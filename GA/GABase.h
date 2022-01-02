@@ -11,6 +11,10 @@ double randD() {
     return (std::rand()%32767)/32767.0;
 }
 
+double randD(const double min,const double max) {
+    return (max-min)*randD()+min;
+}
+
 struct GAOption
 {
 public:
@@ -63,7 +67,7 @@ public:
         _mutateFun=[](Var*,const ArgsType*){};
     };
     virtual ~GA() {};
-
+    ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
     virtual void initialize(const GAOption & options,
                             initializeFun _iFun,
                             fitnessFun _fFun,
