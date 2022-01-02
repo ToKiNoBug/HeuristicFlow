@@ -1,3 +1,22 @@
+/*
+ Copyright © 2021  TokiNoBug
+This file is part of AlgoTemplates.
+
+    AlgoTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    AlgoTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with AlgoTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #include <iostream>
 #include "GABase.h"
 #include <ctime>
@@ -39,7 +58,7 @@ void testSingleNumber() {
     opt.maxFailTimes=50;
     opt.populationSize=100;
     opt.maxGenerations=300;
-    algo.initialize(opt,
+    algo.initialize(
         [](double * x,const tuple<>*){*x=randD();},
         [](const double * x,const tuple<>*){return 1.0/(std::abs(*x-3.0)+1e-8);},
         [](double * x,double *y,const tuple<>*)
@@ -47,6 +66,8 @@ void testSingleNumber() {
         [](double * x,const tuple<>*)
             {if(std::rand()%2)*x*=-1;
              *x+=randD()*0.1;},
+    nullptr,
+    opt,
     std::tuple<>()
     );
 
@@ -80,7 +101,7 @@ void testWithEigen() {
     //typeof(Arg)
 
 
-    algo.initialize(opt,
+    algo.initialize(
                     [](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();},
     [](const Eigen::Array4d* x,const typeof(Arg)* arg){
         return -(*x-std::get<TargetOffset>(*arg)).square().maxCoeff();
@@ -103,13 +124,14 @@ void testWithEigen() {
         }
         if(x->operator()(idx)<std::get<MinOffset>(*arg)(idx)) {
             x->operator()(idx)=std::get<MinOffset>(*arg)(idx);
-        }
-    },
+        }},
+    nullptr,
+    opt,
     Arg);
 
 
     algo.run();
-
+    cout<<"Solving spend "<<algo.generation()<<" generations\n";
     cout<<"Result = "<<algo.result().transpose()<<endl;
     cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
