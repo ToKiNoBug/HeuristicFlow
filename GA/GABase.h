@@ -99,6 +99,7 @@ public:
         _fitnessFun=[](const Var*,const ArgsType*){return 0.0;};
         _crossoverFun=[](Var*,Var*,const ArgsType*){};
         _mutateFun=[](Var*,const ArgsType*){};
+        _otherOptFun=[](ArgsType*,size_t,size_t,const GAOption*){};
     };
     virtual ~GA() {};
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
