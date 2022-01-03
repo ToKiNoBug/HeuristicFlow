@@ -17,21 +17,26 @@ This file is part of AlgoTemplates.
 
 */
 
-#ifndef GABASE_H
-#define GABASE_H
+#ifndef GENETIC_H
+#define GENETIC_H
 #include <stdint.h>
 #include <vector>
 #include <tuple>
 #include <cmath>
 #include <algorithm>
-#include <random>
 
 #ifdef OUTPUT
 #include <iostream>
 #endif
+namespace AT {
+
+};
+
+namespace AT
+{
 ///uniform random number in range [0,1]
 double randD() {
-    return (std::rand()%32767)/32767.0;
+    return (std::rand()%RAND_MAX)/double(RAND_MAX);
 }
 ///uniform random number in range [min,max]
 double randD(const double min,const double max) {
@@ -70,9 +75,6 @@ public:
     typedef void(* crossoverFun)(Var*,Var*,const ArgsType*);
     ///Function to apply mutate for Var
     typedef initializeFun mutateFun;
-    ///Function to modify Args after each generation
-    typedef void(* otherOptFun)
-        (ArgsType*,size_t generation,size_t failTimes,const GAOption*);
 
     ///Gene type for Var
     class Gene {
@@ -93,13 +95,17 @@ public:
         double _Fitness;
     };
 
+    ///Function to modify Args after each generation
+    typedef void(* otherOptFun)
+        (ArgsType*,std::vector<Gene>*,size_t generation,size_t failTimes,const GAOption*);
+
 public:
     GA() {
         _initializeFun=[](Var*,const ArgsType*){};
         _fitnessFun=[](const Var*,const ArgsType*){return 0.0;};
         _crossoverFun=[](Var*,Var*,const ArgsType*){};
         _mutateFun=[](Var*,const ArgsType*){};
-        _otherOptFun=[](ArgsType*,size_t,size_t,const GAOption*){};
+        _otherOptFun=[](ArgsType*,std::vector<Gene>*,size_t,size_t,const GAOption*){};
     };
     virtual ~GA() {};
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
@@ -120,7 +126,7 @@ public:
         _mutateFun=_mFun;
 
         if(_ooF==nullptr) {
-            _otherOptFun=[](ArgsType*,size_t,size_t,const GAOption*){};
+            _otherOptFun=[](ArgsType*,std::vector<Gene>*,size_t,size_t,const GAOption*){};
         } else {
             _otherOptFun=_ooF;
         }
@@ -152,7 +158,7 @@ public:
 #ifdef OUTPUT
             std::cout<<"Generation "<<_generation<<std::endl;
 #endif
-            _otherOptFun(&_args,_generation,_failTimes,&_option);
+            _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
             crossover();
             mutate();
         }
@@ -289,5 +295,5 @@ protected:
 
 
 };
-
-#endif // GABASE_H
+}
+#endif // GENETIC_H

@@ -18,12 +18,14 @@ This file is part of AlgoTemplates.
 */
 
 #include <iostream>
-#include "GABase.h"
+#include "Genetic.h"
 #include <ctime>
 
 #include <Eigen/Dense>
 
 using namespace std;
+
+using namespace AT;
 
 void initializeSrand();
 
@@ -36,13 +38,13 @@ void testAckley();
 int main()
 {
     initializeSrand();
-    testAckley();
+    testSingleNumber();
     return 0;
 }
 
 void initializeSrand() {
-    std::clock_t c=std::clock();
-    std::srand((c>>16)^(c&0xFFFF));
+    std::time_t t=std::time(nullptr);
+    std::srand((t>>32)^(t&0xFFFFFFFF));
     /*
     std::clock_t c=std::clock();
     if(sizeof(std::clock_t)>sizeof(unsigned int)) {
@@ -79,7 +81,7 @@ void testSingleNumber() {
     cout<<"result = "<<algo.result()<<endl;
     cout<<"result idx = "<<algo.eliteIdx()<<endl;
 }
-
+/*
 void testWithEigen() {
     Eigen::Array4d target(1,2,3,4);
     target/=target.sum();
@@ -117,10 +119,7 @@ void testWithEigen() {
     [](Eigen::Array4d*x,const typeof(Arg)* arg) {
         uint32_t idx=std::rand()%4;
         x->operator()(idx)+=randD(-1,1)*std::get<LROffset>(*arg);
-        /*
-        if(std::rand()%2==0) {
-            x->operator()(idx)*=-1;
-        }*/
+
         if(x->operator()(idx)>std::get<MaxOffset>(*arg)(idx)) {
             x->operator()(idx)=std::get<MaxOffset>(*arg)(idx);
         }
@@ -193,3 +192,4 @@ void testAckley() {
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
     cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
+*/
