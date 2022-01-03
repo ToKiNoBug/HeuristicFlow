@@ -39,7 +39,8 @@ int main()
 {
     initializeSrand();
     //testSingleNumber();
-    testAckley();
+    testWithEigen();
+    //testAckley();
     return 0;
 }
 
@@ -82,7 +83,7 @@ void testSingleNumber() {
     cout<<"Finished with "<<algo.generation()<<" generations"<<endl;
     cout<<"result = "<<algo.result()<<endl;
 }
-/*
+
 void testWithEigen() {
     Eigen::Array4d target(1,2,3,4);
     target/=target.sum();
@@ -111,11 +112,16 @@ void testWithEigen() {
     [](const Eigen::Array4d* x,const typeof(Arg)* arg){
         return -(*x-std::get<TargetOffset>(*arg)).square().maxCoeff();
     },
-    [](Eigen::Array4d*x,Eigen::Array4d*y,const typeof(Arg)*) {
+    [](const Eigen::Array4d*x,const Eigen::Array4d*y,
+            Eigen::Array4d*X,Eigen::Array4d*Y,
+            const typeof(Arg)*) {
         for(uint32_t i=0;i<4;i++) {
-            if(std::rand()%2==0) {
-                std::swap(x->operator()(i),y->operator()(i));
-            }
+            X->operator()(i)=
+                    (std::rand()%2)?
+                        x->operator()(i):y->operator()(i);
+            Y->operator()(i)=
+                    (std::rand()%2)?
+                        x->operator()(i):y->operator()(i);
         }},
     [](Eigen::Array4d*x,const typeof(Arg)* arg) {
         uint32_t idx=std::rand()%4;
@@ -135,9 +141,8 @@ void testWithEigen() {
     algo.run();
     cout<<"Solving spend "<<algo.generation()<<" generations\n";
     cout<<"Result = "<<algo.result().transpose()<<endl;
-    cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
-*/
+
 
 void testAckley() {
     GAOption opt;
