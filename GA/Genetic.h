@@ -21,10 +21,11 @@ This file is part of AlgoTemplates.
 #define GENETIC_H
 #include <stdint.h>
 #include <vector>
+#include <list>
 #include <tuple>
 #include <cmath>
 #include <algorithm>
-
+#include <iostream>
 #ifdef OUTPUT
 #include <iostream>
 #endif
@@ -72,7 +73,7 @@ public:
     ///Function to calculate fitness for Var
     typedef double(* fitnessFun)(const Var*,const ArgsType*);
     ///Function to apply crossover for Var
-    typedef void(* crossoverFun)(Var*,Var*,const ArgsType*);
+    typedef void(* crossoverFun)(const Var*,const Var*,Var*,Var*,const ArgsType*);
     ///Function to apply mutate for Var
     typedef initializeFun mutateFun;
 
@@ -97,15 +98,15 @@ public:
 
     ///Function to modify Args after each generation
     typedef void(* otherOptFun)
-        (ArgsType*,std::vector<Gene>*,size_t generation,size_t failTimes,const GAOption*);
+        (ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);
 
 public:
     GA() {
         _initializeFun=[](Var*,const ArgsType*){};
         _fitnessFun=[](const Var*,const ArgsType*){return 0.0;};
-        _crossoverFun=[](Var*,Var*,const ArgsType*){};
+        _crossoverFun=[](const Var*,const Var*,Var*,Var*,const ArgsType*){};
         _mutateFun=[](Var*,const ArgsType*){};
-        _otherOptFun=[](ArgsType*,std::vector<Gene>*,size_t,size_t,const GAOption*){};
+        _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
     };
     virtual ~GA() {};
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
@@ -126,7 +127,7 @@ public:
         _mutateFun=_mFun;
 
         if(_ooF==nullptr) {
-            _otherOptFun=[](ArgsType*,std::vector<Gene>*,size_t,size_t,const GAOption*){};
+            _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
         } else {
             _otherOptFun=_ooF;
         }
@@ -134,6 +135,7 @@ public:
         for(auto & i : _population) {
             _initializeFun(&i.self,&_args);
         }
+        _eliteIt=_population.begin();
     }
     ///start to solve
     virtual void run() {
@@ -164,15 +166,15 @@ public:
         }
     }
     ///index of the best gene
-    size_t eliteIdx() const {
-        return _eliteIdx;
+    typename std::list<Gene>::iterator eliteIt() const {
+        return _eliteIt;
     }
     ///result
     const Var & result() const {
-        return _population[_eliteIdx].self;
+        return _eliteIt->self;
     }
     ///the whole population
-    const std::vector<Gene> & population() const {
+    const std::list<Gene> & population() const {
         return _population;
     }
     ///get option
@@ -193,8 +195,9 @@ public:
     }
 
 protected:
-    size_t _eliteIdx;
-    std::vector<Gene> _population;
+    typedef typename std::list<Gene>::iterator GeneIt;
+    GeneIt _eliteIt;
+    std::list<Gene> _population;
     GAOption _option;
 
     size_t _generation;
@@ -226,40 +229,74 @@ protected:
     }
 
     virtual void select() {
-        size_t bestIdx=0,worstIdx=0;
-        double bestFitness=_population.front()._Fitness,worstFitness=bestFitness;
-        for(size_t idx=1;idx<_population.size();idx++) {
-            double curFitness=_population[idx]._Fitness;
-            if(isBetter(curFitness,bestFitness)) {
-                bestIdx=idx;
-                bestFitness=curFitness;
-            }
-            if(isBetter(worstFitness,curFitness)) {
-                worstIdx=idx;
-                worstFitness=curFitness;
-            }
-        }
-        if(_eliteIdx==bestIdx) {
-            _failTimes++;
-        } else {
-            _failTimes=0;
-            _eliteIdx=bestIdx;
+
+        //std::cerr<<__LINE__<<std::endl;
+        //previous elite may be erased
+        const double prevEliteFitness=_eliteIt->fitness();
+        std::vector<GeneIt> iterators;
+        iterators.clear();
+        iterators.reserve(_population.size());
+        auto GeneItCmp=[](GeneIt a,GeneIt b) {
+            return isBetter(a->_Fitness,b->_Fitness);
+        };
+
+        //std::cerr<<__LINE__<<std::endl;
+        for(auto it=_population.begin();it!=_population.end();++it) {
+            iterators.emplace_back(it);
         }
 
-        _population[worstIdx]=_population[_eliteIdx];
+        //std::cerr<<__LINE__<<std::endl;
+        std::sort(iterators.begin(),iterators.end(),GeneItCmp);
+            /*
+            std::cout<<"sorted fitnesses=\n[";
+        for(auto i : iterators) {
+            std::cout<<i->fitness()<<",";
+        }
+            std::cout<<']'<<std::endl;
+        //exit(0);
+            */
+
+        //std::cerr<<__LINE__<<std::endl;
+        while(_population.size()>_option.populationSize) {
+            _population.erase(iterators.back());
+            iterators.pop_back();
+        }
+        //std::cerr<<__LINE__<<std::endl;
+        GeneIt curBest=iterators.front();
+        if(!isBetter(curBest->fitness(),prevEliteFitness)) {
+            _failTimes++;
+            _eliteIt=curBest;
+        }
+        else {
+            _failTimes=0;
+            _eliteIt=curBest;
+        }
+
+        //std::cerr<<__LINE__<<std::endl;
+        _population.emplace_back(*_eliteIt);
+    /*
+        std::cout<<"selected fitnesses=\n[";
+    for(auto i : _population) {
+        std::cout<<i.fitness()<<",";
+    }
+        std::cout<<']'<<std::endl;
+    exit(0);*/
+
+//#error Selection hasn't been fixed
 
     }
     virtual void crossover() {
-        std::vector<Gene*> crossoverQueue;
+        std::vector<GeneIt> crossoverQueue;
         crossoverQueue.clear();
         crossoverQueue.reserve(_population.size());
-        for(size_t idx=0;idx<_population.size();idx++) {
-            if(idx==_eliteIdx) {
+
+        for(GeneIt it=_population.begin();it!=_population.end();it++) {
+            if(it==_eliteIt) {
                 continue;
             }
 
             if(randD()<=_option.crossoverProb) {
-                crossoverQueue.push_back(idx+_population.data());
+                crossoverQueue.emplace_back(it);
             }
         }
 
@@ -270,25 +307,27 @@ protected:
         }
 
         while(crossoverQueue.empty()) {
-            Gene* a,*b;
+            GeneIt a,b;
             a=crossoverQueue.back();
             crossoverQueue.pop_back();
             b=crossoverQueue.back();
             crossoverQueue.pop_back();
-            _crossoverFun(&a->self,&b->self,&_args);
-            a->setUncalculated();
-            b->setUncalculated();
+            Gene * childA=&_population.emplace_back();
+            Gene * childB=&_population.emplace_back();
+            _crossoverFun(&a->self,&b->self,&childA->self,&childB->self,&_args);
+            childA->setUncalculated();
+            childB->setUncalculated();
         }
     }
     ///mutate
     virtual void mutate() {
-        for(size_t idx=0;idx<_population.size();idx++) {
-            if(idx==_eliteIdx) {
+        for(auto it=_population.begin();it!=_population.end();++it) {
+            if(it==_eliteIt) {
                 continue;
             }
             if(randD()<=_option.mutateProb) {
-                _mutateFun(&_population[idx].self,&_args);
-                _population[idx].setUncalculated();
+                _mutateFun(&it->self,&_args);
+                it->setUncalculated();
             }
         }
     }

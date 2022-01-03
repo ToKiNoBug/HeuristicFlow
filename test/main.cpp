@@ -38,7 +38,8 @@ void testAckley();
 int main()
 {
     initializeSrand();
-    testSingleNumber();
+    //testSingleNumber();
+    testAckley();
     return 0;
 }
 
@@ -59,17 +60,18 @@ void testSingleNumber() {
     GAOption opt;
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
-    opt.maxFailTimes=50;
+    opt.maxFailTimes=100;
     opt.populationSize=100;
-    opt.maxGenerations=300;
+    opt.maxGenerations=3000;
     algo.initialize(
         [](double * x,const tuple<>*){*x=randD();},
         [](const double * x,const tuple<>*){return 1.0/(std::abs(*x-3.0)+1e-8);},
-        [](double * x,double *y,const tuple<>*)
-            {double mean=(*x+*y)/2;*x=(*x+mean)/2;*y=(*y+mean)/2;},
+        [](const double * x,const double *y,double *X,double *Y,const tuple<>*)
+            {double mean=(*x+*y)/2;*X=(*x+mean)/2;*Y=(*y+mean)/2;},
         [](double * x,const tuple<>*)
-            {if(std::rand()%2)*x*=-1;
-             *x+=randD()*0.1;},
+            {
+        //if(std::rand()%2)*x*=-1;
+             *x+=randD(-1,1)*0.5;},
     nullptr,
     opt,
     std::tuple<>()
@@ -77,9 +79,8 @@ void testSingleNumber() {
 
     cout << "Start" << endl;
     algo.run();
-    cout<<"Finished"<<endl;
+    cout<<"Finished with "<<algo.generation()<<" generations"<<endl;
     cout<<"result = "<<algo.result()<<endl;
-    cout<<"result idx = "<<algo.eliteIdx()<<endl;
 }
 /*
 void testWithEigen() {
@@ -136,10 +137,12 @@ void testWithEigen() {
     cout<<"Result = "<<algo.result().transpose()<<endl;
     cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
+*/
 
 void testAckley() {
     GAOption opt;
     opt.maxGenerations=1000;
+    opt.maxFailTimes=100;
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
     GA<std::array<double,2>,false,std::array<double,2>,std::array<double,2>,double> algo;
 
@@ -161,13 +164,21 @@ void testAckley() {
                 -exp(0.5*(cos(M_2_PI*x)+cos(M_2_PI*y)))
                 +20+M_E;},
     //crossover
-    [](std::array<double,2>* x,std::array<double,2>* y,const typeof(args) *) {
-        std::array<double,2> copyx=*x,copyy=*y;
+    [](const std::array<double,2>* x,const std::array<double,2>* y,
+            std::array<double,2> *X,std::array<double,2>*Y,
+            const typeof(args) *) {
+        const std::array<double,2> &copyx=*x,&copyy=*y;
         for(uint32_t idx=0;idx<x->size();idx++) {
             if(std::rand()%2)
-                x->operator[](idx)=copyy[idx];
+                X->operator[](idx)=copyy[idx];
+            else {
+                X->operator[](idx)=copyx[idx];
+            }
             if(std::rand()%2)
-                y->operator[](idx)=copyx[idx];
+                Y->operator[](idx)=copyx[idx];
+            else {
+                Y->operator[](idx)=copyy[idx];
+            }
         }},
     //mutate
     [](std::array<double,2>* x,const typeof(args) * a) {
@@ -190,6 +201,6 @@ void testAckley() {
 
     cout<<"Solving spend "<<algo.generation()<<" generations\n";
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
-    cout<<"Result idx = "<<algo.eliteIdx()<<endl;
+    //cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
-*/
+
