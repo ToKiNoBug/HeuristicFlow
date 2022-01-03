@@ -25,8 +25,8 @@ This file is part of AlgoTemplates.
 #include <tuple>
 #include <cmath>
 #include <algorithm>
-#include <iostream>
-#ifdef OUTPUT
+//#include <iostream>
+#ifdef AT_OUTPUT
 #include <iostream>
 #endif
 namespace AT {
@@ -146,18 +146,18 @@ public:
             calculateAll();
             select();
             if(_generation>_option.maxGenerations) {
-#ifdef OUTPUT
+#ifdef AT_OUTPUT
                 std::cout<<"Terminate by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef OUTPUT
+#ifdef AT_OUTPUT
                 std::cout<<"Terminate by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifdef OUTPUT
+#ifdef AT_OUTPUT
             std::cout<<"Generation "<<_generation<<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
