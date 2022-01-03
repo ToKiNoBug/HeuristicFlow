@@ -136,6 +136,8 @@ public:
             _initializeFun(&i.self,&_args);
         }
         _eliteIt=_population.begin();
+        _recording.clear();
+        _recording.reserve(_option.maxGenerations+1);
     }
     ///start to solve
     virtual void run() {
@@ -145,20 +147,21 @@ public:
             _generation++;
             calculateAll();
             select();
+            _recording.emplace_back(_eliteIt->fitness());
             if(_generation>_option.maxGenerations) {
 #ifdef AT_OUTPUT
-                std::cout<<"Terminate by max generation limit"<<std::endl;
+                std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
 #ifdef AT_OUTPUT
-                std::cout<<"Terminate by max failTime limit"<<std::endl;
+                std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
 #ifdef AT_OUTPUT
-            std::cout<<"Generation "<<_generation<<std::endl;
+            std::cout<<"Generation "<<_generation<<" , elite fitness="<<_eliteIt->fitness()<<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
             crossover();
@@ -176,6 +179,9 @@ public:
     ///the whole population
     const std::list<Gene> & population() const {
         return _population;
+    }
+    const std::vector<double> & recording() const {
+        return _recording;
     }
     ///get option
     const GAOption & option() const {
@@ -202,6 +208,7 @@ protected:
 
     size_t _generation;
     size_t _failTimes;
+    std::vector<double> _recording;
 
     ArgsType _args;
 
