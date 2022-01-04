@@ -1,5 +1,5 @@
 /*
- Copyright © 2021  TokiNoBug
+ Copyright © 2022  TokiNoBug
 This file is part of OptimTemplates.
 
     OptimTemplates is free software: you can redistribute it and/or modify

@@ -17,22 +17,14 @@ This file is part of OptimTemplates.
 
 */
 
-#include <iostream>
-#include <ctime>
-#include "def_TestingFuns.h"
+#ifndef DEF_TESTINGFUNS_H
+#define DEF_TESTINGFUNS_H
 
-using namespace std;
-
-///initialize std::rand()
-void initializeSrand();
-
-int main()
-{
-    initializeSrand();
-    return 0;
-}
-
-void initializeSrand() {
-    std::time_t t=std::time(nullptr);
-    std::srand((t>>32)^(t&0xFFFFFFFF));
-}
+void testSingleNumber();
+///Using libEigen with OptimTemplates
+void testWithEigenLib();
+///Ackely function
+void testAckley();
+///TSP problem
+void testTSP();
+#endif // DEF_TESTINGFUNS_H

@@ -1,6 +1,8 @@
-# AlgorithmTemplates
+# OptimTemplates
  
-This is a template class lib for several algorithms, like genetic algorithm(single object).
+C++ template class lib for several algorithms, like genetic algorithm(single object).
+
+namespace: OptimT
 
 Implemented : 
 1. GA
