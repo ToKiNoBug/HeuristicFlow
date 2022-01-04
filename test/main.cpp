@@ -29,6 +29,7 @@ void initializeSrand();
 int main()
 {
     initializeSrand();
+    testTSP(20);
     return 0;
 }
 

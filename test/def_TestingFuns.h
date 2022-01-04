@@ -21,10 +21,13 @@ This file is part of OptimTemplates.
 #define DEF_TESTINGFUNS_H
 
 void testSingleNumber();
+
 ///Using libEigen with OptimTemplates
 void testWithEigenLib();
+
 ///Ackely function
 void testAckley();
+
 ///TSP problem
-void testTSP();
+void testTSP(const unsigned int pointNum=10);
 #endif // DEF_TESTINGFUNS_H

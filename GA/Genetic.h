@@ -24,9 +24,10 @@ This file is part of OptimTemplates.
 #include <list>
 #include <tuple>
 #include <cmath>
+#include <random>
 #include <algorithm>
 
-#ifdef OptimT_OUTPUT
+#ifndef OptimT_NO_OUTPUT
 #include <iostream>
 #endif
 namespace OptimT {
@@ -35,9 +36,12 @@ namespace OptimT {
 
 namespace OptimT
 {
-///uniform random number in range [0,1]
+///uniform random number in range [0,1)
 double randD() {
-    return (std::rand()%RAND_MAX)/double(RAND_MAX);
+    static std::uniform_real_distribution<double> rnd(0,1);
+    static std::mt19937 mt(std::rand());
+    return rnd.operator()(mt);
+    //return (std::rand()%RAND_MAX)/double(RAND_MAX);
 }
 ///uniform random number in range [min,max]
 double randD(const double min,const double max) {
@@ -152,18 +156,18 @@ public:
             select();
             _recording.emplace_back(_eliteIt->fitness());
             if(_generation>_option.maxGenerations) {
-#ifdef OptimT_OUTPUT
+#ifndef OptimT_NO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef OptimT_OUTPUT
+#ifndef OptimT_NO_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifdef OptimT_OUTPUT
+#ifndef OptimT_NO_OUTPUT
             std::cout<<"Generation "<<_generation<<" , elite fitness="<<_eliteIt->fitness()<<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
