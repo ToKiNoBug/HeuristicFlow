@@ -1,19 +1,19 @@
 /*
  Copyright © 2021  TokiNoBug
-This file is part of AlgoTemplates.
+This file is part of OptimTemplates.
 
-    AlgoTemplates is free software: you can redistribute it and/or modify
+    OptimTemplates is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    AlgoTemplates is distributed in the hope that it will be useful,
+    OptimTemplates is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with AlgoTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
@@ -25,15 +25,15 @@ This file is part of AlgoTemplates.
 #include <tuple>
 #include <cmath>
 #include <algorithm>
-//#include <iostream>
-#ifdef AT_OUTPUT
+
+#ifdef OptimT_OUTPUT
 #include <iostream>
 #endif
-namespace AT {
+namespace OptimT {
 
 };
 
-namespace AT
+namespace OptimT
 {
 ///uniform random number in range [0,1]
 double randD() {
@@ -95,6 +95,7 @@ public:
         bool _isCalculated;
         double _Fitness;
     };
+    
 
     ///Function to modify Args after each generation
     typedef void(* otherOptFun)
@@ -139,6 +140,8 @@ public:
         _recording.clear();
         _recording.reserve(_option.maxGenerations+1);
     }
+
+
     ///start to solve
     virtual void run() {
         _generation=0;
@@ -149,18 +152,18 @@ public:
             select();
             _recording.emplace_back(_eliteIt->fitness());
             if(_generation>_option.maxGenerations) {
-#ifdef AT_OUTPUT
+#ifdef OptimT_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef AT_OUTPUT
+#ifdef OptimT_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifdef AT_OUTPUT
+#ifdef OptimT_OUTPUT
             std::cout<<"Generation "<<_generation<<" , elite fitness="<<_eliteIt->fitness()<<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
@@ -168,6 +171,7 @@ public:
             mutate();
         }
     }
+
     ///index of the best gene
     typename std::list<Gene>::iterator eliteIt() const {
         return _eliteIt;
@@ -237,8 +241,6 @@ protected:
 
     virtual void select() {
 
-        //std::cerr<<__LINE__<<std::endl;
-        //previous elite may be erased
         const double prevEliteFitness=_eliteIt->fitness();
         std::vector<GeneIt> iterators;
         iterators.clear();
@@ -247,28 +249,17 @@ protected:
             return isBetter(a->_Fitness,b->_Fitness);
         };
 
-        //std::cerr<<__LINE__<<std::endl;
         for(auto it=_population.begin();it!=_population.end();++it) {
             iterators.emplace_back(it);
         }
 
-        //std::cerr<<__LINE__<<std::endl;
         std::sort(iterators.begin(),iterators.end(),GeneItCmp);
-            /*
-            std::cout<<"sorted fitnesses=\n[";
-        for(auto i : iterators) {
-            std::cout<<i->fitness()<<",";
-        }
-            std::cout<<']'<<std::endl;
-        //exit(0);
-            */
-
-        //std::cerr<<__LINE__<<std::endl;
+        
         while(_population.size()>_option.populationSize) {
             _population.erase(iterators.back());
             iterators.pop_back();
         }
-        //std::cerr<<__LINE__<<std::endl;
+
         GeneIt curBest=iterators.front();
         if(!isBetter(curBest->fitness(),prevEliteFitness)) {
             _failTimes++;
@@ -279,19 +270,10 @@ protected:
             _eliteIt=curBest;
         }
 
-        //std::cerr<<__LINE__<<std::endl;
         _population.emplace_back(*_eliteIt);
-    /*
-        std::cout<<"selected fitnesses=\n[";
-    for(auto i : _population) {
-        std::cout<<i.fitness()<<",";
-    }
-        std::cout<<']'<<std::endl;
-    exit(0);*/
-
-//#error Selection hasn't been fixed
 
     }
+
     virtual void crossover() {
         std::vector<GeneIt> crossoverQueue;
         crossoverQueue.clear();
@@ -326,6 +308,8 @@ protected:
             childB->setUncalculated();
         }
     }
+
+
     ///mutate
     virtual void mutate() {
         for(auto it=_population.begin();it!=_population.end();++it) {

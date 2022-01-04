@@ -25,7 +25,7 @@ This file is part of AlgoTemplates.
 
 using namespace std;
 
-using namespace AT;
+using namespace OptimT;
 
 void initializeSrand();
 
