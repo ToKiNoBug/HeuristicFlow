@@ -1,27 +1,60 @@
 # OptimT::GAOption
-Defined in header [GABase.h](../../GA/GABase.h)
+`GAOption` is a struct encapsulating several general options for most types of genetic algorithm.
+
+| Header: | `#include<Genetic>` |
+| ----: | :---- |
+| Location: | [GABase.h](../../GA/GABase.h) |
 
 <br>
 
 ## Defination
 ```cpp
-    struct GAOption
+    struct GAOption;
 ```
-`GAOption` is a struct encapsulating several general options for most types of genetic algorithm. It's a simple struct with all members public and without any function except constructor.
 
 <br>
 
-## Member types
-| Type | Name | Default value | Description |
-| ----: | :---- | :----: | :---- |
-| `size_t` | `populationSize` | 100 | Size of population. |
-| `size_t` | `maxGeneration` | 300 | Maximum generation. GA will stop once reached this limitation. |
-| `size_t` | `maxFailTimes` | 50 | GA will stop once best solve hasn't been improved for continuous `maxFailTimes` generations. |
-| `double` | `crossoverProb` | 0.8 | Probability of a non-elite individual to join crossover. |
-| `double` | `mutateProb` | 0.05 | Probability of a non-elite individual to get mutated. |
+## Members
+| Access | Type | Name | Default value |
+| :----: | ----: | :---- | :----: |
+| public | `size_t` | [`populationSize`](#populationsize) | 100 |
+| public | `size_t` | [`maxGeneration`](#maxgeneration) | 300 |
+| public | `size_t` | [`maxFailTimes`](#maxfailtimes) | 50 |
+| public | `double` | [`crossoverProb`](#crossoverprob) | 0.8 |
+| public | `double` | [`mutateProb`](#mutateprob) | 0.05 |
 
+<br>
 
 ## Member functions
-| Return type | Defination | Description |
-| ----: | :---- | :---- |
-| (Constructor) | `GAOption()` | Construct and initialize all members to default value |
+| Access | Return type | Defination |
+| :----: | ----: | :---- |
+| public |  | [`GAOption()`](#gaoption) |
+
+<br>
+
+## Detailed description
+`GAOption` is a non-template struct, which means that it's suitable to most genetic algorithm. It's a simple struct with all members public and without any function except constructor.
+
+<br>
+
+## Member details
+### `populationSize`
+Size of population. 
+
+### `maxGeneration`
+Maximum generation. GA will stop once reached this limitation.
+
+### `maxFailTimes`
+GA will stop once best solve hasn't been improved for continuous `maxFailTimes` generations.
+
+### `crossoverProb`
+Probability of a non-elite individual to join crossover.
+
+### `mutateProb`
+Probability of a non-elite individual to get mutated.
+
+<br>
+
+## Function details
+### `GAOption()`
+Construct and initialize all members to their default values.

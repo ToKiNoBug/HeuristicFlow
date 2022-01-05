@@ -1,6 +1,6 @@
 # OptimTemplates
  
-C++ template class lib for several algorithms, like genetic algorithm(single object).
+C++ template class lib for several algorithms, like genetic algorithm.
 
 namespace: OptimT
 
