@@ -16,11 +16,11 @@ CODES
 <br>
 
 ## Types
-| Access | Type | Defination |
-| :----: | ----: | :---- |
-| public | `enum` | `enum_name{...}` |
-| public | `class` | `Gene` |
-| public | `typedef` | `typedef A B` |
+| Access | Name | Type | Defination |
+| :----: | :----: | ----: | :---- |
+| public | `enum_name` | `enum` | `enum_name{...}` |
+| public | `Gene` | `class` | `Gene` |
+| public | `B` |`typedef` | `typedef A B` |
 
 <br>
 

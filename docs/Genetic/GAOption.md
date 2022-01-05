@@ -9,7 +9,7 @@
 
 ## Defination
 ```cpp
-    struct GAOption;
+    struct OptimT::GAOption;
 ```
 
 <br>
