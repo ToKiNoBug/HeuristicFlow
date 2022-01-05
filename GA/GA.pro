@@ -1,3 +1,3 @@
 HEADERS += \
     GABase.h \
-    Genetic.h
+    SOGA.h

@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GENETIC_H
-#define GENETIC_H
+#ifndef SOGA_H
+#define SOGA_H
 #include "./GABase.h"
 
 #include <vector>
@@ -83,4 +83,4 @@ protected:
     }
 };
 }
-#endif // GENETIC_H
+#endif // SOGA_H
