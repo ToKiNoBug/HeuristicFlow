@@ -17,6 +17,9 @@ template<typename Var_t,typename Fitness_t,class ...Args> class OptimT::GABase;
 ## Types
 | Access | Name | Type | Defination |
 | :----: | :----: | ----: | :---- |
+|  | [`Var_t`](#var_t) | `template` |  |
+|  | [`Fitness_t`](#fitness_t) | `template` |  |
+|  | [`Args...`](#args...) | `template` |  |
 | public | [`ArgsType`](#argstype) | `typedef` | `typedef std::tuple<Args...> ArgsType;` |
 | public | [`initializeFun`](#initializefun) | `typedef` |  `typedef void(* initializeFun)(Var_t*,const ArgsType*);` |
 | public | [`fitnessFun`](#fitnessfun) | `typedef` | `typedef Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);` |
@@ -33,23 +36,37 @@ template<typename Var_t,typename Fitness_t,class ...Args> class OptimT::GABase;
 | :----: | ----: | :---- | :----: |
 | protected | `GeneIt` | [`_eliteIt`](#_eliteit) |  |
 | protected | `std::list<Gene>` | [`_population`](#_population) |  |
-| protected | [`GAOption`](./GAOption.md) | [`_option`] |  |
-| protected | `size_t` | `_generation` |  |
-| protected | `size_t` | `_failTimes` |  |
-| protected | `std::vector<Fitness_t>` | `_recording` |  |
-| protected | `ArgsType` | `_args` |  |
-| protected | `fitnessFun` | `_fitnessFun` | empty lambda |
-| protected | `initializeFun` | `_initializeFun` | empty lambda |
-| protected | `crossoverFun` | `_crossoverFun` | empty lambda |
-| protected | `mutateFun` | `_mutateFun` | empty lambda |
-| protected | `otherOptFun` | `_otherOptFun` | empty lambda |
+| protected | [`GAOption`](./GAOption.md) | [`_option`](#_option) |  |
+| protected | `size_t` | [`_generation`](#_generation) |  |
+| protected | `size_t` | [`_failTimes`](#_failtimes) |  |
+| protected | `std::vector<Fitness_t>` | [`_recording`](#_recording) |  |
+| protected | `ArgsType` | [`_args`](#_args) |  |
+| protected | `initializeFun` | [`_initializeFun`](#_initializefun) | empty lambda |
+| protected | `fitnessFun` | [`_fitnessFun`](#_fitnessfun) | empty lambda |
+| protected | `crossoverFun` | [`_crossoverFun`](#_crossoverfun) | empty lambda |
+| protected | `mutateFun` | [`_mutateFun`](#_mutatefun) | empty lambda |
+| protected | `otherOptFun` | [`_otherOptFun`](#_otheroptfun) | empty lambda |
 
 <br>
 
 ## Member functions
 | Access | Return type | Defination |
 | :----: | ----: | :---- |
-| public |  | `GAOption()` |
+| public |  | [`GABase()`](#gabase) |
+| public | `virtual` | [`~GABase()`](#\~gabase) |
+| public | `virtual void` | [`run()`](#run) |
+| public | `std::list<Gene>::iterator` | [`eliteIt() const`](#eliteit-const) |
+| public | `const Var_t &` | [`result() const`](#result-const) |
+| public | `const std::list<Gene> &` | [`population() const`](#population-const) |
+| public | `const std::vector<Fitness_t>` | [`recording() const`](#recording-const) |
+| public | `const GAOption &` | [`option() const`](#option-const) |
+| public | `size_t generation()` | [`generation() const`](#generation-const) |
+| public | `size_t failTimes()` | [`failTimes() const`](#failtimes-const) |
+| public | `const ArgsType &` | [`args() const`](#args-const) |
+| protected | `virtual void` | [`calculateAll()`](#calculateall) |
+| protected | `virtual void` | [`select()=0`](#select0) |
+| protected | `virtual void` | [`crossover()`](#crossover) |
+| protected | `virtual void` | [`mutate()`](#mutate) |
 
 <br>
 
@@ -59,6 +76,9 @@ Class/Strcut description here.
 <br>
 
 ## Type details
+### `Var_t`
+### `Fitness_t`
+### `Args...`
 ### `ArgsType`
 ### `initializeFun`
 ### `fitnessFun`
@@ -73,22 +93,33 @@ Class/Strcut description here.
 ## Member details
 ### `_eliteIt`
 ### `_population`
-### 
-### 
-### 
-### 
-### 
-### 
-### 
-### 
-### 
-### 
-### 
-### 
+### `_option`
+### `_generation`
+### `_failTimes`
+### `_recording`
+### `_args`
+### `_initializeFun`
+### `_fitnessFun`
+### `_crossoverFun`
+### `_mutateFun`
+### `_otherOptFun`
 
 <br>
 
 ## Function details
-### function name
-### function name
+### `GABase()`
+### `~GABase()`
+### `run()`
+### `eliteIt() const`
+### `result() const`
+### `population() const`
+### `recording() const`
+### `option() const`
+### `generation() const`
+### `failTimes() const`
+### `args() const`
+### `calculateAll()`
+### `select()=0`
+### `crossover()`
+### `mutate()`
 

@@ -166,7 +166,7 @@ public:
     const std::list<Gene> & population() const {
         return _population;
     }
-    const std::vector<double> & recording() const {
+    const std::vector<Fitness_t> & recording() const {
         return _recording;
     }
     ///get option
