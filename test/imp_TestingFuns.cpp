@@ -29,7 +29,7 @@ void testAckley() {
     opt.maxGenerations=1000;
     opt.maxFailTimes=100;
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
-    GA<array<double,2>,false,array<double,2>,array<double,2>,double> algo;
+    SOGA<array<double,2>,false,array<double,2>,array<double,2>,double> algo;
 
     tuple<array<double,2>,array<double,2>,double> args;
     get<MinIdx>(args)={-5,-5};
@@ -91,7 +91,7 @@ void testAckley() {
 
 
 void testSingleNumber() {
-    GA<double,true> algo;
+    SOGA<double,true> algo;
     GAOption opt;
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
@@ -129,7 +129,7 @@ void testWithEigenLib() {
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
 
-    GA<Eigen::Array4d,true,Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
+    SOGA<Eigen::Array4d,true,Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
     //val min max learning_rate
     tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> Arg;
     static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
@@ -202,7 +202,7 @@ void testTSP(const uint32_t PointNum) {
 
     //typedef vector<permUnit> permulation;
     //      var,        less=better,    data src
-    GA<vector<double>,false,const vector<Point_t>*> algo;
+    SOGA<vector<double>,false,const vector<Point_t>*> algo;
     static const uint8_t dataIdx=0;
     typedef tuple<const vector<Point_t>*> Args_t;
     Args_t args;//=make_tuple(PointNum,points.data());
