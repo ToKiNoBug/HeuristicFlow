@@ -14,12 +14,7 @@ class GA;
 }
 ```
 
-In the template above, `Var_t` is the Var_tiable to be modified, while `isGreaterBetter` denotes that whether a greater fitness value means a better Var_tiable. `...Args` means extra custom parameters, they can be some datas to calculate the fitness of a Var_tiable like trainning data set, or some other parameters like maximum and minimum value of `Var_t`, or even trainning rate. Also you can leave it blank. Several examples:
-```cpp
-OptimT::GA<std::array<double,16>,true> solver_empty;
-OptimT::GA<BPNetwork_t,false,DataSet_t> GABP_trainner;
-OptimT::GA<Eigen::Array4d,true,std::vector<Point_t>,double,double,double> TSP_solver;
-```
+In the template above, `Var_t` is the Var_tiable to be modified, while `isGreaterBetter` denotes that whether a greater fitness value means a better Var_tiable. `...Args` 
 
 <br>
 <br>
@@ -45,49 +40,32 @@ All these members are public in order to be modified conveniently.
     ```cpp
     typedef std::tuple<Args...> ArgsType;
     ```
-    In class `GA`, `...Args` will be packed in a tuple (`std::tuple`) and such tuple are called **args**, which means parameters of this optimization task.
 2. `initializeFun`
     ```cpp
     typedef void(* initializeFun)(Var_t*,const ArgsType*);
     ```
-    Function pointer type to initialize an individual in population. This function will be called only when initializing. For best flexibility, a constant pointer to parameters is provided.
     
 3. `fitnessFun`
    ```cpp
     typedef double(* fitnessFun)(const Var_t*,const ArgsType*);
    ```
-   Fucntion pointer type to calculate fitness for any individual. Although it may be not too flexible, I assign that fitness value are `double`.
-
-   This function will be called to each individual in each generation, so it often spend most time when optimizing. So when you are solving a complex problem, make this function as fast as possible.
 
 4. `crossoverFun`
    ```cpp
    typedef void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
    ```
-   Function pointer type to do crossover. The first 2 constant pointers can be called *parent1* and *parent2* while call rest non-constant pointers *child1* and *child2*. When doing crossover, parents are chosen from population while children are newly inserted to population. This function should assign children's value by parents' value.
-   Note that children are constructed with **default constructor**, **make sure that your `Var_t` type does have a default constructor**.
 
 5. `mutateFun`
     ```cpp
     typedef initializeFun mutateFun;
     ```
-    Function pointer type to do mutation. It has same type with `initializeFun` but they have different meanings. This function should slightly modify given `Var_t`. Same as above, these functions have constant access to parameters.
+    
 
 6. class `Gene`
    ```cpp
    GA<Var_t,bool,...>::class Gene
    ```
-   Gene type encapsulating a `Var_t` object. It has following members (and functions):
-   | Type/Return Type | Name | Type |
-   | ----: | :---- | :----: |
-   | `Var_t` | `self` | public member |
-   | `void` | `setUncalculated()` | public function |
-   | `bool`  | `isCalculated() const` | public function |
-   | `double` | `fitness() const` | public function |
-   | `bool` | `_isCalculated` | protected member |
-   | `double` | `_Fitness` | protected member |
-
-    To avoid repeated fitness caculation, an extra boolean is added to note whether a `Gene` has already get its fitness value. You can call `void Gene::setUncalculated()` to set a Gene to uncalculated, however, only class `GA` is able to assign fitness to `Gene` and turn it into calculated. This can be done since `GA` is a friend class of `Gene`.
+   
 7. `otherOptFun`
    ```cpp
    typedef void(* otherOptFun)
