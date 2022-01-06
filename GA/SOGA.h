@@ -28,6 +28,9 @@ This file is part of OptimTemplates.
 namespace OptimT
 {
 
+const bool FITNESS_GREATER_BETTER=true;
+const bool FITNESS_LESS_BETTER=false;
+
 ///single object genetic algorithm solver(real fitness value)
 template<typename Var_t,bool isGreaterBetter,bool Record,class ...Args>
 class SOGA : public GABase<Var_t,double,Record,Args...>
@@ -36,7 +39,8 @@ public:
     SOGA() {
         //initialization for function ptrs has been finished in base class constructor
   };
-    typedef GABase<Var_t,double,Record,Args...> Base_t;
+    using Base_t = GABase<Var_t,double,Record,Args...>;
+    using GeneIt_t = typename Base_t::GeneIt_t ;
 protected:
 
     static inline bool isBetter(double A,double B) {
@@ -49,7 +53,6 @@ protected:
     virtual void select() {
 
         const double prevEliteFitness=Base_t::_eliteIt->_Fitness;
-        typedef typeof(Base_t::_population.begin()) GeneIt_t;
         std::vector<GeneIt_t> iterators;
         iterators.clear();
         iterators.reserve(Base_t::_population.size());

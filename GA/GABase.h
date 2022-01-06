@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef GABASE_H
 #define GABASE_H
 
@@ -12,10 +31,17 @@
 #endif
 
 namespace OptimT {
+
+std::random_device global_random_device;
+std::mt19937 global_mt19937(global_random_device());
+
+const bool RECORD_FITNESS=true;
+const bool DONT_RECORD_FITNESS=false;
+
 ///uniform random number in range [0,1)
 double randD() {
     static std::uniform_real_distribution<double> rnd(0,1);
-    static std::mt19937 mt(std::rand());
+    static std::mt19937 mt(global_random_device());
     return rnd.operator()(mt);
     //return (std::rand()%RAND_MAX)/double(RAND_MAX);
 }
@@ -47,15 +73,15 @@ template<typename Var_t,typename Fitness_t,bool Record,class ...Args>
 class GABase {
 public:
     ///Use std::tuple to store all extra parameters such as training samples
-    typedef std::tuple<Args...> ArgsType;
+    using ArgsType = std::tuple<Args...>;
     ///Function to initialize Var
-    typedef void(* initializeFun)(Var_t*,const ArgsType*);
+    using initializeFun = void(*)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
-    typedef Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);
+    using fitnessFun = Fitness_t(*)(const Var_t*,const ArgsType*);
     ///Function to apply crossover for Var
-    typedef void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
+    using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
     ///Function to apply mutate for Var
-    typedef initializeFun mutateFun;
+    using mutateFun = initializeFun;
 
     ///Gene type for Var
     class Gene {
@@ -77,8 +103,10 @@ public:
 
 
     ///Function to modify Args after each generation
-    typedef void(* otherOptFun)
+    using otherOptFun = void(*)
         (ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);
+    ///list iterator to Gene
+    using GeneIt_t = typename std::list<Gene>::iterator;
 
 public:
     GABase() {
@@ -153,7 +181,7 @@ public:
     }
 
     ///index of the best gene
-    typename std::list<Gene>::iterator eliteIt() const {
+    GeneIt_t eliteIt() const {
         return _eliteIt;
     }
     ///result
@@ -182,8 +210,7 @@ public:
     }
 
 protected:
-    typedef typename std::list<Gene>::iterator GeneIt;
-    GeneIt _eliteIt;
+    GeneIt_t _eliteIt;
     std::list<Gene> _population;
     GAOption _option;
 
@@ -211,11 +238,11 @@ protected:
     virtual void select()=0;
 
     virtual void crossover() {
-        std::vector<GeneIt> crossoverQueue;
+        std::vector<GeneIt_t> crossoverQueue;
         crossoverQueue.clear();
         crossoverQueue.reserve(_population.size());
 
-        for(GeneIt it=_population.begin();it!=_population.end();it++) {
+        for(GeneIt_t it=_population.begin();it!=_population.end();it++) {
             if(it==_eliteIt) {
                 continue;
             }
@@ -224,15 +251,14 @@ protected:
                 crossoverQueue.emplace_back(it);
             }
         }
-
-        std::random_shuffle(crossoverQueue.begin(),crossoverQueue.end());
+        std::shuffle(crossoverQueue.begin(),crossoverQueue.end(),global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
         }
 
         while(crossoverQueue.empty()) {
-            GeneIt a,b;
+            GeneIt_t a,b;
             a=crossoverQueue.back();
             crossoverQueue.pop_back();
             b=crossoverQueue.back();
@@ -269,15 +295,15 @@ class GABase<Var_t,Fitness_t,true,Args...>
 {
 public:
     ///Use std::tuple to store all extra parameters such as training samples
-    typedef std::tuple<Args...> ArgsType;
+    using ArgsType = std::tuple<Args...>;
     ///Function to initialize Var
-    typedef void(* initializeFun)(Var_t*,const ArgsType*);
+    using initializeFun = void(*)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
-    typedef Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);
+    using fitnessFun = Fitness_t(*)(const Var_t*,const ArgsType*);
     ///Function to apply crossover for Var
-    typedef void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
+    using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
     ///Function to apply mutate for Var
-    typedef initializeFun mutateFun;
+    using mutateFun = initializeFun;
 
     ///Gene type for Var
     class Gene {
@@ -299,8 +325,10 @@ public:
 
 
     ///Function to modify Args after each generation
-    typedef void(* otherOptFun)
+    using otherOptFun = void(*)
         (ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);
+    ///list iterator to Gene
+    using GeneIt_t = typename std::list<Gene>::iterator;
 
 public:
     GABase() {
@@ -377,7 +405,7 @@ public:
     }
 
     ///index of the best gene
-    typename std::list<Gene>::iterator eliteIt() const {
+    GeneIt_t eliteIt() const {
         return _eliteIt;
     }
     ///result
@@ -410,8 +438,7 @@ public:
     }
 
 protected:
-    typedef typename std::list<Gene>::iterator GeneIt;
-    GeneIt _eliteIt;
+    GeneIt_t _eliteIt;
     std::list<Gene> _population;
     GAOption _option;
 
@@ -441,11 +468,11 @@ protected:
     virtual void select()=0;
 
     virtual void crossover() {
-        std::vector<GeneIt> crossoverQueue;
+        std::vector<GeneIt_t> crossoverQueue;
         crossoverQueue.clear();
         crossoverQueue.reserve(_population.size());
 
-        for(GeneIt it=_population.begin();it!=_population.end();it++) {
+        for(GeneIt_t it=_population.begin();it!=_population.end();it++) {
             if(it==_eliteIt) {
                 continue;
             }
@@ -455,14 +482,14 @@ protected:
             }
         }
 
-        std::random_shuffle(crossoverQueue.begin(),crossoverQueue.end());
+        std::shuffle(crossoverQueue.begin(),crossoverQueue.end(),global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
         }
 
         while(crossoverQueue.empty()) {
-            GeneIt a,b;
+            GeneIt_t a,b;
             a=crossoverQueue.back();
             crossoverQueue.pop_back();
             b=crossoverQueue.back();
@@ -503,21 +530,21 @@ class GABase<Var_t,Fitness_t,true,Args...>
 {
 
 private:
-    typedef GABase<Var_t,Fitness_t,false,Args...> Base_t;
+    using GABase<Var_t,Fitness_t,false,Args...> Base_t;
 
     ///Use std::tuple to store all extra parameters such as training samples
-    typedef std::tuple<Args...> ArgsType;
+    using std::tuple<Args...> ArgsType;
     ///Function to initialize Var
-    typedef void(* initializeFun)(Var_t*,const ArgsType*);
+    using void(* initializeFun)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
-    typedef Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);
+    using Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);
     ///Function to apply crossover for Var
-    typedef void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
+    using void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
     ///Function to apply mutate for Var
-    typedef initializeFun mutateFun;
+    using initializeFun mutateFun;
     ///Function to modify Args after each generation
-    typedef Base_t::Gene Gene_t;
-    typedef void(* otherOptFun)
+    using Base_t::Gene Gene_t;
+    using void(* otherOptFun)
         (ArgsType*,std::list<Gene_t>*,size_t generation,size_t failTimes,const GAOption*);
 public:
     GABase() {};

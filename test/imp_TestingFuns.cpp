@@ -29,12 +29,10 @@ void testAckley_withRecord() {
     opt.maxGenerations=1000;
     opt.maxFailTimes=100;
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
-    SOGA<array<double,2>,false,true,array<double,2>,array<double,2>,double> algo;
-
-    /*
-    GABase<array<double,2>,double,true,array<double,2>,array<double,2>,double> * basePtr;
-    basePtr=&algo;
-    */
+    SOGA<array<double,2>,
+            OptimT::FITNESS_LESS_BETTER,
+            OptimT::RECORD_FITNESS,
+            array<double,2>,array<double,2>,double> algo;
 
     tuple<array<double,2>,array<double,2>,double> args;
     get<MinIdx>(args)={-5,-5};

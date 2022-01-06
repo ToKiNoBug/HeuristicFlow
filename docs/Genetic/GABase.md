@@ -27,14 +27,14 @@ template<typename Var_t,typename Fitness_t,bool Record,class ...Args> class Opti
 | public | [`mutateFun`](#mutatefun) | `typedef` | `typedef initializeFun mutateFun;` |
 | public | [`Gene`](#gene) | `class` | `class Gene` |
 | public | [`otherOptFun`](#otheroptfun) | `typedef` | `typedef void(* otherOptFun)(ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);` |
-| protected | [`GeneIt`](#geneit) | `typedef` | `typedef typename std::list<Gene>::iterator GeneIt;` |
+| protected | [`GeneIt_t`](#GeneIt_t) | `typedef` | `typedef typename std::list<Gene>::iterator GeneIt_t;` |
 
 <br>
 
 ## Members
 | Access | Type | Name | Default value |
 | :----: | ----: | :---- | :----: |
-| protected | `GeneIt` | [`_eliteIt`](#_eliteit) |  |
+| protected | `GeneIt_t` | [`_eliteIt`](#_eliteit) |  |
 | protected | `std::list<Gene>` | [`_population`](#_population) |  |
 | protected | [`GAOption`](./GAOption.md) | [`_option`](#_option) |  |
 | protected | `size_t` | [`_generation`](#_generation) |  |
@@ -54,6 +54,7 @@ template<typename Var_t,typename Fitness_t,bool Record,class ...Args> class Opti
 | :----: | ----: | :---- |
 | public |  | [`GABase()`](#gabase) |
 | public | `virtual` | [`~GABase()`](#\~gabase) |
+| public | `virtual void` | [`initialize(initializeFun,fitnessFun,crossoverFun,mutateFun,otherOptFun=nullptr,const GAOption&=GAOption(),const ArgsType&=ArgsType())`](#initialize) |
 | public | `virtual void` | [`run()`](#run) |
 | public | `std::list<Gene>::iterator` | [`eliteIt() const`](#eliteit-const) |
 | public | `const Var_t &` | [`result() const`](#result-const) |
@@ -90,6 +91,8 @@ By the way, this also leaves room for multi-object optimizators.
 
 ### `Record`
 This boolean template value determines whether instance record the changes of fitness value or not. If true, you call an extra partial special version of GABase with an extra member [`_record`](#_record) and function [`record() const`](#record-const).
+
+Use `RECORD_FITNESS`(`true`) here to enable recording function, or use `DONT_RECORD_FITNESS`(false) to disable recording.
 
 ### `Args...`
 Extra custom parameters. They can be some datas to calculate the fitness of a Var_tiable like trainning data set, or some other parameters like maximum and minimum value of `Var_t`, or even trainning rate. Also you can leave it blank. Several examples:
@@ -132,44 +135,109 @@ To avoid repeated fitness caculation, an extra boolean is added to note whether 
 
 ### `otherOptFun`
 It means "other operate function". This function is called in every generation, after selection but before crossover. In this function, you can modify not only args but also the whole population. In most condition this step is not needed, but I love flexibility.
+
+If no any other operation, you can use pass `nullptr` and it will automatically be replaced by an empty lambda.
    
 **All these function pointers can be lambda. When constructed, all these function pointers has an empty lambda as default value.**
 
-### `GeneIt`
+### `GeneIt_t`
 It's same as iterator type of stl list containing `Gene` types.
 
 <br>
 
 ## Member details
 ### `_eliteIt`
+Iterator to elite gene.
+
 ### `_population`
+A list to store all Genes.
+
 ### `_option`
+Options of solver.
+
 ### `_generation`
+Generations used.
+
 ### `_failTimes`
+Generations that failed to updated elite.
+
 ### `_record`
+Vector to store elite fitness history in each generation.
+
+**Exists only when template parameter [`Record`](#record) is true.**
+
 ### `_args`
+Other parameters pack.
+
 ### `_initializeFun`
+Function pointer to initialize.
+
 ### `_fitnessFun`
+Function pointer to calculate fitness value.
+
 ### `_crossoverFun`
+Function pointer to apply crossover between 2 `Var_t` and produce 2 more `Var_t`.
+
 ### `_mutateFun`
+Function pointer to apply mutation of a `Var_t`.
+
 ### `_otherOptFun`
+Function pointer to apply special other operation after each generation.
 
 <br>
 
 ## Function details
 ### `GABase()`
+Default constructor. All function pointers are initialized with empty lambda.
+
 ### `~GABase()`
+Default virtual constructor.
+
+### `initialize()`
+Initiaze solver with all 5 function pointers, other parameters and `GAOption`.
+
 ### `run()`
+Start solving. Must be called after initialization.
+
 ### `eliteIt() const`
+Get iterator to result gene.
+
 ### `result() const`
+Get result `Var_t`.
+
 ### `population() const`
+Get the whole population.
+
 ### `record() const`
+Get record vector.
+
+**Exists only when template parameter [`Record`](#record) is true.**
+
 ### `option() const`
+Get `GAOption`.
+
 ### `generation() const`
+Get generation used.
+
 ### `failTimes() const`
+Get generations that failed to updated elite.
+
 ### `args() const`
+Get parameter pack.
+
 ### `calculateAll()`
+Calculate fitness values for every genes.
+
+This is a virtual function, so you can cover it by inheriting.
+
 ### `select()=0`
+Apply selection to select better genes.
+
+This is a pure virtual function since comparsion between abstrcat `Fitness_t` is impossible -- you don't even know how many object functions there are!
+
 ### `crossover()`
+Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to population.
+
 ### `mutate()`
+Apply mutation operation which slightly modify gene.
 
