@@ -6,6 +6,6 @@ GA has some implementation of genetic algorithm solver.
 <br>
 
 ## Structs/Classes
-1. [GAOption](Genetic/GAOption.md)
-2. GABase
-3. SOGA
+1. [GAOption](./Genetic/GAOption.md)
+2. [GABase](./Genetic/GABase.md)
+3. [SOGA](./Genetic/SOGA.md)
