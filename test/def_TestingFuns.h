@@ -26,7 +26,7 @@ void testSingleNumber();
 void testWithEigenLib();
 
 ///Ackely function
-void testAckley();
+void testAckley_withRecord();
 
 ///TSP problem
 void testTSP(const unsigned int pointNum=10);

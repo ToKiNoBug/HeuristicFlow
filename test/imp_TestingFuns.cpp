@@ -24,12 +24,17 @@ This file is part of OptimTemplates.
 using namespace OptimT;
 using namespace std;
 
-void testAckley() {
+void testAckley_withRecord() {
     GAOption opt;
     opt.maxGenerations=1000;
     opt.maxFailTimes=100;
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
-    SOGA<array<double,2>,false,array<double,2>,array<double,2>,double> algo;
+    SOGA<array<double,2>,false,true,array<double,2>,array<double,2>,double> algo;
+
+    /*
+    GABase<array<double,2>,double,true,array<double,2>,array<double,2>,double> * basePtr;
+    basePtr=&algo;
+    */
 
     tuple<array<double,2>,array<double,2>,double> args;
     get<MinIdx>(args)={-5,-5};
@@ -86,12 +91,20 @@ void testAckley() {
 
     cout<<"Solving spend "<<algo.generation()<<" generations\n";
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
+
+    cout<<"Fitness history :\n";
+
+    for(auto i : algo.record()) {
+        cout<<i<<'\n';
+    }
+    cout<<endl;
+
     //cout<<"Result idx = "<<algo.eliteIdx()<<endl;
 }
 
 
 void testSingleNumber() {
-    SOGA<double,true> algo;
+    SOGA<double,true,false> algo;
     GAOption opt;
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
@@ -129,7 +142,7 @@ void testWithEigenLib() {
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
 
-    SOGA<Eigen::Array4d,true,Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
+    SOGA<Eigen::Array4d,true,false,Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
     //val min max learning_rate
     tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> Arg;
     static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
@@ -202,7 +215,7 @@ void testTSP(const uint32_t PointNum) {
 
     //typedef vector<permUnit> permulation;
     //      var,        less=better,    data src
-    SOGA<vector<double>,false,const vector<Point_t>*> algo;
+    SOGA<vector<double>,false,false,const vector<Point_t>*> algo;
     static const uint8_t dataIdx=0;
     typedef tuple<const vector<Point_t>*> Args_t;
     Args_t args;//=make_tuple(PointNum,points.data());

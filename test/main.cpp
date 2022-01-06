@@ -29,7 +29,8 @@ void initializeSrand();
 int main()
 {
     initializeSrand();
-    testTSP(20);
+    testAckley_withRecord();
+    //testTSP(20);
     return 0;
 }
 

@@ -29,14 +29,14 @@ namespace OptimT
 {
 
 ///single object genetic algorithm solver(real fitness value)
-template<typename Var_t,bool isGreaterBetter,class ...Args>
-class SOGA : public GABase<Var_t,double,Args...>
+template<typename Var_t,bool isGreaterBetter,bool Record,class ...Args>
+class SOGA : public GABase<Var_t,double,Record,Args...>
 {
 public:
     SOGA() {
         //initialization for function ptrs has been finished in base class constructor
   };
-    typedef GABase<Var_t,double,Args...> Base_t;
+    typedef GABase<Var_t,double,Record,Args...> Base_t;
 protected:
 
     static inline bool isBetter(double A,double B) {
