@@ -17,7 +17,7 @@ This file is part of OptimTemplates.
 
 */
 
-#include "def_TestingFuns.h"
+#include "def_TestingGenetic.h"
 #include <Genetic>
 #include <iostream>
 #include <Eigen/Dense>

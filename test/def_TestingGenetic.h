@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef DEF_TESTINGFUNS_H
-#define DEF_TESTINGFUNS_H
+#ifndef DEF_TESTINGGENETIC_H
+#define DEF_TESTINGGENETIC_H
 
 void testSingleNumber();
 
@@ -30,4 +30,4 @@ void testAckley_withRecord();
 
 ///TSP problem
 void testTSP(const unsigned int pointNum=10);
-#endif // DEF_TESTINGFUNS_H
+#endif // DEF_TESTINGGENETIC_H

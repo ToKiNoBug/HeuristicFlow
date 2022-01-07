@@ -19,8 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingFuns.h"
-
+#include "def_TestingMatrix.h"
 using namespace std;
 
 ///initialize std::rand()
@@ -29,8 +28,9 @@ void initializeSrand();
 int main()
 {
     initializeSrand();
-    testAckley_withRecord();
-    //testTSP(20);
+
+    testCopy();
+
     return 0;
 }
 

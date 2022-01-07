@@ -7,8 +7,10 @@ INCLUDEPATH += ../OptimTemplates \
                                D:/CppLibs/eigen-3.4.0
 
 SOURCES += \
-        imp_TestingFuns.cpp \
+        imp_TestingGenetic.cpp \
+        imp_TestingMatrix.cpp \
         main.cpp
 
 HEADERS += \
-    def_TestingFuns.h
+    def_TestingGenetic.h \
+    def_TestingMatrix.h
