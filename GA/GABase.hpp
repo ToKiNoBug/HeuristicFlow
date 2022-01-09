@@ -149,7 +149,7 @@ public:
             _generation++;
             calculateAll();
             select();
-            //_recording.emplace_back(_eliteIt->_Fitness);
+
             if(_generation>_option.maxGenerations) {
 #ifndef OptimT_NO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
@@ -173,9 +173,9 @@ public:
         }
     }
 
-    ///index of the best gene
-    GeneIt_t eliteIt() const {
-        return _eliteIt;
+    ///best fitness
+    virtual Fitness_t bestFitness() const {
+        return _eliteIt->_Fitness;
     }
     ///result
     const Var_t & result() const {
@@ -236,10 +236,6 @@ protected:
         crossoverQueue.reserve(_population.size());
 
         for(GeneIt_t it=_population.begin();it!=_population.end();it++) {
-            if(it==_eliteIt) {
-                continue;
-            }
-
             if(OtGlobal::randD()<=_option.crossoverProb) {
                 crossoverQueue.emplace_back(it);
             }
@@ -249,7 +245,7 @@ protected:
         std::shuffle(
                     crossoverQueue.begin(),
                     crossoverQueue.end(),
-                    OtGlobal::global_mt19937);
+                    global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
@@ -381,7 +377,7 @@ public:
             _generation++;
             calculateAll();
             select();
-            _record.emplace_back(_eliteIt->_Fitness);
+            _record.emplace_back(bestFitness());
             if(_generation>_option.maxGenerations) {
 #ifndef OptimT_NO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
@@ -405,9 +401,9 @@ public:
         }
     }
 
-    ///index of the best gene
-    GeneIt_t eliteIt() const {
-        return _eliteIt;
+    ///best fitness
+    virtual Fitness_t bestFitness() const {
+        return _eliteIt->_Fitness;
     }
     ///result
     const Var_t & result() const {
@@ -474,9 +470,6 @@ protected:
         crossoverQueue.reserve(_population.size());
 
         for(GeneIt_t it=_population.begin();it!=_population.end();it++) {
-            if(it==_eliteIt) {
-                continue;
-            }
 
             if(OtGlobal::randD()<=_option.crossoverProb) {
                 crossoverQueue.emplace_back(it);
@@ -487,7 +480,7 @@ protected:
         std::shuffle(
                     crossoverQueue.begin(),
                     crossoverQueue.end(),
-                    OtGlobal::global_mt19937);
+                    global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();

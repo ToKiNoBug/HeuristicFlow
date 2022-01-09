@@ -303,7 +303,7 @@ void testTSP(const uint32_t PointNum) {
     cout<<"run!"<<endl;
     algo.run();
     cout<<"finished with "<<algo.generation()<<" generations\n";
-    cout<<"result fitness = "<<algo.eliteIt()->fitness()<<endl;
+    cout<<"result fitness = "<<algo.bestFitness()<<endl;
 
 
 

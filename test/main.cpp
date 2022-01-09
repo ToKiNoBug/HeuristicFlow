@@ -19,6 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
+#define OptimT_NO_OUTPUT
 #include "testNsga2.h"
 
 using namespace std;

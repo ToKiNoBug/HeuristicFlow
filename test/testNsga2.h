@@ -1,13 +1,15 @@
 #ifndef TESTNSGA2_H
 #define TESTNSGA2_H
 
+/*
 #ifdef OptimT_NO_OUTPUT
 #undef OptimT_NO_OUTPUT
 #endif
-
+*/
+#define OptimT_NO_OUTPUT
 #include <OptimTemplates/Genetic>
 #include <array>
-
+#include <iostream>
 //test with 2 object function
 //object1: f1=4x^2+4y^2
 //object2: f2=(x-5)^2+(y-5)^2
@@ -22,19 +24,21 @@ public:
     testNsga2();
     using Base_t =
         GABase<std::array<double,2>,std::array<double,2>,OptimT::RECORD_FITNESS>;
-    class GeneItPlus_t
+    struct infoUnit
     {
     public:
-        GeneItPlus_t() {};
-        ~GeneItPlus_t() {};
-        Base_t::GeneIt_t iterator;
-        uint32_t idx;
-        int paretoRank;
+        //bool isLayered;
         bool isSelected;
+        int32_t sortType;
+        uint32_t index;
+        uint32_t domainedByNum;
+        Base_t::GeneIt_t iterator;
         std::array<double,2> congestion;
     };
 
     void paretoFront(std::vector<const Base_t::Gene*>&) const;
+
+    std::array<double,2> bestFitness() const;
 
 protected:
     static bool isBetter(const std::array<double,2>&,const std::array<double,2>&);

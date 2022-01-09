@@ -11,158 +11,154 @@ testNsga2::testNsga2()
 
 void testNsga2::select() {
 
-    std::vector<GeneItPlus_t> pop(0);
-    pop.reserve(Base_t::_population.size());
+    //if sort by object, this number will be 0 or positive
+    static const int32_t
+            SORT_BY_DOMAINEDBYNUM=-1,
+            SORT_BY_CONGESTION=-2,
+            NONE=-2147483648;
+    ///popSize before selection
+    const size_t popSizeBef=_population.size();
+    std::vector<infoUnit> pop;
+    pop.clear();
+    pop.reserve(popSizeBef);
+    for(auto it=_population.begin();it!=_population.end();++it) {
+        pop.emplace_back();
+        pop.back().index=pop.size()-1;
+        //pop.back().isLayered=false;
+        pop.back().isSelected=false;
+        pop.back().iterator=it;
+        pop.back().sortType=NONE;
+    }
+
+    //calculate domainedByNum
+    for(uint32_t ed=0;ed<popSizeBef;ed++) {
+        pop[ed].domainedByNum=0;
+        for(uint32_t er=0;er<popSizeBef;er++) {
+            if(er==ed) {
+                continue;
+            }
+            pop[ed].domainedByNum
+                    +=isBetter(pop[er].iterator->_Fitness,pop[ed].iterator->_Fitness);
+        }
+    }
+
+    std::vector<const infoUnit *> sortSpace(popSizeBef);
+    for(uint32_t idx=0;idx<popSizeBef;idx++) {
+        sortSpace[idx]=pop.data()+idx;
+        pop[idx].sortType=SORT_BY_DOMAINEDBYNUM;
+    }
+
+    bool (*universalCompareFun)(const infoUnit *,const infoUnit *)
+            =[](const infoUnit * A,const infoUnit * B) {
+        if(A==B) {
+            return false;
+        }
+        //sort on single object
+       if(A->sortType>=0) {
+           return A->iterator->_Fitness[A->sortType]<B->iterator->_Fitness[B->sortType];
+       }
+       if(A->sortType==SORT_BY_DOMAINEDBYNUM) {
+           return A->domainedByNum<B->domainedByNum;
+       }
+       //use the first congestion value as total congestion value
+       if(A->sortType==SORT_BY_CONGESTION) {
+           return A->congestion[0]>B->congestion[0];
+       }
+       std::cerr<<"SORTING FAULT : UNKNOWN SORTTYPE "<<A->sortType<<std::endl;
+       return false;
+    };
+
+    //sort by domainedByNum
+    std::sort(sortSpace.begin(),sortSpace.end(),universalCompareFun);
+
+    std::list<std::vector<const infoUnit *>> paretoLayers;
+    //make by layers
     {
-        uint32_t emplaced=0;
-        for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
-            //pop.emplace_back(it);
-            pop.emplace_back();
-            pop.back().iterator=it;
-            pop.back().idx=(emplaced++);
-            pop.back().paretoRank=-1;
-            pop.back().isSelected=false;
-            pop.back().congestion={0,0};
-        }
-    }
-
-    //(A,B)==true means A strong domain B
-    MatrixDynamicSize<bool>
-            domainMat(Base_t::_population.size(),Base_t::_population.size());
-
-    for(auto & i : domainMat) {
-        i=false;
-    }
-
-    for(uint32_t r=0;r<Base_t::_population.size();r++) {
-        for(uint32_t c=0;c<Base_t::_population.size();c++) {
-            if(r==c)
-                continue;
-            domainMat(r,c)=isBetter(pop[r].iterator->fitness(),pop[c].iterator->fitness());
-        }
-    }
-
-    std::vector<uint32_t> domainNum(Base_t::_population.size());
-    for(uint32_t r=0;r<domainNum.size();r++) {
-        domainNum[r]=0;
-        for(uint32_t c=0;c<domainNum.size();c++) {
-            domainNum[r]+=domainMat(r,c);
-        }
-    }
-
-    std::list<std::vector<uint32_t>>paretoLayer_Idx;
-
-    uint32_t layeredN=0;
-    while(layeredN<Base_t::_population.size()) {
-        paretoLayer_Idx.emplace_back();
-        paretoLayer_Idx.back().clear();
-        paretoLayer_Idx.back().reserve(Base_t::_population.size());
-
-        for(uint32_t idx=0;idx<Base_t::_population.size();idx++) {
-            if(pop[idx].paretoRank>=0) {
-                //a gene which has been sorted into a layer shouldn't be sorted again
-                continue;
+        uint32_t prevDomainedByNum=-1;
+        for(const auto i : sortSpace) {
+            if(i->domainedByNum!=prevDomainedByNum) {
+                paretoLayers.emplace_back();
+                paretoLayers.back().clear();
+                paretoLayers.back().reserve(popSizeBef);
+                prevDomainedByNum=i->domainedByNum;
             }
-            if(domainNum[idx]+1+layeredN>=Base_t::_population.size()) {
-                paretoLayer_Idx.back().emplace_back(idx);
-                pop[idx].paretoRank=paretoLayer_Idx.size()-1;
-            }
+            paretoLayers.back().emplace_back(i);
         }
-        layeredN+=paretoLayer_Idx.back().size();
-    }
-    if(paretoLayer_Idx.back().size()<=0) {
-        paretoLayer_Idx.pop_back();
     }
 
-    std::queue<uint32_t> selectedQueue;
-    bool needCalculateCongestion=false;
-    for(const auto & curLayer : paretoLayer_Idx) {
-        //don't need to calculate congestion
-        if(selectedQueue.size()==Base_t::_option.populationSize){
-            needCalculateCongestion=false;
+    std::queue<const infoUnit *> selected;
+    bool needCongestion=true;
+    while(true) {
+        if(selected.size()==_option.populationSize) {
+            needCongestion=false;
             break;
         }
-        //need to calculate congestion
-        if(selectedQueue.size()+curLayer.size()>Base_t::_option.populationSize) {
-            needCalculateCongestion=true;
+        //must select some from a single layer
+        if(selected.size()+paretoLayers.front().size()>_option.populationSize) {
+            needCongestion=true;
             break;
         }
-        for(auto i : curLayer) {
-            selectedQueue.emplace(i);
+
+        //select them from layers to layers
+        for(const auto i : paretoLayers.front()) {
+            selected.emplace(i);
         }
+        paretoLayers.pop_front();
     }
 
-    //calculate congestion
-    if(needCalculateCongestion) {
-        //using Var_t = std::array<double,2>;
-        using sortUnit = std::pair<GeneItPlus_t*,uint8_t>;//Var_t pointer and object idx
-        std::vector<sortUnit> sortSpace;
-        sortSpace.resize(pop.size());
-        //make sort space
-        for(uint32_t idx=0;idx<pop.size();idx++) {
-            sortSpace[idx].first=&(pop[idx]);
-        }
-        bool (*cmpFun)(const sortUnit & A,const sortUnit & B)
-                =[](const sortUnit & A,const sortUnit & B) {
-            //compare on single object
-            return (A.first->iterator->_Fitness[A.second])
-                    <B.first->iterator->_Fitness[A.second];};
-
-        //sort on n-th object
-        for(uint8_t objIdx=0;objIdx<2;objIdx++) {
-            for(uint32_t idx=0;idx<pop.size();idx++) {
-                sortSpace[idx].second=objIdx;
-            }
-            std::sort(sortSpace.begin(),sortSpace.end(),cmpFun);
-            sortSpace.front().first->congestion[objIdx]=1.0/0.0;
-            sortSpace.back().first->congestion[objIdx]=1.0/0.0;
-
-            //fill in congestion on single dim
-            for(uint32_t idx=1;idx+1<sortSpace.size();idx++) {
-                sortSpace[idx].first->congestion[objIdx]=
-                        std::abs(
-                            sortSpace[idx-1].first->iterator->_Fitness[objIdx]-
-                        sortSpace[idx+1].first->iterator->_Fitness[objIdx]);
+    //finished selection from a single layer
+    if(needCongestion) {
+        for(uint32_t obj=0;obj<2;obj++) {
+            for(auto & i : pop) {
+                i.sortType=obj;
             }
 
-        }
+            std::sort(sortSpace.begin(),sortSpace.end(),universalCompareFun);
 
-        //sort through congestion
-        using congestSortUnit = std::pair<GeneItPlus_t*,double>;
-        std::vector<congestSortUnit> congestSortSpace;
-        congestSortSpace.resize(pop.size());
+            pop[sortSpace.front()->index].congestion[obj]=pinfD;
+            pop[sortSpace.back()->index].congestion[obj]=pinfD;
 
-        for(auto & i : congestSortSpace) {
-            i.second=0;
-            for(double j : i.first->congestion) {
-                i.second+=j;
+            for(uint32_t idx=1;idx<popSizeBef-1;idx++) {
+                pop[sortSpace[idx]->index].congestion[obj]=std::abs(
+                            pop[sortSpace[idx-1]->index].iterator->_Fitness[obj]
+                        -   pop[sortSpace[idx+1]->index].iterator->_Fitness[obj]
+                            );
             }
         }
 
-        std::sort(congestSortSpace.begin(),congestSortSpace.end(),
-                [](const congestSortUnit & A,const congestSortUnit & B) {
-            return A.second<B.second;});
+        //summary congestion
+        for(auto & i : pop) {
+            i.congestion[0]*=1;
+            for(uint32_t obj=1;obj<2;obj++) {
+                i.congestion[0]+=i.congestion[obj];
+            }
+            i.sortType=SORT_BY_CONGESTION;
+        }
 
-        //fill selected queue
-        for(const auto & i : congestSortSpace) {
-            if(selectedQueue.size()>=Base_t::_option.populationSize)
+        std::sort(paretoLayers.front().begin(),paretoLayers.front().end(),universalCompareFun);
+
+        for(auto i : paretoLayers.front()) {
+            if(selected.size()>=_option.populationSize) {
                 break;
-            selectedQueue.emplace(i.first->idx);
+            }
+            selected.emplace(i);
         }
-    }//congestion finished
 
-    //mark selected as selected
-    while(!selectedQueue.empty()) {
-        pop[selectedQueue.front()].isSelected=true;
-        selectedQueue.pop();
     }
+
 
     //erase unselected
-    for(const auto & it : pop) {
-        if(!it.isSelected) {
-            Base_t::_population.erase(it.iterator);
+    while(!selected.empty()) {
+        pop[selected.front()->index].isSelected=true;
+        selected.pop();
+    }
+
+    for(auto & i : pop) {
+        if(!i.isSelected) {
+            _population.erase(i.iterator);
         }
     }
+
 }
 
 bool testNsga2::isBetter(const std::array<double,2>& A,const std::array<double,2>& B) {
@@ -181,13 +177,13 @@ void testNsga2::paretoFront(std::vector<const Base_t::Gene *> & dst) const {
     std::vector<uint32_t> domainedNum;
     domainedNum.resize(Base_t::_population.size());
 
-    for(uint32_t r=0;r<Base_t::_population.size();r++) {
-        domainedNum[r]=0;
-        for(uint32_t c=0;c<Base_t::_population.size();c++) {
-            if(r==c) {
+    for(uint32_t ed=0;ed<Base_t::_population.size();ed++) {
+        domainedNum[ed]=0;
+        for(uint32_t er=0;er<Base_t::_population.size();er++) {
+            if(ed==er) {
                 continue;
             }
-            domainedNum[r]+=!isBetter(pop[r]->_Fitness,pop[c]->_Fitness);
+            domainedNum[ed]+=isBetter(pop[er]->_Fitness,pop[ed]->_Fitness);
         }
     }
 
@@ -209,6 +205,15 @@ void testNsga2::paretoFront(std::vector<const Base_t::Gene *> & dst) const {
 
 }
 
+std::array<double,2> testNsga2::bestFitness() const {
+    std::array<double,2> best=_population.front()._Fitness;
+    for(const auto & i : _population) {
+        best[0]=std::min(i.fitness()[0],best[0]);
+        best[1]=std::min(i.fitness()[1],best[1]);
+    }
+    return best;
+}
+
 void runNSGA2() {
     testNsga2 algo;
     using Var_t = std::array<double,2>;
@@ -217,6 +222,12 @@ void runNSGA2() {
     //object1: f1=4x^2+4y^2
     //object2: f2=(x-5)^2+(y-5)^2
     //0<=x<=5,0<=y<=3
+
+    GAOption opt;
+    opt.maxGenerations=3000;
+    opt.maxFailTimes=-1;
+    opt.populationSize=500;
+
     algo.initialize(
                 [](Var_t* v,const Args_t *) {
         v->at(0)=OtGlobal::randD(0,5);
@@ -240,10 +251,24 @@ void runNSGA2() {
         v->at(1)=std::max(v->at(1),0.0);
         v->at(1)=std::min(3.0,v->at(1));
     },
-    nullptr,
-    GAOption()
-    );
+    nullptr,opt);
 
     algo.run();
+    std::vector<const testNsga2::Gene*> paretoFront;
+    algo.paretoFront(paretoFront);
+
+    /*
+    std::sort(paretoFront.begin(),paretoFront.end(),
+              [](const testNsga2::Gene* a,const testNsga2::Gene* b)
+    {
+        return a->_Fitness[0]<b->_Fitness[0];
+    }
+              );
+    */
+    std::cout<<"\n\n\nparetoFront=[";
+    for(auto i : paretoFront) {
+        std::cout<<i->fitness()[0]<<" , "<<i->fitness()[1]<<";\n";
+    }
+    std::cout<<"];"<<std::endl;
 
 }
