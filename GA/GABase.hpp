@@ -21,34 +21,24 @@ This file is part of OptimTemplates.
 #define GABASE_H
 
 #include <stdint.h>
+#include <tuple>
+#include <vector>
+#include <list>
 #include <cmath>
 #include <random>
-#include <list>
 #include <algorithm>
 
 #ifndef OptimT_NO_OUTPUT
 #include <iostream>
 #endif
 
+#include <../OptimTemplates/Global>
+
 namespace OptimT {
 
-std::random_device global_random_device;
-std::mt19937 global_mt19937(global_random_device());
 
 const bool RECORD_FITNESS=true;
 const bool DONT_RECORD_FITNESS=false;
-
-///uniform random number in range [0,1)
-double randD() {
-    static std::uniform_real_distribution<double> rnd(0,1);
-    static std::mt19937 mt(global_random_device());
-    return rnd.operator()(mt);
-    //return (std::rand()%RAND_MAX)/double(RAND_MAX);
-}
-///uniform random number in range [min,max]
-double randD(const double min,const double max) {
-    return (max-min)*randD()+min;
-}
 
 ///options about GA algorithm
 struct GAOption
@@ -110,12 +100,13 @@ public:
 
 public:
     GABase() {
-
+        /*
         _initializeFun=[](Var_t*,const ArgsType*){};
         _fitnessFun=[](const Var_t*,const ArgsType*){return 0.0;};
         _crossoverFun=[](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
         _mutateFun=[](Var_t*,const ArgsType*){};
         _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
+        */
 
     };
     virtual ~GABase() {};
@@ -172,7 +163,9 @@ public:
                 break;
             }
 #ifndef OptimT_NO_OUTPUT
-            std::cout<<"Generation "<<_generation<<" , elite fitness="<<_eliteIt->fitness()<<std::endl;
+            std::cout<<"Generation "<<_generation
+                    //<<" , elite fitness="<<_eliteIt->fitness()
+                   <<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
             crossover();
@@ -247,11 +240,16 @@ protected:
                 continue;
             }
 
-            if(randD()<=_option.crossoverProb) {
+            if(OtGlobal::randD()<=_option.crossoverProb) {
                 crossoverQueue.emplace_back(it);
             }
         }
-        std::shuffle(crossoverQueue.begin(),crossoverQueue.end(),global_mt19937);
+
+
+        std::shuffle(
+                    crossoverQueue.begin(),
+                    crossoverQueue.end(),
+                    OtGlobal::global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
@@ -278,7 +276,7 @@ protected:
             if(it==_eliteIt) {
                 continue;
             }
-            if(randD()<=_option.mutateProb) {
+            if(OtGlobal::randD()<=_option.mutateProb) {
                 _mutateFun(&it->self,&_args);
                 it->setUncalculated();
             }
@@ -332,12 +330,13 @@ public:
 
 public:
     GABase() {
-
+        /*
         _initializeFun=[](Var_t*,const ArgsType*){};
-        _fitnessFun=[](const Var_t*,const ArgsType*){return 0.0;};
+        _fitnessFun=[](const Var_t*,const ArgsType*){};
         _crossoverFun=[](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
         _mutateFun=[](Var_t*,const ArgsType*){};
         _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
+        */
 
     };
     virtual ~GABase() {};
@@ -396,7 +395,9 @@ public:
                 break;
             }
 #ifndef OptimT_NO_OUTPUT
-            std::cout<<"Generation "<<_generation<<" , elite fitness="<<_eliteIt->fitness()<<std::endl;
+            std::cout<<"Generation "<<_generation
+                    //<<" , elite fitness="<<_eliteIt->fitness()
+                   <<std::endl;
 #endif
             _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
             crossover();
@@ -477,12 +478,16 @@ protected:
                 continue;
             }
 
-            if(randD()<=_option.crossoverProb) {
+            if(OtGlobal::randD()<=_option.crossoverProb) {
                 crossoverQueue.emplace_back(it);
             }
         }
 
-        std::shuffle(crossoverQueue.begin(),crossoverQueue.end(),global_mt19937);
+
+        std::shuffle(
+                    crossoverQueue.begin(),
+                    crossoverQueue.end(),
+                    OtGlobal::global_mt19937);
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
@@ -509,7 +514,7 @@ protected:
             if(it==_eliteIt) {
                 continue;
             }
-            if(randD()<=_option.mutateProb) {
+            if(OtGlobal::randD()<=_option.mutateProb) {
                 _mutateFun(&it->self,&_args);
                 it->setUncalculated();
             }
@@ -519,105 +524,6 @@ protected:
 
 };
 
-
-/*
-
-
-
-template<typename Var_t,typename Fitness_t,class ...Args>
-class GABase<Var_t,Fitness_t,true,Args...>
-        : protected GABase<Var_t,Fitness_t,false,Args...>
-{
-
-private:
-    using GABase<Var_t,Fitness_t,false,Args...> Base_t;
-
-    ///Use std::tuple to store all extra parameters such as training samples
-    using std::tuple<Args...> ArgsType;
-    ///Function to initialize Var
-    using void(* initializeFun)(Var_t*,const ArgsType*);
-    ///Function to calculate fitness for Var
-    using Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);
-    ///Function to apply crossover for Var
-    using void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
-    ///Function to apply mutate for Var
-    using initializeFun mutateFun;
-    ///Function to modify Args after each generation
-    using Base_t::Gene Gene_t;
-    using void(* otherOptFun)
-        (ArgsType*,std::list<Gene_t>*,size_t generation,size_t failTimes,const GAOption*);
-public:
-    GABase() {};
-    virtual ~GABase() {};
-
-    const std::vector<Fitness_t> & recording() const {
-        return _recording;
-    }
-    ///rewrite initialize function for doing record.
-    virtual void initialize(
-                            initializeFun _iFun,
-                            fitnessFun _fFun,
-                            crossoverFun _cFun,
-                            mutateFun _mFun,
-                            otherOptFun  _ooF=nullptr,
-                            const GAOption & options=GAOption(),
-                            const ArgsType & args=ArgsType()) {
-        Base_t::_option=options;
-        Base_t::_population.resize(Base_t::_option.populationSize);
-        Base_t::_args=args;
-        Base_t::_initializeFun=_iFun;
-        Base_t::_fitnessFun=_fFun;
-        Base_t::_crossoverFun=_cFun;
-        Base_t::_mutateFun=_mFun;
-
-        if(_ooF==nullptr) {
-            Base_t::_otherOptFun=[](ArgsType*,typeof(Base_t::_population)*,size_t,size_t,const GAOption*){};
-        } else {
-            Base_t::_otherOptFun=_ooF;
-        }
-
-        for(auto & i : Base_t::_population) {
-            _initializeFun(&i.self,&Base_t::_args);
-            i.setUncalculated();
-        }
-        Base_t::_eliteIt=Base_t::_population.begin();
-        _recording.clear();
-        _recording.reserve(Base_t::_option.maxGenerations+1);
-    }
-    ///rewrite run function
-    virtual void run() {
-        Base_t::_generation=0;
-        Base_t::_failTimes=0;
-        while(true) {
-            Base_t::_generation++;
-            Base_t::calculateAll();
-            Base_t::select();
-            _recording.emplace_back(Base_t::_eliteIt->_Fitness);
-            if(Base_t::_generation>Base_t::_option.maxGenerations) {
-#ifndef OptimT_NO_OUTPUT
-                std::cout<<"Terminated by max generation limit"<<std::endl;
-#endif
-                break;
-            }
-            if(Base_t::_option.maxFailTimes>0&&Base_t::_failTimes>Base_t::_option.maxFailTimes) {
-#ifndef OptimT_NO_OUTPUT
-                std::cout<<"Terminated by max failTime limit"<<std::endl;
-#endif
-                break;
-            }
-#ifndef OptimT_NO_OUTPUT
-            std::cout<<"Generation "<<Base_t::_generation<<" , elite fitness="<<Base_t::_eliteIt->fitness()<<std::endl;
-#endif
-            _otherOptFun(&Base_t::_args,&Base_t::_population,Base_t::_generation,Base_t::_failTimes,&Base_t::_option);
-            Base_t::crossover();
-            Base_t::mutate();
-        }
-    }
-
-protected:
-    std::vector<Fitness_t> _recording;
-};
-*/
 }
 
 #endif // GABASE_H

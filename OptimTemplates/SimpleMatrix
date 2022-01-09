@@ -1,0 +1,6 @@
+#ifndef SIMPLEMATRIX_
+#define SIMPLEMATRIX_
+
+#include "../SimpleMatrix/SimpleMatrix.hpp"
+
+#endif // SIMPLEMATRIX_

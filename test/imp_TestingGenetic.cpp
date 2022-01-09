@@ -18,12 +18,16 @@ This file is part of OptimTemplates.
 */
 
 #include "def_TestingGenetic.h"
-#include <Genetic>
+#include <OptimTemplates/Genetic>
 #include <iostream>
 #include <Eigen/Dense>
 using namespace OptimT;
 using namespace std;
-
+/*
+double randD(const double min,const double max) {
+    return (max-min)*randD()+min;
+}
+*/
 void testAckley_withRecord() {
     GAOption opt;
     opt.maxGenerations=1000;
@@ -43,7 +47,7 @@ void testAckley_withRecord() {
                 //initializer for array<double,2>
     [](array<double,2>* x,const typeof(args) * a) {
         for(uint32_t idx=0;idx<x->size();idx++) {
-            x->operator[](idx)=randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
+            x->operator[](idx)=OtGlobal::randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
         }},
     //Ackely function
     [](const array<double,2>* _x,const typeof(args) *) {
@@ -71,7 +75,7 @@ void testAckley_withRecord() {
     //mutate
     [](array<double,2>* x,const typeof(args) * a) {
         uint8_t mutateIdx=rand()%x->size();
-        x->operator[](mutateIdx)+=get<LrIdx>(*a)*randD(-1,1);
+        x->operator[](mutateIdx)+=get<LrIdx>(*a)*OtGlobal::randD(-1,1);
         if(rand()%2)
             x->operator[](mutateIdx)*=-1;
         for(uint32_t idx=0;idx<x->size();idx++) {
@@ -110,14 +114,14 @@ void testSingleNumber() {
     opt.populationSize=100;
     opt.maxGenerations=3000;
     algo.initialize(
-        [](double * x,const tuple<>*){*x=randD();},
+        [](double * x,const tuple<>*){*x=OtGlobal::randD();},
         [](const double * x,const tuple<>*){return 1.0/(abs(*x-3.0)+1e-8);},
         [](const double * x,const double *y,double *X,double *Y,const tuple<>*)
             {double mean=(*x+*y)/2;*X=(*x+mean)/2;*Y=(*y+mean)/2;},
         [](double * x,const tuple<>*)
             {
         //if(rand()%2)*x*=-1;
-             *x+=randD(-1,1)*0.5;},
+             *x+=OtGlobal::randD(-1,1)*0.5;},
     nullptr,
     opt,
     tuple<>()
@@ -170,7 +174,7 @@ void testWithEigenLib() {
         }},
     [](Eigen::Array4d*x,const typeof(Arg)* arg) {
         uint32_t idx=rand()%4;
-        x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
+        x->operator()(idx)+=OtGlobal::randD(-1,1)*get<LROffset>(*arg);
 
         if(x->operator()(idx)>get<MaxOffset>(*arg)(idx)) {
             x->operator()(idx)=get<MaxOffset>(*arg)(idx);
@@ -198,7 +202,7 @@ void testTSP(const uint32_t PointNum) {
     for(uint32_t i=0;i<PointNum;i++) {
         points.emplace_back();
         for(auto & i : points.back()) {
-            i=randD();
+            i=OtGlobal::randD();
         }
     }
     cout<<"Generated random points :"<<endl;
@@ -224,7 +228,7 @@ void testTSP(const uint32_t PointNum) {
         const uint32_t permL=get<dataIdx>(*args)->size();
         x->resize(permL);
         for(uint32_t i=0;i<permL;i++) {
-            x->at(i)=OptimT::randD();
+            x->at(i)=OtGlobal::randD();
         }
     };
 
@@ -273,9 +277,9 @@ void testTSP(const uint32_t PointNum) {
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
-        if(randD()<0.5) {//modify one element's value
+        if(OtGlobal::randD()<0.5) {//modify one element's value
             double & v=x->at(std::rand()%permL);
-            v+=randD(-0.01,0.01);
+            v+=OtGlobal::randD(-0.01,0.01);
             v=min(v,1.0);
             v=max(v,0.0);
         }

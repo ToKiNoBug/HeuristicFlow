@@ -20,7 +20,7 @@ This file is part of OptimTemplates.
 #ifndef GA_
 #define GA_
 
-#include "../GA/GABase.h"
-#include "../GA/SOGA.h"
+#include "../GA/GABase.hpp"
+#include "../GA/SOGA.hpp"
 
 #endif

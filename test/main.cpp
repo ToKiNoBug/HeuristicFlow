@@ -19,22 +19,17 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingMatrix.h"
+#include "testNsga2.h"
+
 using namespace std;
 
-///initialize std::rand()
-void initializeSrand();
+OPTIMT_MAKE_GLOBAL
 
 int main()
 {
-    initializeSrand();
-
-    testCopy();
-
+    system("pause");
+    //testLoop(100000);
+    runNSGA2();
+    system("pause");
     return 0;
-}
-
-void initializeSrand() {
-    std::time_t t=std::time(nullptr);
-    std::srand((t>>32)^(t&0xFFFFFFFF));
 }

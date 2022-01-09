@@ -1,4 +1,5 @@
 #include "def_TestingMatrix.h"
+#include <OptimTemplates/SimpleMatrix>
 #include <stdint.h>
 #include <iostream>
 #include <Eigen/Dense>
@@ -55,4 +56,16 @@ public:
 
 void testCustomTypes() {
     MatrixDynamicSize<MatrixFixedSize<Double,3,4>> matMat;
+    matMat.resize(2,3);
+
+}
+
+void testLoop(uint32_t loopN) {
+    MatrixDynamicSize<Double> mat;
+    std::array<uint32_t,2> sizeList[]={{2,6},{10,2},{5,36},{6,30},{40,1},{1,100}};
+    for(uint32_t i=0;i<loopN;i++) {
+        uint32_t idx=i%(sizeof(sizeList)/sizeof(sizeList[0]));
+        //cout<<"Loop "<<i<<", size=["<<sizeList[idx][0]<<" , "<<sizeList[idx][1]<<']'<<endl;
+        mat.resize(sizeList[idx][0]*10,sizeList[idx][1]*10);
+    }
 }

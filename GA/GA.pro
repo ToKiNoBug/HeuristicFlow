@@ -1,3 +1,3 @@
 HEADERS += \
-    GABase.h \
-    SOGA.h
+    GABase.hpp \
+    SOGA.hpp

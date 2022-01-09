@@ -1,6 +1,8 @@
 #ifndef SIMPLEMATRIX_H
 #define SIMPLEMATRIX_H
-#include <vector>
+
+#include <stdint.h>
+
 namespace OptimT
 {
 ///col-major matrix with basic types only
@@ -58,11 +60,19 @@ public:
     }
 
     void resize(size_t r,size_t c) {
-        if(dataPtr!=nullptr)
-            delete [] dataPtr;
-        rowNum=r;
-        colNum=c;
-        dataPtr=new Scalar_t[r*c];
+        if(r*c!=size())
+        {
+            if(dataPtr!=nullptr)
+                delete [] dataPtr;
+            rowNum=r;
+            colNum=c;
+            dataPtr=new Scalar_t[r*c];
+        }
+        else {
+            //conservative resize
+            rowNum=r;
+            colNum=c;
+        }
     }
 
     size_t rows() const {

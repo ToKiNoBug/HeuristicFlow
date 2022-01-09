@@ -1,0 +1,12 @@
+#ifndef GLOBAL_H
+#define GLOBAL_H
+
+
+#include "../Global/Globals.hpp"
+
+
+#define OPTIMT_MAKE_GLOBAL \
+std::random_device OptimT::OtGlobal::global_random_device; \
+std::mt19937 OptimT::OtGlobal::global_mt19937(OptimT::OtGlobal::global_random_device());
+
+#endif // GLOBAL_H

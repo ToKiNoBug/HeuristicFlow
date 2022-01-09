@@ -19,11 +19,8 @@ This file is part of OptimTemplates.
 
 #ifndef SOGA_H
 #define SOGA_H
-#include "./GABase.h"
+#include "./GABase.hpp"
 
-#include <vector>
-#include <tuple>
-#include <algorithm>
 
 namespace OptimT
 {

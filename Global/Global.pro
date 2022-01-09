@@ -1,0 +1,2 @@
+HEADERS += \
+    Globals.hpp
