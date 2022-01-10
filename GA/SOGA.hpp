@@ -34,8 +34,7 @@ class SOGA : public GABase<Var_t,double,Record,Args...>
 {
 public:
     SOGA() {
-        //initialization for function ptrs has been finished in base class constructor
-
+        //initialization for function ptrs
         Base_t::_initializeFun=
                 [](Var_t*,const ArgsType*){};
         Base_t::_fitnessFun=

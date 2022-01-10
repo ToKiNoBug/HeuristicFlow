@@ -24,8 +24,7 @@ This file is part of OptimTemplates.
 #include <ctime>
 using namespace OptimT;
 
-testNsga2::testNsga2()
-{
+testNsga2::testNsga2() {
 
 }
 

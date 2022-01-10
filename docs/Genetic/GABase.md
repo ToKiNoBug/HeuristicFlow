@@ -3,7 +3,7 @@ Abstrcat base class of genetic algorithm solvers.
 
 | Header: | `#include<Genetic>` |
 | ----: | :---- |
-| Location: | [GABase.h](./../../GA/GABase.h) |
+| Location: | [GABase.hpp](./../../GA/GABase.hpp) |
 | Inherited by : | [SOGA](./SOGA.md) |
 
 <br>
@@ -16,36 +16,35 @@ template<typename Var_t,typename Fitness_t,bool Record,class ...Args> class Opti
 
 ## Types
 | Access | Name | Type | Defination |
-| :----: | :----: | ----: | :---- |
+| :----: | :----: | :----: | :---- |
 |  | [`Var_t`](#var_t) | `template` |  |
 |  | [`Fitness_t`](#fitness_t) | `template` |  |
 |  | [`Args...`](#args...) | `template` |  |
-| public | [`ArgsType`](#argstype) | `typedef` | `typedef std::tuple<Args...> ArgsType;` |
-| public | [`initializeFun`](#initializefun) | `typedef` |  `typedef void(* initializeFun)(Var_t*,const ArgsType*);` |
-| public | [`fitnessFun`](#fitnessfun) | `typedef` | `typedef Fitness_t(* fitnessFun)(const Var_t*,const ArgsType*);` |
-| public | [`crossoverFun`](#crossoverfun) | `typedef` | `typedef void(* crossoverFun)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);` |
-| public | [`mutateFun`](#mutatefun) | `typedef` | `typedef initializeFun mutateFun;` |
-| public | [`Gene`](#gene) | `class` | `class Gene` |
-| public | [`otherOptFun`](#otheroptfun) | `typedef` | `typedef void(* otherOptFun)(ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);` |
-| protected | [`GeneIt_t`](#GeneIt_t) | `typedef` | `typedef typename std::list<Gene>::iterator GeneIt_t;` |
+| public | [`ArgsType`](#argstype) | `typedef` | `using ArgsType = std::tuple<Args...>;` |
+| public | [`initializeFun`](#initializefun) | `typedef` |  `using initializeFun = void(*)(Var_t*,const ArgsType*);` |
+| public | [`fitnessFun`](#fitnessfun) | `typedef` | `using fitnessFun = void(*)(const Var_t*,const ArgsType*,Fitness_t*);` |
+| public | [`crossoverFun`](#crossoverfun) | `typedef` | `using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);` |
+| public | [`mutateFun`](#mutatefun) | `typedef` | `using mutateFun = initializeFun;` |
+| public | [`Gene`](#gene) | `class` | `class Gene;` |
+| public | [`otherOptFun`](#otheroptfun) | `typedef` | `using otherOptFun = void(*)(ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);` |
+| protected | [`GeneIt_t`](#GeneIt_t) | `typedef` | `using GeneIt_t = typename std::list<Gene>::iterator;` |
 
 <br>
 
 ## Members
 | Access | Type | Name | Default value |
 | :----: | ----: | :---- | :----: |
-| protected | `GeneIt_t` | [`_eliteIt`](#_eliteit) |  |
 | protected | `std::list<Gene>` | [`_population`](#_population) |  |
 | protected | [`GAOption`](./GAOption.md) | [`_option`](#_option) |  |
 | protected | `size_t` | [`_generation`](#_generation) |  |
 | protected | `size_t` | [`_failTimes`](#_failtimes) |  |
 | protected | `std::vector<Fitness_t>` | [`_record`](#_record) |  |
 | protected | `ArgsType` | [`_args`](#_args) |  |
-| protected | `initializeFun` | [`_initializeFun`](#_initializefun) | empty lambda |
-| protected | `fitnessFun` | [`_fitnessFun`](#_fitnessfun) | empty lambda |
-| protected | `crossoverFun` | [`_crossoverFun`](#_crossoverfun) | empty lambda |
-| protected | `mutateFun` | [`_mutateFun`](#_mutatefun) | empty lambda |
-| protected | `otherOptFun` | [`_otherOptFun`](#_otheroptfun) | empty lambda |
+| protected | `initializeFun` | [`_initializeFun`](#_initializefun) | |
+| protected | `fitnessFun` | [`_fitnessFun`](#_fitnessfun) | |
+| protected | `crossoverFun` | [`_crossoverFun`](#_crossoverfun) | |
+| protected | `mutateFun` | [`_mutateFun`](#_mutatefun) | |
+| protected | `otherOptFun` | [`_otherOptFun`](#_otheroptfun) | |
 
 <br>
 
@@ -56,18 +55,17 @@ template<typename Var_t,typename Fitness_t,bool Record,class ...Args> class Opti
 | public | `virtual` | [`~GABase()`](#\~gabase) |
 | public | `virtual void` | [`initialize(initializeFun,fitnessFun,crossoverFun,mutateFun,otherOptFun=nullptr,const GAOption&=GAOption(),const ArgsType&=ArgsType())`](#initialize) |
 | public | `virtual void` | [`run()`](#run) |
-| public | `std::list<Gene>::iterator` | [`eliteIt() const`](#eliteit-const) |
-| public | `const Var_t &` | [`result() const`](#result-const) |
-| public | `const std::list<Gene> &` | [`population() const`](#population-const) |
-| public | `const std::vector<Fitness_t>` | [`record() const`](#record-const) |
+| public | `const std::list<Gene>&` | [`population() const`](#population-const) |
+| public | `const std::vector<Fitness_t>&` | [`record() const`](#record-const) |
 | public | `const GAOption &` | [`option() const`](#option-const) |
 | public | `size_t generation()` | [`generation() const`](#generation-const) |
 | public | `size_t failTimes()` | [`failTimes() const`](#failtimes-const) |
 | public | `const ArgsType &` | [`args() const`](#args-const) |
+| public | `Fitness_t` | [`bestFitness() const=0`](#bestfitness-const0) |
 | protected | `virtual void` | [`calculateAll()`](#calculateall) |
 | protected | `virtual void` | [`select()=0`](#select0) |
 | protected | `virtual void` | [`crossover()`](#crossover) |
-| protected | `virtual void` | [`mutate()`](#mutate) |
+| protected | `virtual void` | [`mutate()=0`](#mutate) |
 
 <br>
 
@@ -146,9 +144,6 @@ It's same as iterator type of stl list containing `Gene` types.
 <br>
 
 ## Member details
-### `_eliteIt`
-Iterator to elite gene.
-
 ### `_population`
 A list to store all Genes.
 
@@ -188,7 +183,7 @@ Function pointer to apply special other operation after each generation.
 
 ## Function details
 ### `GABase()`
-Default constructor. All function pointers are initialized with empty lambda.
+Default constructor.
 
 ### `~GABase()`
 Default virtual constructor.
@@ -198,12 +193,6 @@ Initiaze solver with all 5 function pointers, other parameters and `GAOption`.
 
 ### `run()`
 Start solving. Must be called after initialization.
-
-### `eliteIt() const`
-Get iterator to result gene.
-
-### `result() const`
-Get result `Var_t`.
 
 ### `population() const`
 Get the whole population.
@@ -230,6 +219,13 @@ Calculate fitness values for every genes.
 
 This is a virtual function, so you can cover it by inheriting.
 
+### `bestFitness() const=0`
+Best fitness value to be recoreded.
+
+This function is pure virtual to suit any condition.
+
+**Exists only when template parameter [`Record`](#record) is true.**
+
 ### `select()=0`
 Apply selection to select better genes.
 
@@ -238,6 +234,7 @@ This is a pure virtual function since comparsion between abstrcat `Fitness_t` is
 ### `crossover()`
 Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to population.
 
-### `mutate()`
+### `mutate()=0`
 Apply mutation operation which slightly modify gene.
 
+This function is pure virtual to suit non-elitism mode.
