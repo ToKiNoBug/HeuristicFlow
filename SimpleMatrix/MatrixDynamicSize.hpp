@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef SIMPLEMATRIX_H
-#define SIMPLEMATRIX_H
+#ifndef MATRIXDYNAMICSIZE_H
+#define MATRIXDYNAMICSIZE_H
 
 #include <stdint.h>
 
@@ -128,71 +128,7 @@ protected:
 };
 
 
-template<class Scalar_t,size_t Rows,size_t Cols>
-class MatrixFixedSize
-{
-public:
-    MatrixFixedSize() {};
-    ~MatrixFixedSize() {};
-
-    using iterator = Scalar_t*;
-    using citerator = const Scalar_t*;
-
-    ///Deep copy
-    explicit MatrixFixedSize(const MatrixFixedSize & src) {
-        for(size_t i=0;i<size();i++) {
-            array[i]=src.array[i];
-        }
-    }
-
-    iterator begin() {
-        return array;
-    }
-
-    iterator end() {
-        return array+size();
-    }
-
-    static size_t size() {
-        return Rows*Cols;
-    }
-
-    static size_t rows() {
-        return Rows;
-    }
-
-    static size_t cols() {
-        return Cols;
-    }
-
-    Scalar_t & operator()(size_t n) {
-        return array[n];
-    }
-
-    Scalar_t & operator()(size_t r,size_t c) {
-        return array[Rows*c+r];
-    }
-
-    Scalar_t * data() {
-        return array;
-    }
-
-    const Scalar_t * cdata() const {
-        return array;
-    }
-
-    ///Deep copy
-    const MatrixFixedSize & operator=(const MatrixFixedSize & src) {
-        for(size_t i=0;i<size();i++) {
-            array[i]=src.array[i];
-        }
-        return *this;
-    }
-
-protected:
-    Scalar_t array[Rows*Cols];
-};
 
 }
 
-#endif // SIMPLEMATRIX_H
+#endif // MATRIXDYNAMICSIZE_H

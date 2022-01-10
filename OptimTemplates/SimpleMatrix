@@ -20,6 +20,7 @@ This file is part of OptimTemplates.
 #ifndef SIMPLEMATRIX_
 #define SIMPLEMATRIX_
 
-#include "../SimpleMatrix/SimpleMatrix.hpp"
+#include "../SimpleMatrix/MatrixDynamicSize.hpp"
+#include "../SimpleMatrix/MatrixFixedSize.hpp"
 
 #endif // SIMPLEMATRIX_

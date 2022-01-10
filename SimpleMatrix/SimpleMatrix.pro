@@ -1,3 +1,4 @@
 HEADERS += \
-    SimpleMatrix.hpp
+    MatrixDynamicSize.hpp \
+    MatrixFixedSize.hpp
 
