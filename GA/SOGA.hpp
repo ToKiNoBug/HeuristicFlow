@@ -35,10 +35,63 @@ class SOGA : public GABase<Var_t,double,Record,Args...>
 public:
     SOGA() {
         //initialization for function ptrs has been finished in base class constructor
+
+        Base_t::_initializeFun=
+                [](Var_t*,const ArgsType*){};
+        Base_t::_fitnessFun=
+                [](const Var_t*,const ArgsType*,double*){};
+        Base_t::_crossoverFun=
+                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
+        Base_t::_mutateFun=
+                [](Var_t*,const ArgsType*){};
+        Base_t::_otherOptFun=
+                [](ArgsType*,std::list<typename Base_t::Gene>*,size_t,size_t,const GAOption*){};
+
   };
     using Base_t = GABase<Var_t,double,Record,Args...>;
-    using GeneIt_t = typename Base_t::GeneIt_t ;
+    OPTIMT_MAKE_GABASE_TYPES
+
+    virtual double bestFitness() const {
+        return _eliteIt->_Fitness;
+    }
+
+    const Var_t & result() const {
+        return _eliteIt->self;
+    }
+
+    virtual void initialize(
+                            initializeFun _iFun,
+                            fitnessFun _fFun,
+                            crossoverFun _cFun,
+                            mutateFun _mFun,
+                            otherOptFun _ooF=nullptr,
+                            const GAOption & options=GAOption(),
+                            const ArgsType & args=ArgsType()) {
+        Base_t::_option=options;
+        Base_t::_population.resize(Base_t::_option.populationSize);
+        Base_t::_args=args;
+        Base_t::_initializeFun=_iFun;
+        Base_t::_fitnessFun=_fFun;
+        Base_t::_crossoverFun=_cFun;
+        Base_t::_mutateFun=_mFun;
+
+        if(_ooF==nullptr) {
+            Base_t::_otherOptFun=[]
+                    (ArgsType*,std::list<typename Base_t::Gene>*,size_t,size_t,const GAOption*){};
+        } else {
+            Base_t::_otherOptFun=_ooF;
+        }
+
+        for(auto & i : Base_t::_population) {
+            Base_t::_initializeFun(&i.self,&Base_t::args());
+            i.setUncalculated();
+        }
+        _eliteIt=Base_t::_population.begin();
+    }
+
 protected:
+
+    GeneIt_t _eliteIt;
 
     static inline bool isBetter(double A,double B) {
         if(isGreaterBetter) {
@@ -49,7 +102,7 @@ protected:
 
     virtual void select() {
 
-        const double prevEliteFitness=Base_t::_eliteIt->_Fitness;
+        const double prevEliteFitness=_eliteIt->_Fitness;
         std::vector<GeneIt_t> iterators;
         iterators.clear();
         iterators.reserve(Base_t::_population.size());
@@ -71,15 +124,27 @@ protected:
         GeneIt_t curBest=iterators.front();
         if(!isBetter(curBest->_Fitness,prevEliteFitness)) {
             Base_t::_failTimes++;
-            Base_t::_eliteIt=curBest;
+            _eliteIt=curBest;
         }
         else {
             Base_t::_failTimes=0;
-            Base_t::_eliteIt=curBest;
+            _eliteIt=curBest;
         }
 
-        Base_t::_population.emplace_back(*Base_t::_eliteIt);
+        Base_t::_population.emplace_back(*_eliteIt);
 
+    }
+
+    virtual void mutate() {
+        for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
+            if(it==_eliteIt) {
+                continue;
+            }
+            if(OtGlobal::randD()<=Base_t::_option.mutateProb) {
+                Base_t::_mutateFun(&it->self,&Base_t::args());
+                it->setUncalculated();
+            }
+        }
     }
 };
 }

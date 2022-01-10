@@ -20,7 +20,7 @@ This file is part of OptimTemplates.
 #ifndef GABASE_H
 #define GABASE_H
 
-#include <stdint.h>
+#include "./GAOption.hpp"
 #include <tuple>
 #include <vector>
 #include <list>
@@ -40,23 +40,6 @@ namespace OptimT {
 const bool RECORD_FITNESS=true;
 const bool DONT_RECORD_FITNESS=false;
 
-///options about GA algorithm
-struct GAOption
-{
-public:
-    GAOption() {
-        populationSize=100;
-        maxFailTimes=50;
-        maxGenerations=300;
-        crossoverProb=0.8;
-        mutateProb=0.05;
-    }
-    size_t populationSize;
-    size_t maxFailTimes;
-    size_t maxGenerations;
-    double crossoverProb;
-    double mutateProb;
-};
 
 ///Genetic algorithm base class
 template<typename Var_t,typename Fitness_t,bool Record,class ...Args>
@@ -67,7 +50,7 @@ public:
     ///Function to initialize Var
     using initializeFun = void(*)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
-    using fitnessFun = Fitness_t(*)(const Var_t*,const ArgsType*);
+    using fitnessFun = void(*)(const Var_t*,const ArgsType*,Fitness_t*);
     ///Function to apply crossover for Var
     using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
     ///Function to apply mutate for Var
@@ -100,16 +83,10 @@ public:
 
 public:
     GABase() {
-        /*
-        _initializeFun=[](Var_t*,const ArgsType*){};
-        _fitnessFun=[](const Var_t*,const ArgsType*){return 0.0;};
-        _crossoverFun=[](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
-        _mutateFun=[](Var_t*,const ArgsType*){};
-        _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
-        */
 
     };
     virtual ~GABase() {};
+
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
     virtual void initialize(
                             initializeFun _iFun,
@@ -137,7 +114,6 @@ public:
             _initializeFun(&i.self,&_args);
             i.setUncalculated();
         }
-        _eliteIt=_population.begin();
     }
 
 
@@ -174,13 +150,8 @@ public:
     }
 
     ///best fitness
-    virtual Fitness_t bestFitness() const {
-        return _eliteIt->_Fitness;
-    }
-    ///result
-    const Var_t & result() const {
-        return _eliteIt->self;
-    }
+    //virtual Fitness_t bestFitness() const=0;
+
     ///the whole population
     const std::list<Gene> & population() const {
         return _population;
@@ -203,7 +174,6 @@ public:
     }
 
 protected:
-    GeneIt_t _eliteIt;
     std::list<Gene> _population;
     GAOption _option;
 
@@ -223,7 +193,7 @@ protected:
             if(i._isCalculated) {
                 continue;
             }
-            i._Fitness=_fitnessFun(&i.self,&_args);
+            _fitnessFun(&i.self,&_args,&i._Fitness);
             i._isCalculated=true;
         }
     }
@@ -267,17 +237,7 @@ protected:
 
 
     ///mutate
-    virtual void mutate() {
-        for(auto it=_population.begin();it!=_population.end();++it) {
-            if(it==_eliteIt) {
-                continue;
-            }
-            if(OtGlobal::randD()<=_option.mutateProb) {
-                _mutateFun(&it->self,&_args);
-                it->setUncalculated();
-            }
-        }
-    }
+    virtual void mutate()=0;
 
 
 };
@@ -293,7 +253,7 @@ public:
     ///Function to initialize Var
     using initializeFun = void(*)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
-    using fitnessFun = Fitness_t(*)(const Var_t*,const ArgsType*);
+    using fitnessFun = void(*)(const Var_t*,const ArgsType*,Fitness_t*);
     ///Function to apply crossover for Var
     using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
     ///Function to apply mutate for Var
@@ -363,7 +323,7 @@ public:
             _initializeFun(&i.self,&_args);
             i.setUncalculated();
         }
-        _eliteIt=_population.begin();
+        //_eliteIt=_population.begin();
         _record.clear();
         _record.reserve(_option.maxGenerations+1);
     }
@@ -373,6 +333,11 @@ public:
     virtual void run() {
         _generation=0;
         _failTimes=0;
+
+
+        _record.clear();
+        _record.reserve(_option.maxGenerations+1);
+
         while(true) {
             _generation++;
             calculateAll();
@@ -402,13 +367,9 @@ public:
     }
 
     ///best fitness
-    virtual Fitness_t bestFitness() const {
-        return _eliteIt->_Fitness;
-    }
+    virtual Fitness_t bestFitness() const=0;
+
     ///result
-    const Var_t & result() const {
-        return _eliteIt->self;
-    }
     const std::vector<Fitness_t> record() const {
         return _record;
     }
@@ -435,7 +396,6 @@ public:
     }
 
 protected:
-    GeneIt_t _eliteIt;
     std::list<Gene> _population;
     GAOption _option;
 
@@ -457,7 +417,7 @@ protected:
             if(i._isCalculated) {
                 continue;
             }
-            i._Fitness=_fitnessFun(&i.self,&_args);
+            _fitnessFun(&i.self,&_args,&i._Fitness);
             i._isCalculated=true;
         }
     }
@@ -502,20 +462,20 @@ protected:
 
 
     ///mutate
-    virtual void mutate() {
-        for(auto it=_population.begin();it!=_population.end();++it) {
-            if(it==_eliteIt) {
-                continue;
-            }
-            if(OtGlobal::randD()<=_option.mutateProb) {
-                _mutateFun(&it->self,&_args);
-                it->setUncalculated();
-            }
-        }
-    }
+    virtual void mutate()=0;
 
 
 };
+
+#define OPTIMT_MAKE_GABASE_TYPES \
+using Gene = typename Base_t::Gene; \
+using GeneIt_t = typename Base_t::GeneIt_t ; \
+using initializeFun = typename Base_t::initializeFun; \
+using fitnessFun = typename Base_t::fitnessFun; \
+using crossoverFun = typename Base_t::crossoverFun; \
+using mutateFun = typename Base_t::mutateFun; \
+using otherOptFun = typename Base_t::otherOptFun; \
+using ArgsType = typename Base_t::ArgsType; \
 
 }
 

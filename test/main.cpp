@@ -19,9 +19,9 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#define OptimT_NO_OUTPUT
 #include "testNsga2.h"
 
+#include "def_TestingGenetic.h"
 using namespace std;
 
 OPTIMT_MAKE_GLOBAL
@@ -29,8 +29,7 @@ OPTIMT_MAKE_GLOBAL
 int main()
 {
     system("pause");
-    //testLoop(100000);
-    runNSGA2();
+    testAckley_withRecord();
     system("pause");
     return 0;
 }

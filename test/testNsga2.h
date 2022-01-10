@@ -1,11 +1,25 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef TESTNSGA2_H
 #define TESTNSGA2_H
 
-/*
-#ifdef OptimT_NO_OUTPUT
-#undef OptimT_NO_OUTPUT
-#endif
-*/
 #define OptimT_NO_OUTPUT
 #include <OptimTemplates/Genetic>
 #include <array>
@@ -43,6 +57,8 @@ public:
 protected:
     static bool isBetter(const std::array<double,2>&,const std::array<double,2>&);
     void select();
+
+    void mutate();
 };
 
 void runNSGA2();

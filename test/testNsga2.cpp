@@ -1,7 +1,27 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #include "testNsga2.h"
 
 #include <OptimTemplates/SimpleMatrix>
 #include <queue>
+#include <ctime>
 using namespace OptimT;
 
 testNsga2::testNsga2()
@@ -165,6 +185,17 @@ bool testNsga2::isBetter(const std::array<double,2>& A,const std::array<double,2
     return (A[0]<B[0])&&(A[1]<B[1]);
 }
 
+void testNsga2::mutate() {
+
+    for(auto & i : _population) {
+        if(OptimT::OtGlobal::randD()<_option.mutateProb) {
+            _mutateFun(&i.self,&_args);
+            i.setUncalculated();
+        }
+    }
+
+}
+
 void testNsga2::paretoFront(std::vector<const Base_t::Gene *> & dst) const {
     std::vector<std::list<Base_t::Gene>::const_iterator> pop;
     pop.clear();
@@ -208,8 +239,8 @@ void testNsga2::paretoFront(std::vector<const Base_t::Gene *> & dst) const {
 std::array<double,2> testNsga2::bestFitness() const {
     std::array<double,2> best=_population.front()._Fitness;
     for(const auto & i : _population) {
-        best[0]=std::min(i.fitness()[0],best[0]);
-        best[1]=std::min(i.fitness()[1],best[1]);
+        best[0]=std::min(i._Fitness[0],best[0]);
+        best[1]=std::min(i._Fitness[1],best[1]);
     }
     return best;
 }
@@ -226,18 +257,17 @@ void runNSGA2() {
     GAOption opt;
     opt.maxGenerations=3000;
     opt.maxFailTimes=-1;
-    opt.populationSize=500;
+    opt.populationSize=200;
 
     algo.initialize(
                 [](Var_t* v,const Args_t *) {
         v->at(0)=OtGlobal::randD(0,5);
         v->at(1)=OtGlobal::randD(0,3);},
-    [](const Var_t * v,const Args_t *) {
-        std::array<double,2> fitness;
+    [](const Var_t * v,const Args_t *,std::array<double,2>*fitness) {
         const double & x=v->at(0),y=v->at(1);
-        fitness[0]=4*x*x+4*y*y;
-        fitness[1]=OT_square(x-5)+OT_square(y-5);
-        return fitness;},
+        fitness->at(0)=4*x*x+4*y*y;
+        fitness->at(1)=OT_square(x-5)+OT_square(y-5);
+        },
     [](const Var_t * p1,const Var_t * p2,Var_t * c1,Var_t * c2,const Args_t *) {
         for(uint32_t idx=0;idx<p1->size();idx++) {
             c1->at(idx)=(OtGlobal::randD()<0.5)?p1->at(idx):p2->at(idx);
@@ -252,11 +282,13 @@ void runNSGA2() {
         v->at(1)=std::min(3.0,v->at(1));
     },
     nullptr,opt);
-
+    std::cout<<"Start running..."<<std::endl;
+    std::clock_t t=std::clock();
     algo.run();
     std::vector<const testNsga2::Gene*> paretoFront;
     algo.paretoFront(paretoFront);
-
+    t=std::clock()-t;
+    std::cout<<"Time elapsed:"<<double(t)/CLOCKS_PER_SEC<<std::endl;
     /*
     std::sort(paretoFront.begin(),paretoFront.end(),
               [](const testNsga2::Gene* a,const testNsga2::Gene* b)
@@ -268,6 +300,12 @@ void runNSGA2() {
     std::cout<<"\n\n\nparetoFront=[";
     for(auto i : paretoFront) {
         std::cout<<i->fitness()[0]<<" , "<<i->fitness()[1]<<";\n";
+    }
+    std::cout<<"];"<<std::endl;
+
+    std::cout<<"\n\n\n\nHistory=[";
+    for(const auto & i : algo.record()) {
+        std::cout<<i[0]<<" , "<<i[1]<<";\n";
     }
     std::cout<<"];"<<std::endl;
 

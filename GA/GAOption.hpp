@@ -17,11 +17,29 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GA_
-#define GA_
+#ifndef GAOPTION_HPP
+#define GAOPTION_HPP
+#include <stdint.h>
+namespace OptimT {
 
-#include "../GA/GAOption.hpp"
-#include "../GA/GABase.hpp"
-#include "../GA/SOGA.hpp"
+///options about GA algorithm
+struct GAOption
+{
+public:
+    GAOption() {
+        populationSize=100;
+        maxFailTimes=50;
+        maxGenerations=300;
+        crossoverProb=0.8;
+        mutateProb=0.05;
+    }
+    size_t populationSize;
+    size_t maxFailTimes;
+    size_t maxGenerations;
+    double crossoverProb;
+    double mutateProb;
+};
 
-#endif
+}
+
+#endif // GAOPTION_HPP

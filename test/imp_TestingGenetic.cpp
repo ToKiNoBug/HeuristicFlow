@@ -18,9 +18,11 @@ This file is part of OptimTemplates.
 */
 
 #include "def_TestingGenetic.h"
+#define OptimT_NO_OUTPUT
 #include <OptimTemplates/Genetic>
 #include <iostream>
 #include <Eigen/Dense>
+#include <ctime>
 using namespace OptimT;
 using namespace std;
 /*
@@ -30,13 +32,17 @@ double randD(const double min,const double max) {
 */
 void testAckley_withRecord() {
     GAOption opt;
-    opt.maxGenerations=1000;
-    opt.maxFailTimes=100;
+    opt.populationSize=200;
+    opt.maxFailTimes=-1;
+    opt.maxGenerations=3000;
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
     SOGA<array<double,2>,
             OptimT::FITNESS_LESS_BETTER,
             OptimT::RECORD_FITNESS,
-            array<double,2>,array<double,2>,double> algo;
+            array<double,2>,//min
+            array<double,2>,//max
+            double//learning rate
+            > algo;
 
     tuple<array<double,2>,array<double,2>,double> args;
     get<MinIdx>(args)={-5,-5};
@@ -50,9 +56,9 @@ void testAckley_withRecord() {
             x->operator[](idx)=OtGlobal::randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
         }},
     //Ackely function
-    [](const array<double,2>* _x,const typeof(args) *) {
+    [](const array<double,2>* _x,const typeof(args) *,double * f) {
         double x=_x->operator[](0),y=_x->operator[](1);
-        return -20*exp(-0.2*sqrt(0.5*(x*x+y*y)))
+        *f= -20*exp(-0.2*sqrt(0.5*(x*x+y*y)))
                 -exp(0.5*(cos(M_2_PI*x)+cos(M_2_PI*y)))
                 +20+M_E;},
     //crossover
@@ -89,9 +95,12 @@ void testAckley_withRecord() {
     opt,
     args);
 
+    std::clock_t t=std::clock();
     algo.run();
+    t=std::clock()-t;
 
-    cout<<"Solving spend "<<algo.generation()<<" generations\n";
+    cout<<"Solving spend "<<algo.generation()<<" generations in "
+       <<double(t)/CLOCKS_PER_SEC<<" sec\n";
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
 
     cout<<"Fitness history :\n";
@@ -106,7 +115,9 @@ void testAckley_withRecord() {
 
 
 void testSingleNumber() {
-    SOGA<double,true,false> algo;
+    SOGA<double,
+            OptimT::FITNESS_GREATER_BETTER,
+            OptimT::DONT_RECORD_FITNESS> algo;
     GAOption opt;
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
@@ -115,7 +126,7 @@ void testSingleNumber() {
     opt.maxGenerations=3000;
     algo.initialize(
         [](double * x,const tuple<>*){*x=OtGlobal::randD();},
-        [](const double * x,const tuple<>*){return 1.0/(abs(*x-3.0)+1e-8);},
+        [](const double * x,const tuple<>*,double * f){*f=1.0/(abs(*x-3.0)+1e-8);},
         [](const double * x,const double *y,double *X,double *Y,const tuple<>*)
             {double mean=(*x+*y)/2;*X=(*x+mean)/2;*Y=(*y+mean)/2;},
         [](double * x,const tuple<>*)
@@ -158,8 +169,8 @@ void testWithEigenLib() {
 
     algo.initialize(
                     [](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();},
-    [](const Eigen::Array4d* x,const typeof(Arg)* arg){
-        return -(*x-get<TargetOffset>(*arg)).square().maxCoeff();
+    [](const Eigen::Array4d* x,const typeof(Arg)* arg,double *f){
+        *f = -(*x-get<TargetOffset>(*arg)).square().maxCoeff();
     },
     [](const Eigen::Array4d*x,const Eigen::Array4d*y,
             Eigen::Array4d*X,Eigen::Array4d*Y,
@@ -233,7 +244,8 @@ void testTSP(const uint32_t PointNum) {
     };
 
     //calculate fitness
-    auto calculateFun=[](const vector<double> *x,const Args_t* args) {
+    auto calculateFun=[](const vector<double> *x,const Args_t* args,double *f) {
+
         const uint32_t permL=x->size();
         vector<permUnit> perm(permL);
         for(uint32_t i=0;i<permL;i++) {
@@ -244,6 +256,7 @@ void testTSP(const uint32_t PointNum) {
                   //compare function for std::sort
                   [](const permUnit &a,const permUnit &b)
                       { return a.first>b.first;});
+
         double L=0;
         for(uint32_t i=1;i<permL;i++) {
             const Point_t &prev=get<dataIdx>(*args)->at(perm[i-1].second);
@@ -253,7 +266,8 @@ void testTSP(const uint32_t PointNum) {
                 curL+=(prev[d]-cur[d])*(prev[d]-cur[d]);
             }
             L+=curL;
-        } return L;};
+        } *f= L;
+    };
 
     //calculate natural perm pathL
     {
@@ -261,7 +275,8 @@ void testTSP(const uint32_t PointNum) {
         for(uint32_t i=0;i<PointNum;i++) {
             natural[i]=double(i)/PointNum;
         }
-        double naturalPathL=calculateFun(&natural,&args);
+        double naturalPathL;
+        calculateFun(&natural,&args,&naturalPathL);
         cout<<"default pathL = "<<naturalPathL<<endl;
     }
 
@@ -308,4 +323,5 @@ void testTSP(const uint32_t PointNum) {
 
 
 }
+
 
