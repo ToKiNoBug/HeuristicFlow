@@ -37,6 +37,15 @@ CODES
 
 <br>
 
+## Macros
+| Name | Usage |
+| :----: | :----: |
+| name | macro function |
+| name | conditional compiling |
+| name | to be expanded |
+
+<br>
+
 ## Detailed description
 Class/Strcut description here.
 
@@ -58,3 +67,8 @@ Class/Strcut description here.
 ### function name
 ### function name
 
+<br>
+
+## Macro details
+### macro name
+### macro name
