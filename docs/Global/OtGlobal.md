@@ -16,22 +16,22 @@ class OptimT::OtGlobal;
 ## Releated variables
 | Access | Type | Name | Default value |
 | :----: | ----: | :---- | :----: |
-| global | `std::random_device` | `global_random_device` |  |
-| global | `std::mt19937` | `global_mt19937` |  |
+| global | `std::random_device` | [`global_random_device`](#global_random_device) |  |
+| global | `std::mt19937` | [`global_mt19937`](#global_mt19937) |  |
 
 ## Member functions
 | Access | Return type | Defination |
 | :----: | ----: | :---- |
-| public | `static double` | `randD()` |
-| public | `static double` | `randD(const double min,const double max)` |
+| public | `static double` | [`randD()`](#randd) |
+| public | `static double` | [`randD(const double min,const double max)`](#randdconst-double-minconst-double-max) |
 
 <br>
 
 ## Macros
 | Name | Usage |
 | :----: | :---- |
-| `OT_square(x)` | Macro function |
-| `OPTIMT_MAKE_GLOBAL` | To be expanded |
+| [`OT_square(x)`](#ot_squarex) | Macro function |
+| [`OPTIMT_MAKE_GLOBAL`](#optimt_make_global) | To be expanded |
 
 <br>
 
@@ -83,7 +83,7 @@ Example below:
 OPTIMT_MAKE_GLOBAL
 
 int main() {
-    std::cout<<"rand number : "<<OptimT::OtGlobal::randD()<<std::endl;
+    std::cout<<"random number : "<<OptimT::OtGlobal::randD()<<std::endl;
     return 0;
 }
 
