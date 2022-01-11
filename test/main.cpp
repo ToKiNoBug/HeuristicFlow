@@ -29,7 +29,7 @@ OPTIMT_MAKE_GLOBAL
 int main()
 {
     system("pause");
-    testAckley_withRecord();
+    testNSGA2();
     system("pause");
     return 0;
 }

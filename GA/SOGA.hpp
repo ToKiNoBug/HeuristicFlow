@@ -25,9 +25,6 @@ This file is part of OptimTemplates.
 namespace OptimT
 {
 
-const bool FITNESS_GREATER_BETTER=true;
-const bool FITNESS_LESS_BETTER=false;
-
 ///single object genetic algorithm solver(real fitness value)
 template<typename Var_t,bool isGreaterBetter,bool Record,class ...Args>
 class SOGA : public GABase<Var_t,double,Record,Args...>

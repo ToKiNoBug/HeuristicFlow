@@ -324,4 +324,89 @@ void testTSP(const uint32_t PointNum) {
 
 }
 
+///Zitzler–Deb–Thiele's function N. 2
+void testNSGA2() {
+    //0<=x_i<=1, 1<=i<=30
+    static const size_t XNum=30;
+    static const double r=0.2;
+
+    OptimT::NSGA2<std::array<double,XNum>,
+            2,
+            OptimT::FITNESS_LESS_BETTER,
+            OptimT::RECORD_FITNESS> algo;
+
+    void (*iFun)(std::array<double,XNum>*,const std::tuple<>*) =
+    [] (std::array<double,XNum> * x,const std::tuple<>*) {
+        for(size_t i=0;i<XNum;i++) {
+            x->at(i)=OptimT::OtGlobal::randD();
+        }
+    };
+
+    void (*fFun)(const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f)
+            =[](const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f) {
+      f->at(0)=x->at(0);
+      const double & f1=f->at(0);
+      double g=0;
+      for(size_t i=1;i<XNum;i++) {
+          g+=x->at(i);
+      }
+      g=1+g*9.0/(XNum-1);
+      double && f1_div_g=f1/g;
+      double h=1-f1_div_g*f1_div_g;
+      f->at(1)=(g*h)/10;
+    };
+
+    void (*cFun)(const std::array<double,XNum>*,const std::array<double,XNum>*,
+                 std::array<double,XNum>*,std::array<double,XNum>*,const std::tuple<>*)
+            =[](const std::array<double,XNum>*p1,const std::array<double,XNum>*p2,
+            std::array<double,XNum>*ch1,std::array<double,XNum>*ch2,const std::tuple<>*)
+    {
+        for(size_t i=0;i<XNum;i++) {
+            //discrete
+            /*
+            ch1->at(i)=(OptimT::OtGlobal::randD()<0.5)?p1->at(i):p2->at(i);
+            ch2->at(i)=(OptimT::OtGlobal::randD()<0.5)?p1->at(i):p2->at(i);
+            */
+            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
+            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+        }
+
+    };
+
+    void (*mFun)(std::array<double,XNum>*,const std::tuple<>*)=
+            [](std::array<double,XNum>*x,const std::tuple<>*){
+        const size_t mutateIdx=size_t(OptimT::OtGlobal::randD(0,XNum))%XNum;
+
+        x->at(mutateIdx)+=0.1*OptimT::OtGlobal::randD(-1,1);
+
+        x->at(mutateIdx)=std::min(x->at(mutateIdx),1.0);
+        x->at(mutateIdx)=std::max(x->at(mutateIdx),0.0);
+    };
+
+    GAOption opt;
+    opt.populationSize=500;
+    opt.maxFailTimes=-1;
+    opt.maxGenerations=3000;
+
+    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+    cout<<"Start"<<endl;
+    std::clock_t t=std::clock();
+    algo.run();
+    t=std::clock()-t;
+    cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
+       <<"seconds and "<<algo.generation()<<"generations"<<endl;
+    std::vector<std::array<double,2>> paretoFront;
+    algo.paretoFront(paretoFront);
+    cout<<"paretoFront=[";
+    for(const auto & i : paretoFront) {
+        cout<<i[0]<<" , "<<i[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+
+    cout<<"\n\n\n population=[";
+    for(const auto & i : algo.population()) {
+        cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+}
 

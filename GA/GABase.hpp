@@ -41,6 +41,9 @@ const bool RECORD_FITNESS=true;
 const bool DONT_RECORD_FITNESS=false;
 
 
+const bool FITNESS_GREATER_BETTER=true;
+const bool FITNESS_LESS_BETTER=false;
+
 ///Genetic algorithm base class
 template<typename Var_t,typename Fitness_t,bool Record,class ...Args>
 class GABase {
