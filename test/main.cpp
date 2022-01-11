@@ -22,14 +22,16 @@ This file is part of OptimTemplates.
 #include "testNsga2.h"
 
 #include "def_TestingGenetic.h"
+
+#include <unordered_set>
+
 using namespace std;
 
 OPTIMT_MAKE_GLOBAL
 
 int main()
 {
-    system("pause");
-    testNSGA2();
+    testNSGA2_Kursawe();
     system("pause");
     return 0;
 }

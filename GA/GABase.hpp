@@ -37,15 +37,18 @@ This file is part of OptimTemplates.
 namespace OptimT {
 
 
-const bool RECORD_FITNESS=true;
-const bool DONT_RECORD_FITNESS=false;
+enum RecordOption : uint8_t {
+    RECORD_FITNESS=true,
+    DONT_RECORD_FITNESS=false
+};
 
-
-const bool FITNESS_GREATER_BETTER=true;
-const bool FITNESS_LESS_BETTER=false;
+enum FitnessOption : uint8_t {
+    FITNESS_LESS_BETTER=false,
+    FITNESS_GREATER_BETTER=true,
+};
 
 ///Genetic algorithm base class
-template<typename Var_t,typename Fitness_t,bool Record,class ...Args>
+template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args>
 class GABase {
 public:
     ///Use std::tuple to store all extra parameters such as training samples
@@ -117,6 +120,7 @@ public:
             _initializeFun(&i.self,&_args);
             i.setUncalculated();
         }
+        customOptWhenInitialization();
     }
 
 
@@ -150,6 +154,7 @@ public:
             crossover();
             mutate();
         }
+        _generation--;
     }
 
     ///best fitness
@@ -190,6 +195,7 @@ protected:
     crossoverFun _crossoverFun;
     mutateFun _mutateFun;
     otherOptFun _otherOptFun;
+    virtual void customOptWhenInitialization() {}
 
     virtual void calculateAll() {
         for(Gene & i : _population) {
@@ -248,7 +254,7 @@ protected:
 
 ///partial specialization for GABase with record
 template<typename Var_t,typename Fitness_t,class ...Args>
-class GABase<Var_t,Fitness_t,true,Args...>
+class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args...>
 {
 public:
     ///Use std::tuple to store all extra parameters such as training samples
@@ -329,6 +335,8 @@ public:
         //_eliteIt=_population.begin();
         _record.clear();
         _record.reserve(_option.maxGenerations+1);
+
+        customOptWhenInitialization();
     }
 
 
@@ -367,6 +375,7 @@ public:
             crossover();
             mutate();
         }
+        _generation--;
     }
 
     ///best fitness
@@ -414,6 +423,8 @@ protected:
     otherOptFun _otherOptFun;
 
     std::vector<Fitness_t> _record;
+
+    virtual void customOptWhenInitialization() {}
 
     virtual void calculateAll() {
         for(Gene & i : _population) {

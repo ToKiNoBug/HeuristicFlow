@@ -155,7 +155,10 @@ void testWithEigenLib() {
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
 
-    SOGA<Eigen::Array4d,true,false,Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
+    SOGA<Eigen::Array4d,
+            FITNESS_GREATER_BETTER,
+            RECORD_FITNESS,
+            Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
     //val min max learning_rate
     tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> Arg;
     static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
@@ -228,7 +231,10 @@ void testTSP(const uint32_t PointNum) {
 
     //typedef vector<permUnit> permulation;
     //      var,        less=better,    data src
-    SOGA<vector<double>,false,false,const vector<Point_t>*> algo;
+    SOGA<vector<double>,
+            FITNESS_LESS_BETTER,
+            DONT_RECORD_FITNESS,
+            const vector<Point_t>*> algo;
     static const uint8_t dataIdx=0;
     typedef tuple<const vector<Point_t>*> Args_t;
     Args_t args;//=make_tuple(PointNum,points.data());
@@ -319,21 +325,19 @@ void testTSP(const uint32_t PointNum) {
     algo.run();
     cout<<"finished with "<<algo.generation()<<" generations\n";
     cout<<"result fitness = "<<algo.bestFitness()<<endl;
-
-
-
 }
 
-///Zitzler–Deb–Thiele's function N. 2
-void testNSGA2() {
+///Zitzler–Deb–Thiele's function N. 3
+void testNSGA2_ZDT3() {
     //0<=x_i<=1, 1<=i<=30
     static const size_t XNum=30;
     static const double r=0.2;
 
     OptimT::NSGA2<std::array<double,XNum>,
             2,
-            OptimT::FITNESS_LESS_BETTER,
-            OptimT::RECORD_FITNESS> algo;
+            FITNESS_LESS_BETTER,
+            RECORD_FITNESS,
+            PARETO_FRONT_DONT_MUTATE> algo;
 
     void (*iFun)(std::array<double,XNum>*,const std::tuple<>*) =
     [] (std::array<double,XNum> * x,const std::tuple<>*) {
@@ -342,18 +346,19 @@ void testNSGA2() {
         }
     };
 
-    void (*fFun)(const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f)
+    void (*fFun)
+            (const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f)
             =[](const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f) {
       f->at(0)=x->at(0);
-      const double & f1=f->at(0);
+      const double && f1=std::move(f->at(0));
       double g=0;
       for(size_t i=1;i<XNum;i++) {
           g+=x->at(i);
       }
       g=1+g*9.0/(XNum-1);
       double && f1_div_g=f1/g;
-      double h=1-f1_div_g*f1_div_g;
-      f->at(1)=(g*h)/10;
+      double && h=1-std::sqrt(f1_div_g)-f1_div_g*std::sin(10*M_PI*f1);
+      f->at(1)=g*h;
     };
 
     void (*cFun)(const std::array<double,XNum>*,const std::array<double,XNum>*,
@@ -377,16 +382,16 @@ void testNSGA2() {
             [](std::array<double,XNum>*x,const std::tuple<>*){
         const size_t mutateIdx=size_t(OptimT::OtGlobal::randD(0,XNum))%XNum;
 
-        x->at(mutateIdx)+=0.1*OptimT::OtGlobal::randD(-1,1);
+        x->at(mutateIdx)+=0.005*OptimT::OtGlobal::randD(-1,1);
 
         x->at(mutateIdx)=std::min(x->at(mutateIdx),1.0);
         x->at(mutateIdx)=std::max(x->at(mutateIdx),0.0);
     };
 
     GAOption opt;
-    opt.populationSize=500;
-    opt.maxFailTimes=-1;
-    opt.maxGenerations=3000;
+    opt.populationSize=2000;
+    opt.maxFailTimes=500;
+    opt.maxGenerations=2000;
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
     cout<<"Start"<<endl;
@@ -402,11 +407,160 @@ void testNSGA2() {
         cout<<i[0]<<" , "<<i[1]<<";\n";
     }
     cout<<"];"<<endl;
-
+    /*
     cout<<"\n\n\n population=[";
     for(const auto & i : algo.population()) {
         cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
     }
     cout<<"];"<<endl;
+    */
 }
 
+void testNSGA2_Kursawe() {
+    //1<=i<=3,  -5<=x_i<=5
+    NSGA2<std::array<double,3>,
+            2,
+            FITNESS_LESS_BETTER,
+            DONT_RECORD_FITNESS,
+            PARETO_FRONT_DONT_MUTATE> algo;
+    auto iFun=[](std::array<double,3> * x,const std::tuple<>*) {
+        for(auto & i : *x) {
+            i=OtGlobal::randD(-5,5);
+        }
+    };
+    auto fFun=[](const std::array<double,3> * x,const std::tuple<>*,std::array<double,2> *f) {
+        double f1=0,f2=0;
+        for(int i=0;i<2;i++) {
+            f1+=-10*exp(-0.2*sqrt(OT_square(x->at(i))+OT_square(x->at(i+1))));
+        }
+        for(int i=0;i<3;i++) {
+            f2+=pow(abs(x->at(i)),0.8)+5*sin(x->at(i)*x->at(i)*x->at(i));
+        }
+        f->at(0)=f1;
+        f->at(1)=f2;
+    };
+
+    auto cFun=[](const std::array<double,3> *p1,const std::array<double,3> *p2,
+            std::array<double,3> *ch1,std::array<double,3> *ch2,const std::tuple<>*) {
+        for(int i=0;i<3;i++) {
+            static const double r=0.2;
+            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
+            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+        }
+    };
+
+    auto mFun=[](std::array<double,3> * x,const std::tuple<>*) {
+        const size_t idx=size_t(OtGlobal::randD(0,3))%3;
+        x->at(idx)+=0.1*OtGlobal::randD(-1,1);
+        x->at(idx)=min(x->at(idx),5.0);
+        x->at(idx)=max(x->at(idx),-5.0);
+    };
+
+    GAOption opt;
+    opt.maxGenerations=2000;
+    opt.populationSize=4000;
+    opt.maxFailTimes=-1;
+
+    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+
+
+    cout<<"Start"<<endl;
+    std::clock_t t=std::clock();
+    algo.run();
+    t=std::clock()-t;
+    cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
+       <<"seconds and "<<algo.generation()<<"generations"<<endl;
+    std::vector<std::array<double,2>> paretoFront;
+    algo.paretoFront(paretoFront);
+    cout<<"paretoFront=[";
+    for(const auto & i : paretoFront) {
+        cout<<i[0]<<" , "<<i[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+    /*
+    cout<<"\n\n\n population=[";
+    for(const auto & i : algo.population()) {
+        cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+    */
+}
+
+void testNSGA2_Binh_and_Korn() {
+    //0<=x_0<=5,  0<=x_1<=3
+    NSGA2<std::array<double,2>,
+            2,
+            FITNESS_LESS_BETTER,
+            DONT_RECORD_FITNESS,
+            PARETO_FRONT_DONT_MUTATE> algo;
+    auto iFun=[](std::array<double,2> * x,const std::tuple<>*) {
+        for(auto & i : *x) {
+            i=OtGlobal::randD(-5,5);
+        }
+    };
+    auto fFun=[](const std::array<double,2> * _x,const std::tuple<>*,std::array<double,2> *f) {
+        double & f1=f->at(0);
+        double & f2=f->at(1);
+        const double x=_x->at(0),y=_x->at(1);
+        f1=4*(x*x+y*y);
+        f2=OT_square(x-5)+OT_square(y-5);
+
+        double constraint_g1=OT_square(x-5)+y*y-25;
+        double constraint_g2=7.7-(OT_square(x-8)+OT_square(y+3));
+        if(constraint_g1>0) {
+            f1+=1e4+constraint_g1;
+        }
+        if(constraint_g2>0) {
+            f2+=1e4+constraint_g2;
+        }
+    };
+
+    auto cFun=[](const std::array<double,2> *p1,const std::array<double,2> *p2,
+            std::array<double,2> *ch1,std::array<double,2> *ch2,const std::tuple<>*) {
+        for(int i=0;i<2;i++) {
+            static const double r=0.2;
+            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
+            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+        }
+    };
+
+    auto mFun=[](std::array<double,2> * x,const std::tuple<>*) {
+        const size_t idx=size_t(OtGlobal::randD(0,2))%2;
+        x->at(idx)+=0.1*OtGlobal::randD(-1,1);
+        x->at(0)=min(x->at(0),5.0);
+        x->at(0)=max(x->at(0),0.0);
+        x->at(1)=min(x->at(1),3.0);
+        x->at(1)=max(x->at(1),0.0);
+    };
+
+    GAOption opt;
+    opt.maxGenerations=2000;
+    opt.populationSize=300;
+    opt.maxFailTimes=-1;
+
+    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+
+    ///custom ccfun is not compulsory. Default value is nullptr
+    //algo.setCongestComposeFun();
+
+    cout<<"Start"<<endl;
+    std::clock_t t=std::clock();
+    algo.run();
+    t=std::clock()-t;
+    cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
+       <<"seconds and "<<algo.generation()<<"generations"<<endl;
+    std::vector<std::array<double,2>> paretoFront;
+    algo.paretoFront(paretoFront);
+    cout<<"paretoFront=[";
+    for(const auto & i : paretoFront) {
+        cout<<i[0]<<" , "<<i[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+    /*
+    cout<<"\n\n\n population=[";
+    for(const auto & i : algo.population()) {
+        cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
+    }
+    cout<<"];"<<endl;
+    */
+}

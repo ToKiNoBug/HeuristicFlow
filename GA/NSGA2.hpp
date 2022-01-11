@@ -3,10 +3,21 @@
 
 #include "./GABase.hpp"
 #include <queue>
+#include <unordered_set>
 namespace OptimT
 {
 
-template<typename Var_t,size_t ObjNum,bool isGreaterBetter,bool Record,class ...Args>
+enum PFOption : unsigned char {
+    PARETO_FRONT_DONT_MUTATE=true,
+    PARETO_FRONT_CAN_MUTATE=false
+};
+
+
+template<typename Var_t,size_t ObjNum,
+         FitnessOption isGreaterBetter,
+         RecordOption Record,
+         PFOption ProtectPF,
+         class ...Args>
 class NSGA2 : public GABase<Var_t,std::array<double,ObjNum>,Record,Args...>
 {
 public:
@@ -14,6 +25,8 @@ public:
     using Base_t = GABase<Var_t,std::array<double,ObjNum>,Record,Args...>;
     using Fitness_t = std::array<double,ObjNum>;
     OPTIMT_MAKE_GABASE_TYPES
+
+    using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
 
     NSGA2() {
         Base_t::_initializeFun=
@@ -26,9 +39,24 @@ public:
                 [](Var_t*,const ArgsType*){};
         Base_t::_otherOptFun=
                 [](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
+        _ccFun=nullptr;
     };
 
     ~NSGA2() {};
+
+    void setCongestComposeFun(congestComposeFun __ccFun=nullptr) {
+        if(__ccFun==nullptr) {
+            _ccFun=[](const Fitness_t * f,const ArgsType*) {
+                double result=0;
+                for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+                    result+=f->at(objIdx);
+                }
+                return result;
+            };
+        }
+        else
+            _ccFun=__ccFun;
+    }
 
     virtual Fitness_t bestFitness() const {
         Fitness_t best=Base_t::_population.front()._Fitness;
@@ -48,29 +76,9 @@ public:
 
     ///get pareto front in vec
     void paretoFront(std::vector<Fitness_t> & front) const {
-        const size_t popSize=Base_t::_population.size();
-        std::vector<const Gene*> pop;
-        pop.clear();    pop.reserve(popSize);
-        for(const auto & i : Base_t::_population) {
-            pop.emplace_back(&i);
-        }
-        std::vector<size_t> domainedByNum(popSize);
-
-        for(size_t ed=0;ed<popSize;ed++) {
-            domainedByNum[ed]=0;
-            for(size_t er=0;er<popSize;er++) {
-                if(ed==er)
-                    continue;
-                domainedByNum[ed]+=
-                        isStrongDomain(&pop[er]->_Fitness,&pop[ed]->_Fitness);
-            }
-        }
-
-        front.clear();  front.reserve(popSize);
-        for(size_t i=0;i<popSize;i++) {
-            if(domainedByNum[i]<=0) {
-                front.emplace_back(pop[i]->_Fitness);
-            }
+        front.clear();  front.reserve(_pfGenes.size());
+        for(const Gene* i : _pfGenes) {
+            front.emplace_back(i->_Fitness);
         }
         return;
     }
@@ -89,20 +97,33 @@ public:
     };
 
 protected:
+    size_t prevFrontSize;
+    std::unordered_set<const Gene*> _pfGenes;
+    congestComposeFun _ccFun;
+
+    virtual void customOptWhenInitialization() {
+        prevFrontSize=-1;
+        _pfGenes.clear();
+        _pfGenes.reserve(Base_t::_option.populationSize*2);
+        if(_ccFun==nullptr) {
+            setCongestComposeFun();
+        }
+    }
+
     ///whether A strong domains B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
+        //if(A==B) return false;
         for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
             if(isGreaterBetter) {
-                //if any single object fitness of A is worse than B, A doesn't strong domain B
-                if(A->at(objIdx)<=B->at(objIdx)) {
+                //if any single fitness of A isn't better than B, A doesn't strong domain B
+                if((A->at(objIdx))<(B->at(objIdx))) {
                     return false;
                 }
             } else {
-                //if any single object fitness of A is worse than B, A doesn't strong domain B
-                if(A->at(objIdx)>=B->at(objIdx)) {
+                //if any single fitness of A isn't better than B, A doesn't strong domain B
+                if((A->at(objIdx))>(B->at(objIdx))) {
                     return false;
                 }
-
             }
         }
         return true;
@@ -110,11 +131,13 @@ protected:
 
     ///compare by  paretoLayers
     static bool compareFun_DomainedBy(const infoUnit * A,const infoUnit * B) {
+        if(A==B) return false;
         return A->domainedByNum<B->domainedByNum;
     }
 
     ///compare by fitness on single object
     static bool compareFun_Fitness(const infoUnit * A,const infoUnit * B) {
+        if(A==B) return false;
         //if(!isGreaterBetter)
             return A->iterator->_Fitness[A->sortIdx]<B->iterator->_Fitness[B->sortIdx];
         //else
@@ -126,7 +149,7 @@ protected:
         return A->congestion[0]>B->congestion[0];
     }
 
-    ///fast non-domain sorting
+    ///fast nondominated sorting
     virtual void select() {
         const size_t popSizeBefore=Base_t::_population.size();
         std::vector<infoUnit> pop;
@@ -178,6 +201,22 @@ protected:
                 unLayeredNum--;
             }
         }
+
+        {
+            const size_t curFrontSize=paretoLayers.front().size();
+            if(prevFrontSize!=curFrontSize) {
+                Base_t::_failTimes=0;
+                prevFrontSize=curFrontSize;
+            } else {
+                Base_t::_failTimes++;
+            }
+            _pfGenes.clear();
+            for(const auto i :paretoLayers.front()) {
+                _pfGenes.emplace(&*(i->iterator));
+            }
+        }
+
+
         std::queue<infoUnit *> selected;
         bool needCongestion=true;
         while(true) {
@@ -208,20 +247,27 @@ protected:
 
                 sortSpace.front()->congestion[objIdx]=OptimT::pinfD;
                 sortSpace.back()->congestion[objIdx]=OptimT::pinfD;
+
                 //calculate congestion on single object
+
+
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
+
                     sortSpace[idx]->congestion[objIdx]=std::abs(
                                 sortSpace[idx-1]->iterator->_Fitness[objIdx]
                                -sortSpace[idx+1]->iterator->_Fitness[objIdx]
+
                                 );
                 }
             } // end sort on objIdx
 
             for(infoUnit & i : pop) {
                 //store final congestion at the first congestion
+                i.congestion[0]=_ccFun(&i.congestion,&Base_t::args());
+                /*
                 for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
                     i.congestion[0]+=i.congestion[objIdx];
-                }
+                }*/
             }
 
             std::sort(paretoLayers.front().begin(),paretoLayers.front().end(),
@@ -251,6 +297,11 @@ protected:
     virtual void mutate() {
         for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
             if(OtGlobal::randD()<=Base_t::_option.mutateProb) {
+                if(ProtectPF){
+                    if(_pfGenes.find(&*it)!=_pfGenes.end()) {
+                        continue;
+                    }
+                }
                 Base_t::_mutateFun(&it->self,&Base_t::args());
                 it->setUncalculated();
             }

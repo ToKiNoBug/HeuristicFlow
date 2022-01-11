@@ -31,5 +31,10 @@ void testAckley_withRecord();
 ///TSP problem
 void testTSP(const unsigned int pointNum=10);
 
-void testNSGA2();
+///Binh and Korn function
+void testNSGA2_Binh_and_Korn();
+
+void testNSGA2_Kursawe();
+
+void testNSGA2_ZDT3();
 #endif // DEF_TESTINGGENETIC_H

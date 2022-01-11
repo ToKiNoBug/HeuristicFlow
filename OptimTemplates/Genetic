@@ -24,5 +24,6 @@ This file is part of OptimTemplates.
 #include "../GA/GABase.hpp"
 #include "../GA/SOGA.hpp"
 #include "../GA/NSGA2.hpp"
+#include "../GA/GANds.h"
 
 #endif

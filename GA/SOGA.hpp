@@ -26,7 +26,7 @@ namespace OptimT
 {
 
 ///single object genetic algorithm solver(real fitness value)
-template<typename Var_t,bool isGreaterBetter,bool Record,class ...Args>
+template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args>
 class SOGA : public GABase<Var_t,double,Record,Args...>
 {
 public:
