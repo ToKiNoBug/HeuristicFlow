@@ -25,13 +25,13 @@ This file is part of OptimTemplates.
 #include <unordered_set>
 namespace OptimT
 {
-
+///whether to protect pareto front when mutation or not
 enum PFOption : unsigned char {
     PARETO_FRONT_DONT_MUTATE=true,
     PARETO_FRONT_CAN_MUTATE=false
 };
 
-
+///NSGA2 MOGA solver
 template<typename Var_t,size_t ObjNum,
          FitnessOption isGreaterBetter,
          RecordOption Record,
