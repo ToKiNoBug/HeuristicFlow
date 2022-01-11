@@ -24,7 +24,7 @@ This file is part of OptimTemplates.
 
 namespace OptimT
 {
-
+///No-constraint N-d GA optimizer
 template<size_t N,FitnessOption isGreaterBetter>
 class GA_usual :
         public SOGA<std::array<double,N>,
@@ -46,6 +46,7 @@ public:
     static const size_t tuple_maxIdx=1;
     static const size_t tuple_learningRateIdx=2;
 
+    ///Default function for initializing
     static void default_iFun(std::array<double,N> * x,const ArgsType * arg) {
         for(size_t idx=0;idx<N;idx++) {
             x->at(idx)=OtGlobal::randD(
@@ -53,7 +54,7 @@ public:
                         std::get<tuple_maxIdx>(*arg));
         }
     }
-
+    ///Default function for crossover
     static void default_cFun_discrete(const std::array<double,N> * p1,
                                       const std::array<double,N> * p2,
                                       std::array<double,N> * ch1,
@@ -64,7 +65,7 @@ public:
             ch2->at(idx)=(std::rand()%2)?p1->at(idx):p2->at(idx);
         }
     }
-
+    ///Default function for crossover
     static void default_cFun_continous(const std::array<double,N> * p1,
                                       const std::array<double,N> * p2,
                                       std::array<double,N> * ch1,
@@ -75,7 +76,7 @@ public:
             ch2->at(idx)=0.2*p2->at(idx)+(1-0.2)*p1->at(idx);
         }
     }
-
+    ///Default function for mutation
     static void default_mFun(std::array<double,N> * x,const ArgsType * arg) {
         const size_t idx=size_t(OtGlobal::randD(0,N))%N;
         double & m=x->at(idx);
@@ -86,16 +87,26 @@ public:
 
 };
 
+///No-constraint 2d GA minimizer
 using GA2dMinimizer = GA_usual<2,FITNESS_LESS_BETTER>;
+///No-constraint 3d GA minimizer
 using GA3dMinimizer = GA_usual<3,FITNESS_LESS_BETTER>;
+///No-constraint 4d GA minimizer
 using GA4dMinimizer = GA_usual<4,FITNESS_LESS_BETTER>;
+///No-constraint 5d GA minimizer
 using GA5dMinimizer = GA_usual<5,FITNESS_LESS_BETTER>;
+///No-constraint 6d GA minimizer
 using GA6dMinimizer = GA_usual<6,FITNESS_LESS_BETTER>;
 
+///No-constraint 2d GA maximizer
 using GA2dMaximizer = GA_usual<2,FITNESS_GREATER_BETTER>;
+///No-constraint 3d GA maximizer
 using GA3dMaximizer = GA_usual<3,FITNESS_GREATER_BETTER>;
+///No-constraint 4d GA maximizer
 using GA4dMaximizer = GA_usual<4,FITNESS_GREATER_BETTER>;
+///No-constraint 5d GA maximizer
 using GA5dMaximizer = GA_usual<5,FITNESS_GREATER_BETTER>;
+///No-constraint 6d GA maximizer
 using GA6dMaximizer = GA_usual<6,FITNESS_GREATER_BETTER>;
 
 }
