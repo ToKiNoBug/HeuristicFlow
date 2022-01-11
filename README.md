@@ -6,8 +6,8 @@ namespace: `OptimT`
 
 Modules:
 1. [Genetic](./docs/Genetic.md)
-2. Global
-3. SimpleMatrix
+2. [Global](./docs/Genetic.md)
+3. [SimpleMatrix](./docs/SimpleMatrix.md)
 
 
 Implemented : 
