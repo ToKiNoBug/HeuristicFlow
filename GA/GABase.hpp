@@ -32,7 +32,7 @@ This file is part of OptimTemplates.
 #include <iostream>
 #endif
 
-#include <../OptimTemplates/Global>
+#include "../OptimTemplates/Global"
 
 namespace OptimT {
 
@@ -236,8 +236,10 @@ protected:
             crossoverQueue.pop_back();
             b=crossoverQueue.back();
             crossoverQueue.pop_back();
-            Gene * childA=&_population.emplace_back();
-            Gene * childB=&_population.emplace_back();
+            _population.emplace_back();
+            Gene * childA=&_population.back();
+            _population.emplace_back();
+            Gene * childB=&_population.back();
             _crossoverFun(&a->self,&b->self,&childA->self,&childB->self,&_args);
             childA->setUncalculated();
             childB->setUncalculated();
@@ -466,8 +468,10 @@ protected:
             crossoverQueue.pop_back();
             b=crossoverQueue.back();
             crossoverQueue.pop_back();
-            Gene * childA=&_population.emplace_back();
-            Gene * childB=&_population.emplace_back();
+            _population.emplace_back();
+            Gene * childA=&_population.back();
+            _population.emplace_back();
+            Gene * childB=&_population.back();
             _crossoverFun(&a->self,&b->self,&childA->self,&childB->self,&_args);
             childA->setUncalculated();
             childB->setUncalculated();

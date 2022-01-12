@@ -1,4 +1,0 @@
-HEADERS += \
-    Genetic \
-    Global \
-    SimpleMatrix
