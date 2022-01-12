@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef GLOBAL_INCLUDE
+#define GLOBAL_INCLUDE
 
 #include "../Global/Globals.hpp"
 

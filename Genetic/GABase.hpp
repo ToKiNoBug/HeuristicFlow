@@ -28,6 +28,10 @@ This file is part of OptimTemplates.
 #include <random>
 #include <algorithm>
 
+#ifndef OptimT_NO_STATICASSERT
+#include <type_traits>
+#endif
+
 #ifndef OptimT_NO_OUTPUT
 #include <iostream>
 #endif

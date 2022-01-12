@@ -327,6 +327,11 @@ protected:
         }
     }
 
+
+#ifndef OptimT_NO_STATICASSERT
+    static_assert(std::integral_constant<bool,(ObjNum>1)>::value,
+    "OptimTemplates : You used less than 2 object functions in NSGA2");
+#endif
 };
 
 }

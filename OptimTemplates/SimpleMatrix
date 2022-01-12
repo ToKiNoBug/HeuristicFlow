@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef SIMPLEMATRIX_
-#define SIMPLEMATRIX_
+#ifndef SIMPLEMATRIX_INCLUDE
+#define SIMPLEMATRIX_INCLUDE
 
 #include "../SimpleMatrix/MatrixDynamicSize.hpp"
 #include "../SimpleMatrix/MatrixFixedSize.hpp"

@@ -17,13 +17,13 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GA_
-#define GA_
+#ifndef Genetic_INCLUDE
+#define Genetic_INCLUDE
 
-#include "../GA/GAOption.hpp"
-#include "../GA/GABase.hpp"
-#include "../GA/SOGA.hpp"
-#include "../GA/NSGA2.hpp"
-#include "../GA/GANds.h"
+#include "../Genetic/GAOption.hpp"
+#include "../Genetic/GABase.hpp"
+#include "../Genetic/SOGA.hpp"
+#include "../Genetic/NSGA2.hpp"
+#include "../Genetic/GANds.h"
 
 #endif

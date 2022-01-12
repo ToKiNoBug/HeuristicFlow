@@ -458,7 +458,7 @@ void testNSGA2_Kursawe() {
 
     GAOption opt;
     opt.maxGenerations=2000;
-    opt.populationSize=4000;
+    opt.populationSize=1000;
     opt.maxFailTimes=-1;
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
@@ -469,7 +469,7 @@ void testNSGA2_Kursawe() {
     algo.run();
     t=std::clock()-t;
     cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
-       <<"seconds and "<<algo.generation()<<"generations"<<endl;
+       <<" seconds and "<<algo.generation()<<" generations"<<endl;
     std::vector<std::array<double,2>> paretoFront;
     algo.paretoFront(paretoFront);
     cout<<"paretoFront=[";
