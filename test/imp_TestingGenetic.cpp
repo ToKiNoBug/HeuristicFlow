@@ -463,6 +463,7 @@ void testNSGA2_Kursawe() {
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
 
+    algo.setCongestComposeFun(algo.default_ccFun_powered<3>);
 
     cout<<"Start"<<endl;
     std::clock_t t=std::clock();

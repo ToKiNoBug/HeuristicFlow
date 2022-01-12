@@ -58,23 +58,46 @@ public:
                 [](Var_t*,const ArgsType*){};
         Base_t::_otherOptFun=
                 [](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
-        _ccFun=nullptr;
+        _ccFun=default_ccFun_liner;
     };
 
     ~NSGA2() {};
 
-    void setCongestComposeFun(congestComposeFun __ccFun=nullptr) {
-        if(__ccFun==nullptr) {
-            _ccFun=[](const Fitness_t * f,const ArgsType*) {
-                double result=0;
-                for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
-                    result+=f->at(objIdx);
-                }
-                return result;
-            };
-        }
-        else
+    void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             _ccFun=__ccFun;
+    }
+
+    static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
+        double result=f->at(0);
+        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
+            result+=f->at(objIdx);
+        }
+        return result;
+    };
+
+    static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
+        double result=OT_square(f->at(0));
+        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
+            result+=OT_square(f->at(objIdx));
+        }
+        return std::sqrt(result);
+    }
+
+    static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
+        double result=f->at(0);
+        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
+            result=std::max(f->at(objIdx),result);
+        }
+        return result;
+    }
+
+    template<int power>
+    static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
+        double result=0;
+        for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+            result=std::pow(f->at(objIdx),(power));
+        }
+        return std::pow(result,1.0/power);
     }
 
     virtual Fitness_t bestFitness() const {
