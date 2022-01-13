@@ -133,6 +133,10 @@ public:
         }
     }
 
+    const std::unordered_set<const Gene*> & pfGenes() const {
+        return _pfGenes;
+    }
+
     ///temporary struct to store infos when selection
     struct infoUnit
     {
