@@ -102,11 +102,11 @@ public:
         return colNum;
     }
 
-    Scalar_t & operator()(size_t n) {
+    Scalar_t & operator()(size_t n) const {
         return dataPtr[n];
     }
 
-    Scalar_t & operator()(size_t r,size_t c) {
+    Scalar_t & operator()(size_t r,size_t c) const {
         return dataPtr[rowNum*c+r];
     }
 

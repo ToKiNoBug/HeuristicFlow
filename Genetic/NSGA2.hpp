@@ -125,6 +125,14 @@ public:
         return;
     }
 
+    void paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front) const {
+        front.clear();
+        front.reserve(_pfGenes.size());
+        for(const Gene* i : _pfGenes) {
+            front.emplace_back(std::make_pair(&(i->self),&(i->_Fitness)));
+        }
+    }
+
     ///temporary struct to store infos when selection
     struct infoUnit
     {

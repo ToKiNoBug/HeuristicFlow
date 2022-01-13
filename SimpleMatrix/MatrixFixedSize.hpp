@@ -61,11 +61,11 @@ public:
         return Cols;
     }
 
-    Scalar_t & operator()(size_t n) {
+    Scalar_t & operator()(size_t n) const {
         return array[n];
     }
 
-    Scalar_t & operator()(size_t r,size_t c) {
+    Scalar_t & operator()(size_t r,size_t c) const {
         return array[Rows*c+r];
     }
 
