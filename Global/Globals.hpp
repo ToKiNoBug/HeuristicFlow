@@ -19,6 +19,7 @@ namespace OptimT
 ///global random device(mt19937) for OptimT
 extern std::mt19937 global_mt19937;
 
+extern LogisticChaos global_logistic;
 ///Infinet value for float
 const float pinfF=1.0f/0.0f;
 
@@ -79,12 +80,12 @@ inline double randD(const double min,const double max) {
 
 ///logistic random number in range (0,1)
 inline double logisticD() {
-    static LogisticChaos lc(randD());
-    return lc();
+    return global_logistic();
 }
 
 #define OPTIMT_MAKE_GLOBAL \
-std::mt19937 OptimT::global_mt19937(OptimT::OtGlobal::makeRandSeed());
+std::mt19937 OptimT::global_mt19937(OptimT::OtGlobal::makeRandSeed()); \
+OptimT::LogisticChaos OptimT::global_logistic(randD());
 
 }
 

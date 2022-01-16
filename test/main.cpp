@@ -31,6 +31,10 @@ OPTIMT_MAKE_GLOBAL
 
 int main()
 {
+    auto t=OptimT::TentChaosI<8>::max();
+    std::cout<<t<<std::endl;
+    system("pause");
+
     testNSGA2_ZDT3();
     system("pause");
     return 0;
