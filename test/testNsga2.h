@@ -21,6 +21,7 @@ This file is part of OptimTemplates.
 #define TESTNSGA2_H
 
 #define OptimT_NO_OUTPUT
+#include <OptimTemplates/Global>
 #include <OptimTemplates/Genetic>
 #include <array>
 #include <iostream>

@@ -22,6 +22,7 @@ This file is part of OptimTemplates.
 
 void testSingleNumber();
 
+#include <OptimTemplates/Global>
 ///Using libEigen with OptimTemplates
 void testWithEigenLib();
 

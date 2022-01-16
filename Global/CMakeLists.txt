@@ -4,3 +4,8 @@ project(OptimT_Global LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package ( OpenMP )
+if(OpenMP_CXX_FOUND)
+
+endif()

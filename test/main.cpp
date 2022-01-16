@@ -31,7 +31,7 @@ OPTIMT_MAKE_GLOBAL
 
 int main()
 {
-    testNSGA2_Kursawe();
+    testNSGA2_ZDT3();
     system("pause");
     return 0;
 }
