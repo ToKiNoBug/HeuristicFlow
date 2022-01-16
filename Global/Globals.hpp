@@ -4,6 +4,7 @@
 
 #include <random>
 #include <ctime>
+#include "./LogisticChaos.h"
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
 #endif
@@ -47,12 +48,19 @@ public:
         return (max-min)*randD()+min;
     }
     static uint32_t makeRandSeed() {
-        uint32_t seed=std::time(nullptr),seed_=seed;
-        std::srand(seed);
-        uint8_t * swapper=(uint8_t *)&seed;
-        std::swap(swapper[0],swapper[3]);
-        std::swap(swapper[1],swapper[2]);
-        return seed_^seed;
+        static bool isFirstCalled=true;
+        if(isFirstCalled) {
+            uint32_t seed=std::time(nullptr),seed_=seed;
+            std::srand(seed);
+            uint8_t * swapper=(uint8_t *)&seed;
+            std::swap(swapper[0],swapper[3]);
+            std::swap(swapper[1],swapper[2]);
+            isFirstCalled=false;
+            return seed_^seed;
+        }
+        else {
+            return global_mt19937.operator()();
+        }
     }
 private:
     OtGlobal();
@@ -67,6 +75,12 @@ inline double randD() {
 ///uniform random number in range [min,max]
 inline double randD(const double min,const double max) {
     return (max-min)*randD()+min;
+}
+
+///logistic random number in range (0,1)
+inline double logisticD() {
+    static LogisticChaos lc(randD());
+    return lc();
 }
 
 #define OPTIMT_MAKE_GLOBAL \
