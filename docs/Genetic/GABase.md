@@ -4,7 +4,7 @@ Abstrcat base class of genetic algorithm solvers.
 | Header: | `#include<Genetic>` |
 | ----: | :---- |
 | Location: | [GABase.hpp](./../../GA/GABase.hpp) |
-| Inherited by : | [SOGA](./SOGA.md) |
+| Inherited by : | [SOGA](./SOGA.md), [NSGA2](./NSGA2.md) |
 
 <br>
 

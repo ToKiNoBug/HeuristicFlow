@@ -72,3 +72,5 @@ Thumbs.db
 *.exe
 
 CMakeLists.txt.user
+.vscode/c_cpp_properties.json
+.vscode/settings.json
