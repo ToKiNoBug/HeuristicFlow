@@ -121,7 +121,9 @@ Stores the size of pareto front in previous generation.
 A unordered set to mark the pareto front.
 
 ### `_ccFun`
-Function pointer to compose congestion value.
+Function pointer to compose congestion value. 
+
+After partial congestion on each objective is calculated, it's required to compose then into a congestion value(`double`).
 
 <br>
 
@@ -133,16 +135,57 @@ Constructor.
 Destructor.
 
 ### `setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner)`
+Set the value of [`_ccFun`](#_ccfun).
 
+It's not a must to call this function when using NSGA2, instead, it's an optional one.
 
 ### `default_ccFun_liner(const Fitness_t * f,const ArgsType*)`
+A candidate function for [`_ccFun`](#_ccfun). It composes congestion by adding difference on each objective linearly. It's the default function.
+$$
+{Congestion} = \sum _{i=1}^{ObjNum}{\Delta f_i}
+$$
+To some extent, it's like **Manhattan distance**.
+
 ### `default_ccFun_sphere(const Fitness_t * f,const ArgsType*)`
+A candidate function for [`_ccFun`](#_ccfun). It compoeses congestion like a sphere using following formula:
+$$
+{Congestion} = \sqrt{\sum _{i=1}^{ObjNum}{\Delta f_i}^2}
+$$
+To some extent, it's like **Eculidean distance**.
+
+
 ### `default_ccFun_max(const Fitness_t * f,const ArgsType*)`
+A candidate function for [`_ccFun`](#_ccfun). It select the maximun parital congestion among all objectives as the total congestion.
+
+Formula:
+$$
+{Congestion} = \max _{1\leq i\leq ObjNum} {\Delta f_i}
+$$
+To some extent, it's like **Chebyshev distance**.
+
 ### `default_ccFun_powered<int power>(const Fitness_t * f,const ArgsType*)`
+A candidate function for [`_ccFun`](#_ccfun).
+
+Formula:
+$$
+{Congestion} = {(\sum _{i=1}^{ObjNum}{\Delta f_i}^p)}^{\frac{1}{p}} \\
+\text{Where }p=\text{power in the template.}
+$$
+To some extent, it's like **Minkowski distance**.
+
+
 ### `bestFitness() const`
+Implementation for pure virtual function defined in [GABase](./GABase.md). It's defined to provide a `Fitness_t` to be recorded. This function will compose the best value of each objective.
+
 ### `paretoFront(std::vector<Fitness_t> & front)`
+Get pareto front consisted of a vector of `Fitness_t`.
+
 ### `paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front)`
+Get pareto front consisted of a vector of `<std::pair<const Var_t*,const Fitness_t*>`. It provided both solution(`Var_t`) and objective value(`Fitness_t`).
+
 ### `pfGenes() const`
+Returns a const reference to member [`_pfGenes`](#_pfgenes).
+
 ### `customOptWhenInitialization()`
 ### `isStrongDomain(const Fitness_t * A,const Fitness_t * B)`
 ### `compareFun_DomainedBy(const infoUnit * A,const infoUnit * B)`
