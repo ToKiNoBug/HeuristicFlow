@@ -83,7 +83,7 @@ inline double logisticD() {
     return global_logistic();
 }
 
-#define OPTIMT_MAKE_GLOBAL \
+#define OptimT_MAKE_GLOBAL \
 std::mt19937 OptimT::global_mt19937(OptimT::OtGlobal::makeRandSeed()); \
 OptimT::LogisticChaos OptimT::global_logistic(randD());
 

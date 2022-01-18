@@ -27,7 +27,7 @@ This file is part of OptimTemplates.
 
 using namespace std;
 
-OPTIMT_MAKE_GLOBAL
+OptimT_MAKE_GLOBAL
 
 int main()
 {
