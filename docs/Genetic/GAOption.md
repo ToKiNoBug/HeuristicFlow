@@ -3,7 +3,7 @@
 
 | Header: | `#include<Genetic>` |
 | ----: | :---- |
-| Location: | [GAOption.hpp](../../GA/GAOption.hpp) |
+| Location: | [GAOption.hpp](../../Genetic/GAOption.hpp) |
 
 <br>
 

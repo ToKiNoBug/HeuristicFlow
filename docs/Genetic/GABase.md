@@ -3,23 +3,26 @@ Abstrcat base class of genetic algorithm solvers.
 
 | Header: | `#include<Genetic>` |
 | ----: | :---- |
-| Location: | [GABase.hpp](./../../GA/GABase.hpp) |
+| Location: | [GABase.hpp](./../../Genetic/GABase.hpp) |
 | Inherited by : | [SOGA](./SOGA.md), [NSGA2](./NSGA2.md) |
 
 <br>
 
 ## Defination
 ```cpp
-template<typename Var_t,typename Fitness_t,bool Record,class ...Args> class OptimT::GABase;
+template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args> class OptimT::GABase;
 ```
 <br>
 
 ## Types
 | Access | Name | Type | Defination |
 | :----: | :----: | :----: | :---- |
-|  | [`Var_t`](#var_t) | `template` |  |
-|  | [`Fitness_t`](#fitness_t) | `template` |  |
-|  | [`Args...`](#args...) | `template` |  |
+| global | [`RecordOption`](#recordoption) | `enumeration` | `enum RecordOption : uint8_t` |
+| global | [`FitnessOption`](#fitnessoption) | `enumeration` | `enum FitnessOption : uint8_t` |
+| template | [`Var_t`](#var_t) | `typename` |  |
+| template | [`Fitness_t`](#fitness_t) | `typename` |  |
+| template | [`Record`](#record) | `RecordOption` |  |
+| template | [`Args...`](#args...) | `typename` |  |
 | public | [`ArgsType`](#argstype) | `typedef` | `using ArgsType = std::tuple<Args...>;` |
 | public | [`initializeFun`](#initializefun) | `typedef` |  `using initializeFun = void(*)(Var_t*,const ArgsType*);` |
 | public | [`fitnessFun`](#fitnessfun) | `typedef` | `using fitnessFun = void(*)(const Var_t*,const ArgsType*,Fitness_t*);` |
@@ -78,6 +81,30 @@ GABase implemented basic initialization, fitness calculation, crossover, mutatio
 <br>
 
 ## Type details
+### `RecordOption`
+Markes whether GA solver records the changes of fitness value when solving.
+
+Defination: 
+```cpp
+enum RecordOption : uint8_t {
+    RECORD_FITNESS=true,
+    DONT_RECORD_FITNESS=false
+};
+```
+
+### `FitnessOption`
+Marks whether a greater fitness value means a better solution.
+
+Defination:
+```cpp
+enum FitnessOption : uint8_t {
+    FITNESS_LESS_BETTER=false,
+    FITNESS_GREATER_BETTER=true,
+};
+```
+
+This enumeration type isn't used in `GABase` but all derived classes use it, so it's defined together with `GABase`.
+
 ### `Var_t`
 Encoded solution type. For instance, when solving TSP problems, what we really want to solve is a permulation to arrange order between nodes, but the permulation is encoded into a double array and decoded via sorting. So in this instance, `Var_t` is assigned to `std::vector<double>` instead of an permulation type. You should decode when calculating fitness value.
 
@@ -88,7 +115,9 @@ Besides, since type of fitness value can be any type, which made **comparsion be
 By the way, this also leaves room for multi-object optimizators.
 
 ### `Record`
-This boolean template value determines whether instance record the changes of fitness value or not. If true, you call an extra partial special version of GABase with an extra member [`_record`](#_record) and function [`record() const`](#record-const).
+This boolean template value determines whether instance record the changes of fitness value or not. 
+
+If true, you call an extra partial special version of GABase with an extra member [`_record`](#_record) and function [`record() const`](#record-const).
 
 Use `RECORD_FITNESS`(`true`) here to enable recording function, or use `DONT_RECORD_FITNESS`(false) to disable recording.
 

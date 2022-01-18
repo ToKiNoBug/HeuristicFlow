@@ -46,7 +46,7 @@ Some other members are inherited from [GABase](./GABase.md).
 | Access | Return type | Defination |
 | :----: | ----: | :---- |
 | public |  | [`NSGA2()`](#nsga2) |
-| public |  | [`~NSGA2()`](#\~nsga2) |
+| public | virtual | [`~NSGA2()`](#\~nsga2) |
 | public | `void` | [`setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner)`](#setcongestcomposefuncongestcomposefun-__ccfundefault_ccfun_liner) |
 | public | `static double` | [`default_ccFun_liner(const Fitness_t * f,const ArgsType*)`](#default_ccfun_linerconst-fitness_t--fconst-argstype) |
 | public | `static double` | [`default_ccFun_sphere(const Fitness_t * f,const ArgsType*)`](#default_ccfun_sphereconst-fitness_t--fconst-argstype) |

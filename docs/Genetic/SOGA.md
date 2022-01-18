@@ -10,14 +10,14 @@ Single-object genetic solver.
 
 ## Defination
 ```cpp
-template<typename Var_t,bool isGreaterBetter,bool Record,class ...Args> class OptimT::SOGA;
+template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args> class OptimT::SOGA;
 ```
 <br>
 
 ## Types
 | Access | Name | Type | Defination |
 | :----: | :----: | ----: | :---- |
-|  | [`isGreaterBetter`](#isgreaterbetter) | `template bool` |  |
+| template | [`isGreaterBetter`](#isgreaterbetter) | `FitnessOption |  |
 
 Some other types are inherited from [GABase](./GABase.md).
 
@@ -53,9 +53,11 @@ Class/Strcut description here.
 
 ## Type details
 ### `isGreaterBetter`
-Boolean template parameter. This boolean denotes whether a greater fitness value is better. If yes, SOGA will try to find the maximum, otherwise SOGA will try to find the minimum.
+Enumeration template parameter. This parameter denotes whether a greater fitness value is better. If yes, SOGA will try to find the maximum, otherwise SOGA will try to find the minimum.
 
 Use `FITNESS_GREATER_BETTER`(true) or `FITNESS_LESS_BETTER`(false) here to make your code more readable.
+
+More about enumeration type, see [GABase](./GABase.md).
 
 
 <br>
