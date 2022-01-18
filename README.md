@@ -11,8 +11,9 @@ Modules:
 
 
 Implemented : 
-1. GA
+1. [GA](./docs/Genetic/SOGA.md)
+2. [NSGA-II](./docs/Genetic/NSGA2.md)
 
 Waiting to be implemented :
-1. NSGA-II
+1. NSGA-III
 2. PSO
