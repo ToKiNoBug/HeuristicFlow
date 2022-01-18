@@ -164,7 +164,7 @@ protected:
         }
     }
 
-    ///whether A strong domains B
+    ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         //if(A==B) return false;
         for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {

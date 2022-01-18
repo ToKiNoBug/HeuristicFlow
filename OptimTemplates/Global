@@ -21,7 +21,7 @@ This file is part of OptimTemplates.
 #define GLOBAL_INCLUDE
 
 #include "../Global/Globals.hpp"
-#include "../Global/LogisticChaos.h"
-#include "../Global/TentChaos.h"
+#include "../Global/LogisticChaos.hpp"
+#include "../Global/TentChaos.hpp"
 
 #endif // GLOBAL_H

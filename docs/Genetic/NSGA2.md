@@ -111,6 +111,16 @@ struct OptimT::NSGA2::infoUnit
 ```
 This struct is used to store nondomainance sorting-related informations in select operation. A pointer to this struct, `infoUnit*`, has access to every information to a gene. 
 
+There's several sorting by according to different attribute, thus a vector of `infoUnit*` is widely used when sorting.
+
+1. `isSelected` marks whether a gene is selected to form the next generation.
+2. `sortIdx` marks which objective sorting is according to.
+3. `domainedByNum` means the number of genes in previous that strong domainates this gene. **Value 0 means it's a member of the pareto front.**
+4. `iterator` is a `std::list<Gene>::iterator` to a gene.
+5. `congestion` stores the partial congestion in each objective. That's why it has the same type with fitness(`std::array<double,ObjNum>`) but it's not a fitness value. 
+   
+   **Mention that when composing congestion, the first element of `congestion` is occupied to store the total congestion and other elements aren't used.**
+
 <br>
 
 ## Member details
@@ -175,23 +185,59 @@ To some extent, it's like **Minkowski distance**.
 
 
 ### `bestFitness() const`
-Implementation for pure virtual function defined in [GABase](./GABase.md). It's defined to provide a `Fitness_t` to be recorded. This function will compose the best value of each objective.
+Implementation for pure virtual function defined in [GABase](./GABase.md). It's defined to provide a `Fitness_t` to be recorded. This function will compose the best value of each objective. 
+
+**Usually such a fitness value can domainate the whole population, however corresponding solution rarely exists.**
+
+If you aren't satisfied to such recording method, inherit `NSGA2` and do it yourself.
 
 ### `paretoFront(std::vector<Fitness_t> & front)`
-Get pareto front consisted of a vector of `Fitness_t`.
+Get Pareto front consisted of a vector of `Fitness_t`.
 
 ### `paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front)`
-Get pareto front consisted of a vector of `<std::pair<const Var_t*,const Fitness_t*>`. It provided both solution(`Var_t`) and objective value(`Fitness_t`).
+Get Pareto front consists of a vector of `std::pair<const Var_t*,const Fitness_t*>`. It provides both solution(`Var_t`) and objective value(`Fitness_t`).
 
 ### `pfGenes() const`
 Returns a const reference to member [`_pfGenes`](#_pfgenes).
 
 ### `customOptWhenInitialization()`
+Reimplementation to this function defined in [GABase](./GABase.md). 
+
+It clears `_pfGenes`, tells it to reserve space for twice the size of population size. Besides, it assigns [`prevFrontSize`](#prevfrontsize) to -1 and congestion composing function to [`default_ccFun_liner(const Fitness_t * f,const ArgsType*)`](#default_ccfun_linerconst-fitness_t--fconst-argstype).
+
 ### `isStrongDomain(const Fitness_t * A,const Fitness_t * B)`
+Returns whether A strong domainates B.
+
 ### `compareFun_DomainedBy(const infoUnit * A,const infoUnit * B)`
+A comparison function to sort according to `infoUnit::domainedByNum` in an acsending order. This sorting step will seperate the whole population into several pareto layers.
+
 ### `compareFun_Fitness(const infoUnit * A,const infoUnit * B)`
+A comparison function to sort according to the `infoUnit::sortIdx`-th objective value. 
+
+It doesn't matter whether such sorting is in an acsending order or a decsending order.
+
 ### `compareFun_Congestion(const infoUnit * A,const infoUnit * B)`
+A comparison function to sort according to total congestion value in descending order. If some genes in a pareto layer will be selected and others in this layer will be eliminated, genes with greater congestion value has greater chance to be selected.
+
 ### `select()`
+This is the core of NSGA2. It applies non-dominated sorting in following steps:
+1. Make a `std::vector` of `infoUnit` named `pop` that each element corresponds to an element in population(`std::list<Gene>`).
+2. Make a `std::vector` of `infoUnit*` named `sortSpace` that each pointer element points to an element in `pop`.
+3. Calculate `infoUnit::domainedByNum` for `pop`.
+4. Sort elements in `sortSpace` according to `infoUnit::domainedByNum`.
+5. Make a `std::list<std::vector<infoUnit *>>` named `paretoLayers` and insert each element in `sortSpace`. The whole population is devided into several layers. For better performance, each `std::vector<infoUnit *>` will reserve space for the whole population. Here we use vector since sorting might happen in a single layer.
+6. Make a `std::queue` of `infoUnit *` named `selected` to store all selected genes. Insert pareto front and each layers into `selected` until a layer can't be completedly inserted(I name this layer *K*). Congestion are used to select several genes in *K*.
+7. Sort the whole population according to every objective values to calculate partial congestion on each objective. Each objective will be sorted once.
+8. Compose partial congestion into total congestion for layer *K*.
+9. Sort layer *K* according to parital congestion.
+10. Inserts each element in *K* until size of `selected` equals to user assigned population size(`GABase::_option.populationSize`).
+11. Mark every selected genes and erase unmarked genes from population.
+
+Every sorting steps use `std::sort` and different comparision function are used to sort according to different attributes of a gene.
+
+Really complicated, isn't it?
+
 ### `mutate()`
+Implementation of pure virtual function defined in [GABase](./GABase.md). It's slightly different from mutation operation in [SOGA](./SOGA.md). 
 
-
+If template parameter [`PFOption`](#pfoption) is assigned to `PARETO_FRONT_DONT_MUTATE`(`true`), the pareto front (elements in [`_pfGenes`](#_pfgenes)) won't mutate. Otherwise every genes in population have probability to mutate.
