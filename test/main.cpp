@@ -19,7 +19,6 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "testNsga2.h"
 
 #include "def_TestingGenetic.h"
 
@@ -29,13 +28,21 @@ using namespace std;
 
 OptimT_MAKE_GLOBAL
 
+void tryOMP();
+
 int main()
 {
-    auto t=OptimT::TentChaosI<8>::max();
-    std::cout<<t<<std::endl;
-    system("pause");
-
-    testNSGA2_ZDT3();
+    testTSP(1000);
     system("pause");
     return 0;
+}
+#include <string>
+#include <iomanip>
+void tryOMP() {
+    const char str[]="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+#pragma omp parallel for
+    for(uint32_t i=0;i<sizeof(str)-1;i++) {
+        cout<<char(str[i]);
+    }
+
 }

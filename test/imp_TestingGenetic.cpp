@@ -19,6 +19,7 @@ This file is part of OptimTemplates.
 
 #include "def_TestingGenetic.h"
 #define OptimT_NO_OUTPUT
+#define OptimT_DO_PARALLELIZE
 #include <OptimTemplates/Genetic>
 #include <iostream>
 #include <Eigen/Dense>
@@ -219,6 +220,7 @@ void testTSP(const uint32_t PointNum) {
             i=OtGlobal::randD();
         }
     }
+    /*
     cout<<"Generated random points :"<<endl;
     for(const auto & i : points) {
         cout<<'(';
@@ -227,6 +229,7 @@ void testTSP(const uint32_t PointNum) {
         }
         cout<<")"<<endl;
     }
+    */
     typedef pair<double,uint32_t> permUnit;
 
     //typedef vector<permUnit> permulation;
@@ -318,12 +321,16 @@ void testTSP(const uint32_t PointNum) {
 
     GAOption opt;
     opt.maxGenerations=30*PointNum;
+    opt.maxFailTimes=-1;
     algo.initialize(initializeFun,calculateFun,crossoverFun,mutateFun,nullptr,
                     opt,args);
 
     cout<<"run!"<<endl;
+    std::clock_t c=std::clock();
     algo.run();
-    cout<<"finished with "<<algo.generation()<<" generations\n";
+    c=std::clock()-c;
+    cout<<"finished with "<<algo.generation()<<" generations and "
+       <<double(c)/CLOCKS_PER_SEC<<" s\n";
     cout<<"result fitness = "<<algo.bestFitness()<<endl;
 }
 

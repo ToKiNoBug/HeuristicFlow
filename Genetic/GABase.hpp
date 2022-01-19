@@ -202,6 +202,20 @@ protected:
     virtual void customOptWhenInitialization() {}
 
     virtual void calculateAll() {
+#ifdef OptimT_DO_PARALLELIZE
+        std::vector<Gene*> tasks;
+        tasks.reserve(_population.size());
+        for(Gene & i : _population) {
+            if(i._isCalculated) {
+                continue;
+            }
+            tasks.emplace_back(&i);
+        }
+#pragma omp parallel for
+        for(uint32_t i=0;i<tasks.size();i++) {
+            _fitnessFun(&tasks[i]->self,&_args,&tasks[i]->_Fitness);
+        }
+#else
         for(Gene & i : _population) {
             if(i._isCalculated) {
                 continue;
@@ -209,6 +223,7 @@ protected:
             _fitnessFun(&i.self,&_args,&i._Fitness);
             i._isCalculated=true;
         }
+#endif
     }
 
     virtual void select()=0;
@@ -433,6 +448,20 @@ protected:
     virtual void customOptWhenInitialization() {}
 
     virtual void calculateAll() {
+#ifdef OptimT_DO_PARALLELIZE
+        std::vector<Gene*> tasks;
+        tasks.reserve(_population.size());
+        for(Gene & i : _population) {
+            if(i._isCalculated) {
+                continue;
+            }
+            tasks.emplace_back(&i);
+        }
+#pragma omp parallel for
+        for(uint32_t i=0;i<tasks.size();i++) {
+            _fitnessFun(&tasks[i]->self,&_args,&tasks[i]->_Fitness);
+        }
+#else
         for(Gene & i : _population) {
             if(i._isCalculated) {
                 continue;
@@ -440,6 +469,7 @@ protected:
             _fitnessFun(&i.self,&_args,&i._Fitness);
             i._isCalculated=true;
         }
+#endif
     }
 
     virtual void select()=0;

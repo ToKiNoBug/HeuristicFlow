@@ -13,3 +13,8 @@ add_executable(OptimT_Test
     imp_TestingMatrix.cpp
     imp_TestingGenetic.cpp
     main.cpp)
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(OptimT_Test PUBLIC OpenMP::OpenMP_CXX)
+endif()

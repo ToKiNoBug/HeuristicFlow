@@ -5,6 +5,7 @@
 #include <random>
 #include <ctime>
 #include "./LogisticChaos.hpp"
+
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
 #endif
