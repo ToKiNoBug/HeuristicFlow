@@ -4,10 +4,12 @@
 
 #include <random>
 #include <ctime>
+#include <thread>
 #include "./LogisticChaos.hpp"
 
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
+#include <thread>
 #endif
 
 namespace OptimT
@@ -21,6 +23,7 @@ namespace OptimT
 extern std::mt19937 global_mt19937;
 
 extern LogisticChaos global_logistic;
+
 ///Infinet value for float
 const float pinfF=1.0f/0.0f;
 
@@ -37,6 +40,10 @@ const double ninfD=-pinfD;
 class OtGlobal
 {
 public:
+    static uint32_t threadNum() {
+        return concurrency;
+    }
+
     /// [Deprecated]
     ///uniform random number in range [0,1)
     static double randD() {
@@ -58,6 +65,7 @@ public:
             std::swap(swapper[0],swapper[3]);
             std::swap(swapper[1],swapper[2]);
             isFirstCalled=false;
+
             return seed_^seed;
         }
         else {
@@ -66,6 +74,7 @@ public:
     }
 private:
     OtGlobal();
+    static uint32_t concurrency;
 };
 
 ///uniform random number in range [0,1)
@@ -86,7 +95,8 @@ inline double logisticD() {
 
 #define OptimT_MAKE_GLOBAL \
 std::mt19937 OptimT::global_mt19937(OptimT::OtGlobal::makeRandSeed()); \
-OptimT::LogisticChaos OptimT::global_logistic(randD());
+OptimT::LogisticChaos OptimT::global_logistic(randD()); \
+uint32_t OptimT::OtGlobal::concurrency=std::thread::hardware_concurrency();
 
 }
 
