@@ -18,9 +18,6 @@ This file is part of OptimTemplates.
 */
 
 #include "def_TestingGenetic.h"
-#define OptimT_NO_OUTPUT
-#define OptimT_DO_PARALLELIZE
-#include <OptimTemplates/Genetic>
 #include <iostream>
 #include <Eigen/Dense>
 #include <ctime>
@@ -542,8 +539,8 @@ void testNSGA2_Binh_and_Korn() {
     };
 
     GAOption opt;
-    opt.maxGenerations=2000;
-    opt.populationSize=300;
+    opt.maxGenerations=10000;
+    opt.populationSize=200;
     opt.maxFailTimes=-1;
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
@@ -556,7 +553,9 @@ void testNSGA2_Binh_and_Korn() {
     algo.run();
     t=std::clock()-t;
     cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
-       <<"seconds and "<<algo.generation()<<"generations"<<endl;
+       <<" seconds and "<<algo.generation()<<"generations"<<endl;
+
+    /*
     std::vector<std::array<double,2>> paretoFront;
     algo.paretoFront(paretoFront);
     cout<<"paretoFront=[";
@@ -564,6 +563,8 @@ void testNSGA2_Binh_and_Korn() {
         cout<<i[0]<<" , "<<i[1]<<";\n";
     }
     cout<<"];"<<endl;
+    */
+
     /*
     cout<<"\n\n\n population=[";
     for(const auto & i : algo.population()) {

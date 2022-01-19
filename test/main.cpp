@@ -19,7 +19,6 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-
 #include "def_TestingGenetic.h"
 
 #include <unordered_set>
@@ -32,7 +31,7 @@ void tryOMP();
 
 int main()
 {
-    testTSP(1000);
+    testNSGA2_Binh_and_Korn();
     system("pause");
     return 0;
 }

@@ -31,6 +31,12 @@ enum PFOption : unsigned char {
     PARETO_FRONT_CAN_MUTATE=false
 };
 
+enum CompareOption : int64_t {
+    CompareByCongestion=-1,
+    CompareByDominantedBy=-2
+};
+
+
 ///NSGA2 MOGA solver
 template<typename Var_t,size_t ObjNum,
          FitnessOption isGreaterBetter,
@@ -142,7 +148,7 @@ public:
     {
     public:
         bool isSelected;
-        size_t sortIdx;
+        //size_t sortIdx;
         //uint32_t index;
         ///Genes in population that strong domain this gene
         size_t domainedByNum;
@@ -183,28 +189,28 @@ protected:
         return true;
     } //isStrongDomain
 
-    ///compare by  paretoLayers
-    static bool compareFun_DomainedBy(const infoUnit * A,const infoUnit * B) {
+    template<int64_t objIdx>
+    static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {
         if(A==B) return false;
-        return A->domainedByNum<B->domainedByNum;
+        ///compare by congestion
+        if(objIdx==CompareByCongestion) {
+            return A->congestion[0]>B->congestion[0];
+        }
+        ///compare by paretoLayers
+        if(objIdx==CompareByDominantedBy) {
+            return A->domainedByNum<B->domainedByNum;
+        }
+        ///compare by fitness on single objective
+        return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
     }
 
-    ///compare by fitness on single object
-    static bool compareFun_Fitness(const infoUnit * A,const infoUnit * B) {
-        if(A==B) return false;
-        //if(!isGreaterBetter)
-            return A->iterator->_Fitness[A->sortIdx]<B->iterator->_Fitness[B->sortIdx];
-        //else
-            //return A->iterator->_Fitness[A->sortIdx]>B->iterator->_Fitness[B->sortIdx];
-    }
-
-    ///compare by congestion
-    static bool compareFun_Congestion(const infoUnit * A,const infoUnit * B) {
-        return A->congestion[0]>B->congestion[0];
-    }
 
     ///fast nondominated sorting
     virtual void select() {
+        using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
+        static const std::array<cmpFun_t,ObjNum> fitnessCmpFuns
+                =expand<0,ObjNum-1>();
+
         const size_t popSizeBefore=Base_t::_population.size();
         std::vector<infoUnit> pop;
         pop.clear();pop.reserve(popSizeBefore);
@@ -212,7 +218,6 @@ protected:
         for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
             pop.emplace_back();
             pop.back().isSelected=false;
-            pop.back().sortIdx=0;
             //pop.back().index=pop.size()-1;
             //pop.back().domainedByNum=0;
             pop.back().iterator=it;
@@ -225,6 +230,24 @@ protected:
         }
 
         //calculate domainedByNum
+#ifdef OptimT_NSGA2_DO_PARALLELIZE
+        static const size_t thN=OtGlobal::threadNum();
+#pragma omp parallel for
+        for(size_t begIdx=0;begIdx<thN;begIdx++) {
+
+            for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
+                pop[ed].domainedByNum=0;
+                for(size_t er=0;er<popSizeBefore;er++) {
+                    if(er==ed)
+                        continue;
+                    pop[ed].domainedByNum+=
+                            isStrongDomain(&(pop[er].iterator->_Fitness),
+                                           &(pop[ed].iterator->_Fitness));
+                }
+            }
+        }
+
+#else
         for(size_t ed=0;ed<popSizeBefore;ed++) {
             pop[ed].domainedByNum=0;
             for(size_t er=0;er<popSizeBefore;er++) {
@@ -235,9 +258,11 @@ protected:
                                        &(pop[ed].iterator->_Fitness));
             }
         }
+#endif
+
         //sort by paretoLayers
         std::sort(sortSpace.begin(),sortSpace.end(),
-                compareFun_DomainedBy);
+                universialCompareFun<CompareByDominantedBy>);
 
         std::list<std::vector<infoUnit *>> paretoLayers;
         //seperate them into layers
@@ -293,24 +318,29 @@ protected:
 
         //calculate congestion
         if(needCongestion) {
+#ifdef OptimT_NSGA2_DO_PARALLELIZE
+#pragma omp parallel for
+#endif
             for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
-                for(infoUnit & i : pop) {
-                    i.sortIdx=objIdx;
-                }
-                std::sort(sortSpace.begin(),sortSpace.end(),compareFun_Fitness);
+                //if don't parallelize,  cursortSpace is only a reference to sortSpace;
+                //otherwise it's copied to enable sorting concurrently
+                std::vector<infoUnit*>
+#ifndef OptimT_DO_PARALLELIZE
+                        &
+#endif
+                        cursortSpace=sortSpace;
 
-                sortSpace.front()->congestion[objIdx]=OptimT::pinfD;
-                sortSpace.back()->congestion[objIdx]=OptimT::pinfD;
+                std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
+
+                cursortSpace.front()->congestion[objIdx]=OptimT::pinfD;
+                cursortSpace.back()->congestion[objIdx]=OptimT::pinfD;
 
                 //calculate congestion on single object
-
-
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
 
-                    sortSpace[idx]->congestion[objIdx]=std::abs(
-                                sortSpace[idx-1]->iterator->_Fitness[objIdx]
-                               -sortSpace[idx+1]->iterator->_Fitness[objIdx]
-
+                    cursortSpace[idx]->congestion[objIdx]=std::abs(
+                                cursortSpace[idx-1]->iterator->_Fitness[objIdx]
+                               -cursortSpace[idx+1]->iterator->_Fitness[objIdx]
                                 );
                 }
             } // end sort on objIdx
@@ -318,14 +348,10 @@ protected:
             for(infoUnit & i : pop) {
                 //store final congestion at the first congestion
                 i.congestion[0]=_ccFun(&i.congestion,&Base_t::args());
-                /*
-                for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
-                    i.congestion[0]+=i.congestion[objIdx];
-                }*/
             }
 
             std::sort(paretoLayers.front().begin(),paretoLayers.front().end(),
-                      compareFun_Congestion);
+                      universialCompareFun<CompareByCongestion>);
             size_t idx=0;
             while(selected.size()<Base_t::_option.populationSize) {
                 selected.emplace(paretoLayers.front()[idx]);
@@ -362,11 +388,47 @@ protected:
         }
     }
 
+private:
+    //some template metaprogramming to make a function pointer array as below:
+    //universialCompareFun<0>,universialCompareFun<1>,...,universialCompareFun<ObjNum-1>
+    using fun_t = bool(*)(const infoUnit * ,const infoUnit * );
+    template<int64_t cur,int64_t max>
+    struct expandStruct
+    {
+        static void expand(fun_t * dst) {
+            *dst=universialCompareFun<cur>;
+            expandStruct<cur+1,max>::expand(dst+1);
+        }
+    };
+
+    template<int64_t max>
+    struct expandStruct<max,max>
+    {
+        static void expand(fun_t * dst) {
+            *dst=universialCompareFun<max>;
+        }
+    };
+
+    template<int64_t beg,int64_t end>
+    std::array<fun_t,end-beg+1> expand() {
+        std::array<fun_t,end-beg+1> funs;
+        expandStruct<beg,end>::expand(funs.data());
+        return funs;
+    }
+
 
 #ifndef OptimT_NO_STATICASSERT
     static_assert(std::integral_constant<bool,(ObjNum>1)>::value,
     "OptimTemplates : You used less than 2 object functions in NSGA2");
 #endif
+
+#ifdef OptimT_NSGA2_DO_PARALLELIZE
+#ifndef OptimT_DO_PARALLELIZE
+#error You allowed parallelize in NSGA2 but not on global.  \
+    Macro OptimT_NSGA2_DO_PARALLELIZE can only be defined when OptimT_DO_PARALLELIZE is defined.
+#endif
+#endif
+
 };
 
 }

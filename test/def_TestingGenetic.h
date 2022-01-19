@@ -20,9 +20,15 @@ This file is part of OptimTemplates.
 #ifndef DEF_TESTINGGENETIC_H
 #define DEF_TESTINGGENETIC_H
 
+
+#define OptimT_NO_OUTPUT
+#define OptimT_DO_PARALLELIZE
+#define OptimT_NSGA2_DO_PARALLELIZE
+#include <OptimTemplates/Genetic>
+
 void testSingleNumber();
 
-#include <OptimTemplates/Global>
+
 ///Using libEigen with OptimTemplates
 void testWithEigenLib();
 
