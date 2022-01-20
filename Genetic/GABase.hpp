@@ -27,7 +27,6 @@ This file is part of OptimTemplates.
 #include <cmath>
 #include <random>
 #include <algorithm>
-#include <stack>
 #ifndef OptimT_NO_STATICASSERT
 #include <type_traits>
 #endif
@@ -204,23 +203,21 @@ protected:
     virtual void calculateAll() {
 #ifdef OptimT_DO_PARALLELIZE
         static const uint32_t thN=OtGlobal::threadNum();
-        std::vector<std::stack<Gene*>> tasks;
-        tasks.resize(thN);
-        uint32_t idx=0;
+        std::vector<Gene*> tasks;
+        tasks.resize(0);
+        tasks.reserve(_population.size());
         for(Gene & i : _population) {
             if(i._isCalculated) {
                 continue;
             }
-            tasks[idx%thN].emplace(&i);
-            idx++;
+            tasks.emplace_back(&i);
         }
 #pragma omp parallel for
-        for(uint32_t i=0;i<thN;i++) {
-            while(!tasks[i].empty()) {
-                Gene * ptr=tasks[i].top();
+        for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
+            for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
+                Gene * ptr=tasks[i];
                 _fitnessFun(&ptr->self,&_args,&ptr->_Fitness);
                 ptr->_isCalculated=true;
-                tasks[i].pop();
             }
         }
 #else
@@ -458,23 +455,21 @@ protected:
     virtual void calculateAll() {
 #ifdef OptimT_DO_PARALLELIZE
         static const uint32_t thN=OtGlobal::threadNum();
-        std::vector<std::stack<Gene*>> tasks;
-        tasks.resize(thN);
-        uint32_t idx=0;
+        std::vector<Gene*> tasks;
+        tasks.resize(0);
+        tasks.reserve(_population.size());
         for(Gene & i : _population) {
             if(i._isCalculated) {
                 continue;
             }
-            tasks[idx%thN].emplace(&i);
-            idx++;
+            tasks.emplace_back(&i);
         }
 #pragma omp parallel for
-        for(uint32_t i=0;i<thN;i++) {
-            while(!tasks[i].empty()) {
-                Gene * ptr=tasks[i].top();
+        for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
+            for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
+                Gene * ptr=tasks[i];
                 _fitnessFun(&ptr->self,&_args,&ptr->_Fitness);
                 ptr->_isCalculated=true;
-                tasks[i].pop();
             }
         }
 #else

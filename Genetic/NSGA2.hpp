@@ -158,6 +158,7 @@ public:
 
 protected:
     size_t prevFrontSize;
+    size_t prevPFCheckSum;
     std::unordered_set<const Gene*> _pfGenes;
     congestComposeFun _ccFun;
 
@@ -283,15 +284,36 @@ protected:
 
         {
             const size_t curFrontSize=paretoLayers.front().size();
-            if(prevFrontSize!=curFrontSize) {
-                Base_t::_failTimes=0;
-                prevFrontSize=curFrontSize;
-            } else {
-                Base_t::_failTimes++;
-            }
+
             _pfGenes.clear();
             for(const auto i :paretoLayers.front()) {
                 _pfGenes.emplace(&*(i->iterator));
+            }
+
+            if(prevFrontSize!=curFrontSize) {
+                Base_t::_failTimes=0;
+                prevFrontSize=curFrontSize;
+            }
+            else {
+                std::vector<const Gene*> pfvec;
+                pfvec.reserve(_pfGenes.size());
+                for(auto i : _pfGenes) {
+                    pfvec.emplace_back(i);
+                }
+                std::sort(pfvec.begin(),pfvec.end());
+
+                static const auto hashFun=_pfGenes.hash_function();
+                std::size_t checkSum=hashFun(pfvec.front());
+                for(size_t i=1;i<pfvec.size();i++) {
+                    checkSum^=hashFun(pfvec[i]);
+                }
+
+                if(prevPFCheckSum==checkSum) {
+                    Base_t::_failTimes++;
+                } else {
+                    Base_t::_failTimes=0;
+                    prevPFCheckSum=checkSum;
+                }
             }
         }
 

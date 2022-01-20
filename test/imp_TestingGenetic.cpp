@@ -541,7 +541,7 @@ void testNSGA2_Binh_and_Korn() {
     GAOption opt;
     opt.maxGenerations=10000;
     opt.populationSize=200;
-    opt.maxFailTimes=-1;
+    opt.maxFailTimes=200;
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
 
