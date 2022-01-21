@@ -70,6 +70,7 @@ protected:
         Point_t * curGBest=Base_t::_population.data();
         for(Particle_t & i : Base_t::_population) {
             if(Base_t::_generation<=1) {
+                this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?(ninfD):(pinfD);
                 i.pBest=i;
             }
             else {
@@ -77,19 +78,19 @@ protected:
                     i.pBest=i;
                 }
             }
-            if(isBetterThan(curGBest->fitness,i.pBest.fitness)) {
+
+            if(isBetterThan(i.pBest.fitness,curGBest->fitness)) {
                 curGBest=&i.pBest;
             }
         }
 
-        if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
-            Base_t::_failTimes=0;
-            Base_t::gBest=*curGBest;
-        }
-        else {
-            Base_t::_failTimes++;
-        }
-
+            if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
+                Base_t::_failTimes=0;
+                Base_t::gBest=*curGBest;
+            }
+            else {
+                Base_t::_failTimes++;
+            }
     }
 
     virtual void updatePopulation() {
@@ -106,6 +107,7 @@ protected:
                 i.position[idx]=std::max(i.position[idx],Base_t::_posMin[idx]);
                 i.position[idx]=std::min(i.position[idx],Base_t::_posMax[idx]);
             }
+            i.setUncalculated();
         }
     }
 
@@ -159,6 +161,7 @@ protected:
         Point_t * curGBest=Base_t::_population.data();
         for(Particle_t & i : Base_t::_population) {
             if(Base_t::_generation<=1) {
+                this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?(ninfD):(pinfD);
                 i.pBest=i;
             }
             else {
@@ -166,19 +169,19 @@ protected:
                     i.pBest=i;
                 }
             }
-            if(isBetterThan(curGBest->fitness,i.pBest.fitness)) {
+
+            if(isBetterThan(i.pBest.fitness,curGBest->fitness)) {
                 curGBest=&i.pBest;
             }
         }
 
-        if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
-            Base_t::_failTimes=0;
-            Base_t::gBest=*curGBest;
-        }
-        else {
-            Base_t::_failTimes++;
-        }
-
+            if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
+                Base_t::_failTimes=0;
+                Base_t::gBest=*curGBest;
+            }
+            else {
+                Base_t::_failTimes++;
+            }
     }
 
     virtual void updatePopulation() {
@@ -194,6 +197,8 @@ protected:
 
             i.position=i.position.min(Base_t::_posMax);
             i.position=i.position.max(Base_t::_posMin);
+            
+            i.setUncalculated();
         }
     }
 

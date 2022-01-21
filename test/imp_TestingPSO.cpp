@@ -59,6 +59,10 @@ void testRastriginFun() {
     using Args_t = solver_t::Args_t;
 
     PSOOption opt;
+    opt.maxGeneration=1000;
+    opt.maxFailTimes=-1;
+
+
     solver_t solver;
 
     solver_t::iFun_t iFun=[](Var_t * x,Var_t * v,
@@ -73,11 +77,13 @@ void testRastriginFun() {
     solver_t::fFun_t fFun=[](const Var_t *x,const Args_t *,double * fitness) {
         *fitness=10*N;
         for(auto i : *x) {
-            *fitness+=i*i-10*std::cos(M_2_PI*2*i);
+            //double i=j-1;
+            *fitness+=i*i-10*std::cos(M_2_PI*i);
         }
+        //cout<<"fFun"<<endl;
     };
 
-    solver.setPVRange(-5.12,5.12,0.512);
+    solver.setPVRange(-5.12,5.12,1);
 
     solver.initialize(iFun,fFun,solver_t::default_ooFun,opt);
 
