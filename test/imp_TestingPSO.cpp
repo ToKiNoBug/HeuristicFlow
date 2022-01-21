@@ -1,6 +1,8 @@
 #include "def_TestingPSO.h"
+#include <cmath>
 using namespace OptimT;
 using namespace std;
+
 void testPSOBase() {
     PSOBase<std::array<double,10>,
             double,
@@ -43,5 +45,55 @@ void testPSOBase() {
     /// 'PSOBase<std::array<double, 10>, double, RecordOption::RECORD_FITNESS> *'
     /// from
     /// 'PSO<std::array<double, 10>, 10, StdArray, FITNESS_GREATER_BETTER, DONT_RECORD_FITNESS> *'
+
+}
+
+void testRastriginFun() {
+    static const size_t N=10;
+    using Var_t = std::array<double,N>;
+    using solver_t = PSO<std::array<double,N>,
+    N,StdArray,
+    FITNESS_LESS_BETTER,
+    RECORD_FITNESS>;
+
+    using Args_t = solver_t::Args_t;
+
+    PSOOption opt;
+    solver_t solver;
+
+    solver_t::iFun_t iFun=[](Var_t * x,Var_t * v,
+            const Var_t * xMin,const Var_t * xMax,const Var_t * vMax,
+            const Args_t *) {
+        for(size_t i=0;i<N;i++) {
+            x->at(i)=randD(xMin->at(i),xMax->at(i));
+            v->at(i)=0;
+        }
+    };
+
+    solver_t::fFun_t fFun=[](const Var_t *x,const Args_t *,double * fitness) {
+        *fitness=10*N;
+        for(auto i : *x) {
+            *fitness+=i*i-10*std::cos(M_2_PI*2*i);
+        }
+    };
+
+    solver.setPVRange(-5.12,5.12,0.512);
+
+    solver.initialize(iFun,fFun,solver_t::default_ooFun,opt);
+
+    clock_t time=clock();
+    solver.run();
+    time=clock()-time;
+
+    cout<<"result fitness = "<<solver.bestFitness()<<endl;
+
+    const Var_t & result=solver.globalBest().position;
+
+    cout<<"result = [";
+    for(auto i : result) {
+        cout<<i<<" , ";
+    }
+    cout<<"];"<<endl;
+
 
 }

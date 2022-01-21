@@ -5,4 +5,6 @@
 
 void testPSOBase();
 
+void testRastriginFun();
+
 #endif // DEF_TESTINGPSO_H

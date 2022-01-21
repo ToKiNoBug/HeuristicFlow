@@ -29,7 +29,7 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    testPSOBase();
+    testRastriginFun();
     system("pause");
     return 0;
 }
