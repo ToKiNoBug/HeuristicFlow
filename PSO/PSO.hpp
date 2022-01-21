@@ -25,8 +25,10 @@ This file is part of OptimTemplates.
 #include <vector>
 #include <tuple>
 
-#ifdef EIGEN_CORE_H
-#define OptimT_USER_USE_EIGEN
+#ifndef EIGEN_CORE_H
+#ifdef OptimT_PSO_USE_EIGEN
+#error You must include Eigen before you define OptimT_PSO_USE_EIGEN! Include Eigen before OptimT.
+#endif
 #endif
 
 namespace OptimT {
@@ -108,6 +110,95 @@ protected:
     }
 
 };
+
+template<size_t Dim,
+        FitnessOption FitnessOpt,
+         RecordOption RecordOpt,
+         class ...Args>
+using PSO_std = PSO<std::array<double,Dim>,Dim,StdArray,FitnessOpt,RecordOpt,Args...>;
+
+
+#ifdef OptimT_PSO_USE_EIGEN
+template<size_t Dim,
+        FitnessOption FitnessOpt,
+         RecordOption RecordOpt,
+         class ...Args>
+using PSO_Eigen = PSO<Eigen::Array<double,Dim,1>,Dim,EigenArray,FitnessOpt,RecordOpt,Args...>;
+
+template<
+         size_t Dim,
+         FitnessOption FitnessOpt,
+         RecordOption RecordOpt,
+         class ...Args>
+class PSO<Eigen::Array<double,Dim,1>,Dim,EigenArray,FitnessOpt,RecordOpt,Args...>
+{
+public:
+    using Base_t = PSOBase<Eigen::Array<double,Dim,1>,double,RecordOpt,Args...>;
+    OPTIMT_MAKE_PSOBASE_TYPES
+
+    virtual void setPVRange(double pMin,double pMax,double vMax) {
+        this->_posMin.setConstant(pMin);
+        this->_posMax.setConstant(pMax);
+        this->_velocityMax.setConstant(vMax);
+    }
+
+    virtual double bestFitness() const {
+        return Base_t::gBest.fitness;
+    }
+
+protected:
+    static bool isBetterThan(double a,double b) {
+        if(FitnessOpt==FitnessOption::FITNESS_GREATER_BETTER) {
+            return a>b;
+        } else {
+            return a<b;
+        }
+    }
+
+    virtual void updatePGBest() {
+        Point_t * curGBest=Base_t::_population.data();
+        for(Particle_t & i : Base_t::_population) {
+            if(Base_t::_generation<=1) {
+                i.pBest=i;
+            }
+            else {
+                if(isBetterThan(i.fitness,i.pBest.fitness)) {
+                    i.pBest=i;
+                }
+            }
+            if(isBetterThan(curGBest->fitness,i.pBest.fitness)) {
+                curGBest=&i.pBest;
+            }
+        }
+
+        if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
+            Base_t::_failTimes=0;
+            Base_t::gBest=*curGBest;
+        }
+        else {
+            Base_t::_failTimes++;
+        }
+
+    }
+
+    virtual void updatePopulation() {
+        for(Particle_t & i : Base_t::_population) {
+            i.velocity=this->_option.interiaFactor*i.velocity
+                        +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
+                        +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
+
+            i.velocity=i.velocity.min(Base_t::_velocityMax);
+            i.velocity=i.velocity.max(-Base_t::_velocityMax);
+
+            i.position+=i.velocity;
+
+            i.position=i.position.min(Base_t::_posMax);
+            i.position=i.position.max(Base_t::_posMin);
+        }
+    }
+
+};
+#endif // OptimT_PSO_USE_EIGEN
 
 }
 
