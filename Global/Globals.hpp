@@ -17,8 +17,22 @@ namespace OptimT
 ///macro function for square
 #define OT_square(x) (x)*(x)
 
-///global random device for OptimT
-//extern std::random_device global_random_device;
+///whether to record trainning curve of not
+enum RecordOption : uint8_t {
+    RECORD_FITNESS=true,
+    DONT_RECORD_FITNESS=false
+};
+///optimization direction
+enum FitnessOption : uint8_t {
+    FITNESS_LESS_BETTER=false,
+    FITNESS_GREATER_BETTER=true,
+};
+
+enum ConstraintOption : uint8_t {
+    NONCONSTRAINT,
+    IS_CONSTRAINT
+};
+
 ///global random device(mt19937) for OptimT
 extern std::mt19937 global_mt19937;
 

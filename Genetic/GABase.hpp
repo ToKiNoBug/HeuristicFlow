@@ -39,17 +39,6 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
-///whether to record trainning curve of not
-enum RecordOption : uint8_t {
-    RECORD_FITNESS=true,
-    DONT_RECORD_FITNESS=false
-};
-///optimization direction
-enum FitnessOption : uint8_t {
-    FITNESS_LESS_BETTER=false,
-    FITNESS_GREATER_BETTER=true,
-};
-
 ///Genetic algorithm base class
 template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args>
 class GABase {
