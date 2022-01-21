@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GLOBAL_INCLUDE
-#define GLOBAL_INCLUDE
+#ifndef OptimT_GLOBAL_INCLUDE
+#define OptimT_GLOBAL_INCLUDE
 
 #include "../Global/Globals.hpp"
 #include "../Global/LogisticChaos.hpp"

@@ -17,10 +17,11 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef OptimT_SIMPLEMATRIX_INCLUDE
-#define OptimT_SIMPLEMATRIX_INCLUDE
+#ifndef OptimT_PSO_INCLUDE
+#define OptimT_PSO_INCLUDE
 
-#include "../SimpleMatrix/MatrixDynamicSize.hpp"
-#include "../SimpleMatrix/MatrixFixedSize.hpp"
+#include "../PSO/PSOOption.hpp"
+#include "../PSO/PSOBase.hpp"
+#include "../PSO/PSO.hpp"
 
-#endif // OptimT_SIMPLEMATRIX_
+#endif // OptimT_PSO_INCLUDE

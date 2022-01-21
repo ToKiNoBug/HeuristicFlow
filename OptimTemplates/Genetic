@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef Genetic_INCLUDE
-#define Genetic_INCLUDE
+#ifndef OptimT_Genetic_INCLUDE
+#define OptimT_Genetic_INCLUDE
 
 #include "../Genetic/GAOption.hpp"
 #include "../Genetic/GABase.hpp"

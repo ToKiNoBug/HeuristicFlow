@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef PSOBASE_HPP
 #define PSOBASE_HPP
 
@@ -210,13 +229,68 @@ protected:
 
 };
 
+#define OPTIMT_MAKE_PSOBASE_TYPES \
+using Particle_t = typename Base_t::Particle; \
+using iFun_t = typename Base_t::iFun_t; \
+using fFun_t = typename Base_t::fFun_t; \
+using ooFun_t = typename Base_t::ooFun_t; \
+using Args_t = typename Base_t::Args_t;
 
 
 template<class Var_t,class Fitness_t,class...Args>
 class PSOBase<Var_t,Fitness_t,RECORD_FITNESS,Args...>
         : public PSOBase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>
 {
+public:
+    using Base_t = PSOBase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>;
+    OPTIMT_MAKE_PSOBASE_TYPES
 
+    const std::vector<Fitness_t> & record() const {
+        return _record;
+    }
+
+    virtual Fitness_t bestFitness() const=0;
+
+    virtual void run() {
+        Base_t::_generation=0;
+        Base_t::_failTimes=0;
+        _record.clear();
+        _record.reserve(Base_t::_option.maxGeneration+1);
+        while(true) {
+            Base_t::_generation++;
+            Base_t::calculateAll();
+            Base_t::updatePGBest();
+            _record.emplace_back(bestFitness());
+            if(Base_t::_generation>Base_t::_option.maxGeneration) {
+#ifndef OptimT_NO_OUTPUT
+                    std::cout<<"Terminated by max generation limit"<<std::endl;
+#endif
+                    break;
+                }
+                if(Base_t::_option.maxFailTimes>0
+                        &&Base_t::_failTimes>Base_t::_option.maxFailTimes) {
+#ifndef OptimT_NO_OUTPUT
+                    std::cout<<"Terminated by max failTime limit"<<std::endl;
+#endif
+                    break;
+                }
+#ifndef OptimT_NO_OUTPUT
+                std::cout<<"Generation "<<Base_t::_generation
+                        //<<" , elite fitness="<<_eliteIt->fitness()
+                       <<std::endl;
+#endif
+                Base_t::_otherOptFun(&Base_t::_args,
+                                     &Base_t::_population,
+                                     Base_t::_generation,
+                                     Base_t::_failTimes,
+                                     &Base_t::_option);
+                Base_t::updatePopulation();
+        }
+        Base_t::_generation--;
+
+    }
+protected:
+    std::vector<Fitness_t> _record;
 };
 
 }
