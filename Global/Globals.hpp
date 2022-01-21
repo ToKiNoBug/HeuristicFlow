@@ -28,9 +28,17 @@ enum FitnessOption : uint8_t {
     FITNESS_GREATER_BETTER=true,
 };
 
+///whether it's constrainted
 enum ConstraintOption : uint8_t {
     NONCONSTRAINT,
     IS_CONSTRAINT
+};
+
+///which type of vector to use
+enum DoubleVectorOption {
+    StdArray,
+    EigenArray,
+    Custom
 };
 
 ///global random device(mt19937) for OptimT
@@ -90,6 +98,12 @@ private:
     OtGlobal();
     static uint32_t concurrency;
 };
+
+inline double sign(double x) {
+    if(x>0) return 1;
+    if(x<0) return -1;
+    return 0;
+}
 
 ///uniform random number in range [0,1)
 inline double randD() {

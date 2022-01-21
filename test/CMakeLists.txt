@@ -12,6 +12,7 @@ add_executable(OptimT_Test
     testNsga2.cpp
     imp_TestingMatrix.cpp
     imp_TestingGenetic.cpp
+    imp_TestingPSO.cpp
     main.cpp)
 
 find_package(OpenMP)

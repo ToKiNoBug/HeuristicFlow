@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingGenetic.h"
+#include "def_TestingPSO.h"
 
 #include <unordered_set>
 
@@ -27,21 +27,9 @@ using namespace std;
 
 OptimT_MAKE_GLOBAL
 
-void tryOMP();
-
 int main()
 {
-    testNSGA2_Binh_and_Korn();
+    testPSOBase();
     system("pause");
     return 0;
-}
-#include <string>
-#include <iomanip>
-void tryOMP() {
-    const char str[]="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-#pragma omp parallel for
-    for(uint32_t i=0;i<sizeof(str)-1;i++) {
-        cout<<char(str[i]);
-    }
-
 }

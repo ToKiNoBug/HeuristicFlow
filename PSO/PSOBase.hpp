@@ -37,13 +37,20 @@ public:
         const Var_t * pMin,const Var_t * pMax,const Var_t * vMax,const Args_t *);
     using fFun_t = void(*)(const Var_t * ,const Args_t *,Fitness_t *);
 
-    class Particle
+    class Point
     {
     public:
         Var_t position;
+        Fitness_t fitness;
+    };
+
+    class Particle : public Point
+    {
+    public:
         Var_t velocity;
         bool isCalculated;
-        Fitness_t fitness;
+        Point pBest;
+
         void setUncalculated() {
             isCalculated=false;
         }
@@ -99,12 +106,8 @@ public:
         return _population;
     }
 
-    const Particle * populationBest() const {
-        return pBest;
-    }
-
-    const Particle * globalBest() const {
-        return &gBest;
+    const Point & globalBest() const {
+        return gBest;
     }
 
     void setPVRange(const Var_t & pMin,
@@ -114,6 +117,8 @@ public:
         _posMax=pMax;
         _velocityMax=vMax;
     }
+
+    virtual void setPVRange(double,double,double)=0;
 
     virtual void initialize(iFun_t _i,
             fFun_t _f,
@@ -128,7 +133,7 @@ public:
         _population.resize(_option.populationSize);
 
         for(Particle & i : _population) {
-            _iFun(&i.position,&i.velocity,&_args);
+            _iFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&_args);
             i.setUncalculated();
         }
         _generation=0;
@@ -160,7 +165,7 @@ public:
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
 #endif
-                _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
+                _ooFun(&_args,&_population,_generation,_failTimes,&_option);
                 updatePopulation();
         }
         _generation--;
@@ -189,8 +194,7 @@ protected:
 
     std::vector<Particle> _population;
 
-    const Particle * pBest;
-    Particle gBest;
+    Point gBest;
 
     virtual void calculateAll() {
 #ifdef OptimT_DO_PARALLELIZE
@@ -217,7 +221,7 @@ protected:
             if(i.isCalculated) {
                 continue;
             }
-            _Fun(&i.position,&_args,&i._Fitness);
+            _fFun(&i.position,&_args,&i.fitness);
             i.isCalculated=true;
         }
 #endif
@@ -230,13 +234,14 @@ protected:
 };
 
 #define OPTIMT_MAKE_PSOBASE_TYPES \
+using Point_t = typename Base_t::Point; \
 using Particle_t = typename Base_t::Particle; \
 using iFun_t = typename Base_t::iFun_t; \
 using fFun_t = typename Base_t::fFun_t; \
 using ooFun_t = typename Base_t::ooFun_t; \
 using Args_t = typename Base_t::Args_t;
 
-
+///partial specialization for PSO with recording
 template<class Var_t,class Fitness_t,class...Args>
 class PSOBase<Var_t,Fitness_t,RECORD_FITNESS,Args...>
         : public PSOBase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>
@@ -259,7 +264,7 @@ public:
         while(true) {
             Base_t::_generation++;
             Base_t::calculateAll();
-            Base_t::updatePGBest();
+            this->updatePGBest();
             _record.emplace_back(bestFitness());
             if(Base_t::_generation>Base_t::_option.maxGeneration) {
 #ifndef OptimT_NO_OUTPUT
@@ -279,12 +284,13 @@ public:
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
 #endif
-                Base_t::_otherOptFun(&Base_t::_args,
-                                     &Base_t::_population,
-                                     Base_t::_generation,
-                                     Base_t::_failTimes,
-                                     &Base_t::_option);
-                Base_t::updatePopulation();
+                Base_t::_ooFun(&this->_args,
+                                     &this->_population,
+                                     this->_generation,
+                                     this->_failTimes,
+                                     &this->_option);
+                //_ooFun(&_args,&_population,_generation,_failTimes,&_option);
+                this->updatePopulation();
         }
         Base_t::_generation--;
 
