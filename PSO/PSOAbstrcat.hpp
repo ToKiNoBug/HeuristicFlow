@@ -113,8 +113,11 @@ public:
 
         for(Particle & i : _population) {
             _iFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&_args);
-            i.setUncalculated();
+            _fFun(&i.position,&_args,&i.fitness);
+            i.pBest=i;
+            i.isCalculated=true;
         }
+        gBest=_population.front();
         _generation=0;
         _failTimes=0;
     }

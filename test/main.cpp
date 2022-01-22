@@ -29,7 +29,9 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    testTSP(10);
+    //OptimT::PSO<double,1,OptimT::FITNESS_GREATER_BETTER,OptimT::RECORD_FITNESS> o;
+
+    testTSP(100);
     system("pause");
     return 0;
 }

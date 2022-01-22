@@ -9,10 +9,10 @@ include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
 add_executable(OptimT_Test
-    testNsga2.cpp
-    imp_TestingMatrix.cpp
-    imp_TestingGenetic.cpp
-    imp_TestingPSO.cpp
+    testNsga2.cpp   #Manual implementation of NSGA2 inheriting GABase
+    imp_TestingMatrix.cpp   #Test simple matrix
+    imp_TestingGenetic.cpp  #Test SOGA and NSGA2
+    imp_TestingPSO.cpp  #Test PSO
     main.cpp)
 
 find_package(OpenMP)

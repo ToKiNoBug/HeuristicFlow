@@ -41,6 +41,28 @@ enum DoubleVectorOption {
     Custom
 };
 
+inline const char * Enum2String(ConstraintOption c) {
+    switch (c)
+    {
+        case NONCONSTRAINT:
+        return "UnConstrainted";
+        case IS_CONSTRAINT:
+        return "Constrainted";
+    }
+}
+
+inline const char * Enum2String(DoubleVectorOption e) {
+    switch (e) 
+    {
+        case Std:
+        return "C++ std vector/array";
+        case Eigen:
+        return "Eigen Array";
+        default:
+        return "Unknown custom types";
+    }
+}
+
 ///global random device(mt19937) for OptimT
 extern std::mt19937 global_mt19937;
 

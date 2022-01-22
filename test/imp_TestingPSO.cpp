@@ -37,12 +37,7 @@ void testRastriginFun() {
     FITNESS_LESS_BETTER,
     RECORD_FITNESS>;
     
-    using Var_t = Eigen::Array<double,N,1>;
-    using EVar_t = EigenVar_t<N>;
-    Var_t * vptr;
-    EVar_t * evptr;
-    evptr=vptr;
-    vptr=evptr;
+    using Var_t = EigenVar_t<N>;;
 
     using Args_t = solver_t::Args_t;
 
@@ -96,6 +91,7 @@ void testRastriginFun() {
 }
 
 #include <algorithm>
+
 void testTSP(const size_t N) {
 static const size_t SpaceDim=2;
 
@@ -108,18 +104,13 @@ static const size_t SpaceDim=2;
     RECORD_FITNESS,DistanceMat_t>;
 
 
-    cout<<Solver_t::Flag<<endl;
+    cout<<Enum2String(Solver_t::Flag)<<endl;
 
     using Args_t = Solver_t::Args_t;
 
     Solver_t solver;
 
     using sortUnit = std::pair<double,size_t>;
-    /*
-    Solver_t::iFun_t iFun=[](Var_t*x,Var_t*v,const Var_t *,const Var_t *,const Var_t *,const Args_t *) {
-
-    };
-    */
 
     Solver_t::fFun_t fFun=[](const Var_t* x,const Args_t * args,double * fitness) {
         const size_t N=std::get<0>(*args).rows();
@@ -165,7 +156,7 @@ static const size_t SpaceDim=2;
     opt.learnFactorP=2;
     opt.maxGeneration=50*N;
     opt.maxFailTimes=opt.maxGeneration/10;
-    opt.populationSize=300;
+    opt.populationSize=100;
 
     
 
@@ -194,6 +185,16 @@ static const size_t SpaceDim=2;
 
     cout<<"result fitness = "<<solver.bestFitness()<<endl;
 
+    cout<<"Trainning Curve=[";
+    for(auto i : solver.record()) {
+        cout<<i<<" , ";
+    }
+    cout<<"];"<<endl;
+    
+    cout<<"Population condition:"<<endl;
+    for(const auto & i : solver.population()) {
+        cout<<"fitness="<<i.fitness<<" , pBest="<<i.pBest.fitness<<endl;
+    }
     
 
 

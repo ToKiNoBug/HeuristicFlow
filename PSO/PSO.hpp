@@ -46,7 +46,7 @@ public:
     static const DoubleVectorOption Flag =
         (std::is_same<Var_t,stdVar_t<DIM>>::value)?
         DoubleVectorOption::Std : DoubleVectorOption::Custom;
-
+    
     void setPVRange(double pMin,double pMax,double vMax) {
         std::cerr<<__FILE__<<" , "<<__LINE__<<std::endl;
         for(size_t i=0;i<this->dimensions();i++) {
@@ -56,6 +56,7 @@ public:
         }
     }
     
+    ///function used to provide a result for recording
     virtual double bestFitness() const {
         return Base_t::gBest.fitness;
     }
@@ -80,17 +81,19 @@ protected:
     }
 
     virtual void updatePGBest() {
-        Point_t * curGBest=Base_t::_population.data();
-        for(Particle_t & i : Base_t::_population) {
-            if(Base_t::_generation<=1) {
-                this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?(ninfD):(pinfD);
+        Point_t * curGBest=&Base_t::_population.front().pBest;
+
+        if(this->_generation<=1) {
+            this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?ninfD:pinfD;
+            for(Particle_t & i : Base_t::_population) {
                 i.pBest=i;
             }
-            else {
-                if(isBetterThan(i.fitness,i.pBest.fitness)) {
-                    i.pBest=i;
-                }
-            }
+        }
+
+        for(Particle_t & i : Base_t::_population) {
+            if(isBetterThan(i.fitness,i.pBest.fitness)) {
+                i.pBest=i;
+            }            
 
             if(isBetterThan(i.pBest.fitness,curGBest->fitness)) {
                 curGBest=&i.pBest;
@@ -123,6 +126,8 @@ protected:
             i.setUncalculated();
         }
     }
+
+    static_assert(!(std::is_scalar<Var_t>::value),"Var_t should be a non-scalar type");
 
 };
 
@@ -194,16 +199,20 @@ protected:
     }
 
     virtual void updatePGBest() {
-        Point_t * curGBest=Base_t::_population.data();
-        for(Particle_t & i : Base_t::_population) {
-            if(Base_t::_generation<=1) {
-                this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?(ninfD):(pinfD);
+        Point_t * curGBest=&Base_t::_population.front().pBest;
+
+        /*
+        if(this->_generation<=1) {
+            this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?ninfD:pinfD;
+            for(Particle_t & i : Base_t::_population) {
                 i.pBest=i;
             }
-            else {
-                if(isBetterThan(i.fitness,i.pBest.fitness)) {
-                    i.pBest=i;
-                }
+        }
+        */
+
+        for(Particle_t & i : Base_t::_population) {
+            if(isBetterThan(i.fitness,i.pBest.fitness)) {
+                i.pBest=i;
             }
 
             if(isBetterThan(i.pBest.fitness,curGBest->fitness)) {
