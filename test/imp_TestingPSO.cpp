@@ -38,6 +38,11 @@ void testRastriginFun() {
     RECORD_FITNESS>;
     
     using Var_t = Eigen::Array<double,N,1>;
+    using EVar_t = EigenVar_t<N>;
+    Var_t * vptr;
+    EVar_t * evptr;
+    evptr=vptr;
+    vptr=evptr;
 
     using Args_t = solver_t::Args_t;
 
@@ -98,12 +103,12 @@ static const size_t SpaceDim=2;
 
     using DistanceMat_t = Eigen::ArrayXXd;
 
-    using Solver_t = PSO<Var_t,Dynamic,
-    DoubleVectorOption::Eigen,
+    using Solver_t = PSO_Eigen<Dynamic,
     FITNESS_LESS_BETTER,
     RECORD_FITNESS,DistanceMat_t>;
 
-    cout<<Solver_t::flag()<<endl;
+
+    cout<<Solver_t::Flag<<endl;
 
     using Args_t = Solver_t::Args_t;
 

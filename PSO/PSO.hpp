@@ -24,12 +24,16 @@ This file is part of OptimTemplates.
 #include <array>
 #include <vector>
 #include <tuple>
+#include <type_traits>
 
 namespace OptimT {
 
+///Array type when using std vector/array(s)
+template<size_t DIM>
+using stdVar_t = typename std::conditional<DIM==Dynamic,std::vector<double>,std::array<double,DIM>>::type;
+
 template<class Var_t,   //Var_t must support operator[] and public function size();
          size_t DIM,    //Use 0 as Dynamic
-         DoubleVectorOption VecType,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
@@ -38,6 +42,10 @@ class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Args...>
 public:
     using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
+
+    static const DoubleVectorOption Flag =
+        (std::is_same<Var_t,stdVar_t<DIM>>::value)?
+        DoubleVectorOption::Std : DoubleVectorOption::Custom;
 
     void setPVRange(double pMin,double pMax,double vMax) {
         std::cerr<<__FILE__<<" , "<<__LINE__<<std::endl;
@@ -118,42 +126,43 @@ protected:
 
 };
 
-///Simple typedef for stdArray (fix-sized)
+///Convenient typedef for stdArray (fix-sized and dynamic sized)
 template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_std = PSO<std::array<double,DIM>,DIM,Std,FitnessOpt,RecordOpt,Args...>;
+using PSO_std = PSO<stdVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 
 
 #ifdef OptimT_PSO_USE_EIGEN
+
+///Array type when using Eigen array(s)
+template<size_t DIM>
+using EigenVar_t = typename std::conditional<DIM==Dynamic,Eigen::ArrayXd,Eigen::Array<double,DIM,1>>::type;
+
+///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>;
-
-
+using PSO_Eigen = PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
-template<size_t DIM,
+template<
+        size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,
-DIM,
-Eigen,FitnessOpt,RecordOpt,Args...>
-    : public PSOBase<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,DIM,double,RecordOpt,Args...>
+class PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>
+    : public PSOBase<EigenVar_t<DIM>,DIM,double,RecordOpt,Args...>
 {
 public:
-    using Base_t = PSOBase<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,DIM,double,RecordOpt,Args...>;
+    using Base_t = PSOBase<EigenVar_t<DIM>,DIM,double,RecordOpt,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
-    using Var_t = Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>;
+    using Var_t = EigenVar_t<DIM>;
 
-    static const char* flag() {
-        return "PSO using Eigen's Array";
-    }
+    static const DoubleVectorOption Flag = DoubleVectorOption::Eigen;
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(this->dimensions(),1,pMin);
