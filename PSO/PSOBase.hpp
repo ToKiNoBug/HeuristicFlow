@@ -48,6 +48,10 @@ public:
     static size_t dimensions() {
         return DIM;
     }
+
+protected:
+    static const size_t dims=DIM;
+
 };
 
 ///partial specialization for PSOBase with dynamic dimensions

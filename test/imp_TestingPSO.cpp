@@ -92,6 +92,8 @@ void testRastriginFun() {
 
 #include <algorithm>
 void testTSP(const size_t N) {
+static const size_t SpaceDim=2;
+
     using Var_t = Eigen::ArrayXd;
 
     using DistanceMat_t = Eigen::ArrayXXd;
@@ -101,13 +103,18 @@ void testTSP(const size_t N) {
     FITNESS_LESS_BETTER,
     RECORD_FITNESS,DistanceMat_t>;
 
+    cout<<Solver_t::flag()<<endl;
+
     using Args_t = Solver_t::Args_t;
 
     Solver_t solver;
 
-    solver.setDimensions(N);
-
     using sortUnit = std::pair<double,size_t>;
+    /*
+    Solver_t::iFun_t iFun=[](Var_t*x,Var_t*v,const Var_t *,const Var_t *,const Var_t *,const Args_t *) {
+
+    };
+    */
 
     Solver_t::fFun_t fFun=[](const Var_t* x,const Args_t * args,double * fitness) {
         const size_t N=std::get<0>(*args).rows();
@@ -117,7 +124,7 @@ void testTSP(const size_t N) {
         }
 
         
-        auto cmpFun=[](const sortUnit & a,const sortUnit & b) {
+        static const auto cmpFun=[](const sortUnit & a,const sortUnit & b) {
             return a.first<b.first;
         };
 
@@ -130,6 +137,60 @@ void testTSP(const size_t N) {
             *fitness+=std::get<0>(*args)(sortSpace[i].second,sortSpace[i+1].second);
         }
     };
+
+    DistanceMat_t dMat(N,N);
+    
+    dMat.setZero();
+
+    {
+        Eigen::Array<double,SpaceDim,Eigen::Dynamic> points;
+        points.setRandom(SpaceDim,N);
+
+        for(size_t r=0;r<N;r++) {
+            for(size_t c=0;c<N;c++) {
+                if(r==c) continue;
+                dMat(r,c)=(points.col(r)-points.col(c)).square().sum();
+            }
+        }
+    }
+
+    PSOOption opt;
+    opt.inertiaFactor=0.8;
+    opt.learnFactorG=2;
+    opt.learnFactorP=2;
+    opt.maxGeneration=50*N;
+    opt.maxFailTimes=opt.maxGeneration/10;
+    opt.populationSize=300;
+
+    
+
+    solver.setDimensions(N);
+
+    solver.setPVRange(0,1,0.5);
+
+    solver.initialize(Solver_t::default_iFun,
+                        fFun,
+                        Solver_t::default_ooFun,
+                        opt,
+                        std::make_tuple(dMat));
+
+    {
+        double iniFitness;
+        fFun(&solver.population().front().position,&solver.args(),&iniFitness);
+        cout<<"iniFitness = "<<iniFitness<<endl;
+    }
+
+    clock_t c=clock();
+    solver.run();
+    c=clock()-c;
+
+    cout<<"finished in "<<double(c)*1000/CLOCKS_PER_SEC
+        <<" miliseconds and "<<solver.generation()<<" generations"<<endl;
+
+    cout<<"result fitness = "<<solver.bestFitness()<<endl;
+
+    
+
 
 
 }

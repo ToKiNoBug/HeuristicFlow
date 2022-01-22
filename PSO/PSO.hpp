@@ -40,6 +40,7 @@ public:
     OPTIMT_MAKE_PSOABSTRACT_TYPES
 
     void setPVRange(double pMin,double pMax,double vMax) {
+        std::cerr<<__FILE__<<" , "<<__LINE__<<std::endl;
         for(size_t i=0;i<this->dimensions();i++) {
             Base_t::_posMin[i]=pMin;
             Base_t::_posMax[i]=pMax;
@@ -55,7 +56,7 @@ public:
     static void default_iFun(Var_t *x,Var_t *v,
     const Var_t * xMin,const Var_t * xMax,
     const Var_t *,const Args_t*) {
-        for(size_t idx=0;idx<Base_t::dimensions();idx++) {
+        for(size_t idx=0;idx<xMin->size();idx++) {
             x->operator[](idx)=randD(xMin->operator[](idx),xMax->operator[](idx));
             v->operator[](idx)=0;
         }
@@ -140,19 +141,24 @@ template<size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>
-    //: public PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>
+class PSO<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,
+DIM,
+Eigen,FitnessOpt,RecordOpt,Args...>
+    : public PSOBase<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,DIM,double,RecordOpt,Args...>
 {
 public:
-    using Base_t = PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>;
+    using Base_t = PSOBase<Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>,DIM,double,RecordOpt,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
-    using Var_t = Eigen::Array<double,DIM,1>;
+    using Var_t = Eigen::Array<double,(DIM>0?int(DIM):int(-1)),1>;
 
+    static const char* flag() {
+        return "PSO using Eigen's Array";
+    }
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
-        this->_posMin.setConstant(pMin,this->dimensions(),1);
-        this->_posMax.setConstant(pMax,this->dimensions(),1);
-        this->_velocityMax.setConstant(vMax,this->dimensions(),1);
+        this->_posMin.setConstant(this->dimensions(),1,pMin);
+        this->_posMax.setConstant(this->dimensions(),1,pMax);
+        this->_velocityMax.setZero(this->dimensions(),1);
     }
 
     virtual double bestFitness() const {
@@ -163,10 +169,10 @@ public:
     static void default_iFun(Var_t *x,Var_t *v,
     const Var_t * xMin,const Var_t * xMax,
     const Var_t *,const Args_t*) {
-        x->setRandom(Base_t::dimensions(),1);
+        x->setRandom(xMin->size(),1);
         (*x)*=(*xMax-*xMin)/2;
         (*x)+=(*xMin+*xMax)/2;
-        v->setZeros(Base_t::dimensions(),1);
+        v->setZero(xMin->size(),1);
     }
 
 protected:
@@ -207,7 +213,7 @@ protected:
 
     virtual void updatePopulation() {
         for(Particle_t & i : Base_t::_population) {
-            i.velocity=this->_option.interiaFactor*i.velocity
+            i.velocity=this->_option.inertiaFactor*i.velocity
                         +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
                         +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
 
