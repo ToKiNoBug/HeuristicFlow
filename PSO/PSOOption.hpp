@@ -26,14 +26,15 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
+///Options to PSO
 struct PSOOption
 {
 public:
     PSOOption() {
-        populationSize=100;
+        populationSize=200;
         maxGeneration=300;
         maxFailTimes=100;
-        inertiaFactor=1;
+        inertiaFactor=0.8;
         learnFactorP=2;
         learnFactorG=2;
     }

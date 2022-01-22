@@ -25,34 +25,28 @@ This file is part of OptimTemplates.
 #include <vector>
 #include <tuple>
 
-#ifndef EIGEN_CORE_H
-#ifdef OptimT_PSO_USE_EIGEN
-#error You must include Eigen before you define OptimT_PSO_USE_EIGEN! Include Eigen before OptimT.
-#endif
-#endif
-
 namespace OptimT {
 
-template<class Var_t,   //Var_t must support operator[]
-         size_t Dim,
+template<class Var_t,   //Var_t must support operator[] and public function size();
+         size_t DIM,    //Use 0 as Dynamic
          DoubleVectorOption VecType,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO : public PSOBase<Var_t,double,RecordOpt,Args...>
+class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Args...>
 {
 public:
-    using Base_t = PSOBase<Var_t,double,RecordOpt,Args...>;
-    OPTIMT_MAKE_PSOBASE_TYPES
+    using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Args...>;
+    OPTIMT_MAKE_PSOABSTRACT_TYPES
 
-    virtual void setPVRange(double pMin,double pMax,double vMax) {
-        for(size_t i=0;i<Dim;i++) {
+    void setPVRange(double pMin,double pMax,double vMax) {
+        for(size_t i=0;i<this->dimensions();i++) {
             Base_t::_posMin[i]=pMin;
             Base_t::_posMax[i]=pMax;
             Base_t::_velocityMax[i]=vMax;
         }
     }
-
+    
     virtual double bestFitness() const {
         return Base_t::gBest.fitness;
     }
@@ -95,7 +89,7 @@ protected:
 
     virtual void updatePopulation() {
         for(Particle_t & i : Base_t::_population) {
-            for(size_t idx=0;idx<Dim;idx++) {
+            for(size_t idx=0;idx<this->dimensions();idx++) {
                 i.velocity[idx]=
                         Base_t::_option.inertiaFactor*i.velocity[idx]
                         +Base_t::_option.learnFactorP*randD()*(i.pBest.position[idx]-i.position[idx])
@@ -113,30 +107,32 @@ protected:
 
 };
 
-template<size_t Dim,
+///Simple typedef for stdArray (fix-sized)
+template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_std = PSO<std::array<double,Dim>,Dim,StdArray,FitnessOpt,RecordOpt,Args...>;
+using PSO_std = PSO<std::array<double,DIM>,DIM,StdArray,FitnessOpt,RecordOpt,Args...>;
 
 
 #ifdef OptimT_PSO_USE_EIGEN
-template<size_t Dim,
+template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_Eigen = PSO<Eigen::Array<double,Dim,1>,Dim,EigenArray,FitnessOpt,RecordOpt,Args...>;
+using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,EigenArray,FitnessOpt,RecordOpt,Args...>;
 
-template<
-         size_t Dim,
+///Partial specilization for PSO using Eigen's fix-sized Array
+template<size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO<Eigen::Array<double,Dim,1>,Dim,EigenArray,FitnessOpt,RecordOpt,Args...>
+class PSO<Eigen::Array<double,DIM,1>,DIM,EigenArray,FitnessOpt,RecordOpt,Args...>
+    //: public PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>
 {
 public:
-    using Base_t = PSOBase<Eigen::Array<double,Dim,1>,double,RecordOpt,Args...>;
-    OPTIMT_MAKE_PSOBASE_TYPES
+    using Base_t = PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>;
+    OPTIMT_MAKE_PSOABSTRACT_TYPES
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(pMin);
