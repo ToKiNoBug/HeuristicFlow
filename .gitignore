@@ -74,3 +74,7 @@ Thumbs.db
 CMakeLists.txt.user
 .vscode/c_cpp_properties.json
 .vscode/settings.json
+.vscode/launch.json
+build/CMakeCache.txt
+build/.cmake/api/v1/query/client-vscode/query.json
+build/CMakeFiles/cmake.check_cache
