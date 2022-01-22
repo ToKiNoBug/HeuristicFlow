@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingPSO.h"
+#include "def_TestingGenetic.h"
 
 #include <unordered_set>
 
@@ -29,7 +29,7 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    testRastriginFun();
+    testTSP(10);
     system("pause");
     return 0;
 }

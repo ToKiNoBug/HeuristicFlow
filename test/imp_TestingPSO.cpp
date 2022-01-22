@@ -29,13 +29,6 @@ void testPSOBase() {
     abstractNoRec=baseNoRec;
     abstractDoRec=baseDoRec;
 
-
-
-
-    
-
-
-
 }
 
 void testRastriginFun() {
@@ -97,3 +90,9 @@ void testRastriginFun() {
 
 }
 
+
+void testTSP(const size_t N) {
+    using Var_t = Eigen::ArrayXd;
+
+    //using Solver_t = PSO<Var_t,Dynamic,Custom,
+}

@@ -112,7 +112,7 @@ template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_std = PSO<std::array<double,DIM>,DIM,StdArray,FitnessOpt,RecordOpt,Args...>;
+using PSO_std = PSO<std::array<double,DIM>,DIM,Std,FitnessOpt,RecordOpt,Args...>;
 
 
 #ifdef OptimT_PSO_USE_EIGEN
@@ -120,14 +120,14 @@ template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,EigenArray,FitnessOpt,RecordOpt,Args...>;
+using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>;
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
 template<size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO<Eigen::Array<double,DIM,1>,DIM,EigenArray,FitnessOpt,RecordOpt,Args...>
+class PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>
     //: public PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>
 {
 public:
@@ -135,9 +135,9 @@ public:
     OPTIMT_MAKE_PSOABSTRACT_TYPES
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
-        this->_posMin.setConstant(pMin);
-        this->_posMax.setConstant(pMax);
-        this->_velocityMax.setConstant(vMax);
+        this->_posMin.setConstant(pMin,this->dimensions(),1);
+        this->_posMax.setConstant(pMax,this->dimensions(),1);
+        this->_velocityMax.setConstant(vMax,this->dimensions(),1);
     }
 
     virtual double bestFitness() const {

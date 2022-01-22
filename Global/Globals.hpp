@@ -36,8 +36,8 @@ enum ConstraintOption : uint8_t {
 
 ///which type of vector to use
 enum DoubleVectorOption {
-    StdArray,
-    EigenArray,
+    Std,
+    Eigen,
     Custom
 };
 
