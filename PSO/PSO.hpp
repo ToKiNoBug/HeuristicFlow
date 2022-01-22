@@ -51,6 +51,16 @@ public:
         return Base_t::gBest.fitness;
     }
 
+    ///Candidate function for initialization
+    static void default_iFun(Var_t *x,Var_t *v,
+    const Var_t * xMin,const Var_t * xMax,
+    const Var_t *,const Args_t*) {
+        for(size_t idx=0;idx<Base_t::dimensions();idx++) {
+            x->operator[](idx)=randD(xMin->operator[](idx),xMax->operator[](idx));
+            v->operator[](idx)=0;
+        }
+    }
+
 protected:
     static bool isBetterThan(double a,double b) {
         if(FitnessOpt==FitnessOption::FITNESS_GREATER_BETTER) {
@@ -89,7 +99,7 @@ protected:
 
     virtual void updatePopulation() {
         for(Particle_t & i : Base_t::_population) {
-            for(size_t idx=0;idx<this->dimensions();idx++) {
+            for(size_t idx=0;idx<Base_t::dimensions();idx++) {
                 i.velocity[idx]=
                         Base_t::_option.inertiaFactor*i.velocity[idx]
                         +Base_t::_option.learnFactorP*randD()*(i.pBest.position[idx]-i.position[idx])
@@ -122,6 +132,9 @@ template<size_t DIM,
          class ...Args>
 using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>;
 
+
+
+
 ///Partial specilization for PSO using Eigen's fix-sized Array
 template<size_t DIM,
          FitnessOption FitnessOpt,
@@ -133,6 +146,8 @@ class PSO<Eigen::Array<double,DIM,1>,DIM,Eigen,FitnessOpt,RecordOpt,Args...>
 public:
     using Base_t = PSOBase<Eigen::Array<double,DIM,1>,DIM,double,RecordOpt,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Var_t = Eigen::Array<double,DIM,1>;
+
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(pMin,this->dimensions(),1);
@@ -142,6 +157,16 @@ public:
 
     virtual double bestFitness() const {
         return Base_t::gBest.fitness;
+    }
+
+    ///Candidate function for initialization
+    static void default_iFun(Var_t *x,Var_t *v,
+    const Var_t * xMin,const Var_t * xMax,
+    const Var_t *,const Args_t*) {
+        x->setRandom(Base_t::dimensions(),1);
+        (*x)*=(*xMax-*xMin)/2;
+        (*x)+=(*xMin+*xMax)/2;
+        v->setZeros(Base_t::dimensions(),1);
     }
 
 protected:

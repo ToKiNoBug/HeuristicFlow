@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingGenetic.h"
+#include "def_TestingPSO.h"
 
 #include <unordered_set>
 

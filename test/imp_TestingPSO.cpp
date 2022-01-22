@@ -90,9 +90,46 @@ void testRastriginFun() {
 
 }
 
-
+#include <algorithm>
 void testTSP(const size_t N) {
     using Var_t = Eigen::ArrayXd;
 
-    //using Solver_t = PSO<Var_t,Dynamic,Custom,
+    using DistanceMat_t = Eigen::ArrayXXd;
+
+    using Solver_t = PSO<Var_t,Dynamic,
+    DoubleVectorOption::Eigen,
+    FITNESS_LESS_BETTER,
+    RECORD_FITNESS,DistanceMat_t>;
+
+    using Args_t = Solver_t::Args_t;
+
+    Solver_t solver;
+
+    solver.setDimensions(N);
+
+    using sortUnit = std::pair<double,size_t>;
+
+    Solver_t::fFun_t fFun=[](const Var_t* x,const Args_t * args,double * fitness) {
+        const size_t N=std::get<0>(*args).rows();
+        std::vector<sortUnit> sortSpace(N);
+        for(size_t i=0;i<N;i++) {
+            sortSpace[i]=std::make_pair(x->operator[](i),i);
+        }
+
+        
+        auto cmpFun=[](const sortUnit & a,const sortUnit & b) {
+            return a.first<b.first;
+        };
+
+
+        std::sort(sortSpace.begin(),sortSpace.end(),cmpFun);
+
+        *fitness=0;
+
+        for(size_t i=0;i+1<N;i++) {
+            *fitness+=std::get<0>(*args)(sortSpace[i].second,sortSpace[i+1].second);
+        }
+    };
+
+
 }
