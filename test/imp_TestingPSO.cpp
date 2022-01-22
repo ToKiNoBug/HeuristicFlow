@@ -32,7 +32,7 @@ void testPSOBase() {
 }
 
 void testRastriginFun() {
-    static const size_t N=50;
+    static const size_t N=10;
     using solver_t = PSO_Eigen<N,
     FITNESS_LESS_BETTER,
     RECORD_FITNESS>;
@@ -42,7 +42,7 @@ void testRastriginFun() {
     using Args_t = solver_t::Args_t;
 
     PSOOption opt;
-    opt.maxGeneration=10000;
+    opt.maxGeneration=50*N;
     opt.maxFailTimes=opt.maxGeneration/10;
     opt.inertiaFactor=0.8;
     opt.learnFactorG=2;
@@ -66,7 +66,7 @@ void testRastriginFun() {
 
     };
 
-    solver.setPVRange(-5.12,5.12,1);
+    solver.setPVRange(-5.12,5.12,0.1);
 
     solver.initialize(iFun,fFun,solver_t::default_ooFun,opt);
 
@@ -87,6 +87,20 @@ void testRastriginFun() {
     }
     cout<<"];"<<endl;
 
+    
+    cout<<"Trainning Curve=[";
+    for(auto i : solver.record()) {
+        cout<<i<<" , ";
+    }
+    cout<<"];"<<endl;
+
+    /*
+    cout<<"Population condition:"<<endl;
+    for(const auto & i : solver.population()) {
+        cout<<"fitness="<<i.fitness<<" , pBest="
+           <<i.pBest.fitness<<" , position="<<i.position.transpose()<<" , velocity="<<i.velocity.transpose()<<endl;
+    }
+    */
 
 }
 

@@ -29,12 +29,9 @@ public:
     {
     public:
         Var_t velocity;
-        bool isCalculated;
+        //bool isCalculated;
         Point pBest;
 
-        void setUncalculated() {
-            isCalculated=false;
-        }
     };
     using ooFun_t = void(*)
         (Args_t*,std::vector<Particle>*,size_t generation,size_t failTimes,PSOOption*);
@@ -115,8 +112,9 @@ public:
             _iFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&_args);
             _fFun(&i.position,&_args,&i.fitness);
             i.pBest=i;
-            i.isCalculated=true;
+            //i.isCalculated=true;
         }
+
         gBest=_population.front();
         _generation=0;
         _failTimes=0;
@@ -135,20 +133,21 @@ public:
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
-                }
-                if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
+            }
+
+            if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
 #ifndef OptimT_NO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
-                }
+            }
 #ifndef OptimT_NO_OUTPUT
-                std::cout<<"Generation "<<_generation
+            std::cout<<"Generation "<<_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
 #endif
-                _ooFun(&_args,&_population,_generation,_failTimes,&_option);
-                updatePopulation();
+            _ooFun(&_args,&_population,_generation,_failTimes,&_option);
+            updatePopulation();
         }
         _generation--;
 
@@ -185,9 +184,7 @@ protected:
         tasks.resize(0);
         tasks.reserve(_population.size());
         for(Particle & i : _population) {
-            if(i._isCalculated) {
-                continue;
-            }
+            
             tasks.emplace_back(&i);
         }
 #pragma omp parallel for
@@ -195,16 +192,14 @@ protected:
             for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
                 Particle * ptr=tasks[i];
                 _fitnessFun(&ptr->position,&_args,&ptr->_Fitness);
-                ptr->isCalculated=true;
+                //ptr->isCalculated=true;
             }
         }
 #else
         for(Particle & i : _population) {
-            if(i.isCalculated) {
-                continue;
-            }
+            
             _fFun(&i.position,&_args,&i.fitness);
-            i.isCalculated=true;
+            //i.isCalculated=true;
         }
 #endif
     }

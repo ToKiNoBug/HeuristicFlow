@@ -30,7 +30,7 @@ OptimT_MAKE_GLOBAL
 int main()
 {
     //OptimT::PSO<double,1,OptimT::FITNESS_GREATER_BETTER,OptimT::RECORD_FITNESS> o;
-
+    //testRastriginFun();
     testTSP(100);
     system("pause");
     return 0;

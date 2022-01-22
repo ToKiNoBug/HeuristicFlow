@@ -83,17 +83,10 @@ protected:
     virtual void updatePGBest() {
         Point_t * curGBest=&Base_t::_population.front().pBest;
 
-        if(this->_generation<=1) {
-            this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?ninfD:pinfD;
-            for(Particle_t & i : Base_t::_population) {
-                i.pBest=i;
-            }
-        }
-
         for(Particle_t & i : Base_t::_population) {
             if(isBetterThan(i.fitness,i.pBest.fitness)) {
                 i.pBest=i;
-            }            
+            }
 
             if(isBetterThan(i.pBest.fitness,curGBest->fitness)) {
                 curGBest=&i.pBest;
@@ -123,7 +116,6 @@ protected:
                 i.position[idx]=std::max(i.position[idx],Base_t::_posMin[idx]);
                 i.position[idx]=std::min(i.position[idx],Base_t::_posMax[idx]);
             }
-            i.setUncalculated();
         }
     }
 
@@ -172,7 +164,7 @@ public:
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(this->dimensions(),1,pMin);
         this->_posMax.setConstant(this->dimensions(),1,pMax);
-        this->_velocityMax.setZero(this->dimensions(),1);
+        this->_velocityMax.setConstant(this->dimensions(),1,vMax);
     }
 
     virtual double bestFitness() const {
@@ -200,15 +192,6 @@ protected:
 
     virtual void updatePGBest() {
         Point_t * curGBest=&Base_t::_population.front().pBest;
-
-        /*
-        if(this->_generation<=1) {
-            this->gBest.fitness=(FitnessOpt==FITNESS_GREATER_BETTER)?ninfD:pinfD;
-            for(Particle_t & i : Base_t::_population) {
-                i.pBest=i;
-            }
-        }
-        */
 
         for(Particle_t & i : Base_t::_population) {
             if(isBetterThan(i.fitness,i.pBest.fitness)) {
@@ -242,8 +225,7 @@ protected:
 
             i.position=i.position.min(Base_t::_posMax);
             i.position=i.position.max(Base_t::_posMin);
-            
-            i.setUncalculated();
+
         }
     }
 
