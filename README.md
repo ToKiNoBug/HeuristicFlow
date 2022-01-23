@@ -13,7 +13,7 @@ Modules:
 Implemented : 
 1. [GA](./docs/Genetic/SOGA.md)
 2. [NSGA-II](./docs/Genetic/NSGA2.md)
+3. PSO
 
 Waiting to be implemented :
 1. NSGA-III
-2. PSO
