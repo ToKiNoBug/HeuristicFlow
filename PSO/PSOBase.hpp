@@ -31,8 +31,6 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
-const size_t Dynamic = 0;
-
 ///Abstrcat base class for most PSO solvers
 template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class...Args>
 class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Args...>

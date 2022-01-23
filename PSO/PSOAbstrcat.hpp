@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef PSOABSTRCAT_HPP
 #define PSOABSTRCAT_HPP
 #include "PSOOption.hpp"
@@ -180,18 +199,11 @@ protected:
     virtual void calculateAll() {
 #ifdef OptimT_DO_PARALLELIZE
         static const uint32_t thN=OtGlobal::threadNum();
-        std::vector<Particle*> tasks;
-        tasks.resize(0);
-        tasks.reserve(_population.size());
-        for(Particle & i : _population) {
-            
-            tasks.emplace_back(&i);
-        }
 #pragma omp parallel for
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
-            for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
-                Particle * ptr=tasks[i];
-                _fitnessFun(&ptr->position,&_args,&ptr->_Fitness);
+            for(uint32_t i=begIdx;i<_population.size();i+=thN) {
+                Particle * ptr=&_population[i];
+                _fFun(&ptr->position,&_args,&ptr->fitness);
                 //ptr->isCalculated=true;
             }
         }

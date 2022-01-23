@@ -169,7 +169,8 @@ static const size_t SpaceDim=2;
     opt.learnFactorG=2;
     opt.learnFactorP=2;
     opt.maxGeneration=50*N;
-    opt.maxFailTimes=opt.maxGeneration/10;
+    opt.maxFailTimes=
+            opt.maxGeneration/10;
     opt.populationSize=100;
 
     
@@ -198,7 +199,7 @@ static const size_t SpaceDim=2;
         <<" miliseconds and "<<solver.generation()<<" generations"<<endl;
 
     cout<<"result fitness = "<<solver.bestFitness()<<endl;
-
+    /*
     cout<<"Trainning Curve=[";
     for(auto i : solver.record()) {
         cout<<i<<" , ";
@@ -209,6 +210,7 @@ static const size_t SpaceDim=2;
     for(const auto & i : solver.population()) {
         cout<<"fitness="<<i.fitness<<" , pBest="<<i.pBest.fitness<<endl;
     }
+    */
     
 
 

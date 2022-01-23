@@ -29,9 +29,25 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    //OptimT::PSO<double,1,OptimT::FITNESS_GREATER_BETTER,OptimT::RECORD_FITNESS> o;
-    //testRastriginFun();
-    testTSP(100);
+    testTSP(500);
+    /*
+    static const size_t N=10000000;
+    static const size_t POW=10;
+    Eigen::ArrayXd a,b;
+    a.setLinSpaced(N,1,2);
+    system("pause");
+    clock_t c=clock();
+    for(size_t i=0;i<N;i++) {
+        a(i)=
+        OptimT::power<POW>(a(i))
+        //OptimT::power(a(i),POW)
+        ;
+    }
+    c=clock()-c;
+    cout<<"Mean time cost = "<<1e9*double(c)/CLOCKS_PER_SEC/N<<" nano seconds"<<endl;
+    cout<<a.mean()<<endl;
+    */
+    //cout<<OptimT::power(1.01,890)<<endl;
     system("pause");
     return 0;
 }

@@ -97,13 +97,13 @@ public:
         return result;
     }
 
-    template<int power>
+    template<int64_t p>
     static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
         double result=0;
         for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
-            result=std::pow(f->at(objIdx),(power));
+            result+=power<p>(f->at(objIdx));
         }
-        return std::pow(result,1.0/power);
+        return std::pow(result,1.0/p);
     }
 
     virtual Fitness_t bestFitness() const {

@@ -165,8 +165,6 @@ void testWithEigenLib() {
     get<MaxOffset>(Arg).setConstant(2);
     get<LROffset>(Arg)=0.01;
 
-    //typeof(Arg)
-
 
     algo.initialize(
                     [](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();},

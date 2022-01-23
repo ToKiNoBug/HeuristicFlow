@@ -32,8 +32,9 @@ namespace OptimT {
 template<size_t DIM>
 using stdVar_t = typename std::conditional<DIM==Dynamic,std::vector<double>,std::array<double,DIM>>::type;
 
-template<class Var_t,   //Var_t must support operator[] and public function size();
-         size_t DIM,    //Use 0 as Dynamic
+///Generalized PSO solver
+template<class Var_t,
+         size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
@@ -136,13 +137,13 @@ using PSO_std = PSO<stdVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 ///Array type when using Eigen array(s)
 template<size_t DIM>
 using EigenVar_t = typename std::conditional<DIM==Dynamic,Eigen::ArrayXd,Eigen::Array<double,DIM,1>>::type;
+///Array type when using Eigen array(s)
+
 
 ///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
-template<size_t DIM,
-        FitnessOption FitnessOpt,
-         RecordOption RecordOpt,
-         class ...Args>
+template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class ...Args>
 using PSO_Eigen = PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
+///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
@@ -152,6 +153,7 @@ template<
          RecordOption RecordOpt,
          class ...Args>
 class PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>
+///Partial specilization for PSO using Eigen's fix-sized Array
     : public PSOBase<EigenVar_t<DIM>,DIM,double,RecordOpt,Args...>
 {
 public:

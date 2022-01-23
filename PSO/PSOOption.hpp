@@ -38,12 +38,17 @@ public:
         learnFactorP=2;
         learnFactorG=2;
     }
-
+    ///size of population
     size_t populationSize;
+    ///maximum allowed generation
     size_t maxGeneration;
+    ///maximun allowed failtimes;
     size_t maxFailTimes;
+    ///speed factor
     double inertiaFactor;
+    ///pBest factor
     double learnFactorP;
+    ///gBest factor
     double learnFactorG;
 };
 
