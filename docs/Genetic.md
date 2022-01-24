@@ -1,6 +1,6 @@
 # Genetic algorithm template class
 
-GA has some implementation of genetic algorithm solver.
+Genetic has some implementations of genetic algorithm solver.
 
 <br>
 <br>
