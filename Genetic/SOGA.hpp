@@ -136,7 +136,7 @@ protected:
             if(it==_eliteIt) {
                 continue;
             }
-            if(OtGlobal::randD()<=Base_t::_option.mutateProb) {
+            if(randD()<=Base_t::_option.mutateProb) {
                 Base_t::_mutateFun(&it->self,&Base_t::args());
                 it->setUncalculated();
             }

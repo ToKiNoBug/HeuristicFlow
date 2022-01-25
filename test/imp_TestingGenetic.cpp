@@ -51,7 +51,7 @@ void testAckley_withRecord() {
                 //initializer for array<double,2>
     [](array<double,2>* x,const typeof(args) * a) {
         for(uint32_t idx=0;idx<x->size();idx++) {
-            x->operator[](idx)=OtGlobal::randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
+            x->operator[](idx)=randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
         }},
     //Ackely function
     [](const array<double,2>* _x,const typeof(args) *,double * f) {
@@ -79,7 +79,7 @@ void testAckley_withRecord() {
     //mutate
     [](array<double,2>* x,const typeof(args) * a) {
         uint8_t mutateIdx=rand()%x->size();
-        x->operator[](mutateIdx)+=get<LrIdx>(*a)*OtGlobal::randD(-1,1);
+        x->operator[](mutateIdx)+=get<LrIdx>(*a)*randD(-1,1);
         if(rand()%2)
             x->operator[](mutateIdx)*=-1;
         for(uint32_t idx=0;idx<x->size();idx++) {
@@ -123,14 +123,14 @@ void testSingleNumber() {
     opt.populationSize=100;
     opt.maxGenerations=3000;
     algo.initialize(
-        [](double * x,const tuple<>*){*x=OtGlobal::randD();},
+        [](double * x,const tuple<>*){*x=randD();},
         [](const double * x,const tuple<>*,double * f){*f=1.0/(abs(*x-3.0)+1e-8);},
         [](const double * x,const double *y,double *X,double *Y,const tuple<>*)
             {double mean=(*x+*y)/2;*X=(*x+mean)/2;*Y=(*y+mean)/2;},
         [](double * x,const tuple<>*)
             {
         //if(rand()%2)*x*=-1;
-             *x+=OtGlobal::randD(-1,1)*0.5;},
+             *x+=randD(-1,1)*0.5;},
     nullptr,
     opt,
     tuple<>()
@@ -184,7 +184,7 @@ void testWithEigenLib() {
         }},
     [](Eigen::Array4d*x,const typeof(Arg)* arg) {
         uint32_t idx=rand()%4;
-        x->operator()(idx)+=OtGlobal::randD(-1,1)*get<LROffset>(*arg);
+        x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
 
         if(x->operator()(idx)>get<MaxOffset>(*arg)(idx)) {
             x->operator()(idx)=get<MaxOffset>(*arg)(idx);
@@ -212,7 +212,7 @@ void testTSP(const uint32_t PointNum) {
     for(uint32_t i=0;i<PointNum;i++) {
         points.emplace_back();
         for(auto & i : points.back()) {
-            i=OtGlobal::randD();
+            i=randD();
         }
     }
     /*
@@ -243,7 +243,7 @@ void testTSP(const uint32_t PointNum) {
         const uint32_t permL=get<dataIdx>(*args)->size();
         x->resize(permL);
         for(uint32_t i=0;i<permL;i++) {
-            x->at(i)=OtGlobal::randD();
+            x->at(i)=randD();
         }
     };
 
@@ -296,9 +296,9 @@ void testTSP(const uint32_t PointNum) {
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
-        if(OtGlobal::randD()<0.5) {//modify one element's value
+        if(randD()<0.5) {//modify one element's value
             double & v=x->at(std::rand()%permL);
-            v+=OtGlobal::randD(-0.01,0.01);
+            v+=randD(-0.01,0.01);
             v=min(v,1.0);
             v=max(v,0.0);
         }
@@ -344,7 +344,7 @@ void testNSGA2_ZDT3() {
     void (*iFun)(std::array<double,XNum>*,const std::tuple<>*) =
     [] (std::array<double,XNum> * x,const std::tuple<>*) {
         for(size_t i=0;i<XNum;i++) {
-            x->at(i)=OptimT::OtGlobal::randD();
+            x->at(i)=OptimT::randD();
         }
     };
 
@@ -371,8 +371,8 @@ void testNSGA2_ZDT3() {
         for(size_t i=0;i<XNum;i++) {
             //discrete
             /*
-            ch1->at(i)=(OptimT::OtGlobal::randD()<0.5)?p1->at(i):p2->at(i);
-            ch2->at(i)=(OptimT::OtGlobal::randD()<0.5)?p1->at(i):p2->at(i);
+            ch1->at(i)=(OptimT::randD()<0.5)?p1->at(i):p2->at(i);
+            ch2->at(i)=(OptimT::randD()<0.5)?p1->at(i):p2->at(i);
             */
             ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
             ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
@@ -382,9 +382,9 @@ void testNSGA2_ZDT3() {
 
     void (*mFun)(std::array<double,XNum>*,const std::tuple<>*)=
             [](std::array<double,XNum>*x,const std::tuple<>*){
-        const size_t mutateIdx=size_t(OptimT::OtGlobal::randD(0,XNum))%XNum;
+        const size_t mutateIdx=size_t(OptimT::randD(0,XNum))%XNum;
 
-        x->at(mutateIdx)+=0.005*OptimT::OtGlobal::randD(-1,1);
+        x->at(mutateIdx)+=0.005*OptimT::randD(-1,1);
 
         x->at(mutateIdx)=std::min(x->at(mutateIdx),1.0);
         x->at(mutateIdx)=std::max(x->at(mutateIdx),0.0);
@@ -427,7 +427,7 @@ void testNSGA2_Kursawe() {
             PARETO_FRONT_DONT_MUTATE> algo;
     auto iFun=[](std::array<double,3> * x,const std::tuple<>*) {
         for(auto & i : *x) {
-            i=OtGlobal::randD(-5,5);
+            i=randD(-5,5);
         }
     };
     auto fFun=[](const std::array<double,3> * x,const std::tuple<>*,std::array<double,2> *f) {
@@ -452,8 +452,8 @@ void testNSGA2_Kursawe() {
     };
 
     auto mFun=[](std::array<double,3> * x,const std::tuple<>*) {
-        const size_t idx=size_t(OtGlobal::randD(0,3))%3;
-        x->at(idx)+=0.1*OtGlobal::randD(-1,1);
+        const size_t idx=size_t(randD(0,3))%3;
+        x->at(idx)+=0.1*randD(-1,1);
         x->at(idx)=min(x->at(idx),5.0);
         x->at(idx)=max(x->at(idx),-5.0);
     };
@@ -498,7 +498,7 @@ void testNSGA2_Binh_and_Korn() {
             PARETO_FRONT_DONT_MUTATE> algo;
     auto iFun=[](std::array<double,2> * x,const std::tuple<>*) {
         for(auto & i : *x) {
-            i=OtGlobal::randD(-5,5);
+            i=randD(-5,5);
         }
     };
     auto fFun=[](const std::array<double,2> * _x,const std::tuple<>*,std::array<double,2> *f) {
@@ -528,8 +528,8 @@ void testNSGA2_Binh_and_Korn() {
     };
 
     auto mFun=[](std::array<double,2> * x,const std::tuple<>*) {
-        const size_t idx=size_t(OtGlobal::randD(0,2))%2;
-        x->at(idx)+=0.1*OtGlobal::randD(-1,1);
+        const size_t idx=size_t(randD(0,2))%2;
+        x->at(idx)+=0.1*randD(-1,1);
         x->at(0)=min(x->at(0),5.0);
         x->at(0)=max(x->at(0),0.0);
         x->at(1)=min(x->at(1),3.0);

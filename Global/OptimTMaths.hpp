@@ -1,7 +1,16 @@
+#ifndef OptimTMaths_HPP
+#define OptimTMaths_HPP
+
 #include <stdint.h>
 #include <type_traits>
 #include <cmath>
 namespace OptimT {
+
+inline double sign(double x) {
+    if(x>0) return 1;
+    if(x<0) return -1;
+    return 0;
+}
 
 namespace OptimTPrivate {
 
@@ -50,3 +59,5 @@ val_t power(val_t v,int64_t p) {
 }
 
 }
+
+#endif  //  OptimTMaths_HPP

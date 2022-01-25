@@ -398,7 +398,7 @@ protected:
     ///mutate operation
     virtual void mutate() {
         for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
-            if(OtGlobal::randD()<=Base_t::_option.mutateProb) {
+            if(randD()<=Base_t::_option.mutateProb) {
                 if(ProtectPF){
                     if(_pfGenes.find(&*it)!=_pfGenes.end()) {
                         continue;

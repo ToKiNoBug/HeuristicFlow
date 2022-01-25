@@ -49,7 +49,7 @@ public:
     ///Default function for initializing
     static void default_iFun(std::array<double,N> * x,const ArgsType * arg) {
         for(size_t idx=0;idx<N;idx++) {
-            x->at(idx)=OtGlobal::randD(
+            x->at(idx)=randD(
                         std::get<tuple_minIdx>(*arg),
                         std::get<tuple_maxIdx>(*arg));
         }
@@ -78,9 +78,9 @@ public:
     }
     ///Default function for mutation
     static void default_mFun(std::array<double,N> * x,const ArgsType * arg) {
-        const size_t idx=size_t(OtGlobal::randD(0,N))%N;
+        const size_t idx=size_t(randD(0,N))%N;
         double & m=x->at(idx);
-        m+=std::get<tuple_learningRateIdx>(*arg)*OtGlobal::randD(-1,1);
+        m+=std::get<tuple_learningRateIdx>(*arg)*randD(-1,1);
         m=std::min(m,std::get<tuple_maxIdx>(*arg)[idx]);
         m=std::max(m,std::get<tuple_minIdx>(*arg)[idx]);
     }

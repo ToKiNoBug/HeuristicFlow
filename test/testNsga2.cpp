@@ -187,7 +187,7 @@ bool testNsga2::isBetter(const std::array<double,2>& A,const std::array<double,2
 void testNsga2::mutate() {
 
     for(auto & i : _population) {
-        if(OptimT::OtGlobal::randD()<_option.mutateProb) {
+        if(OptimT::randD()<_option.mutateProb) {
             _mutateFun(&i.self,&_args);
             i.setUncalculated();
         }
@@ -260,8 +260,8 @@ void runNSGA2() {
 
     algo.initialize(
                 [](Var_t* v,const Args_t *) {
-        v->at(0)=OtGlobal::randD(0,5);
-        v->at(1)=OtGlobal::randD(0,3);},
+        v->at(0)=randD(0,5);
+        v->at(1)=randD(0,3);},
     [](const Var_t * v,const Args_t *,std::array<double,2>*fitness) {
         const double & x=v->at(0),y=v->at(1);
         fitness->at(0)=4*x*x+4*y*y;
@@ -269,14 +269,14 @@ void runNSGA2() {
         },
     [](const Var_t * p1,const Var_t * p2,Var_t * c1,Var_t * c2,const Args_t *) {
         for(uint32_t idx=0;idx<p1->size();idx++) {
-            c1->at(idx)=(OtGlobal::randD()<0.5)?p1->at(idx):p2->at(idx);
-            c2->at(idx)=(OtGlobal::randD()<0.5)?p1->at(idx):p2->at(idx);
+            c1->at(idx)=(randD()<0.5)?p1->at(idx):p2->at(idx);
+            c2->at(idx)=(randD()<0.5)?p1->at(idx):p2->at(idx);
         } },
     [](Var_t * v,const Args_t *) {
-        v->at(0)+=OtGlobal::randD(-0.05,0.05);
+        v->at(0)+=randD(-0.05,0.05);
         v->at(0)=std::max(v->at(0),0.0);
         v->at(0)=std::min(5.0,v->at(0));
-        v->at(1)+=OtGlobal::randD(-0.05,0.05);
+        v->at(1)+=randD(-0.05,0.05);
         v->at(1)=std::max(v->at(1),0.0);
         v->at(1)=std::min(3.0,v->at(1));
     },

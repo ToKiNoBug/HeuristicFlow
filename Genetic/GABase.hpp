@@ -228,7 +228,7 @@ protected:
         crossoverQueue.reserve(_population.size());
 
         for(GeneIt_t it=_population.begin();it!=_population.end();it++) {
-            if(OtGlobal::randD()<=_option.crossoverProb) {
+            if(randD()<=_option.crossoverProb) {
                 crossoverQueue.emplace_back(it);
             }
         }
