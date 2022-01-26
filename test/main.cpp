@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingPSO.h"
+#include "def_TestingGenetic.h"
 
 #include <unordered_set>
 
@@ -29,25 +29,7 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    testTSP(500);
-    /*
-    static const size_t N=10000000;
-    static const size_t POW=10;
-    Eigen::ArrayXd a,b;
-    a.setLinSpaced(N,1,2);
-    system("pause");
-    clock_t c=clock();
-    for(size_t i=0;i<N;i++) {
-        a(i)=
-        OptimT::power<POW>(a(i))
-        //OptimT::power(a(i),POW)
-        ;
-    }
-    c=clock()-c;
-    cout<<"Mean time cost = "<<1e9*double(c)/CLOCKS_PER_SEC/N<<" nano seconds"<<endl;
-    cout<<a.mean()<<endl;
-    */
-    //cout<<OptimT::power(1.01,890)<<endl;
+    testNSGA2_Binh_and_Korn();
     system("pause");
     return 0;
 }

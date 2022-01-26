@@ -20,16 +20,9 @@ This file is part of OptimTemplates.
 #ifndef NSGA2_HPP
 #define NSGA2_HPP
 
-#include "./GABase.hpp"
-#include <queue>
-#include <unordered_set>
+#include "./MOGABase.hpp"
 namespace OptimT
 {
-///whether to protect pareto front when mutation or not
-enum PFOption : unsigned char {
-    PARETO_FRONT_DONT_MUTATE=true,
-    PARETO_FRONT_CAN_MUTATE=false
-};
 
 enum CompareOption : int64_t {
     CompareByCongestion=-1,
@@ -43,11 +36,25 @@ template<typename Var_t,size_t ObjNum,
          RecordOption Record,
          PFOption ProtectPF,
          class ...Args>
-class NSGA2 : public GABase<Var_t,std::array<double,ObjNum>,Record,Args...>
+class NSGA2 
+    : public MOGABase<Var_t,
+                    ObjNum,
+                    std::array<double,ObjNum>,
+                    isGreaterBetter,
+                    Record,
+                    ProtectPF,
+                    Args...>
+//public GABase<Var_t,std::array<double,ObjNum>,Record,Args...>
 {
 public:
     using This_t = NSGA2;
-    using Base_t = GABase<Var_t,std::array<double,ObjNum>,Record,Args...>;
+    using Base_t = MOGABase<Var_t,
+                    ObjNum,
+                    std::array<double,ObjNum>,
+                    isGreaterBetter,
+                    Record,
+                    ProtectPF,
+                    Args...>;
     using Fitness_t = std::array<double,ObjNum>;
     OPTIMT_MAKE_GABASE_TYPES
 
@@ -122,27 +129,6 @@ public:
         return best;
     }
 
-    ///get pareto front in vec
-    void paretoFront(std::vector<Fitness_t> & front) const {
-        front.clear();  front.reserve(_pfGenes.size());
-        for(const Gene* i : _pfGenes) {
-            front.emplace_back(i->_Fitness);
-        }
-        return;
-    }
-
-    void paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front) const {
-        front.clear();
-        front.reserve(_pfGenes.size());
-        for(const Gene* i : _pfGenes) {
-            front.emplace_back(std::make_pair(&(i->self),&(i->_Fitness)));
-        }
-    }
-
-    const std::unordered_set<const Gene*> & pfGenes() const {
-        return _pfGenes;
-    }
-
     ///temporary struct to store infos when selection
     struct infoUnit
     {
@@ -157,15 +143,12 @@ public:
     };
 
 protected:
-    size_t prevFrontSize;
-    size_t prevPFCheckSum;
-    std::unordered_set<const Gene*> _pfGenes;
     congestComposeFun _ccFun;
 
     virtual void customOptWhenInitialization() {
-        prevFrontSize=-1;
-        _pfGenes.clear();
-        _pfGenes.reserve(Base_t::_option.populationSize*2);
+        this->prevFrontSize=-1;
+        this->_pfGenes.clear();
+        this->_pfGenes.reserve(Base_t::_option.populationSize*2);
         if(_ccFun==nullptr) {
             setCongestComposeFun();
         }
@@ -285,34 +268,23 @@ protected:
         {
             const size_t curFrontSize=paretoLayers.front().size();
 
-            _pfGenes.clear();
+            this->_pfGenes.clear();
             for(const auto i :paretoLayers.front()) {
-                _pfGenes.emplace(&*(i->iterator));
+                this->_pfGenes.emplace(&*(i->iterator));
             }
 
-            if(prevFrontSize!=curFrontSize) {
+            if(this->prevFrontSize!=curFrontSize) {
                 Base_t::_failTimes=0;
-                prevFrontSize=curFrontSize;
+                this->prevFrontSize=curFrontSize;
             }
             else {
-                std::vector<const Gene*> pfvec;
-                pfvec.reserve(_pfGenes.size());
-                for(auto i : _pfGenes) {
-                    pfvec.emplace_back(i);
-                }
-                std::sort(pfvec.begin(),pfvec.end());
+                size_t checkSum=this->makePFCheckSum();
 
-                static const auto hashFun=_pfGenes.hash_function();
-                std::size_t checkSum=hashFun(pfvec.front());
-                for(size_t i=1;i<pfvec.size();i++) {
-                    checkSum^=hashFun(pfvec[i]);
-                }
-
-                if(prevPFCheckSum==checkSum) {
+                if(this->prevPFCheckSum==checkSum) {
                     Base_t::_failTimes++;
                 } else {
                     Base_t::_failTimes=0;
-                    prevPFCheckSum=checkSum;
+                    this->prevPFCheckSum=checkSum;
                 }
             }
         }
@@ -400,7 +372,7 @@ protected:
         for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
             if(randD()<=Base_t::_option.mutateProb) {
                 if(ProtectPF){
-                    if(_pfGenes.find(&*it)!=_pfGenes.end()) {
+                    if(this->_pfGenes.find(&*it)!=this->_pfGenes.end()) {
                         continue;
                     }
                 }
