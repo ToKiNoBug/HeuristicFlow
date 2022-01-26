@@ -27,8 +27,8 @@ using namespace std;
 OptimT_MAKE_GLOBAL
 
 int main()
-{
-    testNSGA2_Binh_and_Korn();
+{   
+    testDistance(3);
     //testTSP(100);
     system("pause");
     return 0;

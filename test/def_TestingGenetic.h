@@ -40,6 +40,8 @@ void testAckley_withRecord();
 ///TSP problem
 void testTSP(const unsigned int pointNum=10);
 
+void testDistance(const size_t=4);
+
 ///Binh and Korn function
 void testNSGA2_Binh_and_Korn();
 

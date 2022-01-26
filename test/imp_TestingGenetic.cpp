@@ -577,3 +577,69 @@ void testNSGA2_Binh_and_Korn() {
     cout<<"];"<<endl;
     */
 }
+
+
+void testDistance(const size_t N) {
+static const size_t Dim=4;
+using Point_t = Eigen::Array<double,Dim,1>;
+using solver_t = NSGA2<Point_t,
+    Dynamic,
+    DoubleVectorOption::Eigen,
+    FITNESS_LESS_BETTER,
+    DONT_RECORD_FITNESS,
+    PARETO_FRONT_DONT_MUTATE,
+    Eigen::Array<double,Dim,Eigen::Dynamic>>;
+
+using Base_t = solver_t;
+OptimT_MAKE_GABASE_TYPES
+using Fitness_t = solver_t::Fitness_t;
+
+static const double r=0.2;
+
+initializeFun iFun=[](Point_t *p,const ArgsType *) {
+p->setRandom();
+};
+
+fitnessFun fFun=[](const Point_t * p,const ArgsType* arg,Fitness_t *f) {
+const size_t dotNum=std::get<0>(*arg).cols();
+auto diff=(std::get<0>(*arg)-(p->replicate(1,dotNum))).square();
+
+*f=diff.colwise().sum();
+
+};
+
+crossoverFun cFun=[](const Point_t * p1,const Point_t * p2,
+    Point_t * c1,Point_t * c2,
+    const ArgsType*) {
+    *c1=r*(*p1)+(1-r)*(*p2);
+    *c2=r*(*p2)+(1-r)*(*p1);
+};
+
+mutateFun mFun=[](Point_t * p,const ArgsType *) {
+*p+=Point_t::Random()*0.01;
+};
+
+solver_t solver;
+solver.setObjectiveNum(Dim);
+
+GAOption opt;
+opt.maxGenerations=5000;
+opt.maxFailTimes=1000;
+opt.populationSize=200;
+
+ArgsType args;
+std::get<0>(args)=(Eigen::Array<double,Dim,Eigen::Dynamic>::Random(Dim,N)*0.5);
+
+solver.initialize(iFun,fFun,cFun,mFun,nullptr,opt,args);
+
+clock_t t=clock();
+solver.run();
+t=std::clock()-t;
+cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
+    <<" seconds and "<<solver.generation()<<"generations"<<endl;
+
+for(const auto & i : solver.pfGenes()) {
+    cout<<i->_Fitness.transpose()<<endl;
+}
+
+}
