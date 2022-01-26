@@ -8,19 +8,18 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-project(OptimT_Test LANGUAGES CXX)
+project(OptimT_Lab LANGUAGES CXX)
 
 
 include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
-add_executable(OptimT_Test
-    imp_TestingMatrix.cpp   #Test simple matrix
-    imp_TestingGenetic.cpp  #Test SOGA and NSGA2
-    imp_TestingPSO.cpp  #Test PSO
+add_executable(OptimT_Lab
+    testNsga2.cpp
+    testNsga3.cpp
     main.cpp)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(OptimT_Test PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(OptimT_Lab PUBLIC OpenMP::OpenMP_CXX)
 endif()
