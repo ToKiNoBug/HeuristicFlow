@@ -40,7 +40,7 @@ public:
         FITNESS_LESS_BETTER,
         DONT_RECORD_FITNESS,
         std::array<double,N>,std::array<double,N>,double>::Base_t;
-    OPTIMT_MAKE_GABASE_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
     static const size_t tuple_minIdx=0;
     static const size_t tuple_maxIdx=1;

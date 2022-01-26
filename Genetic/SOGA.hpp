@@ -25,7 +25,14 @@ This file is part of OptimTemplates.
 namespace OptimT
 {
 
-///single object genetic algorithm solver(real fitness value)
+/**
+   *  @brief Single object genetic algorithm solver(real fitness value).
+   *
+   *  @tparam Var_t  Type of decisition variable.
+   *  @tparam isGreaterBetter Whether greater fitness value means better.
+   *  @tparam Record  Whether the solver records fitness changelog.
+   *  @tparam ...Args  Type of other parameters.
+  */
 template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args>
 class SOGA : public GABase<Var_t,double,Record,Args...>
 {
@@ -45,7 +52,7 @@ public:
 
   };
     using Base_t = GABase<Var_t,double,Record,Args...>;
-    OPTIMT_MAKE_GABASE_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
     virtual double bestFitness() const {
         return _eliteIt->_Fitness;

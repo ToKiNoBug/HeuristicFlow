@@ -13,6 +13,17 @@ enum PFOption : unsigned char {
     PARETO_FRONT_CAN_MUTATE=false
 };
 
+/**
+   *  @brief Base class for multi-objective genetic algorithm solver.
+   *
+   *  @tparam Var_t  Type of decisition variable.
+   *  @tparam ObjNum Numbers of objectives.
+   *  @tparam Fitness_t Type of fitness value.
+   *  @tparam fOpt Whether greater fitness value means better.
+   *  @tparam rOpt Whether the solver records fitness changelog.
+   *  @tparam pfOpt Whether to protect the Pareto front from mutation.
+   *  @tparam ...Args Type of other parameters.
+  */
 template<typename Var_t,
         size_t ObjNum,
         typename Fitness_t,
@@ -28,7 +39,7 @@ public:
     virtual ~MOGABase() {};
 
     using Base_t = GABase<Var_t,Fitness_t,rOpt,Args...>;
-    OPTIMT_MAKE_GABASE_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
     ///get pareto front in vec
     void paretoFront(std::vector<Fitness_t> & front) const {

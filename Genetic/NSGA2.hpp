@@ -30,13 +30,24 @@ enum CompareOption : int64_t {
 };
 
 
-///NSGA2 MOGA solver
+///
+/**
+   *  @brief NSGA2 MOGA solver. Suitable for not too many objectives.
+   *
+   *  @tparam Var_t  Type of decisition variable.
+   *  @tparam ObjNum Numbers of objectives.
+   *  @tparam Fitness_t Type of fitness value.
+   *  @tparam fOpt Whether greater fitness value means better.
+   *  @tparam rOpt Whether the solver records fitness changelog.
+   *  @tparam pfOpt Whether to protect the Pareto front from mutation.
+   *  @tparam ...Args Type of other parameters.
+  */
 template<typename Var_t,size_t ObjNum,
          FitnessOption isGreaterBetter,
          RecordOption Record,
          PFOption ProtectPF,
          class ...Args>
-class NSGA2 
+class NSGA2
     : public MOGABase<Var_t,
                     ObjNum,
                     std::array<double,ObjNum>,
@@ -44,7 +55,6 @@ class NSGA2
                     Record,
                     ProtectPF,
                     Args...>
-//public GABase<Var_t,std::array<double,ObjNum>,Record,Args...>
 {
 public:
     using This_t = NSGA2;
@@ -56,7 +66,7 @@ public:
                     ProtectPF,
                     Args...>;
     using Fitness_t = std::array<double,ObjNum>;
-    OPTIMT_MAKE_GABASE_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
 

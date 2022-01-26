@@ -38,8 +38,18 @@ This file is part of OptimTemplates.
 #include "../OptimTemplates/Global"
 
 namespace OptimT {
-
-///Genetic algorithm base class
+    /**
+   *  @brief Genetic algorithm base class. 
+   *  It's an abstrcat base class for all genetic algorithm solvers.
+   *
+   *  @author TokiNoBug
+   * 
+   *  @tparam Var_t  Type of decisition variable
+   *  @tparam Fitness_t  Type of fitness value(objective value)
+   *  @tparam Record  Whether the solver records fitness changelog
+   *  @tparam ...Args  Type of other parameters.
+   * 
+  */
 template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args>
 class GABase {
 public:
@@ -268,7 +278,7 @@ protected:
 
 
 
-#define OPTIMT_MAKE_GABASE_TYPES \
+#define OptimT_MAKE_GABASE_TYPES \
 using Gene = typename Base_t::Gene; \
 using GeneIt_t = typename Base_t::GeneIt_t ; \
 using initializeFun = typename Base_t::initializeFun; \
@@ -278,16 +288,24 @@ using mutateFun = typename Base_t::mutateFun; \
 using otherOptFun = typename Base_t::otherOptFun; \
 using ArgsType = typename Base_t::ArgsType; 
 
+#define OPTIMT_MAKE_GABASE_TYPES OptimT_MAKE_GABASE_TYPES
 
-
-///partial specialization for GABase with record
+/**
+   *  @brief partial specialization for GABase with record.
+   *  It's an abstrcat base class for all genetic algorithm solvers that records fitness.
+   *
+   *  @tparam Var_t  Type of decisition variable
+   *  @tparam Fitness_t  Type of fitness value(objective value)
+   *  @tparam RecordOption  Whether the solver records fitness changelog
+   *  @tparam ...Args  Type of other parameters.
+  */
 template<typename Var_t,typename Fitness_t,class ...Args>
 class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args...>
     : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>
 {
 public:
     using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>;
-    OPTIMT_MAKE_GABASE_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
 public:
     GABase() {
