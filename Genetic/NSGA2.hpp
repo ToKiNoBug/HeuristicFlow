@@ -30,6 +30,7 @@ enum CompareOption : int64_t {
     CompareByDominantedBy=-2
 };
 
+#define OptimT_NSGA2_RTObjNum_MaxObjNum 255
 
 #ifdef OptimT_GA_USE_EIGEN
 template<DoubleVectorOption dvo,size_t Dim>
@@ -105,25 +106,25 @@ public:
     }
 
     static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
-        double result=f->at(0);
-        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
-            result+=f->at(objIdx);
+        double result=f->operator[](0);
+        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+            result+=f->operator[](objIdx);
         }
         return result;
     };
 
     static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
-        double result=OT_square(f->at(0));
-        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
-            result+=OT_square(f->at(objIdx));
+        double result=OT_square(f->operator[](0));
+        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+            result+=OT_square(f->operator[](objIdx));
         }
         return std::sqrt(result);
     }
 
     static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
-        double result=f->at(0);
-        for(size_t objIdx=1;objIdx<ObjNum;objIdx++) {
-            result=std::max(f->at(objIdx),result);
+        double result=f->operator[](0);
+        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+            result=std::max(f->operator[](objIdx),result);
         }
         return result;
     }
@@ -131,8 +132,8 @@ public:
     template<int64_t p>
     static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
         double result=0;
-        for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
-            result+=power<p>(f->at(objIdx));
+        for(size_t objIdx=0;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+            result+=power<p>(f->operator[](objIdx));
         }
         return std::pow(result,1.0/p);
     }
@@ -141,11 +142,11 @@ public:
         Fitness_t best=Base_t::_population.front()._Fitness;
         for(const Gene & i : Base_t::_population) {
             if(isGreaterBetter) {
-                for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+                for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
                     best[objIdx]=std::max(best[objIdx],i._Fitness[objIdx]);
                 }
             } else {
-                for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+                for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
                     best[objIdx]=std::min(best[objIdx],i._Fitness[objIdx]);
                 }
             }
@@ -181,15 +182,15 @@ protected:
     ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         //if(A==B) return false;
-        for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+        for(size_t objIdx=0;objIdx<A->size();objIdx++) {
             if(isGreaterBetter) {
                 //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->at(objIdx))<(B->at(objIdx))) {
+                if((A->operator[](objIdx))<(B->operator[](objIdx))) {
                     return false;
                 }
             } else {
                 //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->at(objIdx))>(B->at(objIdx))) {
+                if((A->operator[](objIdx))>(B->operator[](objIdx))) {
                     return false;
                 }
             }
@@ -216,8 +217,10 @@ protected:
     ///fast nondominated sorting
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
-        static const std::array<cmpFun_t,ObjNum> fitnessCmpFuns
-                =expand<0,ObjNum-1>();
+        static const size_t objCapacity=
+                (ObjNum==0)?(OptimT_NSGA2_RTObjNum_MaxObjNum):ObjNum;
+        static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
+                =expand<0,objCapacity-1>();
 
         const size_t popSizeBefore=Base_t::_population.size();
         std::vector<infoUnit> pop;
@@ -339,7 +342,7 @@ protected:
 #ifdef OptimT_NSGA2_DO_PARALLELIZE
 #pragma omp parallel for
 #endif
-            for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
+            for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
                 //if don't parallelize,  cursortSpace is only a reference to sortSpace;
                 //otherwise it's copied to enable sorting concurrently
                 std::vector<infoUnit*>
@@ -433,12 +436,6 @@ private:
         expandStruct<beg,end>::expand(funs.data());
         return funs;
     }
-
-
-#ifndef OptimT_NO_STATICASSERT
-    static_assert(std::integral_constant<bool,(ObjNum>1)>::value,
-    "OptimTemplates : You used less than 2 object functions in NSGA2");
-#endif
 
 #ifdef OptimT_NSGA2_DO_PARALLELIZE
 #ifndef OptimT_DO_PARALLELIZE

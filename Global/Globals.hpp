@@ -28,7 +28,7 @@ This file is part of OptimTemplates.
 #include "./Chaotic.hpp"
 #include "./Randoms.hpp"
 #include "./OptimTMaths.hpp"
-
+#include <type_traits>
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
 #include <thread>
@@ -38,8 +38,6 @@ namespace OptimT
 {
 ///macro function for square
 #define OT_square(x) (x)*(x)
-
-
 
 ///Size identifier for dynamic size (fitness or var)
 const size_t Dynamic = 0;
@@ -56,7 +54,7 @@ const float nInfF=-pinfF;
 ///negative infinet value for double
 const double ninfD=-pinfD;
 
-///Empty class to put global variable and functions, instances of it is meanning less
+///Empty class to put global variable and functions, instances of it is meanningless
 class OtGlobal
 {
 public:
