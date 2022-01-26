@@ -19,6 +19,8 @@ This file is part of OptimTemplates.
 
 #ifndef PSOABSTRCAT_HPP
 #define PSOABSTRCAT_HPP
+
+#include <OptimTemplates/Global>
 #include "PSOOption.hpp"
 
 #ifndef OptimT_NO_OUTPUT

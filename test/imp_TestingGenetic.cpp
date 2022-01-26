@@ -243,7 +243,7 @@ void testTSP(const uint32_t PointNum) {
         const uint32_t permL=get<dataIdx>(*args)->size();
         x->resize(permL);
         for(uint32_t i=0;i<permL;i++) {
-            x->at(i)=randD();
+            x->operator[](i)=randD();
         }
     };
 
@@ -253,7 +253,7 @@ void testTSP(const uint32_t PointNum) {
         const uint32_t permL=x->size();
         vector<permUnit> perm(permL);
         for(uint32_t i=0;i<permL;i++) {
-            perm[i].first=x->at(i);
+            perm[i].first=x->operator[](i);
             perm[i].second=i;
         }
         std::sort(perm.begin(),perm.end(),
@@ -263,8 +263,8 @@ void testTSP(const uint32_t PointNum) {
 
         double L=0;
         for(uint32_t i=1;i<permL;i++) {
-            const Point_t &prev=get<dataIdx>(*args)->at(perm[i-1].second);
-            const Point_t &cur=get<dataIdx>(*args)->at(perm[i].second);
+            const Point_t &prev=get<dataIdx>(*args)->operator[](perm[i-1].second);
+            const Point_t &cur=get<dataIdx>(*args)->operator[](perm[i].second);
             double curL=0;
             for(uint8_t d=0;d<DIM;d++) {
                 curL+=(prev[d]-cur[d])*(prev[d]-cur[d]);
@@ -289,15 +289,15 @@ void testTSP(const uint32_t PointNum) {
         const uint32_t permL=p1->size();
         c1->resize(permL);c2->resize(permL);
         for(uint32_t i=0;i<permL;i++) {
-            c1->at(i)=(std::rand()%2)?p1->at(i):p2->at(i);
-            c2->at(i)=(std::rand()%2)?p1->at(i):p2->at(i);
+            c1->operator[](i)=(std::rand()%2)?p1->operator[](i):p2->operator[](i);
+            c2->operator[](i)=(std::rand()%2)?p1->operator[](i):p2->operator[](i);
         }
     };
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
         if(randD()<0.5) {//modify one element's value
-            double & v=x->at(std::rand()%permL);
+            double & v=x->operator[](std::rand()%permL);
             v+=randD(-0.01,0.01);
             v=min(v,1.0);
             v=max(v,0.0);
@@ -308,7 +308,7 @@ void testTSP(const uint32_t PointNum) {
             //cout<<"flipB="<<flipB<<" , flipE"<<flipE<<endl;
             const uint32_t flipN=flipE-flipB+1;
             for(uint32_t flipped=0;flipped*2<=flipN;flipped++) {
-                swap(x->at(flipB+flipped),x->at(flipE-flipped));
+                swap(x->operator[](flipB+flipped),x->operator[](flipE-flipped));
             }
         }
     };
@@ -337,6 +337,7 @@ void testNSGA2_ZDT3() {
 
     OptimT::NSGA2<std::array<double,XNum>,
             2,
+            Std,
             FITNESS_LESS_BETTER,
             RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
@@ -344,23 +345,23 @@ void testNSGA2_ZDT3() {
     void (*iFun)(std::array<double,XNum>*,const std::tuple<>*) =
     [] (std::array<double,XNum> * x,const std::tuple<>*) {
         for(size_t i=0;i<XNum;i++) {
-            x->at(i)=OptimT::randD();
+            x->operator[](i)=OptimT::randD();
         }
     };
 
     void (*fFun)
             (const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f)
             =[](const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f) {
-      f->at(0)=x->at(0);
-      const double && f1=std::move(f->at(0));
+      f->operator[](0)=x->operator[](0);
+      const double && f1=std::move(f->operator[](0));
       double g=0;
       for(size_t i=1;i<XNum;i++) {
-          g+=x->at(i);
+          g+=x->operator[](i);
       }
       g=1+g*9.0/(XNum-1);
       double && f1_div_g=f1/g;
       double && h=1-std::sqrt(f1_div_g)-f1_div_g*std::sin(10*M_PI*f1);
-      f->at(1)=g*h;
+      f->operator[](1)=g*h;
     };
 
     void (*cFun)(const std::array<double,XNum>*,const std::array<double,XNum>*,
@@ -371,11 +372,11 @@ void testNSGA2_ZDT3() {
         for(size_t i=0;i<XNum;i++) {
             //discrete
             /*
-            ch1->at(i)=(OptimT::randD()<0.5)?p1->at(i):p2->at(i);
-            ch2->at(i)=(OptimT::randD()<0.5)?p1->at(i):p2->at(i);
+            ch1->operator[](i)=(OptimT::randD()<0.5)?p1->operator[](i):p2->operator[](i);
+            ch2->operator[](i)=(OptimT::randD()<0.5)?p1->operator[](i):p2->operator[](i);
             */
-            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
-            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+            ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
+            ch2->operator[](i)=r*p2->operator[](i)+(1-r)*p1->operator[](i);
         }
 
     };
@@ -384,10 +385,10 @@ void testNSGA2_ZDT3() {
             [](std::array<double,XNum>*x,const std::tuple<>*){
         const size_t mutateIdx=size_t(OptimT::randD(0,XNum))%XNum;
 
-        x->at(mutateIdx)+=0.005*OptimT::randD(-1,1);
+        x->operator[](mutateIdx)+=0.005*OptimT::randD(-1,1);
 
-        x->at(mutateIdx)=std::min(x->at(mutateIdx),1.0);
-        x->at(mutateIdx)=std::max(x->at(mutateIdx),0.0);
+        x->operator[](mutateIdx)=std::min(x->operator[](mutateIdx),1.0);
+        x->operator[](mutateIdx)=std::max(x->operator[](mutateIdx),0.0);
     };
 
     GAOption opt;
@@ -422,6 +423,7 @@ void testNSGA2_Kursawe() {
     //1<=i<=3,  -5<=x_i<=5
     NSGA2<std::array<double,3>,
             2,
+            Std,
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
@@ -433,29 +435,29 @@ void testNSGA2_Kursawe() {
     auto fFun=[](const std::array<double,3> * x,const std::tuple<>*,std::array<double,2> *f) {
         double f1=0,f2=0;
         for(int i=0;i<2;i++) {
-            f1+=-10*exp(-0.2*sqrt(OT_square(x->at(i))+OT_square(x->at(i+1))));
+            f1+=-10*exp(-0.2*sqrt(OT_square(x->operator[](i))+OT_square(x->operator[](i+1))));
         }
         for(int i=0;i<3;i++) {
-            f2+=pow(abs(x->at(i)),0.8)+5*sin(x->at(i)*x->at(i)*x->at(i));
+            f2+=pow(abs(x->operator[](i)),0.8)+5*sin(x->operator[](i)*x->operator[](i)*x->operator[](i));
         }
-        f->at(0)=f1;
-        f->at(1)=f2;
+        f->operator[](0)=f1;
+        f->operator[](1)=f2;
     };
 
     auto cFun=[](const std::array<double,3> *p1,const std::array<double,3> *p2,
             std::array<double,3> *ch1,std::array<double,3> *ch2,const std::tuple<>*) {
         for(int i=0;i<3;i++) {
             static const double r=0.2;
-            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
-            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+            ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
+            ch2->operator[](i)=r*p2->operator[](i)+(1-r)*p1->operator[](i);
         }
     };
 
     auto mFun=[](std::array<double,3> * x,const std::tuple<>*) {
         const size_t idx=size_t(randD(0,3))%3;
-        x->at(idx)+=0.1*randD(-1,1);
-        x->at(idx)=min(x->at(idx),5.0);
-        x->at(idx)=max(x->at(idx),-5.0);
+        x->operator[](idx)+=0.1*randD(-1,1);
+        x->operator[](idx)=min(x->operator[](idx),5.0);
+        x->operator[](idx)=max(x->operator[](idx),-5.0);
     };
 
     GAOption opt;
@@ -491,20 +493,24 @@ void testNSGA2_Kursawe() {
 
 void testNSGA2_Binh_and_Korn() {
     //0<=x_0<=5,  0<=x_1<=3
+    using solver_t = 
     NSGA2<std::array<double,2>,
             2,
+            DoubleVectorOption::Eigen,
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
-            PARETO_FRONT_DONT_MUTATE> algo;
+            PARETO_FRONT_DONT_MUTATE>;
+    solver_t algo;
+    using Fitness_t = typename solver_t::Fitness_t;
     auto iFun=[](std::array<double,2> * x,const std::tuple<>*) {
         for(auto & i : *x) {
             i=randD(-5,5);
         }
     };
-    auto fFun=[](const std::array<double,2> * _x,const std::tuple<>*,std::array<double,2> *f) {
-        double & f1=f->at(0);
-        double & f2=f->at(1);
-        const double x=_x->at(0),y=_x->at(1);
+    auto fFun=[](const std::array<double,2> * _x,const std::tuple<>*,Fitness_t *f) {
+        double & f1=f->operator[](0);
+        double & f2=f->operator[](1);
+        const double x=_x->operator[](0),y=_x->operator[](1);
         f1=4*(x*x+y*y);
         f2=OT_square(x-5)+OT_square(y-5);
 
@@ -522,24 +528,24 @@ void testNSGA2_Binh_and_Korn() {
             std::array<double,2> *ch1,std::array<double,2> *ch2,const std::tuple<>*) {
         for(int i=0;i<2;i++) {
             static const double r=0.2;
-            ch1->at(i)=r*p1->at(i)+(1-r)*p2->at(i);
-            ch2->at(i)=r*p2->at(i)+(1-r)*p1->at(i);
+            ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
+            ch2->operator[](i)=r*p2->operator[](i)+(1-r)*p1->operator[](i);
         }
     };
 
     auto mFun=[](std::array<double,2> * x,const std::tuple<>*) {
         const size_t idx=size_t(randD(0,2))%2;
-        x->at(idx)+=0.1*randD(-1,1);
-        x->at(0)=min(x->at(0),5.0);
-        x->at(0)=max(x->at(0),0.0);
-        x->at(1)=min(x->at(1),3.0);
-        x->at(1)=max(x->at(1),0.0);
+        x->operator[](idx)+=0.1*randD(-1,1);
+        x->operator[](0)=min(x->operator[](0),5.0);
+        x->operator[](0)=max(x->operator[](0),0.0);
+        x->operator[](1)=min(x->operator[](1),3.0);
+        x->operator[](1)=max(x->operator[](1),0.0);
     };
 
     GAOption opt;
     opt.maxGenerations=10000;
     opt.populationSize=200;
-    opt.maxFailTimes=200;
+    opt.maxFailTimes=-1;
 
     algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
 

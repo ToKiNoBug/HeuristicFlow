@@ -130,10 +130,8 @@ using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 
 #ifdef OptimT_PSO_USE_EIGEN
 
-///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class ...Args>
 using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
-///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 
 
 ///Partial specilization for PSO using Eigen's fix-sized Array

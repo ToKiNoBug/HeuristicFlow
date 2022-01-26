@@ -30,7 +30,9 @@ This file is part of OptimTemplates.
 #include "./OptimTMaths.hpp"
 #include <type_traits>
 #include <vector>
+#include <valarray>
 #include <array>
+
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
 #include <thread>
@@ -45,14 +47,27 @@ namespace OptimT
 const size_t Dynamic = 0;
 
 template<size_t Size>
-using stdVecD_t = typename std::conditional<Size==Dynamic,std::vector<double>,std::array<double,Size>>::type;
+using stdVecD_t = typename std::conditional<Size==Dynamic,std::valarray<double>,std::array<double,Size>>::type;
 
 #ifdef EIGEN_CORE_H
 ///Array type when using Eigen array(s)
-template<size_t DIM>
-using EigenVecD_t = typename std::conditional<DIM==Dynamic,Eigen::ArrayXd,Eigen::Array<double,DIM,1>>::type;
+template<size_t Size>
+using EigenVecD_t = typename std::conditional<Size==Dynamic,Eigen::ArrayXd,Eigen::Array<double,Size,1>>::type;
 
+template<DoubleVectorOption dvo,size_t Dim>
+using FitnessVec_t= typename
+    std::enable_if<dvo!=DoubleVectorOption::Custom,
+    typename std::conditional<
+    dvo==DoubleVectorOption::Eigen,
+    EigenVecD_t<Dim>,
+    stdVecD_t<Dim>>::type>::type;
+#else
+template<DoubleVectorOption dvo,size_t Dim>
+using FitnessVec_t= typename
+        std::enable_if<dvo==DoubleVectorOption::Std,stdVecD_t<Dim>>::type;
 #endif
+
+
 
 ///Infinet value for float
 const float pinfF=1.0f/0.0f;

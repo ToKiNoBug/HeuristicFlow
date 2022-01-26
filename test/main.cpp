@@ -19,8 +19,8 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-//#include "def_TestingPSO.h"
 #include "def_TestingGenetic.h"
+//#include "def_TestingPSO.h"
 
 using namespace std;
 

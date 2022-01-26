@@ -76,9 +76,9 @@ inline const char * Enum2String(ConstraintOption c) {
 
 ///which type of vector to use
 enum DoubleVectorOption {
-    Std,
-    Eigen,
-    Custom
+    Std='S',
+    Eigen='E',
+    Custom='C'
 };
 ///convert enumeration to string
 inline const char * Enum2String(DoubleVectorOption e) {

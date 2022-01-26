@@ -25,6 +25,7 @@ This file is part of OptimTemplates.
 #define OptimT_DO_PARALLELIZE
 #define OptimT_GA_USE_EIGEN
 #define OptimT_NSGA2_DO_PARALLELIZE
+#define OptimT_GENETIC_USE_EIGEN
 #include <OptimTemplates/Genetic>
 
 void testSingleNumber();
