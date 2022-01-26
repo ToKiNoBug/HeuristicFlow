@@ -38,6 +38,15 @@ This file is part of OptimTemplates.
 #include "../OptimTemplates/Global"
 
 namespace OptimT {
+
+
+#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
+#ifdef OptimT_GA_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
+#error You must include Eigen before you define OptimT_GA_USE_EIGEN! Include Eigen before OptimT.
+#endif
+#endif
+
+
     /**
    *  @brief Genetic algorithm base class. 
    *  It's an abstrcat base class for all genetic algorithm solvers.

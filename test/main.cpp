@@ -29,7 +29,15 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    testNSGA2_Binh_and_Korn();
+    OptimT::FitnessVec_t<OptimT::DoubleVectorOption::Std,5> stdV5;
+    //OptimT::FitnessVec_t<OptimT::DoubleVectorOption::Eigen,5> EigenV5;
+    //OptimT::FitnessVec_t<OptimT::DoubleVectorOption::Custom,5> customV5;
+    stdV5[0]=3;
+    //EigenV5(3)=2;
+    //customV5[2]=4;
+
+
+    //testNSGA2_Binh_and_Korn();
     system("pause");
     return 0;
 }

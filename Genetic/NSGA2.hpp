@@ -21,6 +21,7 @@ This file is part of OptimTemplates.
 #define NSGA2_HPP
 
 #include "./MOGABase.hpp"
+#include <type_traits>
 namespace OptimT
 {
 
@@ -30,7 +31,20 @@ enum CompareOption : int64_t {
 };
 
 
-///
+#ifdef OptimT_GA_USE_EIGEN
+template<DoubleVectorOption dvo,size_t Dim>
+using FitnessVec_t= typename
+    std::enable_if<dvo!=DoubleVectorOption::Custom,
+    typename std::conditional<
+    dvo==DoubleVectorOption::Eigen,
+    Eigen::Array<double,Dim,1>,
+    std::array<double,Dim>>::type>::type;
+#else
+template<DoubleVectorOption dvo,size_t Dim>
+using FitnessVec_t= typename
+        std::enable_if<dvo==DoubleVectorOption::Std,std::array<double,Dim>>::type;
+#endif
+
 /**
    *  @brief NSGA2 MOGA solver. Suitable for not too many objectives.
    *
