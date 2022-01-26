@@ -29,6 +29,8 @@ This file is part of OptimTemplates.
 #include "./Randoms.hpp"
 #include "./OptimTMaths.hpp"
 #include <type_traits>
+#include <vector>
+#include <array>
 #ifdef OptimT_DO_PARALLELIZE
 #include <omp.h>
 #include <thread>
@@ -41,6 +43,16 @@ namespace OptimT
 
 ///Size identifier for dynamic size (fitness or var)
 const size_t Dynamic = 0;
+
+template<size_t Size>
+using stdVecD_t = typename std::conditional<Size==Dynamic,std::vector<double>,std::array<double,Size>>::type;
+
+#ifdef EIGEN_CORE_H
+///Array type when using Eigen array(s)
+template<size_t DIM>
+using EigenVecD_t = typename std::conditional<DIM==Dynamic,Eigen::ArrayXd,Eigen::Array<double,DIM,1>>::type;
+
+#endif
 
 ///Infinet value for float
 const float pinfF=1.0f/0.0f;

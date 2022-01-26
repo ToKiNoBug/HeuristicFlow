@@ -28,10 +28,6 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
-///Array type when using std vector/array(s)
-template<size_t DIM>
-using stdVar_t = typename std::conditional<DIM==Dynamic,std::vector<double>,std::array<double,DIM>>::type;
-
 ///Generalized PSO solver
 template<class Var_t,
          size_t DIM,
@@ -45,7 +41,7 @@ public:
     OPTIMT_MAKE_PSOABSTRACT_TYPES
 
     static const DoubleVectorOption Flag =
-        (std::is_same<Var_t,stdVar_t<DIM>>::value)?
+        (std::is_same<Var_t,stdVecD_t<DIM>>::value)?
         DoubleVectorOption::Std : DoubleVectorOption::Custom;
     
     void setPVRange(double pMin,double pMax,double vMax) {
@@ -129,20 +125,14 @@ template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-using PSO_std = PSO<stdVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
+using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 
 
 #ifdef OptimT_PSO_USE_EIGEN
 
-///Array type when using Eigen array(s)
-template<size_t DIM>
-using EigenVar_t = typename std::conditional<DIM==Dynamic,Eigen::ArrayXd,Eigen::Array<double,DIM,1>>::type;
-///Array type when using Eigen array(s)
-
-
 ///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class ...Args>
-using PSO_Eigen = PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
+using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
 ///Convenient typedef for Eigen's Array (fix-sized and dynamic-sized)
 
 
@@ -152,14 +142,14 @@ template<
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class ...Args>
-class PSO<EigenVar_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>
+class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>
 ///Partial specilization for PSO using Eigen's fix-sized Array
-    : public PSOBase<EigenVar_t<DIM>,DIM,double,RecordOpt,Args...>
+    : public PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Args...>
 {
 public:
-    using Base_t = PSOBase<EigenVar_t<DIM>,DIM,double,RecordOpt,Args...>;
+    using Base_t = PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
-    using Var_t = EigenVar_t<DIM>;
+    using Var_t = EigenVecD_t<DIM>;
 
     static const DoubleVectorOption Flag = DoubleVectorOption::Eigen;
 

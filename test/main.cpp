@@ -19,6 +19,7 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
+//#include "def_TestingPSO.h"
 #include "def_TestingGenetic.h"
 
 using namespace std;
@@ -27,7 +28,8 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {
-    //testNSGA2_Binh_and_Korn();
+    testNSGA2_Binh_and_Korn();
+    //testTSP(100);
     system("pause");
     return 0;
 }

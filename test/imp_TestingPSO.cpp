@@ -37,7 +37,7 @@ void testRastriginFun() {
     FITNESS_LESS_BETTER,
     RECORD_FITNESS>;
     
-    using Var_t = EigenVar_t<N>;;
+    using Var_t = EigenVecD_t<N>;;
 
     using Args_t = solver_t::Args_t;
 
