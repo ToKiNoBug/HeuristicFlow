@@ -52,7 +52,6 @@ Some other members are inherited from [MOGABase](./MOGABase.md).
 | public | `virtual Fitness_t` | [`bestFitness() const`](#bestfitness-const) |
 | protected | `virtual void` | [`customOptWhenInitialization()`](#customoptwheninitialization) |
 | protected | `static bool` | [`isStrongDomain(const Fitness_t * A,const Fitness_t * B)`](#isstrongdomainconst-fitness_t--aconst-fitness_t--b) |
-| protected | `static bool` | [`compareFun_DomainedBy(const infoUnit * A,const infoUnit * B)`](#comparefun_congestionconst-infounit--aconst-infounit--b) |
 | protected | `static bool` | [`universialCompareFun<int64_t>(const infoUnit *,const infoUnit *)`](#universialcomparefunint64_tconst-infounit-const-infounit-) |
 | protected | `virtual void` | [`calculateDominatedNum(std::vector<infoUnit> & pop) const`](#calculatedominatednumstdvectorinfounit--pop-const) |
 | protected | `virtual void` | [`select()`](#select) |
@@ -68,7 +67,7 @@ Some other functions are inherited from [MOGABase](./MOGABase.md).
 <br>
 
 ## Detailed description
-Class/Strcut description here.
+This class prodives a fundamental implementation of NSGA2 but it's not so easy-usable, and it doesn't supports vectorized boosting.
 
 <br>
 
