@@ -1,7 +1,7 @@
 # OptimT::GAOption
 `GAOption` is a struct encapsulating several general options for most types of genetic algorithm.
 
-| Header: | `#include<Genetic>` |
+| Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
 | Location: | [GAOption.hpp](../../Genetic/GAOption.hpp) |
 

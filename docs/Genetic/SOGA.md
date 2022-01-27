@@ -1,7 +1,7 @@
 # SOGA
 Single-object genetic solver.
 
-| Header: | `#include<Genetic>` |
+| Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
 | Location: | [SOGA.hpp](../../GA/SOGA.hpp) |
 | Inherits from: | [GABase](./GABase.md) |
