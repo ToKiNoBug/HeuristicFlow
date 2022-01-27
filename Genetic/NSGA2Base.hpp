@@ -31,16 +31,16 @@ namespace OptimT {
 #endif
 #endif
 
-#ifndef OptimT_NSGA2_RTObjNum_MaxObjNum
-#define OptimT_NSGA2_RTObjNum_MaxObjNum 255
-#endif
-
 
 enum CompareOption : int64_t {
     CompareByCongestion=-1,
     CompareByDominantedBy=-2
 };
 
+/**
+ * @brief The NSGA2Base class implements most NSGA-II functions
+ * and can be inherited inorder to boost with Eigen
+ */
 template<typename Var_t,
         size_t ObjNum,
         typename Fitness_t,
@@ -48,7 +48,7 @@ template<typename Var_t,
         RecordOption rOpt,
         PFOption pfOpt,
         class ...Args>
-class NSGA2Base 
+class NSGA2Base
     :public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
 {
 public:
@@ -213,7 +213,7 @@ protected:
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
         static const size_t objCapacity=
-                (ObjNum==0)?(OptimT_NSGA2_RTObjNum_MaxObjNum):ObjNum;
+                (ObjNum==0)?(OptimT_MOGA_RTObjNum_MaxObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 

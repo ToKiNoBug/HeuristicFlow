@@ -620,7 +620,7 @@ mutateFun mFun=[](Point_t * p,const ArgsType *) {
 };
 
 solver_t solver;
-solver.setObjectiveNum(Dim);
+solver.setObjectiveNum(N);
 
 GAOption opt;
 opt.maxGenerations=10000;
@@ -645,8 +645,8 @@ solver.initialize(iFun,fFun,cFun,mFun,nullptr,opt,args);
 clock_t t=clock();
 solver.run();
 t=std::clock()-t;
-cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
-    <<" seconds and "<<solver.generation()<<"generations"<<endl;
+cout<<"\n\nSolving finished in "<<double(t)/CLOCKS_PER_SEC
+    <<" seconds and "<<solver.generation()<<" generations\n\n"<<endl;
 
 cout<<"PFValue=[";
 for(const auto & i : solver.pfGenes()) {

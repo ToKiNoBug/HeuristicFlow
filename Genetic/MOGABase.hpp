@@ -3,6 +3,14 @@
 
 #include "./MOGAAbstract.hpp"
 
+#ifndef OptimT_NO_RTASSERT
+#include <assert.h>
+#endif
+
+#ifndef OptimT_MOGA_RTObjNum_MaxObjNum
+#define OptimT_MOGA_RTObjNum_MaxObjNum 255
+#endif
+
 namespace OptimT {
 
 /**
@@ -70,8 +78,11 @@ public:
     return _objectiveNum;
     }
 
-    void setObjectiveNum(size_t on) {
-        _objectiveNum=on;
+    void setObjectiveNum(size_t _objNum) {
+#ifndef OptimT_NO_RTASSERT
+        assert(_objNum>1);
+#endif
+        _objectiveNum=_objNum;
     }
 
 protected:
