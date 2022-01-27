@@ -11,7 +11,13 @@ An abstract base class for multiple objective genetic algorithm solvers.
 
 ## Defination
 ```cpp
-template<typename Var_t,size_t ObjNum,typename Fitness_t,FitnessOption,RecordOption,PFOption,class ...Args> class MOGAAbstract;
+template<typename Var_t,
+        size_t ObjNum,
+        typename Fitness_t,
+        FitnessOption fOpt,
+        RecordOption rOpt,
+        PFOption pfOpt,
+        class ...Args> class MOGAAbstract;
 ```
 <br>
 
@@ -20,8 +26,10 @@ template<typename Var_t,size_t ObjNum,typename Fitness_t,FitnessOption,RecordOpt
 | :----: | :----: | ----: | :---- |
 | global | [`PFOption`](#pfoption) | `enum` | `PFOption : unsigned char{...}` |
 | template | [`ObjNum`](#objnum) | `size_t` |  |
+| template | [`pfOpt`](#pfopt) | `PFOption` |  |
 | public | [`Base_t`](#base_t) |`typedef` | `using Base_t = GABase<Var_t,Fitness_t,Record,Args...>;` |
 
+Some other types are inherited from [GABase](./GABase.md).
 <br>
 
 ## Members
@@ -31,6 +39,7 @@ template<typename Var_t,size_t ObjNum,typename Fitness_t,FitnessOption,RecordOpt
 | protected | `size_t` | [`prevPFCheckSum`](#prevPFCheckSum) |  |
 | protected | `std::unordered_set<const Gene*>` | [`_pfGenes`](#_pfgenes) |  |
 
+Some other members are inherited from [GABase](./GABase.md).
 <br>
 
 ## Member functions
@@ -43,6 +52,7 @@ template<typename Var_t,size_t ObjNum,typename Fitness_t,FitnessOption,RecordOpt
 | public | `const std::unordered_set<const Gene*> &` | [`pfGenes() const`](#pfgenes-const) |
 | protected | `virtual void` | [`mutate()`](#mutate) |
 
+Some other functions are inherited from [GABase](./GABase.md).
 <br>
 
 
@@ -63,6 +73,9 @@ This enumeration type indicates that whether the pareto front will be protected 
 
 ### `ObjNum`
 Number of objectives. If a integer equals to 1 provided, static assertion emerged. Use `OptimT::Dynamic`(`0`) to mark that number of objectives are determined at runtime.
+
+### `pfOpt`
+Whether to protect the Pareto front from mutation or not.
 
 ### `Base_t`
 An shortcut to direct base class.

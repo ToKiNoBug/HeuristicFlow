@@ -31,7 +31,7 @@ template<typename Var_t,
         RecordOption rOpt,
         PFOption pfOpt,
         class ...Args>
-class MOGAAbstract 
+class MOGAAbstract
     : public GABase<Var_t,Fitness_t,rOpt,Args...>
 {
 public:
