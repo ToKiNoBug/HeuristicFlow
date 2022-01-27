@@ -5,7 +5,17 @@
 
 namespace OptimT {
 
-
+/**
+ * @brief MOGA solver base class with compile-time objective count
+ * 
+ * @tparam Var_t 
+ * @tparam ObjNum 
+ * @tparam Fitness_t 
+ * @tparam fOpt 
+ * @tparam rOpt 
+ * @tparam pfOpt 
+ * @tparam Args 
+ */
 template<typename Var_t,
         size_t ObjNum,
         typename Fitness_t,
@@ -23,11 +33,22 @@ public:
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    size_t objectiveNum() const {
+    inline size_t objectiveNum() const {
     return ObjNum;
     }
 };
 
+
+/**
+ * @brief MOGA solver base class with runtime objective count
+ * 
+ * @tparam Var_t 
+ * @tparam Fitness_t 
+ * @tparam fOpt 
+ * @tparam rOpt 
+ * @tparam pfOpt 
+ * @tparam Args 
+ */
 template<typename Var_t,
         typename Fitness_t,
         FitnessOption fOpt,
@@ -45,7 +66,7 @@ public:
     using Base_t = MOGAAbstract<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
     OptimT_MAKE_GABASE_TYPES
 
-    size_t objectiveNum() const {
+    inline size_t objectiveNum() const {
     return _objectiveNum;
     }
 

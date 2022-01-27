@@ -62,6 +62,7 @@ public:
         return _pfGenes;
     }
 
+
 protected:
     size_t prevFrontSize;
     size_t prevPFCheckSum;
@@ -82,6 +83,22 @@ protected:
         }
         return checkSum;
     }
+
+    ///mutate operation
+    virtual void mutate() {
+        for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
+            if(randD()<=Base_t::_option.mutateProb) {
+                if(pfOpt){
+                    if(_pfGenes.find(&*it)!=_pfGenes.end()) {
+                        continue;
+                    }
+                }
+                Base_t::_mutateFun(&it->self,&Base_t::args());
+                it->setUncalculated();
+            }
+        }
+    }
+
 private:
     
 #ifndef OptimT_NO_STATICASSERT

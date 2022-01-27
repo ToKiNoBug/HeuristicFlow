@@ -580,7 +580,7 @@ void testNSGA2_Binh_and_Korn() {
 
 
 void testDistance(const size_t N) {
-static const size_t Dim=4;
+static const size_t Dim=2;
 using Point_t = Eigen::Array<double,Dim,1>;
 using solver_t = NSGA2<Point_t,
     Dynamic,
@@ -616,19 +616,29 @@ crossoverFun cFun=[](const Point_t * p1,const Point_t * p2,
 };
 
 mutateFun mFun=[](Point_t * p,const ArgsType *) {
-*p+=Point_t::Random()*0.01;
+*p+=Point_t::Random()*0.05;
 };
 
 solver_t solver;
 solver.setObjectiveNum(Dim);
 
 GAOption opt;
-opt.maxGenerations=5000;
-opt.maxFailTimes=1000;
-opt.populationSize=200;
+opt.maxGenerations=10000;
+opt.maxFailTimes=4000;
+opt.populationSize=400;
 
 ArgsType args;
-std::get<0>(args)=(Eigen::Array<double,Dim,Eigen::Dynamic>::Random(Dim,N)*0.5);
+std::get<0>(args)=(Eigen::Array<double,Dim,Eigen::Dynamic>::Random(Dim,N))/2+0.5;
+
+for(size_t c=1;c<N;c++) {
+    auto prevC=std::get<0>(args).col(c-1);
+    std::get<0>(args).col(c)=4*prevC*(1-prevC);
+}
+
+std::get<0>(args)=(std::get<0>(args)-0.5);
+
+cout<<"args=\n";
+cout<<std::get<0>(args)<<endl;
 
 solver.initialize(iFun,fFun,cFun,mFun,nullptr,opt,args);
 
@@ -638,8 +648,16 @@ t=std::clock()-t;
 cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
     <<" seconds and "<<solver.generation()<<"generations"<<endl;
 
+cout<<"PFValue=[";
 for(const auto & i : solver.pfGenes()) {
-    cout<<i->_Fitness.transpose()<<endl;
+    cout<<i->_Fitness.transpose()<<'\n';
 }
+cout<<"];"<<endl;
+
+cout<<"\n\n\n\nPFPos=[";
+for(const auto & i : solver.pfGenes()) {
+    cout<<i->self.transpose()<<'\n';
+}
+cout<<"];"<<endl;
 
 }

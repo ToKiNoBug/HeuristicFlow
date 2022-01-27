@@ -100,7 +100,16 @@ public:
 
 public:
     GABase() {
-
+        _initializeFun=
+                [](Var_t*,const ArgsType*){};
+        _fitnessFun=
+                [](const Var_t*,const ArgsType*,Fitness_t*){};
+        _crossoverFun=
+                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
+        _mutateFun=
+                [](Var_t*,const ArgsType*){};
+        _otherOptFun=
+                [](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
     };
     virtual ~GABase() {};
 
