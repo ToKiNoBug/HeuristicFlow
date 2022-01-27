@@ -129,24 +129,24 @@ public:
 
     virtual ~NSGA2() {};
 
-    void setCongestComposeFun(congestComposeFun __ccFun=eigen_ccFun_liner) {
+    void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             this->_ccFun=__ccFun;
     }
 
-    static double eigen_ccFun_liner(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
         return f->sum();
     };
 
-    static double eigen_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
         return std::sqrt(f->square().sum());
     }
 
-    static double eigen_ccFun_max(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
         return f->maxCoeff();
     }
 
     template<int64_t p>
-    static double eigen_ccFun_powered(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
         return std::pow(f->power(p).sum(),1.0/p);
     }
 

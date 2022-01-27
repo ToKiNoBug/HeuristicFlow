@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class MOGABase;
+        class ...Args> class OptimT::MOGABase;
 ```
 <br>
 

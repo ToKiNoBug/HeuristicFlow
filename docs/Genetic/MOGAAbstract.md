@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class MOGAAbstract;
+        class ...Args> class OptimT::MOGAAbstract;
 ```
 <br>
 
@@ -26,6 +26,7 @@ template<typename Var_t,
 | :----: | :----: | ----: | :---- |
 | global | [`PFOption`](#pfoption) | `enum` | `PFOption : unsigned char{...}` |
 | template | [`ObjNum`](#objnum) | `size_t` |  |
+| template | [`Fitness_t`](#fitness_t) | `typedef` |  |
 | template | [`pfOpt`](#pfopt) | `PFOption` |  |
 | public | [`Base_t`](#base_t) |`typedef` | `using Base_t = GABase<Var_t,Fitness_t,Record,Args...>;` |
 
@@ -70,6 +71,11 @@ enum PFOption : unsigned char {
 };
 ```
 This enumeration type indicates that whether the pareto front will be protected from mutation when algorithm is running.
+
+### `Fitness_t`
+A container to store fitness value of all objectives must be somehow an array of `double`, like `std::vector<double>`, `std::array<double,4>`, `Eigen::VectorXd` and any other custom types. This type must fit following requirement:
+1. Has an public `opeartor[]()` for random access.
+2. Has a constant member function named `size()` to show element amount in this array.
 
 ### `ObjNum`
 Number of objectives. If a integer equals to 1 provided, static assertion emerged. Use `OptimT::Dynamic`(`0`) to mark that number of objectives are determined at runtime.

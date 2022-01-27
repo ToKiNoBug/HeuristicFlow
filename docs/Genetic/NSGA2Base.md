@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class NSGA2Base;
+        class ...Args> class OptimT::NSGA2Base;
 ```
 <br>
 
