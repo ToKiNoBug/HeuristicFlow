@@ -42,7 +42,7 @@ public:
     virtual ~MOGABase() {};
 
     inline size_t objectiveNum() const {
-    return ObjNum;
+        return ObjNum;
     }
 };
 
