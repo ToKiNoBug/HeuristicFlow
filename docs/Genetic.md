@@ -18,41 +18,17 @@ Genetic has some implementations of genetic algorithm solver.
 ```mermaid
 classDiagram
 
-class GAOption {
-    public size_t populationSize
-    public size_t maxGeneration
-    public size_t maxFailTimes
-    public double crossoverProb
-    public double mutationProb
-}
+class GAOption 
 
 class GABase {
     <<abstract>>
-    protected GAOption _opt
-    protected iFun_t iFun
-    protected fFun_t fFun
-    protected cFun_t cFun
-    protected mFun_t mFun
-    protected ooFun_t ooFun
-    public virtual void initialize();
-    public virtual void run();
-    protected virtual void select()*;
-    protected virtual void crossover();
-    protected virtual void mutate()*;
 
 }
 
-class SOGA {
-    protected GeneIt_t _elite
-    protected virtual void select();
-    protected virtual void mutate();
-}
+class SOGA 
 
 class MOGAAbstract {
     <<abstract>>
-    public void paretoFront()
-    public const auto & pfGenes()const;
-    protected unordered_map _pfGenes
 }
 
 class MOGABase {
@@ -63,7 +39,9 @@ class NSGA2Base {
     <<abstract>>
 }
 
-GAOption o-- GABase
+class NSGA2
+
+GAOption *-- GABase
 GABase <|-- SOGA
 GABase <|-- MOGAAbstract
 MOGAAbstract <|-- MOGABase
