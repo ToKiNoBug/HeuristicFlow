@@ -4,8 +4,8 @@ An abstract base class for multiple objective genetic algorithm solvers.
 | Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
 | Location: | [MOGAAbstract.hpp](../../Genetic/MOGAAbstract.hpp) |
-| Inherits from: | [GABase](GABase.md) |
-| Inherited by : | MOGABase,NSGA2Base,[NSGA2](NSGA2.md) |
+| Inherits from: | [GABase](./GABase.md) |
+| Inherited by : | [MOGABase](./MOGABase.md),[NSGA2Base](./NSGA2Base.md),[NSGA2](./NSGA2.md) |
 
 <br>
 

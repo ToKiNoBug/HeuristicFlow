@@ -5,7 +5,7 @@ Base class for multiple objective genetic solvers.
 | ----: | :---- |
 | Location: | [MOGABase.hpp](../../Genetic/MOGABase.hpp) |
 | Inherits from: | [MOGAAbstract](./MOGAAbstract.md) |
-| Inherited by : | NSGA2Base, [NSGA2](./NSGA2.md) |
+| Inherited by : | [NSGA2Base](./NSGA2Base.md), [NSGA2](./NSGA2.md) |
 
 <br>
 

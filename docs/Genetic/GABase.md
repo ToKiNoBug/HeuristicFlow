@@ -4,7 +4,7 @@ Abstrcat base class of genetic algorithm solvers.
 | Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
 | Location: | [GABase.hpp](./../../Genetic/GABase.hpp) |
-| Inherited by : | [SOGA](./SOGA.md), ,[MOGAAbstract](./MOGAAbstract.md), [MOGABase](./MOGABase.md), [NSGA2](./NSGA2.md) |
+| Inherited by : | [SOGA](./SOGA.md), ,[MOGAAbstract](./MOGAAbstract.md), [MOGABase](./MOGABase.md), [NSGA2Base](./NSGA2Base.md),[NSGA2](./NSGA2.md) |
 
 <br>
 
