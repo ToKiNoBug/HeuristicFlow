@@ -194,7 +194,7 @@ If `objIdx` is an non-negative integer, it's a comparison function to sort accor
 
 Some template metaprogramming tricks will be used to generate an static constant array of function pointers consists of different instances of this function template with parameter ranging from 0 to `ObjNum-1`.
 
-If objective number is dynamic, `ObjNum-1` will be replaced by 255. 
+If objective number is dynamic, `ObjNum-1` will be replaced by 255(see [`OptimT_MOGA_RTObjNum_MaxObjNum`](MOGABase.md)). 
 
 I believe in most cases no body will tries to solve a multi-objective problem with more than 255 objectives using NSGA-II.
 

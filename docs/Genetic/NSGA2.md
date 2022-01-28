@@ -43,7 +43,7 @@ All members are inherited from [NSGA2Base](./NSGA2Base.md).
 ## Detailed description
 NSGA-II is a template for multi-objective genetic algorithm based on Pareto Optimality. It selects by nondomainance sorting, and you can order whether mutation happens on pareto front in template.
 
-If template parameter `DVO` is `OptimT::DoubleVectorOption::Eigen`, an parital specialization implementation will be used. This speical version reloads many functions with a boosted type. **However, exposed API isn't changed.**
+If template parameter `DVO` is `OptimT::DoubleVectorOption::Eigen`, a parital specialization implementation will be activated. This speical version reloads many functions with a boosted type. **However, exposed API isn't changed.**
 
 <br>
 
@@ -57,7 +57,12 @@ enum DoubleVectorOption {
     Custom='C'
 };
 ```
-This enumeration type indicates which style of double array is used.
+This enumeration type indicates which style of double array is used as fitness value.
+- `Std` refers to cpp standard arrays, including `std::valarray`(or `std::vector`) and `std::array`
+- `Eigen` refers to Eigen's `Array`, including `Eigen::ArrayXd` and `Eigen::Array<double,N,1>`.
+- `Custom` refers to any custom types that can behave like an array. It must support random access through `operator[]` and can get size through function `size()`.
+
+In NSGA2, `Custom` isn't allowed. If you want to use your custom type as fitness value, use [NSGA2Base](./NSGA2Base.md).
 
 
 ### `Fitness_t`

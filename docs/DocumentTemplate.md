@@ -40,8 +40,9 @@ CODES
 ## Macros
 | Name | Usage |
 | :----: | :----: |
-| name | macro function |
 | name | conditional compiling |
+| name | value |
+| name | macro function |
 | name | to be expanded |
 
 <br>

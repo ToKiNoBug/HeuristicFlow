@@ -43,6 +43,13 @@ Some other members are inherited from [MOGAAbstract](./MOGAAbstract.md).
 
 <br>
 
+## Macros
+| Name | Usage |
+| :----: | :----: |
+| [`OptimT_MOGA_RTObjNum_MaxObjNum`](#optimt_moga_rtobjnum_maxobjnum) | value |
+
+<br>
+
 ## Detailed description
 This layer of inheritance aims to support solvers with fixed and dynamic objective numbers. This template class has a default implementation for fixed objective numbers and a partial specialization for dynamic.
 
@@ -72,3 +79,16 @@ Get number of objectives. If template parameter `ObjNum` is `OptimT::Dynamic`(`0
 Set the number of objectives.
 
 **This function only exists when template parameter `ObjNum` is `OptimT::Dynamic`(`0`).**
+
+<br>
+
+## Macro details
+### `OptimT_MOGA_RTObjNum_MaxObjNum`
+Defination:
+```cpp
+#ifndef OptimT_MOGA_RTObjNum_MaxObjNum
+#define OptimT_MOGA_RTObjNum_MaxObjNum 255
+#endif
+```
+
+This macro refers to maximum objective number for dynamic objective number MOGA solvers. It's default value is 255.
