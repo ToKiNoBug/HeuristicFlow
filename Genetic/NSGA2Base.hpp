@@ -163,9 +163,9 @@ protected:
     static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {
 #ifndef OptimT_NO_STATICASSERT
     static_assert(std::integral_constant<bool,
-        ((objIdx<0)
-        &&(objIdx!=CompareOption::CompareByCongestion)
-        &&(objIdx!=CompareOption::CompareByDominantedBy))>::value,
+        ((objIdx>=0)
+        ||(objIdx==CompareOption::CompareByCongestion)
+        ||(objIdx==CompareOption::CompareByDominantedBy))>::value,
     "OptimTemplates : Invalid compare flag");
 #endif
         if(A==B) return false;
