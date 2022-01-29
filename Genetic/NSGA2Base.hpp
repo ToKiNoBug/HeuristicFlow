@@ -58,7 +58,7 @@ public:
     virtual ~NSGA2Base() {};
 
     using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
-    OptimT_MAKE_GABASE_TYPES
+    OptimT_MAKE_MOGAABSTRACT_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
 
@@ -90,6 +90,13 @@ public:
         return result;
     }
 
+    /**
+     * @brief compose congestion using p-th minkowski distance
+     * 
+     * @tparam p power
+     * @param f parital congestion value
+     * @return double congestion value
+     */
     template<int64_t p>
     static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
         double result=0;
@@ -98,7 +105,11 @@ public:
         }
         return std::pow(result,1.0/p);
     }
-
+    /**
+     * @brief calculate ideal point
+     * 
+     * @return Fitness_t ideal point
+     */
     virtual Fitness_t bestFitness() const {
         Fitness_t best=Base_t::_population.front()._Fitness;
         for(const Gene & i : Base_t::_population) {
@@ -115,16 +126,11 @@ public:
         return best;
     }
 
-    ///temporary struct to store infos when selection
-    struct infoUnit
+    /** @brief temporary struct to store infos when selection
+     */
+    struct infoUnit:public Base_t::infoUnitBase
     {
     public:
-        bool isSelected;
-        //size_t sortIdx;
-        //uint32_t index;
-        ///Genes in population that strong domain this gene
-        size_t domainedByNum;
-        GeneIt_t iterator;
         Fitness_t congestion;
     };
 
@@ -215,7 +221,6 @@ protected:
 #endif
     }
 
-
     ///fast nondominated sorting
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
@@ -265,29 +270,8 @@ protected:
             }
         }
 
-        {
-            const size_t curFrontSize=paretoLayers.front().size();
-
-            this->_pfGenes.clear();
-            for(const auto i :paretoLayers.front()) {
-                this->_pfGenes.emplace(&*(i->iterator));
-            }
-
-            if(this->prevFrontSize!=curFrontSize) {
-                Base_t::_failTimes=0;
-                this->prevFrontSize=curFrontSize;
-            }
-            else {
-                size_t checkSum=this->makePFCheckSum();
-
-                if(this->prevPFCheckSum==checkSum) {
-                    Base_t::_failTimes++;
-                } else {
-                    Base_t::_failTimes=0;
-                    this->prevPFCheckSum=checkSum;
-                }
-            }
-        }
+        Base_t::updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
+                         paretoLayers.front().size());
 
 
         std::queue<infoUnit *> selected;

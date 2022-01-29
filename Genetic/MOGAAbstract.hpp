@@ -62,6 +62,18 @@ public:
         return _pfGenes;
     }
 
+    struct infoUnitBase
+    {
+    public:
+        bool isSelected;
+        ///Genes in population that strong domain this gene
+        size_t domainedByNum;
+        /** @brief iterator to related gene
+        */
+        GeneIt_t iterator;
+        /** @brief congestion value on each objective
+        */
+    };
 
 protected:
     size_t prevFrontSize;
@@ -83,6 +95,28 @@ protected:
         }
         return checkSum;
     }
+
+    void updatePF(const infoUnitBase ** pfs,const size_t curFrontSize) {
+        this->_pfGenes.clear();
+        for(size_t i=0;i<curFrontSize;i++) {
+            this->_pfGenes.emplace(&*(pfs[i]->iterator));
+        }
+        if(this->prevFrontSize!=curFrontSize) {
+            Base_t::_failTimes=0;
+            this->prevFrontSize=curFrontSize;
+        }
+        else {
+            size_t checkSum=this->makePFCheckSum();
+
+            if(this->prevPFCheckSum==checkSum) {
+                Base_t::_failTimes++;
+            } else {
+                Base_t::_failTimes=0;
+                this->prevPFCheckSum=checkSum;
+            }
+        }
+    }
+    
 
     ///mutate operation
     virtual void mutate() {
@@ -107,6 +141,10 @@ private:
 #endif
 
 };
+
+#define OptimT_MAKE_MOGAABSTRACT_TYPES \
+OptimT_MAKE_GABASE_TYPES \
+using infoUnitBase_t = typename Base_t::infoUnitBase;
 
 }
 

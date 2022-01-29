@@ -28,6 +28,7 @@ OptimT_MAKE_GLOBAL
 
 int main()
 {   
+
     testDistance(3);
     //testTSP(100);
     system("pause");

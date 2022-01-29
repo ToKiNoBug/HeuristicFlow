@@ -36,12 +36,12 @@ class MOGABase
 {
 public:
     using Base_t = MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
-    OptimT_MAKE_GABASE_TYPES
+    OptimT_MAKE_MOGAABSTRACT_TYPES
 
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    inline size_t objectiveNum() const {
+    inline constexpr size_t objectiveNum() const {
         return ObjNum;
     }
 };

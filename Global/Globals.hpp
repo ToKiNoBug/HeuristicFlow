@@ -89,7 +89,8 @@ public:
         return concurrency;
     }
 private:
-    OtGlobal();
+    OtGlobal() {};
+    ~OtGlobal() {};
     static uint32_t concurrency;
 };
 
