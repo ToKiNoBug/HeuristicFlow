@@ -3,7 +3,7 @@ Single-object genetic solver.
 
 | Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
-| Location: | [SOGA.hpp](../../GA/SOGA.hpp) |
+| Location: | [SOGA.hpp](../../Genetic/SOGA.hpp) |
 | Inherits from: | [GABase](./GABase.md) |
 
 <br>
