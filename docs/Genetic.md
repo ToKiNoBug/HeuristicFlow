@@ -35,6 +35,10 @@ class MOGABase {
     <<abstract>>
 }
 
+class NSGABase{
+    <<abstract>>
+}
+
 class NSGA2Base
 
 
@@ -44,7 +48,8 @@ GAOption *-- GABase
 GABase <|-- SOGA
 GABase <|-- MOGAAbstract
 MOGAAbstract <|-- MOGABase
-MOGABase <|-- NSGA2Base
+MOGABase <|-- NSGABase
+NSGABase <|-- NSGA2Base
 NSGA2Base <|-- NSGA2
 
 ```

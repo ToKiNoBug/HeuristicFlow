@@ -27,7 +27,7 @@ using namespace std;
 OptimT_MAKE_GLOBAL
 
 int main()
-{   
+{
 
     testDistance(3);
     //testTSP(100);
