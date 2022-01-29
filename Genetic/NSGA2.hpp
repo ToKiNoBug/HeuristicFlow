@@ -67,7 +67,7 @@ public:
                     ProtectPF,
                     Args...>;
     using Fitness_t = stdVecD_t<ObjNum>;
-    OptimT_MAKE_GABASE_TYPES
+    OptimT_MAKE_NSGABASE_TYPES
 
     NSGA2() {
     };
@@ -118,7 +118,7 @@ public:
                     ProtectPF,
                     Args...>;
     using Fitness_t = EigenVecD_t<ObjNum>;
-    OptimT_MAKE_GABASE_TYPES
+    OptimT_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = typename Base_t::congestComposeFun;
     using infoUnit = typename Base_t::infoUnit;
@@ -174,7 +174,7 @@ protected:
     }
 
     ///whether A strong domainates B
-    static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
+    static bool Eig_isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         if(isGreaterBetter) {
             return (*A>*B).all();
         } else {
@@ -182,38 +182,39 @@ protected:
         }
     } //isStrongDomain
 
-    virtual void calculateDominatedNum(std::vector<infoUnit> & pop) const {
-        const size_t popSizeBefore=pop.size();
-        //calculate domainedByNum
+    //calculate domainedByNum
+    virtual void calculateDominatedNum(infoUnitBase_t ** pop,
+        const size_t popSizeBefore) const {
 #ifdef OptimT_NSGA2_DO_PARALLELIZE
         static const size_t thN=OtGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {
 
             for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
-                pop[ed].domainedByNum=0;
+                pop[ed]->domainedByNum=0;
                 for(size_t er=0;er<popSizeBefore;er++) {
                     if(er==ed)
                         continue;
-                    pop[ed].domainedByNum+=
-                            isStrongDomain(&(pop[er].iterator->_Fitness),
-                                           &(pop[ed].iterator->_Fitness));
+                    pop[ed]->domainedByNum+=
+                            Eig_isStrongDomain(&(pop[er]->iterator->_Fitness),
+                                           &(pop[ed]->iterator->_Fitness));
                 }
             }
         }
 
 #else
         for(size_t ed=0;ed<popSizeBefore;ed++) {
-            pop[ed].domainedByNum=0;
+            pop[ed]->domainedByNum=0;
             for(size_t er=0;er<popSizeBefore;er++) {
                 if(er==ed)
                     continue;
-                pop[ed].domainedByNum+=
-                        isStrongDomain(&(pop[er].iterator->_Fitness),
-                                       &(pop[ed].iterator->_Fitness));
+                pop[ed]->domainedByNum+=
+                        Eig_isStrongDomain(&(pop[er]->iterator->_Fitness),
+                                       &(pop[ed]->iterator->_Fitness));
             }
         }
 #endif
+
     }
 
 private:

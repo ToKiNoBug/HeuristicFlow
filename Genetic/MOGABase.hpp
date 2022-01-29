@@ -8,7 +8,7 @@
 #endif
 
 #ifndef OptimT_MOGA_RTObjNum_MaxObjNum
-#define OptimT_MOGA_RTObjNum_MaxObjNum 255
+#define OptimT_MOGA_RTObjNum_MaxObjNum 256
 #endif
 
 namespace OptimT {
@@ -36,7 +36,7 @@ class MOGABase
 {
 public:
     using Base_t = MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
-    OptimT_MAKE_MOGAABSTRACT_TYPES
+    OptimT_MAKE_GABASE_TYPES
 
     MOGABase() {};
     virtual ~MOGABase() {};
@@ -81,6 +81,7 @@ public:
     void setObjectiveNum(size_t _objNum) {
 #ifndef OptimT_NO_RTASSERT
         assert(_objNum>1);
+        assert(_objNum<=OptimT_MOGA_RTObjNum_MaxObjNum);
 #endif
         _objectiveNum=_objNum;
     }

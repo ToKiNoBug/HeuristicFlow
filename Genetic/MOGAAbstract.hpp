@@ -62,23 +62,29 @@ public:
         return _pfGenes;
     }
 
-    struct infoUnitBase
-    {
-    public:
-        bool isSelected;
-        ///Genes in population that strong domain this gene
-        size_t domainedByNum;
-        /** @brief iterator to related gene
-        */
-        GeneIt_t iterator;
-        /** @brief congestion value on each objective
-        */
-    };
-
 protected:
     size_t prevFrontSize;
     size_t prevPFCheckSum;
     std::unordered_set<const Gene*> _pfGenes;
+
+    ///whether A strong domainates B
+    static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
+        //if(A==B) return false;
+        for(size_t objIdx=0;objIdx<A->size();objIdx++) {
+            if(fOpt) {
+                //if any single fitness of A isn't better than B, A doesn't strong domain B
+                if((A->operator[](objIdx))<(B->operator[](objIdx))) {
+                    return false;
+                }
+            } else {
+                //if any single fitness of A isn't better than B, A doesn't strong domain B
+                if((A->operator[](objIdx))>(B->operator[](objIdx))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    } //isStrongDomain
 
     virtual size_t makePFCheckSum() const {
         std::vector<const Gene*> pfvec;
@@ -94,27 +100,6 @@ protected:
             checkSum^=hashFun(pfvec[i]);
         }
         return checkSum;
-    }
-
-    void updatePF(const infoUnitBase ** pfs,const size_t curFrontSize) {
-        this->_pfGenes.clear();
-        for(size_t i=0;i<curFrontSize;i++) {
-            this->_pfGenes.emplace(&*(pfs[i]->iterator));
-        }
-        if(this->prevFrontSize!=curFrontSize) {
-            Base_t::_failTimes=0;
-            this->prevFrontSize=curFrontSize;
-        }
-        else {
-            size_t checkSum=this->makePFCheckSum();
-
-            if(this->prevPFCheckSum==checkSum) {
-                Base_t::_failTimes++;
-            } else {
-                Base_t::_failTimes=0;
-                this->prevPFCheckSum=checkSum;
-            }
-        }
     }
     
 
@@ -140,13 +125,8 @@ private:
     "OptimTemplates : You used less than 1 objective in NSGA2");
 #endif
 
-};
+};  // MOGAAbstract
 
-#define OptimT_MAKE_MOGAABSTRACT_TYPES \
-OptimT_MAKE_GABASE_TYPES \
-using infoUnitBase_t = typename Base_t::infoUnitBase;
-
-}
-
+}   //  OptimT
 
 #endif //   MOGAABSTRACT_HPP

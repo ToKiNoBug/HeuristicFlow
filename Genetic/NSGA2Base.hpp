@@ -20,7 +20,7 @@ This file is part of OptimTemplates.
 #ifndef NSGA2BASE_HPP
 #define NSGA2BASE_HPP
 
-#include "MOGABase.hpp"
+#include "NSGABase.hpp"
 
 namespace OptimT {
 
@@ -49,7 +49,7 @@ template<typename Var_t,
         PFOption pfOpt,
         class ...Args>
 class NSGA2Base
-    :public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
 {
 public:
     NSGA2Base() {
@@ -57,8 +57,8 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
-    OptimT_MAKE_MOGAABSTRACT_TYPES
+    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    OptimT_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
 
@@ -146,25 +146,6 @@ protected:
         }
     }
 
-    ///whether A strong domainates B
-    static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
-        //if(A==B) return false;
-        for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if(fOpt) {
-                //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->operator[](objIdx))<(B->operator[](objIdx))) {
-                    return false;
-                }
-            } else {
-                //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->operator[](objIdx))>(B->operator[](objIdx))) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    } //isStrongDomain
-
     template<int64_t objIdx>
     static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {
 #ifndef OptimT_NO_STATICASSERT
@@ -187,40 +168,6 @@ protected:
         return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
     }
 
-    virtual void calculateDominatedNum(std::vector<infoUnit> & pop) const {
-        const size_t popSizeBefore=pop.size();
-        //calculate domainedByNum
-#ifdef OptimT_NSGA2_DO_PARALLELIZE
-        static const size_t thN=OtGlobal::threadNum();
-#pragma omp parallel for
-        for(size_t begIdx=0;begIdx<thN;begIdx++) {
-
-            for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
-                pop[ed].domainedByNum=0;
-                for(size_t er=0;er<popSizeBefore;er++) {
-                    if(er==ed)
-                        continue;
-                    pop[ed].domainedByNum+=
-                            isStrongDomain(&(pop[er].iterator->_Fitness),
-                                           &(pop[ed].iterator->_Fitness));
-                }
-            }
-        }
-
-#else
-        for(size_t ed=0;ed<popSizeBefore;ed++) {
-            pop[ed].domainedByNum=0;
-            for(size_t er=0;er<popSizeBefore;er++) {
-                if(er==ed)
-                    continue;
-                pop[ed].domainedByNum+=
-                        isStrongDomain(&(pop[er].iterator->_Fitness),
-                                       &(pop[ed].iterator->_Fitness));
-            }
-        }
-#endif
-    }
-
     ///fast nondominated sorting
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
@@ -236,8 +183,6 @@ protected:
         for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
             pop.emplace_back();
             pop.back().isSelected=false;
-            //pop.back().index=pop.size()-1;
-            //pop.back().domainedByNum=0;
             pop.back().iterator=it;
         }
 
@@ -247,7 +192,7 @@ protected:
             sortSpace[i]=pop.data()+i;
         }
 
-        calculateDominatedNum(pop);
+        Base_t::calculateDominatedNum((infoUnitBase_t **)sortSpace.data(),popSizeBefore);
 
         //sort by paretoLayers
         std::sort(sortSpace.begin(),sortSpace.end(),
@@ -270,7 +215,7 @@ protected:
             }
         }
 
-        Base_t::updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
+        this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
                          paretoLayers.front().size());
 
 
