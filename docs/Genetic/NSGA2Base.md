@@ -4,7 +4,7 @@ Direct base class of NSGA2.
 | Header: | `#include<OptimTemplates/Genetic>` |
 | ----: | :---- |
 | Location: | [NSGA2Base.hpp](../../Genetic/NSGA2Base.hpp) |
-| Inherits from: | [MOGABase](./MOGABase.md) |
+| Inherits from: | [NSGABase](./NSGABase.md) |
 | Inherited by : | [NSGA2](./NSGA2.md) |
 
 <br>
@@ -53,7 +53,6 @@ Some other members are inherited from [MOGABase](./MOGABase.md).
 | protected | `virtual void` | [`customOptWhenInitialization()`](#customoptwheninitialization) |
 | protected | `static bool` | [`isStrongDomain(const Fitness_t * A,const Fitness_t * B)`](#isstrongdomainconst-fitness_t--aconst-fitness_t--b) |
 | protected | `static bool` | [`universialCompareFun<int64_t>(const infoUnit *,const infoUnit *)`](#universialcomparefunint64_tconst-infounit-const-infounit-) |
-| protected | `virtual void` | [`calculateDominatedNum(std::vector<infoUnit> & pop) const`](#calculatedominatednumstdvectorinfounit--pop-const) |
 | protected | `virtual void` | [`select()`](#select) |
 
 Some other functions are inherited from [MOGABase](./MOGABase.md).
@@ -87,22 +86,17 @@ Function pointer to calculate congestion.
 ### `infoUnit`
 ```cpp
 struct OptimT::NSGA2Base::infoUnit
+    : public OptimT::NSGABase::infoUnitBase
 {
-    public:
-        bool isSelected;
-        size_t domainedByNum;
-        GeneIt_t iterator;
-        Fitness_t congestion;
+public:
+    Fitness_t congestion;
 };
 ```
 This struct is used to store nondomainance sorting-related informations in select operation. A pointer to this struct, `infoUnit*`, has access to every information to a gene. 
 
 There's several sorting by according to different attribute, thus a vector of `infoUnit*` is widely used when sorting.
 
-1. `isSelected` marks whether a gene is selected to form the next generation.
-2. `domainedByNum` means the number of genes in previous that strong domainates this gene. **Value 0 means it's a member of the pareto front.**
-3. `iterator` is a `std::list<Gene>::iterator` to a gene.
-4. `congestion` stores the partial congestion in each objective. That's why it has the same type with fitness but it's not a fitness value. 
+`congestion` stores the partial congestion in each objective. That's why it has the same type with fitness but it's not a fitness value. 
    
    **Mention that when composing congestion, the first element of `congestion` is occupied to store the total congestion and other elements aren't used.**
 
@@ -197,11 +191,6 @@ Some template metaprogramming tricks will be used to generate an static constant
 If objective number is dynamic, `ObjNum-1` will be replaced by 255(see [`OptimT_MOGA_RTObjNum_MaxObjNum`](MOGABase.md)). 
 
 I believe in most cases no body will tries to solve a multi-objective problem with more than 255 objectives using NSGA-II.
-
-### `calculateDominatedNum(std::vector<infoUnit> & pop) const`
-This function is the first part of selection operator. This part is moved out as a virtual function since it can be boosted when using Eigen's `Array`.
-
-However in this class there's only a simple implementation without any vectorization.
 
 ### `select()`
 This is the core of NSGA2. It applies non-dominated sorting in following steps:

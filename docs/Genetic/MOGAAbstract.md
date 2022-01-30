@@ -51,6 +51,7 @@ Some other members are inherited from [GABase](./GABase.md).
 | public | `void` | [`paretoFront(std::vector<Fitness_t> & front)`](#paretofrontstdvectorfitness_t--front) |
 | public | `void` | [`paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front)`](#paretofrontstdvectorstdpairconst-var_tconst-fitness_t--front) |
 | public | `const std::unordered_set<const Gene*> &` | [`pfGenes() const`](#pfgenes-const) |
+| protected | `virtual size_t` | [`makePFCheckSum() const`](#makepfchecksum-const) |
 | protected | `virtual void` | [`mutate()`](#mutate) |
 
 Some other functions are inherited from [GABase](./GABase.md).
@@ -117,6 +118,11 @@ Get Pareto front consists of a vector of `std::pair<const Var_t*,const Fitness_t
 
 ### `pfGenes() const`
 Returns a const reference to member [`_pfGenes`](#_pfgenes).
+
+### `makePFCheckSum() const`
+Function to calculate checksum of current Pareto front. This function compute hash value of a gene by its address. 
+
+As the population is a linked list, inserting and erasing doesn't affect other elements, which makes it practicable because no gene copying occurs in the whole solving process.
 
 ### `mutate()`
 Implementation of pure virtual function defined in [GABase](./GABase.md). It's slightly different from mutation operation in [SOGA](./SOGA.md). 
