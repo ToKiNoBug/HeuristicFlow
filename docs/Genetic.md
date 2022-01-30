@@ -15,41 +15,7 @@ Genetic has some implementations of genetic algorithm solver.
 7. [NSGA2](./Genetic/NSGA2.md)
 
 ## Class diagram
-```mermaid
-classDiagram
 
-class GAOption 
+Class name in italic refers to an abstract class, while class name in bold means that class is designed to be used directly by user. 2 classes in a dashline box means parital specialization for different conditions.
 
-class GABase {
-    <<abstract>>
-
-}
-
-class SOGA 
-
-class MOGAAbstract {
-    <<abstract>>
-}
-
-class MOGABase {
-    <<abstract>>
-}
-
-class NSGABase{
-    <<abstract>>
-}
-
-class NSGA2Base
-
-
-class NSGA2
-
-GAOption *-- GABase
-GABase <|-- SOGA
-GABase <|-- MOGAAbstract
-MOGAAbstract <|-- MOGABase
-MOGABase <|-- NSGABase
-NSGABase <|-- NSGA2Base
-NSGA2Base <|-- NSGA2
-
-```
+![class diagram in image](https://raw.githubusercontent.com/ToKiNoBug/SlopeCraftTutorial/Images4OptimTemplates/Genetic/classDiagram.png)
