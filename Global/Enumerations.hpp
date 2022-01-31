@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef ENUMERATIONS_HPP
-#define ENUMERATIONS_HPP
+#ifndef OptimT_ENUMERATIONS_HPP
+#define OptimT_ENUMERATIONS_HPP
 
 #include <stdint.h>
 

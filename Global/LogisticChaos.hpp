@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef LOGISTICCHAOS_H
-#define LOGISTICCHAOS_H
+#ifndef OptimT_LOGISTICCHAOS_HPP
+#define OptimT_LOGISTICCHAOS_HPP
 
 #include <cstdint>
 #include "Macros.hpp"

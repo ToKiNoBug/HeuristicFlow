@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef MATRIXFIXEDSIZE_H
-#define MATRIXFIXEDSIZE_H
+#ifndef OptimT_MATRIXFIXEDSIZE_H
+#define OptimT_MATRIXFIXEDSIZE_H
 
 #include <stdint.h>
 

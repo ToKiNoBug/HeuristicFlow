@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GABASE_H
-#define GABASE_H
+#ifndef OptimT_GABASE_H
+#define OptimT_GABASE_H
 
 #include "./GAOption.hpp"
 #include <tuple>

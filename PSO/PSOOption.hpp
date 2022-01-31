@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef PSOOPTION_HPP
-#define PSOOPTION_HPP
+#ifndef OptimT_PSOOPTION_HPP
+#define OptimT_PSOOPTION_HPP
 
 #include "../OptimTemplates/Global"
 

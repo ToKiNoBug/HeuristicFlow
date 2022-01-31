@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef SOGA_H
-#define SOGA_H
+#ifndef OptimT_SOGA_H
+#define OptimT_SOGA_H
 #include "./GABase.hpp"
 
 

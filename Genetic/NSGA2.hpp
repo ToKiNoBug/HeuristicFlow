@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef NSGA2_HPP
-#define NSGA2_HPP
+#ifndef OptimT_NSGA2_HPP
+#define OptimT_NSGA2_HPP
 
 #include "./NSGA2Base.hpp"
 #include <type_traits>

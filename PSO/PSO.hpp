@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef PSO_HPP
-#define PSO_HPP
+#ifndef OptimT_PSO_HPP
+#define OptimT_PSO_HPP
 #include "PSOOption.hpp"
 #include "PSOBase.hpp"
 #include <array>
@@ -29,6 +29,15 @@ This file is part of OptimTemplates.
 namespace OptimT {
 
 ///Generalized PSO solver
+/**
+ * @brief Generalized PSO solver.
+ * 
+ * @tparam Var_t Type of determination vector.
+ * @tparam DIM Dimensional of Var_t
+ * @tparam FitnessOpt Trainning direction
+ * @tparam RecordOpt Record trainning curve or not.
+ * @tparam Argsg... Any other parameters.
+ */
 template<class Var_t,
          size_t DIM,
          FitnessOption FitnessOpt,

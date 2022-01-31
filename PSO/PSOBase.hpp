@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef PSOBASE_HPP
-#define PSOBASE_HPP
+#ifndef OptimT_PSOBASE_HPP
+#define OptimT_PSOBASE_HPP
 
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"

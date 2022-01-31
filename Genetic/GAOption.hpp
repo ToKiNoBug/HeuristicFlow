@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GAOPTION_HPP
-#define GAOPTION_HPP
+#ifndef OptimT_GAOPTION_HPP
+#define OptimT_GAOPTION_HPP
 #include <stdint.h>
 namespace OptimT {
 

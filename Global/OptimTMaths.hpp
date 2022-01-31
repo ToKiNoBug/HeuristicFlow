@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef OptimTMaths_HPP
-#define OptimTMaths_HPP
+#ifndef OptimT_OptimTMaths_HPP
+#define OptimT_OptimTMaths_HPP
 
 #include <stdint.h>
 #include <type_traits>

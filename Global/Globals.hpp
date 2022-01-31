@@ -18,8 +18,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GLOBALS_HPP
-#define GLOBALS_HPP
+#ifndef OptimT_GLOBALS_HPP
+#define OptimT_GLOBALS_HPP
 
 #include <random>
 #include <ctime>

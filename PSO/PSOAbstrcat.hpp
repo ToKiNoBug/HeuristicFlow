@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef PSOABSTRCAT_HPP
-#define PSOABSTRCAT_HPP
+#ifndef OptimT_PSOABSTRCAT_HPP
+#define OptimT_PSOABSTRCAT_HPP
 
 #include <OptimTemplates/Global>
 #include "PSOOption.hpp"
@@ -29,7 +29,13 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
-///Abstrcat base class for most PSO solvers
+/**
+ * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
+ * 
+ * @tparam Var_t Type of determination vector.
+ * @tparam Record Record trainning curve or not.
+ * @tparam Args... Any other parameters
+ */
 template<class Var_t,class Fitness_t,RecordOption Record,class...Args>
 class PSOAbstract
 {

@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef CHAOTIC_HPP
-#define CHAOTIC_HPP
+#ifndef OptimT_CHAOTIC_HPP
+#define OptimT_CHAOTIC_HPP
 #include "./LogisticChaos.hpp"
 namespace OptimT {
 

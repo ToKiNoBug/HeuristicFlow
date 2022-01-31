@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef MACROS_HPP
-#define MACROS_HPP
+#ifndef OptimT_MACROS_HPP
+#define OptimT_MACROS_HPP
 
 namespace OptimT {
 

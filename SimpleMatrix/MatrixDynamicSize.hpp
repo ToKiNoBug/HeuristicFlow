@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef MATRIXDYNAMICSIZE_H
-#define MATRIXDYNAMICSIZE_H
+#ifndef OptimT_MATRIXDYNAMICSIZE_H
+#define OptimT_MATRIXDYNAMICSIZE_H
 
 #include <stdint.h>
 

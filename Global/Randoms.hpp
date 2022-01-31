@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef RANDOMS_HPP
-#define RANDOMS_HPP
+#ifndef OptimT_RANDOMS_HPP
+#define OptimT_RANDOMS_HPP
 
 #include <stdint.h>
 #include <cmath>

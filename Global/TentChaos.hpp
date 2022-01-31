@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef TENTCHAOS_H
-#define TENTCHAOS_H
+#ifndef OptimT_TENTCHAOS_H
+#define OptimT_TENTCHAOS_H
 
 #include <stdint.h>
 

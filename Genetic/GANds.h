@@ -17,8 +17,8 @@ This file is part of OptimTemplates.
 
 */
 
-#ifndef GANDS_H
-#define GANDS_H
+#ifndef OptimT_GANDS_H
+#define OptimT_GANDS_H
 #include "./SOGA.hpp"
 #include "./NSGA2.hpp"
 
