@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #ifndef DEF_TESTINGMATRIX_H
 #define DEF_TESTINGMATRIX_H
-
+#include <OptimTemplates/SimpleMatrix>
 void testAccess();
 
 void testCopy();

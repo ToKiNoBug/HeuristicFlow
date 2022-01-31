@@ -19,18 +19,16 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingGenetic.h"
+#include <OptimTemplates/Global>
+#include "def_TestingMatrix.h"
+//#include "def_TestingGenetic.h"
 //#include "def_TestingPSO.h"
 
 using namespace std;
 
 OptimT_MAKE_GLOBAL
 
-int main()
-{
-
-    testDistance(3);
-    //testTSP(100);
+int main() {
     system("pause");
     return 0;
 }

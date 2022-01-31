@@ -23,6 +23,7 @@ This file is part of OptimTemplates.
 #include <iostream>
 #include <Eigen/Dense>
 #include <array>
+#include <ctime>
 using namespace OptimT;
 using namespace std;
 
@@ -82,9 +83,11 @@ void testCustomTypes() {
 void testLoop(uint32_t loopN) {
     MatrixDynamicSize<Double> mat;
     std::array<uint32_t,2> sizeList[]={{2,6},{10,2},{5,36},{6,30},{40,1},{1,100}};
+    clock_t c=clock();
     for(uint32_t i=0;i<loopN;i++) {
         uint32_t idx=i%(sizeof(sizeList)/sizeof(sizeList[0]));
         //cout<<"Loop "<<i<<", size=["<<sizeList[idx][0]<<" , "<<sizeList[idx][1]<<']'<<endl;
         mat.resize(sizeList[idx][0]*10,sizeList[idx][1]*10);
     }
+    cout<<double(clock()-c)*1000/CLOCKS_PER_SEC/loopN*10e3<<" ms per allocate"<<endl;
 }
