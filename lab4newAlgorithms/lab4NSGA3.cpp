@@ -1,10 +1,12 @@
 #include "lab4NSGA3.h"
 #include <iostream>
+#include <OptimTemplates/Global>
+
 using namespace std;
 
 
-void pri_makeRP(const int64_t dimN,const int64_t precision,
-    const int64_t curDim,const int64_t curP,const int64_t accum,
+void pri_makeRP(const uint64_t dimN,const uint64_t precision,
+    const uint64_t curDim,const uint64_t curP,const uint64_t accum,
     Eigen::ArrayXd & rec,
     vector<Eigen::ArrayXd> & dst) {
     
@@ -15,30 +17,32 @@ void pri_makeRP(const int64_t dimN,const int64_t precision,
     }
     
 
-    for(int64_t p=0;p+accum<=precision;p++) {
+    for(uint64_t p=0;p+accum<=precision;p++) {
         if(curDim>=0)
             rec[curDim]=double(p)/precision;
         pri_makeRP(dimN,precision,curDim+1,p,accum+p,rec,dst);
     }
 }
 
-void pri_startRP(const int64_t dimN,const int64_t precision,vector<Eigen::ArrayXd> & dst) {
+void pri_startRP(const uint64_t dimN,const uint64_t precision,vector<Eigen::ArrayXd> & dst) {
     Eigen::ArrayXd rec;
     rec.setConstant(dimN,1,4);
     pri_makeRP(dimN,precision,0,0,0,rec,dst);
 }
 
-vector<Eigen::ArrayXd> makeReferencePoints(const int64_t dimN,const int64_t precision) {
+vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision) {
     if(precision<=0) {
         exit(114514);
     }
     vector<Eigen::ArrayXd> points;
 
+    points.reserve(OptimT::NchooseK(dimN+precision-1,precision));
+
     pri_startRP(dimN,precision,points);
 
     cout<<"RPS=[\n";
     for(const auto & i : points) {
-        cout<<double(precision)*i.transpose()<<'\n';
+        cout<<i.transpose()<<'\n';
     }
     cout<<"];"<<endl;
 

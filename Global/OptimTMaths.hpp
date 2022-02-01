@@ -31,6 +31,19 @@ inline double sign(double x) {
     return 0;
 }
 
+template<typename num_t>
+inline num_t fractorial(num_t n) {
+    if(n>num_t(1))
+        return n*fractorial(n-1);
+    else
+        return 1;
+}
+
+template<typename num_t>
+inline num_t NchooseK(num_t N,num_t K) {
+    return fractorial<num_t>(N)/(fractorial<num_t>(K)*fractorial<num_t>(N-K));
+}
+
 namespace OptimTPrivate {
 
     template<typename val_t,int64_t N>
