@@ -21,24 +21,32 @@ This file is part of OptimTemplates.
 #define OptimT_MATRIXDYNAMICSIZE_H
 
 #include <stdint.h>
+#include <memory>
+#include <type_traits>
 
 namespace OptimT
 {
 ///col-major matrix with basic types only
-template<class Scalar_t>
+template<class Scalar_t,class allocator_t=std::allocator<Scalar_t>>
 class MatrixDynamicSize
 {
 public:
     MatrixDynamicSize() {
         rowNum=0;
         colNum=0;
+        _capacity=0;
         dataPtr=nullptr;
     };
 
     MatrixDynamicSize(size_t r,size_t c) {
         rowNum=r;
         colNum=c;
-        dataPtr=new Scalar_t[r*c];
+        _capacity=r*c;
+        dataPtr=alloc.allocate(_capacity);
+        if(isClass)
+            for(size_t i=0;i<_capacity;i++) {
+                alloc.construct(dataPtr+i);
+            }
     }
 
     ///Deep copy function
@@ -59,33 +67,52 @@ public:
     }
 
     ~MatrixDynamicSize() {
-        if(dataPtr!=nullptr)
-            delete [] dataPtr;
+        if(dataPtr!=nullptr) {
+            alloc.deallocate(dataPtr,_capacity);
+            if(isClass)
+                for(size_t i=0;i<_capacity;i++) {
+                    alloc.destroy(dataPtr+i);
+                }
+        }
     };
 
     using iterator = Scalar_t*;
     using citerator = const Scalar_t*;
 
-    iterator begin() {
+    inline iterator begin() {
         return dataPtr;
     }
 
-    iterator end() {
+    inline iterator end() {
         return dataPtr+size();
     }
 
-    size_t size() const {
+    inline size_t size() const {
         return rowNum*colNum;
     }
 
     void resize(size_t r,size_t c) {
-        if(r*c!=size())
-        {
-            if(dataPtr!=nullptr)
-                delete [] dataPtr;
-            rowNum=r;
-            colNum=c;
-            dataPtr=new Scalar_t[r*c];
+        if(r*c!=size()) {
+            if(r*c>_capacity) {
+                if(dataPtr!=nullptr) {
+                    if(isClass)
+                        for(size_t i=0;i<_capacity;i++) {
+                            alloc.destroy(dataPtr+i);
+                        }
+                    alloc.deallocate(dataPtr,_capacity);
+                }
+                dataPtr=alloc.allocate(r*c);
+                _capacity=r*c;
+                rowNum=r;
+                colNum=c;
+                for(size_t i=0;i<_capacity;i++) {
+                    alloc.construct(dataPtr+i);
+                }
+            }
+            else {
+                rowNum=r;
+                colNum=c;
+            }
         }
         else {
             //conservative resize
@@ -94,27 +121,31 @@ public:
         }
     }
 
-    size_t rows() const {
+    inline size_t rows() const {
         return rowNum;
     }
 
-    size_t cols() const {
+    inline size_t cols() const {
         return colNum;
     }
 
-    Scalar_t & operator()(size_t n) const {
+    inline size_t capacity() const {
+        return _capacity;
+    }
+
+    inline Scalar_t & operator()(size_t n) const {
         return dataPtr[n];
     }
 
-    Scalar_t & operator()(size_t r,size_t c) const {
+    inline Scalar_t & operator()(size_t r,size_t c) const {
         return dataPtr[rowNum*c+r];
     }
 
-    Scalar_t * data() {
+    inline Scalar_t * data() {
         return dataPtr;
     }
 
-    const Scalar_t * cdata() const {
+    inline const Scalar_t * cdata() const {
         return dataPtr;
     }
 
@@ -122,8 +153,11 @@ protected:
     Scalar_t * dataPtr;
     size_t rowNum;
     size_t colNum;
+    size_t _capacity;
 
-
+private:
+    static const bool isClass=std::is_class<Scalar_t>::value;
+    static allocator_t alloc;
 
 };
 
