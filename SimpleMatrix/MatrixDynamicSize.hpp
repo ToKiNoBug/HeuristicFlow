@@ -91,6 +91,25 @@ public:
         return rowNum*colNum;
     }
 
+    void reserve(size_t s) {
+        if(_capacity<=s)
+            return;
+        
+        if(isClass) 
+            for(size_t i=0;i<_capacity;i++) {
+                alloc.destroy(dataPtr+i);
+            }
+        alloc.deallocate(dataPtr,_capacity);
+
+        dataPtr=alloc.allocate(s);
+        _capacity=s;
+        if(isClass) {
+            for(size_t i=0;i<_capacity;i++) {
+                alloc.construct(dataPtr+i);
+            }
+        }
+    }
+
     void resize(size_t r,size_t c) {
         if(r*c!=size()) {
             if(r*c>_capacity) {
@@ -101,24 +120,20 @@ public:
                         }
                     alloc.deallocate(dataPtr,_capacity);
                 }
+
                 dataPtr=alloc.allocate(r*c);
                 _capacity=r*c;
-                rowNum=r;
-                colNum=c;
-                for(size_t i=0;i<_capacity;i++) {
-                    alloc.construct(dataPtr+i);
-                }
+
+                if(isClass)
+                    for(size_t i=0;i<_capacity;i++) {
+                        alloc.construct(dataPtr+i);
+                    }
             }
-            else {
-                rowNum=r;
-                colNum=c;
-            }
+            
         }
-        else {
-            //conservative resize
-            rowNum=r;
-            colNum=c;
-        }
+        
+        rowNum=r;
+        colNum=c;
     }
 
     inline size_t rows() const {

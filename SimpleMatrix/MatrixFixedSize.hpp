@@ -41,39 +41,39 @@ public:
         }
     }
 
-    iterator begin() {
+    inline iterator begin() {
         return array;
     }
 
-    iterator end() {
+    inline iterator end() {
         return array+size();
     }
 
-    static size_t size() {
+    inline static size_t size() {
         return Rows*Cols;
     }
 
-    static size_t rows() {
+    inline static size_t rows() {
         return Rows;
     }
 
-    static size_t cols() {
+    inline static size_t cols() {
         return Cols;
     }
 
-    Scalar_t & operator()(size_t n) const {
+    inline Scalar_t & operator()(size_t n) const {
         return array[n];
     }
 
-    Scalar_t & operator()(size_t r,size_t c) const {
+    inline Scalar_t & operator()(size_t r,size_t c) const {
         return array[Rows*c+r];
     }
 
-    Scalar_t * data() {
+    inline Scalar_t * data() {
         return array;
     }
 
-    const Scalar_t * cdata() const {
+    inline const Scalar_t * cdata() const {
         return array;
     }
 
