@@ -62,7 +62,7 @@ public:
 
     using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
 
-    void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
+    inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             _ccFun=__ccFun;
     }
 

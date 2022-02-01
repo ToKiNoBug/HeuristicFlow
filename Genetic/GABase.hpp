@@ -181,23 +181,23 @@ public:
     //virtual Fitness_t bestFitness() const=0;
 
     ///the whole population
-    const std::list<Gene> & population() const {
+    inline const std::list<Gene> & population() const {
         return _population;
     }
     ///get option
-    const GAOption & option() const {
+    inline const GAOption & option() const {
         return _option;
     }
     ///generations used
-    size_t generation() const {
+    inline size_t generation() const {
         return _generation;
     }
     ///fail times
-    size_t failTimes() const {
+    inline size_t failTimes() const {
         return _failTimes;
     }
     ///other parameters
-    const ArgsType & args() const {
+    inline const ArgsType & args() const {
         return _args;
     }
 

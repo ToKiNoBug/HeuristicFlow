@@ -19,16 +19,16 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include <OptimTemplates/Global>
-#include "def_TestingMatrix.h"
+//#include "def_TestingMatrix.h"
 //#include "def_TestingGenetic.h"
-//#include "def_TestingPSO.h"
+#include "def_TestingPSO.h"
 
 using namespace std;
 
 OptimT_MAKE_GLOBAL
 
 int main() {
+    testRastriginFun();
     system("pause");
     return 0;
 }

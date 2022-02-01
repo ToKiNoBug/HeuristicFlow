@@ -43,7 +43,7 @@ public:
     PSOBase() {};
     virtual ~PSOBase() {};
 
-    static size_t dimensions() {
+    static constexpr size_t dimensions() {
         return DIM;
     }
 
@@ -61,11 +61,11 @@ public:
     using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Args...>;
     OPTIMT_MAKE_PSOABSTRACT_TYPES
 
-    size_t dimensions() const {
+    inline size_t dimensions() const {
         return dims;
     }
 
-    void setDimensions(size_t d) {
+    inline void setDimensions(size_t d) {
         dims=d;
     }
 

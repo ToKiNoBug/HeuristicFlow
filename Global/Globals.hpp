@@ -85,7 +85,7 @@ const double ninfD=-pinfD;
 class OtGlobal
 {
 public:
-    static uint32_t threadNum() {
+    inline static uint32_t threadNum() {
         return concurrency;
     }
 private:

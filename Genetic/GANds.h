@@ -47,21 +47,21 @@ public:
     static const size_t tuple_maxIdx=1;
     static const size_t tuple_learningRateIdx=2;
 
-    void setMax(const std::array<double,N> & m) {
+    inline void setMax(const std::array<double,N> & m) {
         std::get<tuple_maxIdx>(this->args)=m;
     }
 
-    void setMax(const double m) {
+    inline void setMax(const double m) {
         for(auto & i : std::get<tuple_maxIdx>(this->args)) {
             i=m;
         }
     }
 
-    void setMin(const std::array<double,N> & m) {
+    inline void setMin(const std::array<double,N> & m) {
         std::get<tuple_minIdx>(this->args)=m;
     }
     
-    void setMin(const double m) {
+    inline void setMin(const double m) {
         for(auto & i : std::get<tuple_minIdx>(this->args)) {
             i=m;
         }

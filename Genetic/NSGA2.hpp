@@ -129,7 +129,7 @@ public:
 
     virtual ~NSGA2() {};
 
-    void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
+    inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             this->_ccFun=__ccFun;
     }
 

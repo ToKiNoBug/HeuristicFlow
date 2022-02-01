@@ -67,55 +67,55 @@ public:
     PSOAbstract() {};
     virtual ~PSOAbstract() {};
 
-    const PSOOption & option() const {
+    inline const PSOOption & option() const {
         return _option;
     }
 
-    const Args_t & args() const {
+    inline const Args_t & args() const {
         return _args;
     }
 
-    size_t generation() const {
+    inline size_t generation() const {
         return _generation;
     }
 
-    size_t failTimes() const {
+    inline size_t failTimes() const {
         return _failTimes;
     }
 
-    const Var_t & posMin() const {
+    inline const Var_t & posMin() const {
         return _posMin;
     }
 
-    const Var_t & posMax() const {
+    inline const Var_t & posMax() const {
         return _posMax;
     }
 
-    const Var_t & velocityMax() const {
+    inline const Var_t & velocityMax() const {
         return _velocityMax;
     }
 
-    iFun_t initializeFun() const {
+    inline iFun_t initializeFun() const {
         return _iFun;
     }
 
-    fFun_t fitnessFun() const {
+    inline fFun_t fitnessFun() const {
         return _fFun;
     }
 
-    ooFun_t otherOperationFun() const {
+    inline ooFun_t otherOperationFun() const {
         return _ooFun;
     }
 
-    const std::vector<Particle> & population() const {
+    inline const std::vector<Particle> & population() const {
         return _population;
     }
 
-    const Point & globalBest() const {
+    inline const Point & globalBest() const {
         return gBest;
     }
 
-    void setPVRange(const Var_t & pMin,
+    inline void setPVRange(const Var_t & pMin,
             const Var_t & pMax,
             const Var_t & vMax) {
         _posMin=pMin;

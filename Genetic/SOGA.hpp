@@ -58,7 +58,7 @@ public:
         return _eliteIt->_Fitness;
     }
 
-    const Var_t & result() const {
+    inline const Var_t & result() const {
         return _eliteIt->self;
     }
 

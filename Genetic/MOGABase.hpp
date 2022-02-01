@@ -97,7 +97,7 @@ public:
     return _objectiveNum;
     }
 
-    void setObjectiveNum(size_t _objNum) {
+    inline void setObjectiveNum(size_t _objNum) {
 #ifndef OptimT_NO_RTASSERT
         assert(_objNum>1);
         assert(_objNum<=OptimT_MOGA_RTObjNum_MaxObjNum);

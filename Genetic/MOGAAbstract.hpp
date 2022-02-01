@@ -61,7 +61,7 @@ public:
     OptimT_MAKE_GABASE_TYPES
 
     ///get pareto front in vec
-    void paretoFront(std::vector<Fitness_t> & front) const {
+    inline void paretoFront(std::vector<Fitness_t> & front) const {
         front.clear();  front.reserve(_pfGenes.size());
         for(const Gene* i : _pfGenes) {
             front.emplace_back(i->_Fitness);
@@ -69,7 +69,7 @@ public:
         return;
     }
 
-    void paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front) const {
+    inline void paretoFront(std::vector<std::pair<const Var_t*,const Fitness_t*>> & front) const {
         front.clear();
         front.reserve(_pfGenes.size());
         for(const Gene* i : _pfGenes) {
@@ -77,7 +77,7 @@ public:
         }
     }
 
-    const std::unordered_set<const Gene*> & pfGenes() const {
+    inline const std::unordered_set<const Gene*> & pfGenes() const {
         return _pfGenes;
     }
 
