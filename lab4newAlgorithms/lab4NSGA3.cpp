@@ -49,3 +49,10 @@ vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t pr
     return points;
 
 }
+
+Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd P) {
+    auto P_transpose_inv=P.transpose().matrix().inverse();
+    auto ONE=Eigen::Matrix<double,1,Eigen::Dynamic>::Ones(1,P.cols());
+    auto one_div_intercept=(ONE*P_transpose_inv).array();
+    return 1.0/one_div_intercept;
+}

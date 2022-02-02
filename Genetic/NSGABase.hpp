@@ -89,7 +89,7 @@ protected:
                 if(er==ed)
                     continue;
                 pop[ed]->domainedByNum+=
-                        isStrongDomain(&(pop[er]->iterator->_Fitness),
+                        Base_t::isStrongDomain(&(pop[er]->iterator->_Fitness),
                                        &(pop[ed]->iterator->_Fitness));
             }
         }
