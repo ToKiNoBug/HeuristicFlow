@@ -5,6 +5,7 @@
 #include <vector>
 
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
+std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
 static const size_t VarDim=2;
 static const size_t ObjNum=3;
@@ -22,10 +23,10 @@ class testNSGA3
 {
 public:
     testNSGA3() {
-
+        _precision=4;
     }
 
-    ~testNSGA3() {
+    virtual ~testNSGA3() {
 
     }
 
@@ -41,7 +42,7 @@ public:
     struct RefPoint
     {
     public:
-        Eigen::Array2d Pos;
+        size_t idx;
         size_t nicheCount;
     };
 
@@ -50,9 +51,28 @@ public:
     public:
         Eigen::Array3d translatedFitness;
         RefPoint * closest;
+        double distance;
     };
 
+    inline size_t precision() const {
+        return _precision;
+    }
+
+    inline void setPrecision(size_t p) {
+        _precision=p;
+    }
+
 protected:
+    size_t _precision;
+    Eigen::Array<double,3,Eigen::Dynamic> referencePoses;
+
+    void customOptWhenInitialization() {
+        auto x=makeReferencePoints(ObjNum,_precision);
+        referencePoses.resize(3,x.size());
+        for(size_t i=0;i<x.size();i++) {
+            referencePoses.col(i)=x[i];
+        }
+    }
 
     static bool sortByDominatedNum(const infoUnit3 * A,const infoUnit3* B) {
         if(A==B)
@@ -118,7 +138,17 @@ protected:
         }
 
         if(needRefPoint) {
-            
+            ///Normalize procedure
+            normalize(selected,*Fl);
+
+            std::vector<RefPoint> refPoints(referencePoses.cols());
+            for(size_t i=0;i<referencePoses.cols();i++) {
+                refPoints[i].nicheCount=0;
+                refPoints[i].idx=i;
+            }
+            ///Associate procedure
+            associate(selected,refPoints);
+            associate(*Fl,refPoints);
         }
 
 
@@ -149,26 +179,50 @@ protected:
 
         extremePoints.colwise()-=ideal;
 
+        Eigen::Array3d intercept;
+        
+        extremePoints2Intercept(extremePoints,intercept);
+
         for(auto i : selected) {
-            i->translatedFitness=i->iterator->_Fitness-ideal;
+            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercept;
         }
         for(auto i : Fl) {
-            i->translatedFitness=i->iterator->_Fitness-ideal;
+            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercept;
         }
-
-        Eigen::Array3d intercept;
-
-        auto P_transpose_inv=extremePoints.transpose().matrix().inverse();
-        static const Eigen::Matrix<double,1,3> ONE13=Eigen::Matrix<double,1,3>::Ones();
-        auto one_div_intercept=(ONE13*P_transpose_inv).array();
-
-        intercept=1.0/one_div_intercept;
 
         
     }
+
+    void associate(const std::vector<infoUnit3*> & st,
+            std::vector<RefPoint> & refPoints) const {
+        Eigen::ArrayXd distance(referencePoses.cols());
+        for(auto i : st) {
+            for(size_t c=0;c<referencePoses.cols();c++) {
+                auto w=referencePoses.col(c).matrix();
+                auto w_T_s_w=(w.transpose()*(i->translatedFitness.matrix()))*w;
+                auto w_T_s_w_div_wnorm=w_T_s_w/w.squaredNorm();
+                distance[c]=(i->translatedFitness-w_T_s_w_div_wnorm.array()).matrix().squaredNorm();
+            }
+            int minDistanceIdx;
+            i->distance=distance.minCoeff(&minDistanceIdx);
+            i->closest=refPoints.data()+minDistanceIdx;
+        }
+    }
+
+    void nichePreservation(const std::vector<infoUnit3*> & selected,
+            std::vector<RefPoint> & refPoints) {
+        for(auto i : selected) {
+            i->closest->nicheCount++;
+        }
+    }
+
+    inline static void extremePoints2Intercept(const Eigen::Array33d & P,Eigen::Array3d & intercept) {
+        auto P_transpose_inv=P.transpose().matrix().inverse();
+        auto ONE=Eigen::Matrix<double,Eigen::Dynamic,1>::Ones(P.cols(),1);
+        auto one_div_intercept=(P_transpose_inv*ONE).array();
+        intercept=1.0/one_div_intercept;
+    }
 };
 
-
-std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
 #endif  //  OptimT_LAB4NSGA3_H

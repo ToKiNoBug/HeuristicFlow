@@ -27,6 +27,7 @@ This file is part of OptimTemplates.
 using namespace OptimT;
 using namespace std;
 
+
 void testAccess() {
     cout<<"constructor"<<endl;
     MatrixDynamicSize<double> mat;
