@@ -17,9 +17,7 @@ This file is part of OptimTemplates.
 
 */
 
-#include "testNsga2.h"
-
-#include <OptimTemplates/SimpleMatrix>
+#include "lab4NSGA2.h"
 #include <queue>
 #include <ctime>
 using namespace OptimT;

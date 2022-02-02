@@ -15,8 +15,7 @@ include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
 add_executable(OptimT_Lab
-    testNsga2.cpp
-    testNsga3.cpp
+    lab4NSGA2.cpp
     lab4NSGA3.cpp
     main.cpp)
 

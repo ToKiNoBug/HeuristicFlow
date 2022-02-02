@@ -20,9 +20,7 @@ This file is part of OptimTemplates.
 #ifndef TESTNSGA2_H
 #define TESTNSGA2_H
 
-#define OptimT_NO_OUTPUT
-#include <OptimTemplates/Global>
-#include <OptimTemplates/Genetic>
+#include "includes.h"
 #include <array>
 #include <iostream>
 //test with 2 object function
