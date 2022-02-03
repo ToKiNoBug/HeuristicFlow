@@ -3,6 +3,8 @@
 
 #include "includes.h"
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
 
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
@@ -38,19 +40,20 @@ public:
         OptimT::PARETO_FRONT_DONT_MUTATE>;
 
     OptimT_MAKE_NSGABASE_TYPES
-
+    using RefPoint = size_t;
+    /*
     struct RefPoint
     {
     public:
-        size_t idx;
         size_t nicheCount;
     };
+    */
 
     struct infoUnit3 : public infoUnitBase_t
     {
     public:
         Eigen::Array3d translatedFitness;
-        RefPoint * closest;
+        size_t closestIdx;
         double distance;
     };
 
@@ -87,8 +90,7 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
-            pop.back().closest=nullptr;
-            pop.back().isSelected=false;
+            pop.back().closestIdx=-1;
         }
 
         std::vector<infoUnit3*> sortSpace(popSizeBef);
@@ -113,10 +115,10 @@ protected:
 
         this->updatePF((const infoUnitBase_t **)pfLayers.front().data(),pfLayers.front().size());
 
-        std::vector<infoUnit3*> selected;
+        std::unordered_set<infoUnit3*> selected;
         selected.reserve(this->_option.populationSize);
 
-        std::vector<infoUnit3*> * Fl=nullptr;
+        std::vector<infoUnit3*> * FlPtr=nullptr;
         bool needRefPoint=false;
 
         while(true) {
@@ -126,12 +128,12 @@ protected:
             }
             if(selected.size()+pfLayers.front().size()>this->_option.populationSize) {
                 needRefPoint=true;
-                Fl=&pfLayers.front();
+                FlPtr=&pfLayers.front();
                 break;
             }
 
             for(infoUnit3* i : pfLayers.front()) {
-                selected.emplace_back(i);
+                selected.emplace(i);
             }
             pfLayers.pop_front();
 
@@ -139,25 +141,36 @@ protected:
 
         if(needRefPoint) {
             ///Normalize procedure
-            normalize(selected,*Fl);
-
-            std::vector<RefPoint> refPoints(referencePoses.cols());
+            std::unordered_set<infoUnit3*> Fl;
+            Fl.reserve(FlPtr->size());
+            for(auto i : *FlPtr) {
+                Fl.emplace(i);
+            }
+            normalize(selected,Fl);
+            std::unordered_map<size_t,RefPoint> refPoints;
+            refPoints.reserve(referencePoses.cols());
             for(size_t i=0;i<referencePoses.cols();i++) {
-                refPoints[i].nicheCount=0;
-                refPoints[i].idx=i;
+                refPoints[i]=0;
             }
             ///Associate procedure
-            associate(selected,refPoints);
-            associate(*Fl,refPoints);
+            associate(selected);
+            associate(Fl);
+            nichePreservation(&selected,&Fl,&refPoints);
         }
 
-
+        //erase all unselected genes
+        for(auto i : sortSpace) {
+            if(selected.find(i)==selected.end()) {
+                this->_population.erase(i->iterator);
+            }
+        }
 
     }   //  end select
 
-    void normalize(const std::vector<infoUnit3*> & selected,
-        const std::vector<infoUnit3*> & Fl) const {
-        Eigen::Array3d ideal=selected.front()->iterator->_Fitness;
+    void normalize(const std::unordered_set<infoUnit3*> & selected,
+        const std::unordered_set<infoUnit3*> & Fl) const {
+        auto it=(selected.begin());
+        Eigen::Array3d ideal=(*it)->iterator->_Fitness;
         Eigen::Array33d extremePoints;
         extremePoints.colwise()=ideal;
         for(auto i : selected) {
@@ -189,31 +202,97 @@ protected:
         for(auto i : Fl) {
             i->translatedFitness=(i->iterator->_Fitness-ideal)/intercept;
         }
-
         
     }
 
-    void associate(const std::vector<infoUnit3*> & st,
-            std::vector<RefPoint> & refPoints) const {
-        Eigen::ArrayXd distance(referencePoses.cols());
+    void associate(const std::unordered_set<infoUnit3*> & st) const {
+
         for(auto i : st) {
-            for(size_t c=0;c<referencePoses.cols();c++) {
-                auto w=referencePoses.col(c).matrix();
-                auto w_T_s_w=(w.transpose()*(i->translatedFitness.matrix()))*w;
-                auto w_T_s_w_div_wnorm=w_T_s_w/w.squaredNorm();
-                distance[c]=(i->translatedFitness-w_T_s_w_div_wnorm.array()).matrix().squaredNorm();
-            }
+            const auto & w=referencePoses;
+            const auto & s=i->translatedFitness;
+
+            auto wT_s=w.matrix().transpose()*s.matrix();
+            auto wT_s_w=w.rowwise()*(wT_s.array().transpose());
+            Eigen::Array3Xd norm_wTsw=wT_s_w.rowwise()/(w.colwise().squaredNorm());
+            auto s_sub_norm_wTsw=norm_wTsw.colwise()-s;
+            auto distance=s_sub_norm_wTsw.colwise().squaredNorm();
+
             int minDistanceIdx;
             i->distance=distance.minCoeff(&minDistanceIdx);
-            i->closest=refPoints.data()+minDistanceIdx;
+            i->closestIdx=minDistanceIdx;
         }
     }
 
-    void nichePreservation(const std::vector<infoUnit3*> & selected,
-            std::vector<RefPoint> & refPoints) {
-        for(auto i : selected) {
-            i->closest->nicheCount++;
+    void nichePreservation(std::unordered_set<infoUnit3*> * selected,
+            std::unordered_set<infoUnit3*> * Fl,
+            std::unordered_map<size_t,RefPoint> * refPoints) {
+        for(auto i : *selected) {
+            refPoints->operator[](i->closestIdx)++;
         }
+        std::vector<std::unordered_map<size_t,RefPoint>::iterator> minNicheIterators;
+        minNicheIterators.reserve(refPoints->size());
+
+        std::vector<infoUnit3*> associatedGenesInFl;
+        associatedGenesInFl.reserve(Fl->size());
+
+        while(selected->size()<=this->_option.populationSize) {
+            findMinSet(*refPoints,&minNicheIterators);
+            auto curRefPoint=minNicheIterators[size_t(OptimT::randD(0,minNicheIterators.size()))];
+            size_t rhoJ=curRefPoint->second;
+            findAssociated(*Fl,curRefPoint,&associatedGenesInFl);
+
+
+            if(!associatedGenesInFl.empty()) {
+                infoUnit3 * pickedGene=nullptr;
+                if(rhoJ==0) {
+                    //find element in associatedGenesInFl with minimum distance
+                    infoUnit3 * minGene=associatedGenesInFl.front();
+                    for(auto i : associatedGenesInFl) {
+                        if(i->distance<minGene->distance) {
+                            minGene=i;
+                        }
+                    }
+                    pickedGene=minGene;
+                }
+                else {
+                    //pick a random member in associatedGenesInFl
+                    pickedGene=associatedGenesInFl[size_t(OptimT::randD(0,associatedGenesInFl.size()))];
+                }
+                selected->emplace(pickedGene);
+                Fl->erase(pickedGene);
+                curRefPoint->second++;
+            }
+            else {
+                refPoints->erase(curRefPoint);
+            }
+        }   //  end while
+    }
+
+    inline static void findMinSet(std::unordered_map<size_t,RefPoint> & refPoints,
+            std::vector<std::unordered_map<size_t,RefPoint>::iterator> * minNicheIterators) {
+        minNicheIterators->clear();
+        size_t minNiche=-1;
+        for(auto i : refPoints) {
+            minNiche=std::min(minNiche,i.second);
+        }
+        for(auto it=refPoints.begin();it!=refPoints.end();++it) {
+            if(it->second==minNiche) {
+                minNicheIterators->emplace_back(it);
+            }
+        }
+    }
+
+    inline static void findAssociated(const std::unordered_set<infoUnit3*> & Fl,
+            const std::unordered_map<size_t,RefPoint>::iterator & refP,
+            std::vector<infoUnit3*> * associatedGenesInFl) {
+        associatedGenesInFl->clear();
+
+        for(auto i : Fl) {
+            if(i->closestIdx==refP->first) {
+                associatedGenesInFl->emplace_back(i);
+            }
+        }
+
     }
 
     inline static void extremePoints2Intercept(const Eigen::Array33d & P,Eigen::Array3d & intercept) {

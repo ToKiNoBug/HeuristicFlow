@@ -48,10 +48,6 @@ public:
     struct infoUnitBase
     {
     public:
-        /** @brief whether this gene is selected
-        */
-        bool isSelected;
-
         /** @brief Genes in population that strong domain this gene
         */
         size_t domainedByNum;

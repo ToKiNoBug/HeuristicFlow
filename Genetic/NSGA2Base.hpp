@@ -131,6 +131,9 @@ public:
     struct infoUnit:public Base_t::infoUnitBase
     {
     public:
+        /** @brief whether this gene is selected
+        */
+        bool isSelected;
         Fitness_t congestion;
     };
 
