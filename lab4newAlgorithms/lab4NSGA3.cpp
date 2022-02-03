@@ -40,11 +40,13 @@ vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t pr
 
     pri_startRP(dimN,precision,points);
 
+    /*
     cout<<"RPS=[\n";
     for(const auto & i : points) {
         cout<<i.transpose()<<'\n';
     }
     cout<<"];"<<endl;
+    */
 
     return points;
 
@@ -57,6 +59,31 @@ Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd P) {
     return 1.0/one_div_intercept;
 }
 
-void testNGA3Expri() {
+void testNSGA3Expri() {
     testNSGA3 solver;
+
+    solver.setPrecision(4);
+    OptimT::GAOption opt;
+    opt.maxGenerations=1000;
+    opt.maxFailTimes=400;
+    opt.populationSize=400;
+    opt.crossoverProb=0.8;
+    opt.mutateProb=0.05;
+
+    solver.initialize(testNSGA3::iFun,testNSGA3::fFun,testNSGA3::cFun,testNSGA3::mFun,nullptr,opt);
+    clock_t c=clock();
+    solver.run();
+    c=clock()-c;
+
+    cout<<"Solving finished in "<<c<<" ms with "<<solver.generation()<<" generations"<<endl;
+
+    vector<Eigen::Array3d> PF;
+    solver.paretoFront(PF);
+
+    cout<<"PFV=[\n";
+    for(auto & i : PF) {
+        cout<<i.transpose()<<'\n';
+    }
+    cout<<"];\n"<<endl;
+
 }

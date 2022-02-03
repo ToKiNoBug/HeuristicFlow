@@ -345,6 +345,6 @@ protected:
 };
 
 
-void testNGA3Expri();
+void testNSGA3Expri();
 
 #endif  //  OptimT_LAB4NSGA3_H
