@@ -62,7 +62,7 @@ Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd P) {
 void testNSGA3Expri() {
     testNSGA3 solver;
 
-    solver.setPrecision(4);
+    solver.setPrecision(5);
     OptimT::GAOption opt;
     opt.maxGenerations=1000;
     opt.maxFailTimes=400;
@@ -77,7 +77,7 @@ void testNSGA3Expri() {
 
     cout<<"Solving finished in "<<c<<" ms with "<<solver.generation()<<" generations"<<endl;
 
-    vector<Eigen::Array3d> PF;
+    vector<Eigen::Array<double,ObjNum,1>> PF;
     solver.paretoFront(PF);
 
     cout<<"PFV=[\n";

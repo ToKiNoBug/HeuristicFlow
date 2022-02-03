@@ -6,7 +6,6 @@ OptimT_MAKE_GLOBAL
 using namespace std;
 using namespace Eigen;
 int main() {
-
     testNSGA3Expri();
     return 0;
 }

@@ -57,7 +57,7 @@ inline double randD() {
     return rnd(global_mt19937);
 }
 
-///uniform random number in range [min,max]
+///uniform random number in range [min,max)
 inline double randD(const double min,const double max) {
     return (max-min)*randD()+min;
 }

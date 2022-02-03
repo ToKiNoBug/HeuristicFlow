@@ -9,16 +9,17 @@
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
-static const size_t VarDim=2;
-static const size_t ObjNum=3;
+static const size_t VarDim=10;
+static const size_t ObjNum=5;
+static const double alpha=100;
 /**
  * @brief Viennet function
  * 
  */
 class testNSGA3
-    : public OptimT::NSGABase<Eigen::Array2d,
-        3,
-        Eigen::Array3d,
+    : public OptimT::NSGABase<Eigen::Array<double,VarDim,1>,
+        ObjNum,
+        Eigen::Array<double,ObjNum,1>,
         OptimT::FITNESS_LESS_BETTER,
         OptimT::RECORD_FITNESS,
         OptimT::PARETO_FRONT_DONT_MUTATE>
@@ -32,9 +33,9 @@ public:
 
     }
 
-    using Base_t = OptimT::NSGABase<Eigen::Array2d,
-        3,
-        Eigen::Array3d,
+    using Base_t = OptimT::NSGABase<Eigen::Array<double,VarDim,1>,
+        ObjNum,
+        Eigen::Array<double,ObjNum,1>,
         OptimT::FITNESS_LESS_BETTER,
         OptimT::RECORD_FITNESS,
         OptimT::PARETO_FRONT_DONT_MUTATE>;
@@ -52,7 +53,7 @@ public:
     struct infoUnit3 : public infoUnitBase_t
     {
     public:
-        Eigen::Array3d translatedFitness;
+        Eigen::Array<double,ObjNum,1> translatedFitness;
         size_t closestIdx;
         double distance;
     };
@@ -65,8 +66,8 @@ public:
         _precision=p;
     }
 
-    Eigen::Array3d bestFitness() const {
-        Eigen::Array3d b=this->_population.front()._Fitness;
+    Eigen::Array<double,ObjNum,1> bestFitness() const {
+        Eigen::Array<double,ObjNum,1> b=this->_population.front()._Fitness;
         for(auto i : this->_population) {
             b=b.min(i._Fitness);
         }
@@ -75,44 +76,52 @@ public:
 
 public:
 
-    static void iFun(Eigen::Array2d * v,const ArgsType*) {
-        v->operator[](0)=OptimT::randD(-3,3);
-        v->operator[](1)=OptimT::randD(-3,3);
+    static void iFun(Eigen::Array<double,VarDim,1> * v,const ArgsType*) {
+        v->setRandom();
+        (*v)=(*v+1)/2;
     }
 
-    static void fFun(const Eigen::Array2d * v,const ArgsType *,Eigen::Array3d * f) {
-        const double x=(*v)[0],y=(*v)[1];
-        double f1,f2,f3;
-        const double x2_add_y2=x*x+y*y;
-        f1=0.5*(x2_add_y2)+std::sin(x2_add_y2);
-        f2=OT_square(3*x-2*y+4)/8+OT_square(x-y+1)/27+15;
-        f3=1.0/(1+x2_add_y2)-1.1*std::exp(-x2_add_y2);
-        *f={f1,f2,f3};
+    static void fFun(const Eigen::Array<double,VarDim,1> * v,
+        const ArgsType *,
+        Eigen::Array<double,ObjNum,1> * f) {
+        const double one_add_g=(*v-0.5).square().sum();
+
+        double accum=one_add_g;
+        for(int64_t objIdx=ObjNum-1;objIdx>=0;objIdx--) {
+            accum*=std::sin(M_PI_2*
+                std::pow(v->operator[](ObjNum-objIdx-1),alpha)
+                        );
+            f->operator[](objIdx)=accum;
+        }
     }
 
-    static void cFun(const Eigen::Array2d * p1,
-        const Eigen::Array2d * p2,
-        Eigen::Array2d * c1,
-        Eigen::Array2d * c2,
+    static void cFun(const Eigen::Array<double,VarDim,1> * p1,
+        const Eigen::Array<double,VarDim,1> * p2,
+        Eigen::Array<double,VarDim,1> * c1,
+        Eigen::Array<double,VarDim,1> * c2,
         const ArgsType*) {
         static const double r=0.2;
         *c1=r*(*p1)+(1-r)*(*p2);
         *c2=r*(*p2)+(1-r)*(*p1);
     }
 
-    static void mFun(Eigen::Array2d * v,const ArgsType *) {
-        *v+=Eigen::Array2d::Random()*0.05;
-        *v=v->max(Eigen::Array2d({-3,-3}));
-        *v=v->min(Eigen::Array2d({3,3}));
+    static void mFun(Eigen::Array<double,VarDim,1> * v,const ArgsType *) {
+        *v+=Eigen::Array<double,VarDim,1>::Random()*0.05;
+        for(auto i : *v) {
+            if(i<0)
+                i=0;
+            if(i>1)
+                i=1;
+        }
     }
 
 protected:
     size_t _precision;
-    Eigen::Array<double,3,Eigen::Dynamic> referencePoses;
+    Eigen::Array<double,ObjNum,Eigen::Dynamic> referencePoses;
 
     void customOptWhenInitialization() {
         auto x=makeReferencePoints(ObjNum,_precision);
-        referencePoses.resize(3,x.size());
+        referencePoses.resize(ObjNum,x.size());
         for(size_t i=0;i<x.size();i++) {
             referencePoses.col(i)=x[i];
         }
@@ -211,8 +220,8 @@ protected:
     void normalize(const std::unordered_set<infoUnit3*> & selected,
         const std::unordered_set<infoUnit3*> & Fl) const {
         auto it=(selected.begin());
-        Eigen::Array3d ideal=(*it)->iterator->_Fitness;
-        Eigen::Array33d extremePoints;
+        Eigen::Array<double,ObjNum,1> ideal=(*it)->iterator->_Fitness;
+        Eigen::Array<double,ObjNum,ObjNum> extremePoints;
         extremePoints.colwise()=ideal;
         for(auto i : selected) {
             ideal=ideal.min(i->iterator->_Fitness);
@@ -233,7 +242,7 @@ protected:
 
         extremePoints.colwise()-=ideal;
 
-        Eigen::Array3d intercept;
+        Eigen::Array<double,ObjNum,1> intercept;
         
         extremePoints2Intercept(extremePoints,intercept);
 
@@ -254,7 +263,7 @@ protected:
 
             auto wT_s=w.matrix().transpose()*s.matrix();
             auto wT_s_w=w.rowwise()*(wT_s.array().transpose());
-            Eigen::Array3Xd norm_wTsw=wT_s_w.rowwise()/(w.colwise().squaredNorm());
+            Eigen::Array<double,ObjNum,Eigen::Dynamic> norm_wTsw=wT_s_w.rowwise()/(w.colwise().squaredNorm());
             auto s_sub_norm_wTsw=norm_wTsw.colwise()-s;
             auto distance=s_sub_norm_wTsw.colwise().squaredNorm();
 
@@ -336,7 +345,7 @@ protected:
 
     }
 
-    inline static void extremePoints2Intercept(const Eigen::Array33d & P,Eigen::Array3d & intercept) {
+    inline static void extremePoints2Intercept(const Eigen::Array<double,ObjNum,ObjNum> & P,Eigen::Array<double,ObjNum,1> & intercept) {
         auto P_transpose_inv=P.transpose().matrix().inverse();
         auto ONE=Eigen::Matrix<double,Eigen::Dynamic,1>::Ones(P.cols(),1);
         auto one_div_intercept=(P_transpose_inv*ONE).array();
