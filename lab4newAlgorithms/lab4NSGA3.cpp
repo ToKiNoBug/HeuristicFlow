@@ -64,13 +64,22 @@ void testNSGA3Expri() {
 
     solver.setPrecision(5);
     OptimT::GAOption opt;
-    opt.maxGenerations=1000;
-    opt.maxFailTimes=400;
+    opt.maxGenerations=4000;
+    opt.maxFailTimes=opt.maxGenerations/5;
     opt.populationSize=400;
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
 
     solver.initialize(testNSGA3::iFun,testNSGA3::fFun,testNSGA3::cFun,testNSGA3::mFun,nullptr,opt);
+
+    /*
+    cout<<"\n\npopulation=[\n";
+    for(const auto & i : solver.population()) {
+        cout<<i.self.transpose()<<'\n';
+    }
+    cout<<"]';\n\n\n"<<endl;
+    */
+
     clock_t c=clock();
     solver.run();
     c=clock()-c;
@@ -84,6 +93,13 @@ void testNSGA3Expri() {
     for(auto & i : PF) {
         cout<<i.transpose()<<'\n';
     }
-    cout<<"];\n"<<endl;
+    cout<<"];\n\n\n\n\n\n"<<endl;
+    /*
+    cout<<"PFX=[\n";
+    for(auto & i : solver.pfGenes()) {
+        cout<<i->self.transpose()<<'\n';
+    }
+    cout<<"]';\n"<<endl;
+    */
 
 }

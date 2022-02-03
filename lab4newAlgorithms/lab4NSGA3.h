@@ -12,9 +12,9 @@ std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64
 
 static const size_t VarDim=30;
 static const size_t ObjNum=10;
-static const double alpha=10;
+static const double alpha=100;
 /**
- * @brief Viennet function
+ * @brief DTLZ4
  * 
  */
 class testNSGA3
@@ -85,14 +85,15 @@ public:
     static void fFun(const Eigen::Array<double,VarDim,1> * v,
         const ArgsType *,
         Eigen::Array<double,ObjNum,1> * f) {
-        const double one_add_g=(*v-0.5).square().sum();
+        const double one_add_g=1+(*v-0.5).square().sum();
 
         double accum=one_add_g;
         for(int64_t objIdx=ObjNum-1;objIdx>=0;objIdx--) {
-            accum*=std::sin(M_PI_2*
-                std::pow(v->operator[](ObjNum-objIdx-1),alpha)
-                        );
-            f->operator[](objIdx)=accum;
+            f->operator[](objIdx)=
+            accum*std::sin(M_PI/2*
+                std::pow(v->operator[](ObjNum-objIdx-1),alpha));
+            accum*=std::cos(M_PI/2*
+                std::pow(v->operator[](ObjNum-objIdx-1),alpha));
         }
     }
 
@@ -107,7 +108,7 @@ public:
     }
 
     static void mFun(Eigen::Array<double,VarDim,1> * v,const ArgsType *) {
-        *v+=Eigen::Array<double,VarDim,1>::Random()*0.05;
+        *v+=Eigen::Array<double,VarDim,1>::Random()*0.01;
         for(auto i : *v) {
             if(i<0)
                 i=0;
