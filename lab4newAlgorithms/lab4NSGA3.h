@@ -5,13 +5,14 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <iostream>
 
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
-static const size_t VarDim=10;
-static const size_t ObjNum=5;
-static const double alpha=100;
+static const size_t VarDim=30;
+static const size_t ObjNum=10;
+static const double alpha=10;
 /**
  * @brief Viennet function
  * 
@@ -222,12 +223,15 @@ protected:
         auto it=(selected.begin());
         Eigen::Array<double,ObjNum,1> ideal=(*it)->iterator->_Fitness;
         Eigen::Array<double,ObjNum,ObjNum> extremePoints;
+        std::array<const infoUnit3*,ObjNum> extremePtr;
+        extremePtr.fill(*it);
         extremePoints.colwise()=ideal;
         for(auto i : selected) {
             ideal=ideal.min(i->iterator->_Fitness);
             for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
                 if(i->iterator->_Fitness[objIdx]>extremePoints(objIdx,objIdx)) {
                     extremePoints.col(objIdx)=i->iterator->_Fitness;
+                    extremePtr[objIdx]=i;
                 }
             }
         }
@@ -236,15 +240,37 @@ protected:
             for(size_t objIdx=0;objIdx<ObjNum;objIdx++) {
                 if(i->iterator->_Fitness[objIdx]>extremePoints(objIdx,objIdx)) {
                     extremePoints.col(objIdx)=i->iterator->_Fitness;
+                    extremePtr[objIdx]=i;
                 }
             }
+        }
+
+        bool isSingular;
+
+        {
+            std::unordered_set<const void *> set;
+            set.reserve(ObjNum);
+            for(auto i : extremePtr) {
+                set.emplace(i);
+            }
+            isSingular=(set.size()<ObjNum);
         }
 
         extremePoints.colwise()-=ideal;
 
         Eigen::Array<double,ObjNum,1> intercept;
         
-        extremePoints2Intercept(extremePoints,intercept);
+        
+        if(isSingular) {
+            std::cout<<"singular determinat = "<<extremePoints.matrix().determinant()<<std::endl;
+            for(size_t r=0;r<ObjNum;r++) {
+                intercept[r]=extremePoints(r,r);
+            }
+        }
+        else {
+            extremePoints2Intercept(extremePoints,&intercept);
+        }
+
 
         for(auto i : selected) {
             i->translatedFitness=(i->iterator->_Fitness-ideal)/intercept;
@@ -345,11 +371,12 @@ protected:
 
     }
 
-    inline static void extremePoints2Intercept(const Eigen::Array<double,ObjNum,ObjNum> & P,Eigen::Array<double,ObjNum,1> & intercept) {
+    inline static void extremePoints2Intercept(const Eigen::Array<double,ObjNum,ObjNum> & P,
+        Eigen::Array<double,ObjNum,1> * intercept) {
         auto P_transpose_inv=P.transpose().matrix().inverse();
         auto ONE=Eigen::Matrix<double,Eigen::Dynamic,1>::Ones(P.cols(),1);
         auto one_div_intercept=(P_transpose_inv*ONE).array();
-        intercept=1.0/one_div_intercept;
+        *intercept=1.0/one_div_intercept;
     }
 };
 
