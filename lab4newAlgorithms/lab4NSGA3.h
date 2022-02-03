@@ -10,11 +10,11 @@
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
-static const size_t VarDim=12;
+static const size_t VarDim=15;
 static const size_t ObjNum=10;
-static const double alpha=2;
+//static const double alpha=2;
 /**
- * @brief DTLZ4
+ * @brief DTLZ7
  * 
  */
 class testNSGA3
@@ -85,21 +85,12 @@ public:
     static void fFun(const Eigen::Array<double,VarDim,1> * v,
         const ArgsType *,
         Eigen::Array<double,ObjNum,1> * f) {
-        const double one_add_g=1+(*v-0.5).square().sum();
-
-        double accum=one_add_g;
-        for(int64_t objIdx=ObjNum-1;objIdx>=0;objIdx--) {
-            if(objIdx>0) {
-                f->operator[](objIdx)=
-                accum*std::sin(M_PI_2*
-                    std::pow(v->operator[](ObjNum-objIdx-1),alpha));
-                
-                accum*=std::cos(M_PI_2*
-                    std::pow(v->operator[](ObjNum-objIdx-1),alpha));
-            } else {
-                f->operator[](objIdx)=accum;
-            }
-        }
+        f->segment<ObjNum-1>(0)=v->segment<ObjNum-1>(0);
+        const double g=1+9/(std::sqrt(f->square().sum())+1e-40)*(f->sum());
+        auto f_i=f->segment<ObjNum-1>(0);
+        auto a=f_i/(1+g)*(1+(3*M_PI*f_i).sin());
+        const double h=ObjNum-a.sum();
+        f->operator[](ObjNum-1)=(1+g)*h;        
     }
 
     static void cFun(const Eigen::Array<double,VarDim,1> * p1,

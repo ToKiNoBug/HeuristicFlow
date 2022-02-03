@@ -94,12 +94,14 @@ void testNSGA3Expri() {
         cout<<i.transpose()<<'\n';
     }
     cout<<"];\n\n\n\n\n\n"<<endl;
-    
+
+    /*
     cout<<"PFX=[\n";
     for(auto & i : solver.pfGenes()) {
         cout<<i->self.transpose()<<'\n';
     }
     cout<<"]';\n"<<endl;
+    */
     
 
 }
