@@ -56,3 +56,7 @@ Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd P) {
     auto one_div_intercept=(P_transpose_inv*ONE).array();
     return 1.0/one_div_intercept;
 }
+
+void testNGA3Expri() {
+    testNSGA3 solver;
+}

@@ -65,6 +65,47 @@ public:
         _precision=p;
     }
 
+    Eigen::Array3d bestFitness() const {
+        Eigen::Array3d b=this->_population.front()._Fitness;
+        for(auto i : this->_population) {
+            b=b.min(i._Fitness);
+        }
+        return b;
+    }
+
+public:
+
+    static void iFun(Eigen::Array2d * v,const ArgsType*) {
+        v->operator[](0)=OptimT::randD(-3,3);
+        v->operator[](1)=OptimT::randD(-3,3);
+    }
+
+    static void fFun(const Eigen::Array2d * v,const ArgsType *,Eigen::Array3d * f) {
+        const double x=(*v)[0],y=(*v)[1];
+        double f1,f2,f3;
+        const double x2_add_y2=x*x+y*y;
+        f1=0.5*(x2_add_y2)+std::sin(x2_add_y2);
+        f2=OT_square(3*x-2*y+4)/8+OT_square(x-y+1)/27+15;
+        f3=1.0/(1+x2_add_y2)-1.1*std::exp(-x2_add_y2);
+        *f={f1,f2,f3};
+    }
+
+    static void cFun(const Eigen::Array2d * p1,
+        const Eigen::Array2d * p2,
+        Eigen::Array2d * c1,
+        Eigen::Array2d * c2,
+        const ArgsType*) {
+        static const double r=0.2;
+        *c1=r*(*p1)+(1-r)*(*p2);
+        *c2=r*(*p2)+(1-r)*(*p1);
+    }
+
+    static void mFun(Eigen::Array2d * v,const ArgsType *) {
+        *v+=Eigen::Array2d::Random()*0.05;
+        *v=v->max(Eigen::Array2d({-3,-3}));
+        *v=v->min(Eigen::Array2d({3,3}));
+    }
+
 protected:
     size_t _precision;
     Eigen::Array<double,3,Eigen::Dynamic> referencePoses;
@@ -303,5 +344,7 @@ protected:
     }
 };
 
+
+void testNGA3Expri();
 
 #endif  //  OptimT_LAB4NSGA3_H
