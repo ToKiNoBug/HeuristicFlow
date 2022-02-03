@@ -10,9 +10,9 @@
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
-static const size_t VarDim=30;
+static const size_t VarDim=12;
 static const size_t ObjNum=10;
-static const double alpha=100;
+static const double alpha=2;
 /**
  * @brief DTLZ4
  * 
@@ -23,7 +23,7 @@ class testNSGA3
         Eigen::Array<double,ObjNum,1>,
         OptimT::FITNESS_LESS_BETTER,
         OptimT::RECORD_FITNESS,
-        OptimT::PARETO_FRONT_DONT_MUTATE>
+        OptimT::PARETO_FRONT_CAN_MUTATE>
 {
 public:
     testNSGA3() {
@@ -35,11 +35,11 @@ public:
     }
 
     using Base_t = OptimT::NSGABase<Eigen::Array<double,VarDim,1>,
-        ObjNum,
-        Eigen::Array<double,ObjNum,1>,
-        OptimT::FITNESS_LESS_BETTER,
-        OptimT::RECORD_FITNESS,
-        OptimT::PARETO_FRONT_DONT_MUTATE>;
+    ObjNum,
+    Eigen::Array<double,ObjNum,1>,
+    OptimT::FITNESS_LESS_BETTER,
+    OptimT::RECORD_FITNESS,
+    OptimT::PARETO_FRONT_CAN_MUTATE>;
 
     OptimT_MAKE_NSGABASE_TYPES
     using RefPoint = size_t;
@@ -89,11 +89,16 @@ public:
 
         double accum=one_add_g;
         for(int64_t objIdx=ObjNum-1;objIdx>=0;objIdx--) {
-            f->operator[](objIdx)=
-            accum*std::sin(M_PI/2*
-                std::pow(v->operator[](ObjNum-objIdx-1),alpha));
-            accum*=std::cos(M_PI/2*
-                std::pow(v->operator[](ObjNum-objIdx-1),alpha));
+            if(objIdx>0) {
+                f->operator[](objIdx)=
+                accum*std::sin(M_PI_2*
+                    std::pow(v->operator[](ObjNum-objIdx-1),alpha));
+                
+                accum*=std::cos(M_PI_2*
+                    std::pow(v->operator[](ObjNum-objIdx-1),alpha));
+            } else {
+                f->operator[](objIdx)=accum;
+            }
         }
     }
 
@@ -108,13 +113,12 @@ public:
     }
 
     static void mFun(Eigen::Array<double,VarDim,1> * v,const ArgsType *) {
-        *v+=Eigen::Array<double,VarDim,1>::Random()*0.01;
-        for(auto i : *v) {
-            if(i<0)
-                i=0;
-            if(i>1)
-                i=1;
-        }
+        double & x =v->operator[](size_t(OptimT::randD(0,VarDim)));
+        x+=OptimT::randD(-1,1)*0.05;
+        if(x<0)
+            x=0;
+        if(x>1)
+            x=1;
     }
 
 protected:
