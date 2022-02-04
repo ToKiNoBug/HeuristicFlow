@@ -30,7 +30,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class Args_t>
+        class Args_t=void>
 class NSGABase
     : public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
@@ -99,16 +99,16 @@ protected:
                 this->_pfGenes.emplace(&*(pfs[i]->iterator));
             }
             if(this->prevFrontSize!=curFrontSize) {
-                Base_t::_failTimes=0;
+                this->_failTimes=0;
                 this->prevFrontSize=curFrontSize;
             }
             else {
                 size_t checkSum=this->makePFCheckSum();
 
                 if(this->prevPFCheckSum==checkSum) {
-                    Base_t::_failTimes++;
+                    this->_failTimes++;
                 } else {
-                    Base_t::_failTimes=0;
+                    this->_failTimes=0;
                     this->prevPFCheckSum=checkSum;
                 }
             }

@@ -133,20 +133,20 @@ public:
             this->_ccFun=__ccFun;
     }
 
-    static double default_ccFun_liner(const Fitness_t * f,const Args_t*) {
+    static double default_ccFun_liner(const Fitness_t * f) {
         return f->sum();
     };
 
-    static double default_ccFun_sphere(const Fitness_t * f,const Args_t*) {
+    static double default_ccFun_sphere(const Fitness_t * f) {
         return std::sqrt(f->square().sum());
     }
 
-    static double default_ccFun_max(const Fitness_t * f,const Args_t*) {
+    static double default_ccFun_max(const Fitness_t * f) {
         return f->maxCoeff();
     }
 
     template<int64_t p>
-    static double default_ccFun_powered(const Fitness_t * f,const Args_t*) {
+    static double default_ccFun_powered(const Fitness_t * f) {
         return std::pow(f->power(p).sum(),1.0/p);
     }
 

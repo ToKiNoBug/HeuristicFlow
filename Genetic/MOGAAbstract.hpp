@@ -124,14 +124,16 @@ protected:
 
     ///mutate operation
     virtual void mutate() {
-        for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
-            if(randD()<=Base_t::_option.mutateProb) {
+        for(auto it=this->_population.begin();it!=this->_population.end();++it) {
+            if(randD()<=this->_option.mutateProb) {
                 if(pfOpt){
                     if(_pfGenes.find(&*it)!=_pfGenes.end()) {
                         continue;
                     }
                 }
-                Base_t::_mutateFun(&it->self,&Base_t::args());
+
+                Base_t::doMutate(this->_mFun,&it->self);
+
                 it->setUncalculated();
             }
         }

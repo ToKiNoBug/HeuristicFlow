@@ -186,7 +186,7 @@ void testNsga2::mutate() {
 
     for(auto & i : _population) {
         if(OptimT::randD()<_option.mutateProb) {
-            _mutateFun(&i.self,&_args);
+            _mFun(&i.self);
             i.setUncalculated();
         }
     }
@@ -256,29 +256,34 @@ void runNSGA2() {
     opt.maxFailTimes=-1;
     opt.populationSize=200;
 
-    algo.initialize(
-                [](Var_t* v,const Args_t *) {
+    algo.setiFun([](Var_t* v) {
         v->at(0)=randD(0,5);
-        v->at(1)=randD(0,3);},
-    [](const Var_t * v,const Args_t *,std::array<double,2>*fitness) {
+        v->at(1)=randD(0,3);});
+
+    algo.setfFun(    [](const Var_t * v,std::array<double,2>*fitness) {
         const double & x=v->at(0),y=v->at(1);
         fitness->at(0)=4*x*x+4*y*y;
         fitness->at(1)=OT_square(x-5)+OT_square(y-5);
-        },
-    [](const Var_t * p1,const Var_t * p2,Var_t * c1,Var_t * c2,const Args_t *) {
+        });
+
+    algo.setcFun(    [](const Var_t * p1,const Var_t * p2,Var_t * c1,Var_t * c2) {
         for(uint32_t idx=0;idx<p1->size();idx++) {
             c1->at(idx)=(randD()<0.5)?p1->at(idx):p2->at(idx);
             c2->at(idx)=(randD()<0.5)?p1->at(idx):p2->at(idx);
-        } },
-    [](Var_t * v,const Args_t *) {
+        } });
+
+    algo.setmFun(    [](Var_t * v) {
         v->at(0)+=randD(-0.05,0.05);
         v->at(0)=std::max(v->at(0),0.0);
         v->at(0)=std::min(5.0,v->at(0));
         v->at(1)+=randD(-0.05,0.05);
         v->at(1)=std::max(v->at(1),0.0);
         v->at(1)=std::min(3.0,v->at(1));
-    },
-    nullptr,opt);
+    });
+
+    algo.setOption(opt);
+    algo.initializePop();
+
     std::cout<<"Start running..."<<std::endl;
     std::clock_t t=std::clock();
     algo.run();

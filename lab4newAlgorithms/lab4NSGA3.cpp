@@ -70,7 +70,13 @@ void testNSGA3Expri() {
     opt.crossoverProb=0.8;
     opt.mutateProb=0.05;
 
-    solver.initialize(testNSGA3::iFun,testNSGA3::fFun,testNSGA3::cFun,testNSGA3::mFun,nullptr,opt);
+    solver.setiFun(testNSGA3::iFun);
+    solver.setfFun(testNSGA3::fFun);
+    solver.setcFun(testNSGA3::cFun);
+    solver.setmFun(testNSGA3::mFun);
+    solver.setOption(opt);
+
+    solver.initializePop();
 
     cout<<"size of population = "<<solver.population().size()<<endl;
 

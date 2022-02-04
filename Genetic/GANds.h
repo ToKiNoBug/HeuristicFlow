@@ -17,6 +17,7 @@ This file is part of OptimTemplates.
 
 */
 
+#if false
 #ifndef OptimT_GANDS_H
 #define OptimT_GANDS_H
 #include "./SOGA.hpp"
@@ -116,3 +117,5 @@ private:
 
 
 #endif // GANDS_H
+
+#endif //   false

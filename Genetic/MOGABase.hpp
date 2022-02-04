@@ -27,7 +27,7 @@ This file is part of OptimTemplates.
 #endif
 
 #ifndef OptimT_MOGA_RTObjNum_MaxObjNum
-#define OptimT_MOGA_RTObjNum_MaxObjNum 256
+#define OptimT_MOGA_RTObjNum_MaxObjNum 16
 #endif
 
 namespace OptimT {
@@ -90,7 +90,7 @@ public:
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    using Base_t = MOGAAbstract<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    using Base_t = MOGAAbstract<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_GABASE_TYPES
 
     inline size_t objectiveNum() const {

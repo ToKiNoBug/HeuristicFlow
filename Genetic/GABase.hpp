@@ -63,19 +63,15 @@ namespace OptimT {
 template<typename Var_t,typename Fitness_t,
     RecordOption Record=DONT_RECORD_FITNESS,
     class Args_t=void>
-class GABase : public parameterBody<Args_t>
+class GABase : public GAAbstract<Var_t,Fitness_t,Args_t>
 {
 public:
-    ///Use std::tuple to store all extra parameters such as training samples
-    //using ArgsType = Args_t;
-    ///Function to initialize Var
-    using initializeFun = void(*)(Var_t*,const ArgsType*);
-    ///Function to calculate fitness for Var
-    using fitnessFun = void(*)(const Var_t*,const ArgsType*,Fitness_t*);
-    ///Function to apply crossover for Var
-    using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*);
-    ///Function to apply mutate for Var
-    using mutateFun = initializeFun;
+
+    using ArgsType = Args_t;
+
+    using Base_t = GAAbstract<Var_t,Fitness_t,Args_t>;
+
+    OptimT_MAKE_GAABSTRACT_TYPES
 
     ///Gene type for Var
     class Gene {
@@ -99,14 +95,10 @@ public:
 
 public:
     GABase() {
-        _initializeFun=
-                [](Var_t*,const Args_t*){};
-        _fitnessFun=
-                [](const Var_t*,const Args_t*,Fitness_t*){};
-        _crossoverFun=
-                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t*){};
-        _mutateFun=
-                [](Var_t*,const Args_t*){};
+        _iFun=nullptr;
+        _fFun=nullptr;
+        _fFun=nullptr;
+        _mFun=nullptr;
     };
     virtual ~GABase() {};
 
@@ -128,11 +120,11 @@ public:
         return _fFun;
     }
     
-    inline void setcFun(crossoverFu c) {
+    inline void setcFun(crossoverFun c) {
         _cFun=c;
     }
 
-    inline crossoverFu cFun() const {
+    inline crossoverFun cFun() const {
         return _cFun;
     }
 
@@ -140,7 +132,7 @@ public:
         _mFun=m;
     }
 
-    inline mutateFun mFun() cosnt {
+    inline mutateFun mFun() const {
         return _mFun;
     }
 
@@ -153,32 +145,20 @@ public:
         return _option;
     }
     
-    virtual void initialize() {
+    void initializePop() {
         _population.resize(_option.populationSize);
         for(auto & i : _population) {
-            _initializeFun(&i.self,&_args);
+
+            if constexpr (Base_t::HasParameters)
+                _iFun(&i.self,&this->_args);
+            else
+                _iFun(&i.self);
+
             i.setUncalculated();
         }
         customOptAfterInitialization();
     }
     
-    [[deprecated]]
-    void initialize(
-        initializeFun _iFun,
-        fitnessFun _fFun,
-        crossoverFun _cFun,
-        mutateFun _mFun,
-        onst GAOption & options=GAOption()) {
-        _option=options;
-        _args=args;
-        _initializeFun=_iFun;
-        _fitnessFun=_fFun;
-        _crossoverFun=_cFun;
-        _mutateFun=_mFun;
-        initialize();
-    }
-
-
     ///start to solve
     virtual void run() {
         _generation=0;
@@ -235,10 +215,10 @@ protected:
     size_t _generation;
     size_t _failTimes;
 
-    fitnessFun _fitnessFun;
-    initializeFun _initializeFun;
-    crossoverFun _crossoverFun;
-    mutateFun _mutateFun;
+    fitnessFun _fFun;
+    initializeFun _iFun;
+    crossoverFun _cFun;
+    mutateFun _mFun;
     virtual void customOptAfterInitialization() {}
     virtual void customOptAfterEachGeneration() {}
 
@@ -258,7 +238,11 @@ protected:
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
             for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
                 Gene * ptr=tasks[i];
-                _fitnessFun(&ptr->self,&_args,&ptr->_Fitness);
+                if constexpr (Base_t::HasParameters)
+                    _fFun(&ptr->self,&this->_args,&ptr->_Fitness);
+                else {
+                    _fFun(&ptr->self,&ptr->_Fitness);
+                }
                 ptr->_isCalculated=true;
             }
         }
@@ -267,7 +251,11 @@ protected:
             if(i._isCalculated) {
                 continue;
             }
-            _fitnessFun(&i.self,&_args,&i._Fitness);
+            if constexpr (Base_t::HasParameters)
+                _fFun(&i.self,&this->_args,&i._Fitness);
+            else
+                _fFun(&i.self,&i._Fitness);
+
             i._isCalculated=true;
         }
 #endif
@@ -306,7 +294,11 @@ protected:
             Gene * childA=&_population.back();
             _population.emplace_back();
             Gene * childB=&_population.back();
-            _crossoverFun(&a->self,&b->self,&childA->self,&childB->self,&_args);
+            if constexpr (Base_t::HasParameters)
+                _cFun(&a->self,&b->self,&childA->self,&childB->self,&this->_args);
+            else
+                _cFun(&a->self,&b->self,&childA->self,&childB->self);
+
             childA->setUncalculated();
             childB->setUncalculated();
         }
@@ -320,13 +312,10 @@ protected:
 };
 
 #define OptimT_MAKE_GABASE_TYPES \
+OptimT_MAKE_GAABSTRACT_TYPES \
 using Gene = typename Base_t::Gene; \
 using GeneIt_t = typename Base_t::GeneIt_t ; \
-using initializeFun = typename Base_t::initializeFun; \
-using fitnessFun = typename Base_t::fitnessFun; \
-using crossoverFun = typename Base_t::crossoverFun; \
-using mutateFun = typename Base_t::mutateFun; \
-//using ArgsType = typename Base_t::ArgsType; 
+using ArgsType = typename Base_t::ArgsType;
 
 #define OPTIMT_MAKE_GABASE_TYPES OptimT_MAKE_GABASE_TYPES
 
@@ -339,20 +328,18 @@ using mutateFun = typename Base_t::mutateFun; \
    *  @tparam RecordOption  Whether the solver records fitness changelog
    *  @tparam ...Args  Type of other parameters.
   */
-template<typename Var_t,typename Fitness_t,class ...Args>
-class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args...>
-    : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>
+template<typename Var_t,typename Fitness_t,class Args_t>
+class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t>
+    : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t>
 {
 public:
-    using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>;
+    using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t>;
     OptimT_MAKE_GABASE_TYPES
 
 public:
-    GABase() {
+    GABase() {};
 
-    };
     virtual ~GABase() {};
-
 
     ///start to solve
     virtual void run() {

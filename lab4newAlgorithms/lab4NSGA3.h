@@ -44,13 +44,6 @@ public:
 
     OptimT_MAKE_NSGABASE_TYPES
     using RefPoint = size_t;
-    /*
-    struct RefPoint
-    {
-    public:
-        size_t nicheCount;
-    };
-    */
 
     struct infoUnit3 : public infoUnitBase_t
     {
@@ -87,13 +80,12 @@ public:
 
 public:
 
-    static void iFun(Eigen::Array<double,VarDim,1> * v,const ArgsType*) {
+    static void iFun(Eigen::Array<double,VarDim,1> * v) {
         v->setRandom();
         (*v)=(*v+1)/2;
     }
 
     static void fFun(const Eigen::Array<double,VarDim,1> * v,
-        const ArgsType *,
         Eigen::Array<double,ObjNum,1> * f) {
         f->segment<ObjNum-1>(0)=v->segment<ObjNum-1>(0);
         const double g=1+9/(std::sqrt(f->square().sum())+1e-40)*(f->sum());
@@ -106,14 +98,13 @@ public:
     static void cFun(const Eigen::Array<double,VarDim,1> * p1,
         const Eigen::Array<double,VarDim,1> * p2,
         Eigen::Array<double,VarDim,1> * c1,
-        Eigen::Array<double,VarDim,1> * c2,
-        const ArgsType*) {
+        Eigen::Array<double,VarDim,1> * c2) {
         static const double r=0.2;
         *c1=r*(*p1)+(1-r)*(*p2);
         *c2=r*(*p2)+(1-r)*(*p1);
     }
 
-    static void mFun(Eigen::Array<double,VarDim,1> * v,const ArgsType *) {
+    static void mFun(Eigen::Array<double,VarDim,1> * v) {
         double & x =v->operator[](size_t(OptimT::randD(0,VarDim)));
         x+=OptimT::randD(-1,1)*0.05;
         if(x<0)
