@@ -20,6 +20,7 @@ This file is part of OptimTemplates.
 #ifndef OptimT_PSO_INCLUDE
 #define OptimT_PSO_INCLUDE
 
+#include "../PSO/PSOParameterPack.hpp"
 #include "../PSO/PSOOption.hpp"
 #include "../PSO/PSOBase.hpp"
 #include "../PSO/PSO.hpp"

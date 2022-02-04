@@ -22,6 +22,7 @@ This file is part of OptimTemplates.
 
 #include <OptimTemplates/Global>
 #include "PSOOption.hpp"
+#include "PSOParameterPack.hpp"
 
 #ifndef OptimT_NO_OUTPUT
 #include <iostream>
@@ -34,17 +35,18 @@ namespace OptimT {
  * 
  * @tparam Var_t Type of determination vector.
  * @tparam Record Record trainning curve or not.
- * @tparam Args... Any other parameters
+ * @tparam Arg_t Any other parameters
  */
-template<class Var_t,class Fitness_t,RecordOption Record,class...Args>
-class PSOAbstract
+template<class Var_t,
+    class Fitness_t,
+    RecordOption Record=DONT_RECORD_FITNESS,
+    class Arg_t=void>
+class PSOAbstract : public PSOParameterPack<Var_t,Fitness_t,Arg_t>
 {
 public:
-    using Args_t = std::tuple<Args...>;
-    using iFun_t = void(*)(Var_t * pos,Var_t * velocity,
-        const Var_t * pMin,const Var_t * pMax,const Var_t * vMax,const Args_t *);
-    using fFun_t = void(*)(const Var_t * ,const Args_t *,Fitness_t *);
-
+    using Base_t = PSOParameterPack<Var_t,Fitness_t,Arg_t>;
+    OptimT_MAKE_PSOPARAMETERPACK_TYPES
+    
     class Point
     {
     public:
@@ -60,19 +62,17 @@ public:
         Point pBest;
 
     };
-    using ooFun_t = void(*)
-        (Args_t*,std::vector<Particle>*,size_t generation,size_t failTimes,PSOOption*);
 
 public:
     PSOAbstract() {};
     virtual ~PSOAbstract() {};
 
-    inline const PSOOption & option() const {
-        return _option;
+    inline void setOption(const PSOOption & opt) {
+        _option=opt;
     }
 
-    inline const Args_t & args() const {
-        return _args;
+    inline const PSOOption & option() const {
+        return _option;
     }
 
     inline size_t generation() const {
@@ -95,16 +95,20 @@ public:
         return _velocityMax;
     }
 
+    void setInitializeFun(iFun_t i) {
+        _iFun=i;
+    }
+
     inline iFun_t initializeFun() const {
         return _iFun;
     }
 
-    inline fFun_t fitnessFun() const {
-        return _fFun;
+    void setFitnessFun(fFun_t f) {
+        _fFun=f;
     }
 
-    inline ooFun_t otherOperationFun() const {
-        return _ooFun;
+    inline fFun_t fitnessFun() const {
+        return _fFun;
     }
 
     inline const std::vector<Particle> & population() const {
@@ -123,23 +127,13 @@ public:
         _velocityMax=vMax;
     }
 
-    virtual void initialize(iFun_t _i,
-            fFun_t _f,
-            ooFun_t _oo=default_ooFun,
-            const PSOOption & opt=PSOOption(),
-            const Args_t & args=Args_t()) {
-        _iFun=_i;
-        _fFun=_f;
-        _ooFun=_oo;
-        _option=opt;
-        _args=args;
+    void initializePop() {
         _population.resize(_option.populationSize);
 
         for(Particle & i : _population) {
-            _iFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&_args);
-            _fFun(&i.position,&_args,&i.fitness);
+            Base_t::doInitialize(_iFun,&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax);
+            Base_t::doFitness(_fFun,&i.position,&i.fitness);
             i.pBest=i;
-            //i.isCalculated=true;
         }
 
         gBest=_population.front();
@@ -173,22 +167,16 @@ public:
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
 #endif
-            _ooFun(&_args,&_population,_generation,_failTimes,&_option);
             updatePopulation();
+
+            customOptAfterEachGeneration();
         }
         _generation--;
 
     }
 
-    static void default_ooFun(Args_t*,
-                              std::vector<Particle>*,
-                              size_t generation,
-                              size_t failTimes,
-                              PSOOption*) {}
-
 protected:
     PSOOption _option;
-    Args_t _args;
     size_t _generation;
     size_t _failTimes;
 
@@ -198,7 +186,6 @@ protected:
 
     iFun_t _iFun;
     fFun_t _fFun;
-    ooFun_t _ooFun;
 
     std::vector<Particle> _population;
 
@@ -211,15 +198,12 @@ protected:
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
             for(uint32_t i=begIdx;i<_population.size();i+=thN) {
                 Particle * ptr=&_population[i];
-                _fFun(&ptr->position,&_args,&ptr->fitness);
-                //ptr->isCalculated=true;
+                Base_t::doFitness(_fFun,&ptr->position,&ptr->fitness);
             }
         }
 #else
         for(Particle & i : _population) {
-            
-            _fFun(&i.position,&_args,&i.fitness);
-            //i.isCalculated=true;
+            Base_t::doFitness(_fFun,&i.position,&i.fitness);
         }
 #endif
     }
@@ -228,25 +212,26 @@ protected:
 
     virtual void updatePopulation()=0;
 
+    virtual void customOptAfterEachGeneration() {};
 };
 
-#define OPTIMT_MAKE_PSOABSTRACT_TYPES \
+#define OptimT_MAKE_PSOABSTRACT_TYPES \
+OptimT_MAKE_PSOPARAMETERPACK_TYPES \
 using Point_t = typename Base_t::Point; \
-using Particle_t = typename Base_t::Particle; \
-using iFun_t = typename Base_t::iFun_t; \
-using fFun_t = typename Base_t::fFun_t; \
-using ooFun_t = typename Base_t::ooFun_t; \
-using Args_t = typename Base_t::Args_t;
+using Particle_t = typename Base_t::Particle;
+
+
+
 
 
 ///partial specialization for PSO with recording
-template<class Var_t,class Fitness_t,class...Args>
-class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Args...>
-        : public PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>
+template<class Var_t,class Fitness_t,class Arg_t>
+class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t>
+        : public PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args...>;
-    OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t>;
+    OptimT_MAKE_PSOABSTRACT_TYPES
 
     const std::vector<Fitness_t> & record() const {
         return _record;
@@ -255,42 +240,37 @@ public:
     virtual Fitness_t bestFitness() const=0;
 
     virtual void run() {
-        Base_t::_generation=0;
-        Base_t::_failTimes=0;
+        this->_generation=0;
+        this->_failTimes=0;
         _record.clear();
-        _record.reserve(Base_t::_option.maxGeneration+1);
+        _record.reserve(this->_option.maxGeneration+1);
         while(true) {
-            Base_t::_generation++;
-            Base_t::calculateAll();
+            this->_generation++;
+            this->calculateAll();
             this->updatePGBest();
             _record.emplace_back(bestFitness());
-            if(Base_t::_generation>Base_t::_option.maxGeneration) {
+            if(this->_generation>this->_option.maxGeneration) {
 #ifndef OptimT_NO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
                 }
-                if(Base_t::_option.maxFailTimes>0
-                        &&Base_t::_failTimes>Base_t::_option.maxFailTimes) {
+                if(this->_option.maxFailTimes>0
+                        &&this->_failTimes>this->_option.maxFailTimes) {
 #ifndef OptimT_NO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
                 }
 #ifndef OptimT_NO_OUTPUT
-                std::cout<<"Generation "<<Base_t::_generation
+                std::cout<<"Generation "<<this->_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
 #endif
-                Base_t::_ooFun(&this->_args,
-                                     &this->_population,
-                                     this->_generation,
-                                     this->_failTimes,
-                                     &this->_option);
-                //_ooFun(&_args,&_population,_generation,_failTimes,&_option);
                 this->updatePopulation();
+                this->customOptAfterEachGeneration();
         }
-        Base_t::_generation--;
+        this->_generation--;
 
     }
 protected:

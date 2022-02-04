@@ -32,12 +32,12 @@ This file is part of OptimTemplates.
 namespace OptimT {
 
 ///Abstrcat base class for most PSO solvers
-template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class...Args>
-class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Args...>
+template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class Arg_t=void>
+class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Args...>;
-    OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t>;
+    OptimT_MAKE_PSOABSTRACT_TYPES
 
 public:
     PSOBase() {};
@@ -53,13 +53,13 @@ protected:
 };
 
 ///partial specialization for PSOBase with dynamic dimensions
-template<class Var_t,class Fitness_t,RecordOption Record,class...Args>
-class PSOBase<Var_t,Dynamic,Fitness_t,Record,Args...>
-        : public PSOAbstract<Var_t,Fitness_t,Record,Args...>
+template<class Var_t,class Fitness_t,RecordOption Record,class Arg_t>
+class PSOBase<Var_t,Dynamic,Fitness_t,Record,Arg_t>
+        : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Args...>;
-    OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t>;
+    OptimT_MAKE_PSOABSTRACT_TYPES
 
     inline size_t dimensions() const {
         return dims;

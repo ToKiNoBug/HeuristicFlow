@@ -6,9 +6,10 @@ using namespace std;
 
 void testPSOBase() {
     using Var_t = std::vector<double>;
+
     PSOAbstract<Var_t,
             double,
-            RecordOption::DONT_RECORD_FITNESS> * abstractNoRec;
+            DONT_RECORD_FITNESS> * abstractNoRec;
 
     PSOAbstract<Var_t,
             double,
@@ -39,8 +40,6 @@ void testRastriginFun() {
     
     using Var_t = EigenVecD_t<N>;;
 
-    using Args_t = solver_t::Args_t;
-
     PSOOption opt;
     opt.maxGeneration=50*N;
     opt.maxFailTimes=opt.maxGeneration/10;
@@ -52,23 +51,30 @@ void testRastriginFun() {
     solver_t solver;
 
     solver_t::iFun_t iFun=[](Var_t * x,Var_t * v,
-            const Var_t * xMin,const Var_t * xMax,const Var_t * vMax,
-            const Args_t *) {
+            const Var_t * xMin,const Var_t * xMax,const Var_t * vMax) {
         for(size_t i=0;i<N;i++) {
             x->operator[](i)=randD(xMin->operator[](i),xMax->operator[](i));
             v->operator[](i)=0;
         }
     };
 
-    solver_t::fFun_t fFun=[](const Var_t *x,const Args_t *,double * fitness) {
+    solver_t::fFun_t fFun=[](const Var_t *x,double * fitness) {
         *fitness=10*N;
-        *fitness+=(x->square()-10*(*x*M_2_PI).cos()).sum();
-
+        auto t=(x->array()*M_2_PI).cos()*10;
+        *fitness+=(x->square()-t).sum();
     };
 
     solver.setPVRange(-5.12,5.12,0.1);
 
-    solver.initialize(iFun,fFun,solver_t::default_ooFun,opt);
+    solver.setInitializeFun(iFun);
+
+    solver.setFitnessFun(fFun);
+
+    solver.setOption(opt);
+
+    solver.initializePop();
+
+    //solver.initialize(iFun,fFun,opt);
 
     clock_t time=clock();
     solver.run();
@@ -115,7 +121,8 @@ static const size_t SpaceDim=2;
 
     using Solver_t = PSO_Eigen<Dynamic,
     FITNESS_LESS_BETTER,
-    RECORD_FITNESS,DistanceMat_t>;
+    RECORD_FITNESS,
+    DistanceMat_t>;
 
 
     cout<<Enum2String(Solver_t::Flag)<<endl;
@@ -127,7 +134,7 @@ static const size_t SpaceDim=2;
     using sortUnit = std::pair<double,size_t>;
 
     Solver_t::fFun_t fFun=[](const Var_t* x,const Args_t * args,double * fitness) {
-        const size_t N=std::get<0>(*args).rows();
+        const size_t N=(*args).rows();
         std::vector<sortUnit> sortSpace(N);
         for(size_t i=0;i<N;i++) {
             sortSpace[i]=std::make_pair(x->operator[](i),i);
@@ -144,7 +151,7 @@ static const size_t SpaceDim=2;
         *fitness=0;
 
         for(size_t i=0;i+1<N;i++) {
-            *fitness+=std::get<0>(*args)(sortSpace[i].second,sortSpace[i+1].second);
+            *fitness+=(*args)(sortSpace[i].second,sortSpace[i+1].second);
         }
     };
 
@@ -179,11 +186,11 @@ static const size_t SpaceDim=2;
 
     solver.setPVRange(0,1,0.5);
 
-    solver.initialize(Solver_t::default_iFun,
-                        fFun,
-                        Solver_t::default_ooFun,
-                        opt,
-                        std::make_tuple(dMat));
+    solver.setInitializeFun(Solver_t::default_iFun);
+    solver.setFitnessFun(fFun);
+    solver.setOption(opt);
+    solver.setArgs(dMat);
+    solver.initializePop();
 
     {
         double iniFitness;

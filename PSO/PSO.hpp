@@ -36,18 +36,18 @@ namespace OptimT {
  * @tparam DIM Dimensional of Var_t
  * @tparam FitnessOpt Trainning direction
  * @tparam RecordOpt Record trainning curve or not.
- * @tparam Argsg... Any other parameters.
+ * @tparam Arg_t Any other parameters.
  */
 template<class Var_t,
          size_t DIM,
-         FitnessOption FitnessOpt,
-         RecordOption RecordOpt,
-         class ...Args>
-class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Args...>
+         FitnessOption FitnessOpt=FITNESS_LESS_BETTER,
+         RecordOption RecordOpt=DONT_RECORD_FITNESS,
+         class Arg_t=void>
+class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Arg_t>
 {
 public:
-    using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Args...>;
-    OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Arg_t>;
+    OptimT_MAKE_PSOABSTRACT_TYPES
 
     static const DoubleVectorOption Flag =
         (std::is_same<Var_t,stdVecD_t<DIM>>::value)?
@@ -56,15 +56,15 @@ public:
     void setPVRange(double pMin,double pMax,double vMax) {
         std::cerr<<__FILE__<<" , "<<__LINE__<<std::endl;
         for(size_t i=0;i<this->dimensions();i++) {
-            Base_t::_posMin[i]=pMin;
-            Base_t::_posMax[i]=pMax;
-            Base_t::_velocityMax[i]=vMax;
+            this->_posMin[i]=pMin;
+            this->_posMax[i]=pMax;
+            this->_velocityMax[i]=vMax;
         }
     }
     
     ///function used to provide a result for recording
     virtual double bestFitness() const {
-        return Base_t::gBest.fitness;
+        return this->gBest.fitness;
     }
 
     ///Candidate function for initialization
@@ -87,9 +87,9 @@ protected:
     }
 
     virtual void updatePGBest() {
-        Point_t * curGBest=&Base_t::_population.front().pBest;
+        Point_t * curGBest=&this->_population.front().pBest;
 
-        for(Particle_t & i : Base_t::_population) {
+        for(Particle_t & i : this->_population) {
             if(isBetterThan(i.fitness,i.pBest.fitness)) {
                 i.pBest=i;
             }
@@ -99,28 +99,28 @@ protected:
             }
         }
 
-            if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
-                Base_t::_failTimes=0;
-                Base_t::gBest=*curGBest;
+            if(isBetterThan(curGBest->fitness,this->gBest.fitness)) {
+                this->_failTimes=0;
+                this->gBest=*curGBest;
             }
             else {
-                Base_t::_failTimes++;
+                this->_failTimes++;
             }
     }
 
     virtual void updatePopulation() {
-        for(Particle_t & i : Base_t::_population) {
+        for(Particle_t & i : this->_population) {
             for(size_t idx=0;idx<Base_t::dimensions();idx++) {
                 i.velocity[idx]=
-                        Base_t::_option.inertiaFactor*i.velocity[idx]
-                        +Base_t::_option.learnFactorP*randD()*(i.pBest.position[idx]-i.position[idx])
-                        +Base_t::_option.learnFactorG*randD()*(Base_t::gBest.position[idx]-i.position[idx]);
-                if(std::abs(i.velocity[idx])>Base_t::_velocityMax[idx]) {
-                    i.velocity[idx]=sign(i.velocity[idx])*Base_t::_velocityMax[idx];
+                        this->_option.inertiaFactor*i.velocity[idx]
+                        +this->_option.learnFactorP*randD()*(i.pBest.position[idx]-i.position[idx])
+                        +this->_option.learnFactorG*randD()*(this->gBest.position[idx]-i.position[idx]);
+                if(std::abs(i.velocity[idx])>this->_velocityMax[idx]) {
+                    i.velocity[idx]=sign(i.velocity[idx])*this->_velocityMax[idx];
                 }
                 i.position[idx]+=i.velocity[idx];
-                i.position[idx]=std::max(i.position[idx],Base_t::_posMin[idx]);
-                i.position[idx]=std::min(i.position[idx],Base_t::_posMax[idx]);
+                i.position[idx]=std::max(i.position[idx],this->_posMin[idx]);
+                i.position[idx]=std::min(i.position[idx],this->_posMax[idx]);
             }
         }
     }
@@ -133,14 +133,14 @@ protected:
 template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
-         class ...Args>
-using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
+         class Arg_t=void>
+using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>;
 
 
 #ifdef OptimT_PSO_USE_EIGEN
 
-template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class ...Args>
-using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>;
+template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void>
+using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>;
 
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
@@ -148,14 +148,14 @@ template<
         size_t DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
-         class ...Args>
-class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Args...>
+         class Arg_t>
+class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>
 ///Partial specilization for PSO using Eigen's fix-sized Array
-    : public PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Args...>
+    : public PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t>
 {
 public:
-    using Base_t = PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Args...>;
-    OPTIMT_MAKE_PSOABSTRACT_TYPES
+    using Base_t = PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t>;
+    OptimT_MAKE_PSOABSTRACT_TYPES
     using Var_t = EigenVecD_t<DIM>;
 
     static const DoubleVectorOption Flag = DoubleVectorOption::Eigen;
@@ -167,7 +167,7 @@ public:
     }
 
     virtual double bestFitness() const {
-        return Base_t::gBest.fitness;
+        return this->gBest.fitness;
     }
 
     ///Candidate function for initialization
@@ -190,9 +190,9 @@ protected:
     }
 
     virtual void updatePGBest() {
-        Point_t * curGBest=&Base_t::_population.front().pBest;
+        Point_t * curGBest=&this->_population.front().pBest;
 
-        for(Particle_t & i : Base_t::_population) {
+        for(Particle_t & i : this->_population) {
             if(isBetterThan(i.fitness,i.pBest.fitness)) {
                 i.pBest=i;
             }
@@ -202,28 +202,28 @@ protected:
             }
         }
 
-            if(isBetterThan(curGBest->fitness,Base_t::gBest.fitness)) {
-                Base_t::_failTimes=0;
-                Base_t::gBest=*curGBest;
+            if(isBetterThan(curGBest->fitness,this->gBest.fitness)) {
+                this->_failTimes=0;
+                this->gBest=*curGBest;
             }
             else {
-                Base_t::_failTimes++;
+                this->_failTimes++;
             }
     }
 
     virtual void updatePopulation() {
-        for(Particle_t & i : Base_t::_population) {
+        for(Particle_t & i : this->_population) {
             i.velocity=this->_option.inertiaFactor*i.velocity
                         +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
                         +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
 
-            i.velocity=i.velocity.min(Base_t::_velocityMax);
-            i.velocity=i.velocity.max(-Base_t::_velocityMax);
+            i.velocity=i.velocity.min(this->_velocityMax);
+            i.velocity=i.velocity.max(-this->_velocityMax);
 
             i.position+=i.velocity;
 
-            i.position=i.position.min(Base_t::_posMax);
-            i.position=i.position.max(Base_t::_posMin);
+            i.position=i.position.min(this->_posMax);
+            i.position=i.position.max(this->_posMin);
 
         }
     }
