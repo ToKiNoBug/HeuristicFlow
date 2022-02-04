@@ -24,5 +24,6 @@ This file is part of OptimTemplates.
 #include "../Global/LogisticChaos.hpp"
 #include "../Global/TentChaos.hpp"
 #include "../Global/OptimTMaths.hpp"
+#include "../Global/TemplateFloat.hpp"
 
 #endif // GLOBAL_H

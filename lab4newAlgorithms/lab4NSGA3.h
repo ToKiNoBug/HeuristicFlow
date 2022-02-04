@@ -137,7 +137,7 @@ protected:
                 referencePoses.col(c)=outer[c];
             }
             else {
-                referencePoses.col(c)=inner[c-outer.size()]/2;
+                referencePoses.col(c)=inner[c-outer.size()]*M_SQRT1_2;
             }
         }
     }
