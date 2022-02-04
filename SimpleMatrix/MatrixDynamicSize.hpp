@@ -42,10 +42,10 @@ public:
         rowNum=r;
         colNum=c;
         _capacity=r*c;
-        dataPtr=alloc.allocate(_capacity);
+        dataPtr=alloc().allocate(_capacity);
         if(isClass)
             for(size_t i=0;i<_capacity;i++) {
-                alloc.construct(dataPtr+i);
+                alloc().construct(dataPtr+i);
             }
     }
 
@@ -68,10 +68,10 @@ public:
 
     ~MatrixDynamicSize() {
         if(dataPtr!=nullptr) {
-            alloc.deallocate(dataPtr,_capacity);
+            alloc().deallocate(dataPtr,_capacity);
             if(isClass)
                 for(size_t i=0;i<_capacity;i++) {
-                    alloc.destroy(dataPtr+i);
+                    alloc().destroy(dataPtr+i);
                 }
         }
     };
@@ -97,15 +97,15 @@ public:
         
         if(isClass) 
             for(size_t i=0;i<_capacity;i++) {
-                alloc.destroy(dataPtr+i);
+                alloc().destroy(dataPtr+i);
             }
-        alloc.deallocate(dataPtr,_capacity);
+        alloc().deallocate(dataPtr,_capacity);
 
-        dataPtr=alloc.allocate(s);
+        dataPtr=alloc().allocate(s);
         _capacity=s;
         if(isClass) {
             for(size_t i=0;i<_capacity;i++) {
-                alloc.construct(dataPtr+i);
+                alloc().construct(dataPtr+i);
             }
         }
     }
@@ -116,17 +116,17 @@ public:
                 if(dataPtr!=nullptr) {
                     if(isClass)
                         for(size_t i=0;i<_capacity;i++) {
-                            alloc.destroy(dataPtr+i);
+                            alloc().destroy(dataPtr+i);
                         }
-                    alloc.deallocate(dataPtr,_capacity);
+                    alloc().deallocate(dataPtr,_capacity);
                 }
 
-                dataPtr=alloc.allocate(r*c);
+                dataPtr=alloc().allocate(r*c);
                 _capacity=r*c;
 
                 if(isClass)
                     for(size_t i=0;i<_capacity;i++) {
-                        alloc.construct(dataPtr+i);
+                        alloc().construct(dataPtr+i);
                     }
             }
             
@@ -172,7 +172,11 @@ protected:
 
 private:
     static const bool isClass=std::is_class<Scalar_t>::value;
-    static allocator_t alloc;
+
+    inline static allocator_t & alloc() {
+        static allocator_t alloctor;
+        return alloctor;
+    }
 
 };
 
