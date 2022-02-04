@@ -27,7 +27,8 @@ class testNSGA3
 {
 public:
     testNSGA3() {
-        _precision=4;
+        _innerPrecision=2;
+        _outerPrecision=3;
     }
 
     virtual ~testNSGA3() {
@@ -59,12 +60,17 @@ public:
         double distance;
     };
 
-    inline size_t precision() const {
-        return _precision;
+    inline size_t innerPrecision() const {
+        return _innerPrecision;
     }
 
-    inline void setPrecision(size_t p) {
-        _precision=p;
+    inline size_t outerPrecisioin() const {
+        return _outerPrecision;
+    }
+
+    inline void setPrecision(size_t inner,size_t outer) {
+        _innerPrecision=inner;
+        _outerPrecision=outer;
     }
 
     Eigen::Array<double,ObjNum,1> bestFitness() const {
@@ -73,6 +79,10 @@ public:
             b=b.min(i._Fitness);
         }
         return b;
+    }
+
+    const Eigen::Array<double,ObjNum,Eigen::Dynamic> & referencePoints() const {
+        return referencePoses;
     }
 
 public:
@@ -113,14 +123,22 @@ public:
     }
 
 protected:
-    size_t _precision;
+    size_t _innerPrecision;
+    size_t _outerPrecision;
     Eigen::Array<double,ObjNum,Eigen::Dynamic> referencePoses;
 
     void customOptWhenInitialization() {
-        auto x=makeReferencePoints(ObjNum,_precision);
-        referencePoses.resize(ObjNum,x.size());
-        for(size_t i=0;i<x.size();i++) {
-            referencePoses.col(i)=x[i];
+        auto inner=makeReferencePoints(ObjNum,_innerPrecision);
+        auto outer=makeReferencePoints(ObjNum,_outerPrecision);
+        referencePoses.resize(ObjNum,inner.size()+outer.size());
+        
+        for(size_t c=0;c<referencePoses.cols();c++) {
+            if(c<outer.size()) {
+                referencePoses.col(c)=outer[c];
+            }
+            else {
+                referencePoses.col(c)=inner[c-outer.size()]/2;
+            }
         }
     }
 
