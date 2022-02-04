@@ -40,11 +40,16 @@ namespace OptimT
    *  @tparam fOpt Whether greater fitness value means better.
    *  @tparam rOpt Whether the solver records fitness changelog.
    *  @tparam pfOpt Whether to protect the Pareto front from mutation.
-   *  @tparam ...Args Type of other parameters.
+   *  @tparam Args_t Type of other parameters.
   */
 template<typename Var_t,
          size_t ObjNum,
-         DoubleVectorOption DVO=Std,
+         DoubleVectorOption DVO=
+#ifndef EIGEN_CORE_H
+         DoubleVectorOption::Std,
+#else
+         DoubleVectorOption::Eigen,
+#endif
          FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
          RecordOption Record=DONT_RECORD_FITNESS,
          PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,

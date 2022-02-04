@@ -161,11 +161,11 @@ protected:
 #endif
         if(A==B) return false;
         ///compare by congestion
-        if(objIdx==CompareByCongestion) {
+        if constexpr(objIdx==CompareByCongestion) {
             return A->congestion[0]>B->congestion[0];
         }
         ///compare by paretoLayers
-        if(objIdx==CompareByDominantedBy) {
+        if constexpr(objIdx==CompareByDominantedBy) {
             return A->domainedByNum<B->domainedByNum;
         }
         ///compare by fitness on single objective
