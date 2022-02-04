@@ -44,13 +44,6 @@ public:
 
     OptimT_MAKE_NSGABASE_TYPES
     using RefPoint = size_t;
-    /*
-    struct RefPoint
-    {
-    public:
-        size_t nicheCount;
-    };
-    */
 
     struct infoUnit3 : public infoUnitBase_t
     {
@@ -87,13 +80,12 @@ public:
 
 public:
 
-    static void iFun(Eigen::Array<double,VarDim,1> * v,const ArgsType*) {
+    static void iFun(Eigen::Array<double,VarDim,1> * v) {
         v->setRandom();
         (*v)=(*v+1)/2;
     }
 
     static void fFun(const Eigen::Array<double,VarDim,1> * v,
-        const ArgsType *,
         Eigen::Array<double,ObjNum,1> * f) {
         f->segment<ObjNum-1>(0)=v->segment<ObjNum-1>(0);
         const double g=1+9/(std::sqrt(f->square().sum())+1e-40)*(f->sum());
@@ -106,14 +98,13 @@ public:
     static void cFun(const Eigen::Array<double,VarDim,1> * p1,
         const Eigen::Array<double,VarDim,1> * p2,
         Eigen::Array<double,VarDim,1> * c1,
-        Eigen::Array<double,VarDim,1> * c2,
-        const ArgsType*) {
+        Eigen::Array<double,VarDim,1> * c2) {
         static const double r=0.2;
         *c1=r*(*p1)+(1-r)*(*p2);
         *c2=r*(*p2)+(1-r)*(*p1);
     }
 
-    static void mFun(Eigen::Array<double,VarDim,1> * v,const ArgsType *) {
+    static void mFun(Eigen::Array<double,VarDim,1> * v) {
         double & x =v->operator[](size_t(OptimT::randD(0,VarDim)));
         x+=OptimT::randD(-1,1)*0.05;
         if(x<0)
@@ -217,9 +208,12 @@ protected:
             for(size_t i=0;i<referencePoses.cols();i++) {
                 refPoints[i]=0;
             }
+            std::unordered_multimap<size_t,infoUnit3*> refPoint2Gene;
+            refPoint2Gene.reserve(Fl.size()+selected.size());
+
             ///Associate procedure
-            associate(selected);
-            associate(Fl);
+            associate(selected,nullptr);
+            associate(Fl,&refPoint2Gene);
             nichePreservation(&selected,&Fl,&refPoints);
         }
 
@@ -295,7 +289,7 @@ protected:
         
     }
 
-    void associate(const std::unordered_set<infoUnit3*> & st) const {
+    void associate(const std::unordered_set<infoUnit3*> & st,std::unordered_multimap<size_t,infoUnit3*>* LUT) const {
 
         for(auto i : st) {
             const auto & w=referencePoses;
@@ -310,6 +304,8 @@ protected:
             int minDistanceIdx;
             i->distance=distance.minCoeff(&minDistanceIdx);
             i->closestIdx=minDistanceIdx;
+            if(LUT!=nullptr)
+                LUT->emplace(i->closestIdx,i);
         }
     }
 

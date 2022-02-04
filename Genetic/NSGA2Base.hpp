@@ -44,12 +44,12 @@ enum CompareOption : int64_t {
 template<typename Var_t,
         size_t ObjNum,
         typename Fitness_t,
-        FitnessOption fOpt,
-        RecordOption rOpt,
-        PFOption pfOpt,
-        class ...Args>
+        FitnessOption fOpt=FITNESS_LESS_BETTER,
+        RecordOption rOpt=DONT_RECORD_FITNESS,
+        PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
+        class Args_t=void>
 class NSGA2Base
-    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA2Base() {
@@ -57,16 +57,16 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGABASE_TYPES
 
-    using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
+    using congestComposeFun = double(*)(const Fitness_t *);
 
     inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             _ccFun=__ccFun;
     }
 
-    static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_liner(const Fitness_t * f) {
         double result=f->operator[](0);
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=f->operator[](objIdx);
@@ -74,7 +74,7 @@ public:
         return result;
     };
 
-    static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_sphere(const Fitness_t * f) {
         double result=OT_square(f->operator[](0));
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=OT_square(f->operator[](objIdx));
@@ -82,7 +82,7 @@ public:
         return std::sqrt(result);
     }
 
-    static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_max(const Fitness_t * f) {
         double result=f->operator[](0);
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result=std::max(f->operator[](objIdx),result);
@@ -98,7 +98,7 @@ public:
      * @return double congestion value
      */
     template<int64_t p>
-    static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_powered(const Fitness_t * f) {
         double result=0;
         for(size_t objIdx=0;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=power<p>(f->operator[](objIdx));
@@ -111,14 +111,14 @@ public:
      * @return Fitness_t ideal point
      */
     virtual Fitness_t bestFitness() const {
-        Fitness_t best=Base_t::_population.front()._Fitness;
-        for(const Gene & i : Base_t::_population) {
+        Fitness_t best=this->_population.front()._Fitness;
+        for(const Gene & i : this->_population) {
             if(fOpt) {
-                for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
+                for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
                     best[objIdx]=std::max(best[objIdx],i._Fitness[objIdx]);
                 }
             } else {
-                for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
+                for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
                     best[objIdx]=std::min(best[objIdx],i._Fitness[objIdx]);
                 }
             }
@@ -141,9 +141,10 @@ protected:
     congestComposeFun _ccFun;
 
     virtual void customOptWhenInitialization() {
+        
         this->prevFrontSize=-1;
         this->_pfGenes.clear();
-        this->_pfGenes.reserve(Base_t::_option.populationSize*2);
+        this->_pfGenes.reserve(this->_option.populationSize*2);
         if(_ccFun==nullptr) {
             setCongestComposeFun();
         }
@@ -160,11 +161,11 @@ protected:
 #endif
         if(A==B) return false;
         ///compare by congestion
-        if(objIdx==CompareByCongestion) {
+        if constexpr(objIdx==CompareByCongestion) {
             return A->congestion[0]>B->congestion[0];
         }
         ///compare by paretoLayers
-        if(objIdx==CompareByDominantedBy) {
+        if constexpr(objIdx==CompareByDominantedBy) {
             return A->domainedByNum<B->domainedByNum;
         }
         ///compare by fitness on single objective
@@ -179,11 +180,11 @@ protected:
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 
-        const size_t popSizeBefore=Base_t::_population.size();
+        const size_t popSizeBefore=this->_population.size();
         std::vector<infoUnit> pop;
         pop.clear();pop.reserve(popSizeBefore);
 
-        for(auto it=Base_t::_population.begin();it!=Base_t::_population.end();++it) {
+        for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().isSelected=false;
             pop.back().iterator=it;
@@ -195,7 +196,7 @@ protected:
             sortSpace[i]=pop.data()+i;
         }
 
-        Base_t::calculateDominatedNum((infoUnitBase_t **)sortSpace.data(),popSizeBefore);
+        this->calculateDominatedNum((infoUnitBase_t **)sortSpace.data(),popSizeBefore);
 
         //sort by paretoLayers
         std::sort(sortSpace.begin(),sortSpace.end(),
@@ -226,12 +227,12 @@ protected:
         bool needCongestion=true;
         while(true) {
             //don't need to calculate congestion
-            if(selected.size()==Base_t::_option.populationSize) {
+            if(selected.size()==this->_option.populationSize) {
                 needCongestion=false;
                 break;
             }
             //need to calculate congestion
-            if(selected.size()+paretoLayers.front().size()>Base_t::_option.populationSize) {
+            if(selected.size()+paretoLayers.front().size()>this->_option.populationSize) {
                 needCongestion=true;
                 break;
             }
@@ -247,7 +248,7 @@ protected:
 #ifdef OptimT_NSGA2_DO_PARALLELIZE
 #pragma omp parallel for
 #endif
-            for(size_t objIdx=0;objIdx<Base_t::objectiveNum();objIdx++) {
+            for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
                 //if don't parallelize,  cursortSpace is only a reference to sortSpace;
                 //otherwise it's copied to enable sorting concurrently
                 std::vector<infoUnit*>
@@ -273,13 +274,13 @@ protected:
 
             for(infoUnit & i : pop) {
                 //store final congestion at the first congestion
-                i.congestion[0]=_ccFun(&i.congestion,&Base_t::args());
+                i.congestion[0]=_ccFun(&i.congestion);
             }
 
             std::sort(paretoLayers.front().begin(),paretoLayers.front().end(),
                       universialCompareFun<CompareByCongestion>);
             size_t idx=0;
-            while(selected.size()<Base_t::_option.populationSize) {
+            while(selected.size()<this->_option.populationSize) {
                 selected.emplace(paretoLayers.front()[idx]);
                 idx++;
             }
@@ -294,7 +295,7 @@ protected:
         //erase unselected
         for(infoUnit & i : pop) {
             if(!i.isSelected) {
-                Base_t::_population.erase(i.iterator);
+                this->_population.erase(i.iterator);
             }
         }
     }

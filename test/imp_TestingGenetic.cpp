@@ -29,40 +29,55 @@ double randD(const double min,const double max) {
 }
 */
 void testAckley_withRecord() {
+
+    static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
+    using solver_t = 
+    SOGA<array<double,2>,
+            OptimT::FITNESS_LESS_BETTER,
+            OptimT::RECORD_FITNESS,
+            std::tuple<
+            array<double,2>,//min
+            array<double,2>,//max
+            double//learning rate
+            >>;
+    solver_t algo;
+    
     GAOption opt;
     opt.populationSize=200;
     opt.maxFailTimes=-1;
     opt.maxGenerations=3000;
-    static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
-    SOGA<array<double,2>,
-            OptimT::FITNESS_LESS_BETTER,
-            OptimT::RECORD_FITNESS,
-            array<double,2>,//min
-            array<double,2>,//max
-            double//learning rate
-            > algo;
+    
+    algo.setOption(opt);
 
     tuple<array<double,2>,array<double,2>,double> args;
     get<MinIdx>(args)={-5,-5};
     get<MaxIdx>(args)={5,5};
     get<LrIdx>(args)=0.05;
+    
+    algo.setArgs(args);
 
-    algo.initialize(
-                //initializer for array<double,2>
-    [](array<double,2>* x,const typeof(args) * a) {
+    algo.setiFun(
+    //initializer for array<double,2>
+    [](array<double,2>* x,const solver_t::ArgsType * a) {
         for(uint32_t idx=0;idx<x->size();idx++) {
             x->operator[](idx)=randD(get<MinIdx>(*a)[idx],get<MaxIdx>(*a)[idx]);
-        }},
+        }}
+    );
+
+    algo.setfFun(
     //Ackely function
-    [](const array<double,2>* _x,const typeof(args) *,double * f) {
+    [](const array<double,2>* _x,const solver_t::ArgsType *,double * f) {
         double x=_x->operator[](0),y=_x->operator[](1);
         *f= -20*exp(-0.2*sqrt(0.5*(x*x+y*y)))
                 -exp(0.5*(cos(M_2_PI*x)+cos(M_2_PI*y)))
-                +20+M_E;},
-    //crossover
+                +20+M_E;}
+    );
+
+    algo.setcFun(
+        //crossover
     [](const array<double,2>* x,const array<double,2>* y,
             array<double,2> *X,array<double,2>*Y,
-            const typeof(args) *) {
+            const solver_t::ArgsType *) {
         const array<double,2> &copyx=*x,&copyy=*y;
         for(uint32_t idx=0;idx<x->size();idx++) {
             if(rand()%2)
@@ -75,9 +90,10 @@ void testAckley_withRecord() {
             else {
                 Y->operator[](idx)=copyy[idx];
             }
-        }},
-    //mutate
-    [](array<double,2>* x,const typeof(args) * a) {
+        }}
+    );
+
+    algo.setmFun([](array<double,2>* x,const solver_t::ArgsType * a) {
         uint8_t mutateIdx=rand()%x->size();
         x->operator[](mutateIdx)+=get<LrIdx>(*a)*randD(-1,1);
         if(rand()%2)
@@ -87,11 +103,9 @@ void testAckley_withRecord() {
             var=min(var,get<MaxIdx>(*a)[idx]);
             var=max(var,get<MinIdx>(*a)[idx]);
         }
-    },
-    //no other options
-    nullptr,
-    opt,
-    args);
+    });
+
+    algo.initializePop();
 
     std::clock_t t=std::clock();
     algo.run();
@@ -112,36 +126,6 @@ void testAckley_withRecord() {
 }
 
 
-void testSingleNumber() {
-    SOGA<double,
-            OptimT::FITNESS_GREATER_BETTER,
-            OptimT::DONT_RECORD_FITNESS> algo;
-    GAOption opt;
-    opt.crossoverProb=0.8;
-    opt.mutateProb=0.05;
-    opt.maxFailTimes=100;
-    opt.populationSize=100;
-    opt.maxGenerations=3000;
-    algo.initialize(
-        [](double * x,const tuple<>*){*x=randD();},
-        [](const double * x,const tuple<>*,double * f){*f=1.0/(abs(*x-3.0)+1e-8);},
-        [](const double * x,const double *y,double *X,double *Y,const tuple<>*)
-            {double mean=(*x+*y)/2;*X=(*x+mean)/2;*Y=(*y+mean)/2;},
-        [](double * x,const tuple<>*)
-            {
-        //if(rand()%2)*x*=-1;
-             *x+=randD(-1,1)*0.5;},
-    nullptr,
-    opt,
-    tuple<>()
-    );
-
-    cout << "Start" << endl;
-    algo.run();
-    cout<<"Finished with "<<algo.generation()<<" generations"<<endl;
-    cout<<"result = "<<algo.result()<<endl;
-}
-
 void testWithEigenLib() {
     Eigen::Array4d target(1,2,3,4);
     target/=target.sum();
@@ -156,7 +140,7 @@ void testWithEigenLib() {
     SOGA<Eigen::Array4d,
             FITNESS_GREATER_BETTER,
             RECORD_FITNESS,
-            Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> algo;
+            std::tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double>> algo;
     //val min max learning_rate
     tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> Arg;
     static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
@@ -165,24 +149,22 @@ void testWithEigenLib() {
     get<MaxOffset>(Arg).setConstant(2);
     get<LROffset>(Arg)=0.01;
 
-
-    algo.initialize(
-                    [](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();},
-    [](const Eigen::Array4d* x,const typeof(Arg)* arg,double *f){
+    algo.setiFun([](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();});
+    algo.setfFun(    [](const Eigen::Array4d* x,const typeof(Arg)* arg,double *f){
         *f = -(*x-get<TargetOffset>(*arg)).square().maxCoeff();
-    },
-    [](const Eigen::Array4d*x,const Eigen::Array4d*y,
-            Eigen::Array4d*X,Eigen::Array4d*Y,
-            const typeof(Arg)*) {
-        for(uint32_t i=0;i<4;i++) {
-            X->operator()(i)=
-                    (rand()%2)?
-                        x->operator()(i):y->operator()(i);
-            Y->operator()(i)=
-                    (rand()%2)?
-                        x->operator()(i):y->operator()(i);
-        }},
-    [](Eigen::Array4d*x,const typeof(Arg)* arg) {
+    });
+    algo.setcFun(    [](const Eigen::Array4d*x,const Eigen::Array4d*y,
+                     Eigen::Array4d*X,Eigen::Array4d*Y,
+                     const typeof(Arg)*) {
+                 for(uint32_t i=0;i<4;i++) {
+                     X->operator()(i)=
+                             (rand()%2)?
+                                 x->operator()(i):y->operator()(i);
+                     Y->operator()(i)=
+                             (rand()%2)?
+                                 x->operator()(i):y->operator()(i);
+                 }});
+    algo.setmFun(    [](Eigen::Array4d*x,const typeof(Arg)* arg) {
         uint32_t idx=rand()%4;
         x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
 
@@ -191,16 +173,18 @@ void testWithEigenLib() {
         }
         if(x->operator()(idx)<get<MinOffset>(*arg)(idx)) {
             x->operator()(idx)=get<MinOffset>(*arg)(idx);
-        }},
-    nullptr,
-    opt,
-    Arg);
-
+        }});
+    algo.setArgs(Arg);
+    algo.setOption(opt);
+    algo.initializePop();
 
     algo.run();
     cout<<"Solving spend "<<algo.generation()<<" generations\n";
     cout<<"Result = "<<algo.result().transpose()<<endl;
 }
+
+
+
 
 void testTSP(const uint32_t PointNum) {
     static const uint8_t DIM=2;
@@ -232,7 +216,7 @@ void testTSP(const uint32_t PointNum) {
     SOGA<vector<double>,
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
-            const vector<Point_t>*> algo;
+            std::tuple<const vector<Point_t>*>> algo;
     static const uint8_t dataIdx=0;
     typedef tuple<const vector<Point_t>*> Args_t;
     Args_t args;//=make_tuple(PointNum,points.data());
@@ -317,8 +301,14 @@ void testTSP(const uint32_t PointNum) {
     GAOption opt;
     opt.maxGenerations=30*PointNum;
     opt.maxFailTimes=-1;
-    algo.initialize(initializeFun,calculateFun,crossoverFun,mutateFun,nullptr,
-                    opt,args);
+
+    algo.setiFun(initializeFun);
+    algo.setmFun(mutateFun);
+    algo.setfFun(calculateFun);
+    algo.setcFun(crossoverFun);
+    algo.setOption(opt);
+    algo.setArgs(args);
+    algo.initializePop();
 
     cout<<"run!"<<endl;
     std::clock_t c=std::clock();
@@ -342,16 +332,16 @@ void testNSGA2_ZDT3() {
             RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
 
-    void (*iFun)(std::array<double,XNum>*,const std::tuple<>*) =
-    [] (std::array<double,XNum> * x,const std::tuple<>*) {
+    void (*iFun)(std::array<double,XNum>*) =
+    [] (std::array<double,XNum> * x) {
         for(size_t i=0;i<XNum;i++) {
             x->operator[](i)=OptimT::randD();
         }
     };
 
     void (*fFun)
-            (const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f)
-            =[](const std::array<double,XNum>* x,const std::tuple<>*, std::array<double,2> *f) {
+            (const std::array<double,XNum>* x, std::array<double,2> *f)
+            =[](const std::array<double,XNum>* x, std::array<double,2> *f) {
       f->operator[](0)=x->operator[](0);
       const double && f1=std::move(f->operator[](0));
       double g=0;
@@ -365,9 +355,9 @@ void testNSGA2_ZDT3() {
     };
 
     void (*cFun)(const std::array<double,XNum>*,const std::array<double,XNum>*,
-                 std::array<double,XNum>*,std::array<double,XNum>*,const std::tuple<>*)
+                 std::array<double,XNum>*,std::array<double,XNum>*)
             =[](const std::array<double,XNum>*p1,const std::array<double,XNum>*p2,
-            std::array<double,XNum>*ch1,std::array<double,XNum>*ch2,const std::tuple<>*)
+            std::array<double,XNum>*ch1,std::array<double,XNum>*ch2)
     {
         for(size_t i=0;i<XNum;i++) {
             //discrete
@@ -381,8 +371,8 @@ void testNSGA2_ZDT3() {
 
     };
 
-    void (*mFun)(std::array<double,XNum>*,const std::tuple<>*)=
-            [](std::array<double,XNum>*x,const std::tuple<>*){
+    void (*mFun)(std::array<double,XNum>*)=
+            [](std::array<double,XNum>*x){
         const size_t mutateIdx=size_t(OptimT::randD(0,XNum))%XNum;
 
         x->operator[](mutateIdx)+=0.005*OptimT::randD(-1,1);
@@ -396,7 +386,13 @@ void testNSGA2_ZDT3() {
     opt.maxFailTimes=500;
     opt.maxGenerations=2000;
 
-    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+    algo.setiFun(iFun);
+    algo.setmFun(mFun);
+    algo.setfFun(fFun);
+    algo.setcFun(cFun);
+    algo.setOption(opt);
+    algo.initializePop();
+
     cout<<"Start"<<endl;
     std::clock_t t=std::clock();
     algo.run();
@@ -427,12 +423,12 @@ void testNSGA2_Kursawe() {
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
-    auto iFun=[](std::array<double,3> * x,const std::tuple<>*) {
+    auto iFun=[](std::array<double,3> * x) {
         for(auto & i : *x) {
             i=randD(-5,5);
         }
     };
-    auto fFun=[](const std::array<double,3> * x,const std::tuple<>*,std::array<double,2> *f) {
+    auto fFun=[](const std::array<double,3> * x,std::array<double,2> *f) {
         double f1=0,f2=0;
         for(int i=0;i<2;i++) {
             f1+=-10*exp(-0.2*sqrt(OT_square(x->operator[](i))+OT_square(x->operator[](i+1))));
@@ -445,7 +441,7 @@ void testNSGA2_Kursawe() {
     };
 
     auto cFun=[](const std::array<double,3> *p1,const std::array<double,3> *p2,
-            std::array<double,3> *ch1,std::array<double,3> *ch2,const std::tuple<>*) {
+            std::array<double,3> *ch1,std::array<double,3> *ch2) {
         for(int i=0;i<3;i++) {
             static const double r=0.2;
             ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
@@ -453,7 +449,7 @@ void testNSGA2_Kursawe() {
         }
     };
 
-    auto mFun=[](std::array<double,3> * x,const std::tuple<>*) {
+    auto mFun=[](std::array<double,3> * x) {
         const size_t idx=size_t(randD(0,3))%3;
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](idx)=min(x->operator[](idx),5.0);
@@ -465,7 +461,12 @@ void testNSGA2_Kursawe() {
     opt.populationSize=1000;
     opt.maxFailTimes=-1;
 
-    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+    algo.setiFun(iFun);
+    algo.setmFun(mFun);
+    algo.setfFun(fFun);
+    algo.setcFun(cFun);
+    algo.setOption(opt);
+    algo.initializePop();
 
     algo.setCongestComposeFun(algo.default_ccFun_powered<3>);
 
@@ -502,12 +503,12 @@ void testNSGA2_Binh_and_Korn() {
             PARETO_FRONT_DONT_MUTATE>;
     solver_t algo;
     using Fitness_t = typename solver_t::Fitness_t;
-    auto iFun=[](std::array<double,2> * x,const std::tuple<>*) {
+    auto iFun=[](std::array<double,2> * x) {
         for(auto & i : *x) {
             i=randD(-5,5);
         }
     };
-    auto fFun=[](const std::array<double,2> * _x,const std::tuple<>*,Fitness_t *f) {
+    auto fFun=[](const std::array<double,2> * _x,Fitness_t *f) {
         double & f1=f->operator[](0);
         double & f2=f->operator[](1);
         const double x=_x->operator[](0),y=_x->operator[](1);
@@ -525,7 +526,7 @@ void testNSGA2_Binh_and_Korn() {
     };
 
     auto cFun=[](const std::array<double,2> *p1,const std::array<double,2> *p2,
-            std::array<double,2> *ch1,std::array<double,2> *ch2,const std::tuple<>*) {
+            std::array<double,2> *ch1,std::array<double,2> *ch2) {
         for(int i=0;i<2;i++) {
             static const double r=0.2;
             ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
@@ -533,7 +534,7 @@ void testNSGA2_Binh_and_Korn() {
         }
     };
 
-    auto mFun=[](std::array<double,2> * x,const std::tuple<>*) {
+    auto mFun=[](std::array<double,2> * x) {
         const size_t idx=size_t(randD(0,2))%2;
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](0)=min(x->operator[](0),5.0);
@@ -547,7 +548,12 @@ void testNSGA2_Binh_and_Korn() {
     opt.populationSize=200;
     opt.maxFailTimes=-1;
 
-    algo.initialize(iFun,fFun,cFun,mFun,nullptr,opt);
+    algo.setiFun(iFun);
+    algo.setmFun(mFun);
+    algo.setfFun(fFun);
+    algo.setcFun(cFun);
+    algo.setOption(opt);
+    algo.initializePop();
 
     ///custom ccfun is not compulsory. Default value is nullptr
     //algo.setCongestComposeFun();
@@ -588,7 +594,7 @@ using solver_t = NSGA2<Point_t,
     FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_DONT_MUTATE,
-    Eigen::Array<double,Dim,Eigen::Dynamic>>;
+    std::tuple<Eigen::Array<double,Dim,Eigen::Dynamic>>>;
 
 using Base_t = solver_t;
 OptimT_MAKE_GABASE_TYPES
@@ -640,7 +646,14 @@ std::get<0>(args)=(std::get<0>(args)-0.5);
 cout<<"args=\n";
 cout<<std::get<0>(args)<<endl;
 
-solver.initialize(iFun,fFun,cFun,mFun,nullptr,opt,args);
+solver.setiFun(iFun);
+solver.setcFun(cFun);
+solver.setfFun(fFun);
+solver.setmFun(mFun);
+solver.setArgs(args);
+solver.setOption(opt);
+
+solver.initializePop();
 
 clock_t t=clock();
 solver.run();

@@ -28,8 +28,6 @@ This file is part of OptimTemplates.
 #define OptimT_GENETIC_USE_EIGEN
 #include <OptimTemplates/Genetic>
 
-void testSingleNumber();
-
 
 ///Using libEigen with OptimTemplates
 void testWithEigenLib();

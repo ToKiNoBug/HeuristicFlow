@@ -27,6 +27,6 @@ This file is part of OptimTemplates.
 #include "../Genetic/MOGABase.hpp"
 #include "../Genetic/NSGA2Base.hpp"
 #include "../Genetic/NSGA2.hpp"
-#include "../Genetic/GANds.h"
+//#include "../Genetic/GANds.h"
 
 #endif
