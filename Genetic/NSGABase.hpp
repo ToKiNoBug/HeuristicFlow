@@ -30,15 +30,15 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args>
+        class Args_t>
 class NSGABase
-    : public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+    : public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
-    using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_GABASE_TYPES
     
     /**

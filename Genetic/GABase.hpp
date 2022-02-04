@@ -27,6 +27,7 @@ This file is part of OptimTemplates.
 #include <cmath>
 #include <random>
 #include <algorithm>
+#include "GAAbstract.hpp"
 #ifndef OptimT_NO_STATICASSERT
 #include <type_traits>
 #endif
@@ -59,11 +60,14 @@ namespace OptimT {
    *  @tparam ...Args  Type of other parameters.
    * 
   */
-template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args>
-class GABase {
+template<typename Var_t,typename Fitness_t,
+    RecordOption Record=DONT_RECORD_FITNESS,
+    class Args_t=void>
+class GABase : public parameterBody<Args_t>
+{
 public:
     ///Use std::tuple to store all extra parameters such as training samples
-    using ArgsType = std::tuple<Args...>;
+    //using ArgsType = Args_t;
     ///Function to initialize Var
     using initializeFun = void(*)(Var_t*,const ArgsType*);
     ///Function to calculate fitness for Var
@@ -90,57 +94,88 @@ public:
         bool _isCalculated;
         Fitness_t _Fitness;
     };
-
-
-    ///Function to modify Args after each generation
-    using otherOptFun = void(*)
-        (ArgsType*,std::list<Gene>*,size_t generation,size_t failTimes,const GAOption*);
     ///list iterator to Gene
     using GeneIt_t = typename std::list<Gene>::iterator;
 
 public:
     GABase() {
         _initializeFun=
-                [](Var_t*,const ArgsType*){};
+                [](Var_t*,const Args_t*){};
         _fitnessFun=
-                [](const Var_t*,const ArgsType*,Fitness_t*){};
+                [](const Var_t*,const Args_t*,Fitness_t*){};
         _crossoverFun=
-                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
+                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t*){};
         _mutateFun=
-                [](Var_t*,const ArgsType*){};
-        _otherOptFun=
-                [](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
+                [](Var_t*,const Args_t*){};
     };
     virtual ~GABase() {};
 
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
-    virtual void initialize(
-                            initializeFun _iFun,
-                            fitnessFun _fFun,
-                            crossoverFun _cFun,
-                            mutateFun _mFun,
-                            otherOptFun _ooF=nullptr,
-                            const GAOption & options=GAOption(),
-                            const ArgsType & args=ArgsType()) {
-        _option=options;
+
+    inline void setiFun(initializeFun i) {
+        _iFun=i;
+    }
+
+    inline initializeFun iFun() const {
+        return _iFun;
+    }
+
+    inline void setfFun(fitnessFun f) {
+        _fFun=f;
+    }
+
+    inline fitnessFun fFun() const {
+        return _fFun;
+    }
+    
+    inline void setcFun(crossoverFu c) {
+        _cFun=c;
+    }
+
+    inline crossoverFu cFun() const {
+        return _cFun;
+    }
+
+    inline void setmFun(mutateFun m) {
+        _mFun=m;
+    }
+
+    inline mutateFun mFun() cosnt {
+        return _mFun;
+    }
+
+    inline void setOption(const GAOption & o) {
+        _option=o;
+    }
+
+    ///get option
+    inline const GAOption & option() const {
+        return _option;
+    }
+    
+    virtual void initialize() {
         _population.resize(_option.populationSize);
+        for(auto & i : _population) {
+            _initializeFun(&i.self,&_args);
+            i.setUncalculated();
+        }
+        customOptAfterInitialization();
+    }
+    
+    [[deprecated]]
+    void initialize(
+        initializeFun _iFun,
+        fitnessFun _fFun,
+        crossoverFun _cFun,
+        mutateFun _mFun,
+        onst GAOption & options=GAOption()) {
+        _option=options;
         _args=args;
         _initializeFun=_iFun;
         _fitnessFun=_fFun;
         _crossoverFun=_cFun;
         _mutateFun=_mFun;
-
-        if(_ooF==nullptr) {
-            _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
-        } else {
-            _otherOptFun=_ooF;
-        }
-
-        for(auto & i : _population) {
-            _initializeFun(&i.self,&_args);
-            i.setUncalculated();
-        }
-        customOptWhenInitialization();
+        initialize();
     }
 
 
@@ -170,7 +205,7 @@ public:
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;
 #endif
-            _otherOptFun(&_args,&_population,_generation,_failTimes,&_option);
+            customOptAfterEachGeneration();
             crossover();
             mutate();
         }
@@ -184,10 +219,6 @@ public:
     inline const std::list<Gene> & population() const {
         return _population;
     }
-    ///get option
-    inline const GAOption & option() const {
-        return _option;
-    }
     ///generations used
     inline size_t generation() const {
         return _generation;
@@ -195,10 +226,6 @@ public:
     ///fail times
     inline size_t failTimes() const {
         return _failTimes;
-    }
-    ///other parameters
-    inline const ArgsType & args() const {
-        return _args;
     }
 
 protected:
@@ -208,14 +235,12 @@ protected:
     size_t _generation;
     size_t _failTimes;
 
-    ArgsType _args;
-
     fitnessFun _fitnessFun;
     initializeFun _initializeFun;
     crossoverFun _crossoverFun;
     mutateFun _mutateFun;
-    otherOptFun _otherOptFun;
-    virtual void customOptWhenInitialization() {}
+    virtual void customOptAfterInitialization() {}
+    virtual void customOptAfterEachGeneration() {}
 
     virtual void calculateAll() {
 #ifdef OptimT_DO_PARALLELIZE
@@ -294,8 +319,6 @@ protected:
 
 };
 
-
-
 #define OptimT_MAKE_GABASE_TYPES \
 using Gene = typename Base_t::Gene; \
 using GeneIt_t = typename Base_t::GeneIt_t ; \
@@ -303,8 +326,7 @@ using initializeFun = typename Base_t::initializeFun; \
 using fitnessFun = typename Base_t::fitnessFun; \
 using crossoverFun = typename Base_t::crossoverFun; \
 using mutateFun = typename Base_t::mutateFun; \
-using otherOptFun = typename Base_t::otherOptFun; \
-using ArgsType = typename Base_t::ArgsType; 
+//using ArgsType = typename Base_t::ArgsType; 
 
 #define OPTIMT_MAKE_GABASE_TYPES OptimT_MAKE_GABASE_TYPES
 
@@ -330,39 +352,6 @@ public:
 
     };
     virtual ~GABase() {};
-    ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
-    virtual void initialize(
-                            initializeFun _iFun,
-                            fitnessFun _fFun,
-                            crossoverFun _cFun,
-                            mutateFun _mFun,
-                            otherOptFun _ooF=nullptr,
-                            const GAOption & options=GAOption(),
-                            const ArgsType & args=ArgsType()) {
-        this->_option=options;
-        this->_population.resize(this->_option.populationSize);
-        this->_args=args;
-        this->_initializeFun=_iFun;
-        this->_fitnessFun=_fFun;
-        this->_crossoverFun=_cFun;
-        this->_mutateFun=_mFun;
-
-        if(_ooF==nullptr) {
-           this-> _otherOptFun=[](ArgsType*,std::list<Gene>*,size_t,size_t,const GAOption*){};
-        } else {
-            this->_otherOptFun=_ooF;
-        }
-
-        for(auto & i : this->_population) {
-            this->_initializeFun(&i.self,&this->_args);
-            i.setUncalculated();
-        }
-        //_eliteIt=_population.begin();
-        _record.clear();
-        _record.reserve(this->_option.maxGenerations+1);
-
-        customOptWhenInitialization();
-    }
 
 
     ///start to solve
@@ -395,12 +384,8 @@ public:
             std::cout<<"Generation "<<this->_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;
-#endif
-            this->_otherOptFun(&this->_args,
-                               &this->_population,
-                               this->_generation,
-                               this->_failTimes,
-                               &this->_option);
+#endif      
+            this->customOptAfterEachGeneration();
             this->crossover();
             this->mutate();
         }
@@ -417,8 +402,6 @@ public:
 
 protected:
     std::vector<Fitness_t> _record;
-
-    virtual void customOptWhenInitialization() {}
 
 };
 

@@ -217,9 +217,12 @@ protected:
             for(size_t i=0;i<referencePoses.cols();i++) {
                 refPoints[i]=0;
             }
+            std::unordered_multimap<size_t,infoUnit3*> refPoint2Gene;
+            refPoint2Gene.reserve(Fl.size()+selected.size());
+
             ///Associate procedure
-            associate(selected);
-            associate(Fl);
+            associate(selected,nullptr);
+            associate(Fl,&refPoint2Gene);
             nichePreservation(&selected,&Fl,&refPoints);
         }
 
@@ -295,7 +298,7 @@ protected:
         
     }
 
-    void associate(const std::unordered_set<infoUnit3*> & st) const {
+    void associate(const std::unordered_set<infoUnit3*> & st,std::unordered_multimap<size_t,infoUnit3*>* LUT) const {
 
         for(auto i : st) {
             const auto & w=referencePoses;
@@ -310,6 +313,8 @@ protected:
             int minDistanceIdx;
             i->distance=distance.minCoeff(&minDistanceIdx);
             i->closestIdx=minDistanceIdx;
+            if(LUT!=nullptr)
+                LUT->emplace(i->closestIdx,i);
         }
     }
 

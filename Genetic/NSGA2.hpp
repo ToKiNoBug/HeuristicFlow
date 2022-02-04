@@ -44,11 +44,11 @@ namespace OptimT
   */
 template<typename Var_t,
          size_t ObjNum,
-         DoubleVectorOption DVO,
-         FitnessOption isGreaterBetter,
-         RecordOption Record,
-         PFOption ProtectPF,
-         class ...Args>
+         DoubleVectorOption DVO=Std,
+         FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
+         RecordOption Record=DONT_RECORD_FITNESS,
+         PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
+         class Args_t=void>
 class NSGA2
     : public NSGA2Base<Var_t,
                     ObjNum,
@@ -56,7 +56,7 @@ class NSGA2
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args...>
+                    Args_t>
 {
 public:
     using Base_t = NSGA2Base<Var_t,
@@ -65,7 +65,7 @@ public:
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args...>;
+                    Args_t>;
     using Fitness_t = stdVecD_t<ObjNum>;
     OptimT_MAKE_NSGABASE_TYPES
 
@@ -99,15 +99,15 @@ template<typename Var_t,
          FitnessOption isGreaterBetter,
          RecordOption Record,
          PFOption ProtectPF,
-         class ...Args>
-class NSGA2<Var_t,ObjNum,DoubleVectorOption::Eigen,isGreaterBetter,Record,ProtectPF,Args...>
+         class Args_t>
+class NSGA2<Var_t,ObjNum,DoubleVectorOption::Eigen,isGreaterBetter,Record,ProtectPF,Args_t>
     : public NSGA2Base<Var_t,
                     ObjNum,
                     EigenVecD_t<ObjNum>,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args...>
+                    Args_t>
 {
 public:
     using Base_t =NSGA2Base<Var_t,
@@ -116,7 +116,7 @@ public:
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args...>;
+                    Args_t>;
     using Fitness_t = EigenVecD_t<ObjNum>;
     OptimT_MAKE_NSGABASE_TYPES
 
@@ -133,20 +133,20 @@ public:
             this->_ccFun=__ccFun;
     }
 
-    static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_liner(const Fitness_t * f,const Args_t*) {
         return f->sum();
     };
 
-    static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_sphere(const Fitness_t * f,const Args_t*) {
         return std::sqrt(f->square().sum());
     }
 
-    static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_max(const Fitness_t * f,const Args_t*) {
         return f->maxCoeff();
     }
 
     template<int64_t p>
-    static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_powered(const Fitness_t * f,const Args_t*) {
         return std::pow(f->power(p).sum(),1.0/p);
     }
 

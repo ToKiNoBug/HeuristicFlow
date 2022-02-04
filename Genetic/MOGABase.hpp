@@ -49,12 +49,12 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args>
+        class Args_t>
 class MOGABase
-        : public MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+        : public MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
-    using Base_t = MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    using Base_t = MOGAAbstract<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_GABASE_TYPES
 
     MOGABase() {};
@@ -81,9 +81,9 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args>
-class MOGABase<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args...>
-        : public MOGAAbstract<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+        class Args_t>
+class MOGABase<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
+        : public MOGAAbstract<Var_t,Dynamic,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
 

@@ -41,7 +41,7 @@ enum PFOption : unsigned char {
    *  @tparam fOpt Whether greater fitness value means better.
    *  @tparam rOpt Whether the solver records fitness changelog.
    *  @tparam pfOpt Whether to protect the Pareto front from mutation.
-   *  @tparam ...Args Type of other parameters.
+   *  @tparam Args_t Type of other parameters.
   */
 template<typename Var_t,
         size_t ObjNum,
@@ -49,15 +49,15 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args>
+        class Args_t>
 class MOGAAbstract
-    : public GABase<Var_t,Fitness_t,rOpt,Args...>
+    : public GABase<Var_t,Fitness_t,rOpt,Args_t>
 {
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
 
-    using Base_t = GABase<Var_t,Fitness_t,rOpt,Args...>;
+    using Base_t = GABase<Var_t,Fitness_t,rOpt,Args_t>;
     OptimT_MAKE_GABASE_TYPES
 
     ///get pareto front in vec

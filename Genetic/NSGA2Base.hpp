@@ -44,12 +44,12 @@ enum CompareOption : int64_t {
 template<typename Var_t,
         size_t ObjNum,
         typename Fitness_t,
-        FitnessOption fOpt,
-        RecordOption rOpt,
-        PFOption pfOpt,
-        class ...Args>
+        FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
+        RecordOption Record=DONT_RECORD_FITNESS,
+        PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
+        class Args_t=void>
 class NSGA2Base
-    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>
+    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA2Base() {
@@ -57,16 +57,16 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args...>;
+    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGABASE_TYPES
 
-    using congestComposeFun = double(*)(const Fitness_t *,const ArgsType*);
+    using congestComposeFun = double(*)(const Fitness_t *,const Args_t*);
 
     inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
             _ccFun=__ccFun;
     }
 
-    static double default_ccFun_liner(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_liner(const Fitness_t * f,const Args_t*) {
         double result=f->operator[](0);
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=f->operator[](objIdx);
@@ -74,7 +74,7 @@ public:
         return result;
     };
 
-    static double default_ccFun_sphere(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_sphere(const Fitness_t * f,const Args_t*) {
         double result=OT_square(f->operator[](0));
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=OT_square(f->operator[](objIdx));
@@ -82,7 +82,7 @@ public:
         return std::sqrt(result);
     }
 
-    static double default_ccFun_max(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_max(const Fitness_t * f,const Args_t*) {
         double result=f->operator[](0);
         for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result=std::max(f->operator[](objIdx),result);
@@ -98,7 +98,7 @@ public:
      * @return double congestion value
      */
     template<int64_t p>
-    static double default_ccFun_powered(const Fitness_t * f,const ArgsType*) {
+    static double default_ccFun_powered(const Fitness_t * f,const Args_t*) {
         double result=0;
         for(size_t objIdx=0;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
             result+=power<p>(f->operator[](objIdx));
@@ -141,6 +141,7 @@ protected:
     congestComposeFun _ccFun;
 
     virtual void customOptWhenInitialization() {
+        
         this->prevFrontSize=-1;
         this->_pfGenes.clear();
         this->_pfGenes.reserve(Base_t::_option.populationSize*2);

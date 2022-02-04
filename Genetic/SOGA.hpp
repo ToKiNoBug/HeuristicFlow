@@ -31,27 +31,16 @@ namespace OptimT
    *  @tparam Var_t  Type of decisition variable.
    *  @tparam isGreaterBetter Whether greater fitness value means better.
    *  @tparam Record  Whether the solver records fitness changelog.
-   *  @tparam ...Args  Type of other parameters.
+   *  @tparam Args_t  Type of other parameters.
   */
-template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args>
-class SOGA : public GABase<Var_t,double,Record,Args...>
+template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class Args_t=void>
+class SOGA : public GABase<Var_t,double,Record,Args_t>
 {
 public:
     SOGA() {
-        //initialization for function ptrs
-        Base_t::_initializeFun=
-                [](Var_t*,const ArgsType*){};
-        Base_t::_fitnessFun=
-                [](const Var_t*,const ArgsType*,double*){};
-        Base_t::_crossoverFun=
-                [](const Var_t*,const Var_t*,Var_t*,Var_t*,const ArgsType*){};
-        Base_t::_mutateFun=
-                [](Var_t*,const ArgsType*){};
-        Base_t::_otherOptFun=
-                [](ArgsType*,std::list<typename Base_t::Gene>*,size_t,size_t,const GAOption*){};
 
-  };
-    using Base_t = GABase<Var_t,double,Record,Args...>;
+    };
+    using Base_t = GABase<Var_t,double,Record,Args_t>;
     OptimT_MAKE_GABASE_TYPES
 
     virtual double bestFitness() const {
@@ -62,36 +51,10 @@ public:
         return _eliteIt->self;
     }
 
-    virtual void initialize(
-                            initializeFun _iFun,
-                            fitnessFun _fFun,
-                            crossoverFun _cFun,
-                            mutateFun _mFun,
-                            otherOptFun _ooF=nullptr,
-                            const GAOption & options=GAOption(),
-                            const ArgsType & args=ArgsType()) {
-        Base_t::_option=options;
-        Base_t::_population.resize(Base_t::_option.populationSize);
-        Base_t::_args=args;
-        Base_t::_initializeFun=_iFun;
-        Base_t::_fitnessFun=_fFun;
-        Base_t::_crossoverFun=_cFun;
-        Base_t::_mutateFun=_mFun;
-
-        if(_ooF==nullptr) {
-            Base_t::_otherOptFun=[]
-                    (ArgsType*,std::list<typename Base_t::Gene>*,size_t,size_t,const GAOption*){};
-        } else {
-            Base_t::_otherOptFun=_ooF;
-        }
-
-        for(auto & i : Base_t::_population) {
-            Base_t::_initializeFun(&i.self,&Base_t::args());
-            i.setUncalculated();
-        }
-        _eliteIt=Base_t::_population.begin();
+    virtual void customOptAfterInitialization() {
+        Base_t::customOptAfterInitialization();
+        this->_eliteIt=this->_population.begin();
     }
-
 protected:
 
     GeneIt_t _eliteIt;
