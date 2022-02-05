@@ -41,6 +41,8 @@ public:
    ///Function to apply mutate for Var
    using mutateFun = initializeFun;
 
+   using ArgsType = Args_t;
+
     const Args_t & args() const {
         return _args;
     }
@@ -88,6 +90,8 @@ public:
     ///Function to apply mutate for Var
     using mutateFun = initializeFun;
 
+    using ArgsType = void;
+
     inline static void doInitialize(initializeFun iFun,Var_t * v) {
         iFun(v);
     }
@@ -112,7 +116,8 @@ public:
 using initializeFun = typename Base_t::initializeFun; \
 using fitnessFun = typename Base_t::fitnessFun; \
 using crossoverFun = typename Base_t::crossoverFun; \
-using mutateFun = typename Base_t::mutateFun;
+using mutateFun = typename Base_t::mutateFun; \
+using ArgsType = typename Base_t::ArgsType;
 
 }   //  OptimT
 

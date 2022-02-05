@@ -67,8 +67,6 @@ class GABase : public GAAbstract<Var_t,Fitness_t,Args_t>
 {
 public:
 
-    using ArgsType = Args_t;
-
     using Base_t = GAAbstract<Var_t,Fitness_t,Args_t>;
 
     OptimT_MAKE_GAABSTRACT_TYPES
@@ -312,12 +310,9 @@ protected:
 };
 
 #define OptimT_MAKE_GABASE_TYPES \
-OptimT_MAKE_GAABSTRACT_TYPES \
 using Gene = typename Base_t::Gene; \
-using GeneIt_t = typename Base_t::GeneIt_t ; \
-using ArgsType = typename Base_t::ArgsType;
-
-#define OPTIMT_MAKE_GABASE_TYPES OptimT_MAKE_GABASE_TYPES
+using GeneIt_t = typename Base_t::GeneIt_t; \
+OptimT_MAKE_GAABSTRACT_TYPES
 
 /**
    *  @brief partial specialization for GABase with record.
@@ -326,7 +321,7 @@ using ArgsType = typename Base_t::ArgsType;
    *  @tparam Var_t  Type of decisition variable
    *  @tparam Fitness_t  Type of fitness value(objective value)
    *  @tparam RecordOption  Whether the solver records fitness changelog
-   *  @tparam ...Args  Type of other parameters.
+   *  @tparam Args_t  Type of other parameters.
   */
 template<typename Var_t,typename Fitness_t,class Args_t>
 class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t>

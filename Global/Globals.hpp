@@ -65,7 +65,7 @@ struct iniSize4StdContainer<scalar_t,Dynamic>
 {
 
 public:
-    inline static void iniSize(stdContainer<scalar_t,Dim> * v,size_t size) {
+    inline static void iniSize(stdContainer<scalar_t,Dynamic> * v,size_t size) {
         v->resize(size);
     }
 };
@@ -74,18 +74,18 @@ public:
 template<typename scalar_t,size_t Dim>
 using EigenContainer = 
     typename std::conditional<Dim==Dynamic,
-        Eigen::ArrayXd<scalar_t>,
+        Eigen::Array<scalar_t,Eigen::Dynamic,1>,
         Eigen::Array<scalar_t,Dim,1>>::type;  
 #endif
 
 
 template<size_t Size>
-using stdVecD_t = typename stdContainer<double,Size>;
+using stdVecD_t = stdContainer<double,Size>;
 
 #ifdef EIGEN_CORE_H
 ///Array type when using Eigen array(s)
 template<size_t Size>
-using EigenVecD_t = typename EigenContainer<double,Size>;
+using EigenVecD_t = EigenContainer<double,Size>;
 
 template<DoubleVectorOption dvo,size_t Dim>
 using FitnessVec_t= typename

@@ -268,15 +268,9 @@ void testTSP(const uint32_t PointNum) {
         cout<<"default pathL = "<<naturalPathL<<endl;
     }
 
-    auto crossoverFun=[](const vector<double>*p1,const vector<double>*p2,
-                      vector<double>*c1,vector<double>*c2,const Args_t*) {
-        const uint32_t permL=p1->size();
-        c1->resize(permL);c2->resize(permL);
-        for(uint32_t i=0;i<permL;i++) {
-            c1->operator[](i)=(std::rand()%2)?p1->operator[](i):p2->operator[](i);
-            c2->operator[](i)=(std::rand()%2)?p1->operator[](i):p2->operator[](i);
-        }
-    };
+    auto crossoverFun
+            =OptimT::GADefaults<vector<double>,Args_t>::
+                cFunRandXs<>;
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
@@ -354,22 +348,9 @@ void testNSGA2_ZDT3() {
       f->operator[](1)=g*h;
     };
 
-    void (*cFun)(const std::array<double,XNum>*,const std::array<double,XNum>*,
-                 std::array<double,XNum>*,std::array<double,XNum>*)
-            =[](const std::array<double,XNum>*p1,const std::array<double,XNum>*p2,
-            std::array<double,XNum>*ch1,std::array<double,XNum>*ch2)
-    {
-        for(size_t i=0;i<XNum;i++) {
-            //discrete
-            /*
-            ch1->operator[](i)=(OptimT::randD()<0.5)?p1->operator[](i):p2->operator[](i);
-            ch2->operator[](i)=(OptimT::randD()<0.5)?p1->operator[](i):p2->operator[](i);
-            */
-            ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
-            ch2->operator[](i)=r*p2->operator[](i)+(1-r)*p1->operator[](i);
-        }
-
-    };
+    auto cFun=
+            OptimT::GADefaults<std::array<double,XNum>>::
+                cFunNd<OptimT::encode<1,2>::code>;
 
     void (*mFun)(std::array<double,XNum>*)=
             [](std::array<double,XNum>*x){
@@ -501,8 +482,11 @@ void testNSGA2_Binh_and_Korn() {
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE>;
+
     solver_t algo;
+
     using Fitness_t = typename solver_t::Fitness_t;
+
     auto iFun=[](std::array<double,2> * x) {
         for(auto & i : *x) {
             i=randD(-5,5);
@@ -525,14 +509,9 @@ void testNSGA2_Binh_and_Korn() {
         }
     };
 
-    auto cFun=[](const std::array<double,2> *p1,const std::array<double,2> *p2,
-            std::array<double,2> *ch1,std::array<double,2> *ch2) {
-        for(int i=0;i<2;i++) {
-            static const double r=0.2;
-            ch1->operator[](i)=r*p1->operator[](i)+(1-r)*p2->operator[](i);
-            ch2->operator[](i)=r*p2->operator[](i)+(1-r)*p1->operator[](i);
-        }
-    };
+    solver_t::crossoverFun cFun =
+    OptimT::GADefaults<std::array<double,2>,void>::
+            cFunNd<OptimT::encode<1,5>::code>;
 
     auto mFun=[](std::array<double,2> * x) {
         const size_t idx=size_t(randD(0,2))%2;
@@ -597,7 +576,7 @@ using solver_t = NSGA2<Point_t,
     std::tuple<Eigen::Array<double,Dim,Eigen::Dynamic>>>;
 
 using Base_t = solver_t;
-OptimT_MAKE_GABASE_TYPES
+OptimT_MAKE_NSGABASE_TYPES
 using Fitness_t = solver_t::Fitness_t;
 
 static const double r=0.2;

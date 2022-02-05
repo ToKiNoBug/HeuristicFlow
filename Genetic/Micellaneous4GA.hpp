@@ -22,10 +22,12 @@ This file is part of OptimTemplates.
 
 #include "GAAbstract.hpp"
 #include "../OptimTemplates/Global"
+#include <assert.h>
+
 namespace OptimT {
 
 /*
-template<typename Var_t,DivCode _min,DivCode _max>
+template<DivCode _min,DivCode _max>
 inline void stdGAiFunNd(Var_t * v) {
     static const double min=decode<_min>::real;
     static const double max=decode<_max>::real;
@@ -34,132 +36,232 @@ inline void stdGAiFunNd(Var_t * v) {
     }
 }
 
-template<typename Var_t,DivCode _min,DivCode _max,class Args_t>
+template<DivCode _min,DivCode _max>
 inline void stdGAiFunNd(Var_t * v,const Args_t *) {
-    stdGAiFunNd<Var_t,_min,_max>(v);
+    stdGAiFunNd<_min,_max>(v);
 }
 
 */
 
-/**
- * @brief Default crossover function for fixed-size float/double array/vector
- *        (Genetic without args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam _r crossover ratio, 0<r<1
- */
-template<typename Var_t,DivCode _r>
-inline void GAcFunNd(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2) {
-    static const double r=decode<_r>::real;
-    static_assert(r>0,"r shouldn't be less than 0");
-    static_assert(r<1,"r shouldn't be greater than 1");
-    const size_t N=p1->size();
-    for(size_t i=0;i<N;i++) {
-        c1->opeartor[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i));
-        c2->opeartor[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i));
-    }
-}
+namespace OptimT_pri
+{
 
 /**
- * @brief Default crossover function for dynamic-size float/double array/vector
- *        (Genetic without args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam _r crossover ratio, 0<r<1
- */
-template<typename Var_t,DivCode _r>
-inline void GAcFunXd(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2) {
-    c1->resize(p1->size());
-    c2->resize(p2->size());
-    GAcFunNd<Var_t,_d>(p1,p2,c1,c2);
-}
-
-/**
- * @brief Default crossover function for fixed-size float/double array/vector
- *        (Genetic with args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam _r crossover ratio, 0<r<1
- * @tparam Args_t Type of other parameter in Genetic solver
- */
-template<typename Var_t,DivCode _r,class Args_t>
-inline void GAcFunNd(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2,const Args_t *) {
-    GAcFunNd<Var_t,_r>(p1,p2,c1,c2);
-}
-
-/**
- * @brief Default crossover function for dynamic-size float/double array/vector
- *        (Genetic with args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam _r crossover ratio, 0<r<1
- * @tparam Args_t Type of other parameter in Genetic solver
- */
-template<typename Var_t,DivCode _r,class Args_t>
-inline void GAcFunXd(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2,const Args_t *) {
-    GAcFunXd<Var_t,_r>(p1,p2,c1,c2);
-}
-
-
-/**
- * @brief Default crossover function for fixed-size binary/symbolic array/vector
- *        (Genetic without args)
- * 
- * @tparam Var_t type of determinate vector
+ * @brief Partial specialization for GADefault struct without args
  */
 template<typename Var_t>
-inline void GAcFunNs(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2) {
-    const size_t N=p1->size();
-    const size_t idx=randD(0,N);
-
-    for(size_t i=0;i<N;i++) {
-        if(i<idx) {
-            c1->opeartor[](i)=p1->operator[](i);
-            c2->opeartor[](i)=p2->operator[](i);
-        }
-        else {
-            c1->opeartor[](i)=p2->operator[](i);
-            c2->opeartor[](i)=p1->operator[](i);
+struct imp_GADefaults_noParam
+{
+    /**
+     * @brief Default crossover function for fixed-size float/double array/vector
+     *        (Genetic without args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunNd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        static const double constexpr r=decode<_r>::real;
+        static_assert(r>0,"r shouldn't be less than 0");
+        static_assert(r<1,"r shouldn't be greater than 1");
+        const size_t N=p1->size();
+        for(size_t i=0;i<N;i++) {
+            c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i));
+            c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i));
         }
     }
-}
+
+    /**
+     * @brief Defaults crossover function for dynamic-size float/double array/vector
+     *        (Genetic without args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunXd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        c1->resize(p1->size());
+        c2->resize(p2->size());
+        cFunNd<_r>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default crossover function for fixed-size array/vector
+     *        (Genetic without args)
+     *
+     */
+
+    inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        const size_t N=p1->size();
+        const size_t idx=randD(0,N);
+
+        for(size_t i=0;i<N;i++) {
+            if(i<idx) {
+                c1->operator[](i)=p1->operator[](i);
+                c2->operator[](i)=p2->operator[](i);
+            }
+            else {
+                c1->operator[](i)=p2->operator[](i);
+                c2->operator[](i)=p1->operator[](i);
+            }
+        }
+    }
+
+    /**
+     * @brief Default crossover function for dynamic-size array/vector
+     *        (Genetic without args)
+     *
+     */
+    inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        c1->resize(p1->size());
+        c2->resize(p2->size());
+        cFunSwapNs(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Discrete random selection crossover by probability for fixed-size array/vector
+     *             (without args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode p=encode<1,2>::code>
+    inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        static const double constexpr r=decode<p>::real;
+        static_assert(r>0,"A probability shoule be greater than 0");
+        static_assert(r<1,"A probability shoule be less than 1");
+        const size_t N=p1->size();
+        for(size_t i=0;i<N;i++) {
+            c1->operator[](i)=((randD()<r)?p1:p2)->operator[](i);
+            c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i);
+        }
+    }
+
+    /**
+     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
+     *             (without args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode p=encode<1,2>::code>
+    inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        c1->resize(p1->size());
+        c2->resize(p1->size());
+        cFunRandNs(p1,p2,c1,c2);
+    }
+};
+
 
 /**
- * @brief Default crossover function for dynamic-size binary/symbolic array/vector
- *        (Genetic without args)
- * 
+ * @brief The GADefaults struct defines several candidate operations for GA
+ *
  * @tparam Var_t type of determinate vector
+ * @tparam Args_t type of other parameters in genetic solver
  */
-template<typename Var_t>
-inline void GAcFunXs(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2) {
-    c1->resize(p1->size());
-    c2->resize(p2->size());
-    GAcFunNs<Var_t>(p1,p2,c1,c2);
-}
 
-/**
- * @brief Default crossover function for fixed-size binary/symbolic array/vector
- *        (Genetic with args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam Args_t Type of other parameter in Genetic solver
- */
 template<typename Var_t,class Args_t>
-inline void GAcFunNs(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2,const Args_t *) {
-    GAcFunNs<Var_t>(p1,p2,c1,c2);
-}
+struct imp_GADefaults_withParam
+{
+    static_assert(!std::is_same<Args_t,void>::value,
+        "The compiler run into a incorrect branch of partial specialization");
 
-/**
- * @brief Default crossover function for dynamic-size binary/symbolic array/vector
- *        (Genetic with args)
- * 
- * @tparam Var_t type of determinate vector
- * @tparam Args_t Type of other parameter in Genetic solver
- */
-template<typename Var_t,class Args_t>
-inline void GAcFunXs(const Var_t * p1,const Var_t * p2,Var_t * c1, Var_t * c2,const Args_t *) {
-    GAcFunXs<Var_t>(p1,p2,c1,c2);
-}
+    using imp=imp_GADefaults_noParam<Var_t>;
+
+
+    /**
+     * @brief Default crossover function for fixed-size float/double array/vector
+     *        (Genetic with args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     * @tparam Args_t Type of other parameter in Genetic solver
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunNd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2,
+                                const Args_t *) {
+        imp::cFunNd<_r>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default crossover function for dynamic-size float/double array/vector
+     *        (Genetic with args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     * @tparam Args_t Type of other parameter in Genetic solver
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunXd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2,
+                                const Args_t *) {
+        imp::cFunXd<_r>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default crossover function for fixed-size array/vector
+     *        (Genetic with args)
+     *
+     */
+    inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2,
+                                const Args_t *) {
+        imp::cFunSwapNs(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default crossover function for dynamic-size array/vector
+     *        (Genetic with args)
+     *
+     */
+    inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2,
+                                const Args_t *) {
+        imp::cFunSwapXs(p1,p2,c1,c2);
+    }
+
+
+    /**
+     * @brief Discrete random selection crossover by probability for fixed-size array/vector
+     *             (with args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode p=encode<1,2>::code>
+    inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2,
+                                  const Args_t *) {
+        imp::cFunRandNs<p>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
+     *             (with args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode posCode=encode<1,2>::code>
+    inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2,
+                                  const Args_t *) {
+
+        imp_GADefaults_noParam<Var_t>::cFunRandXs<posCode>(p1,p2,c1,c2);
+    }
+
+};
+
+}   //  namespace OptimT_pri
+
+
+
+template<typename Var_t,class Args_t=void>
+using GADefaults =
+    typename std::conditional<
+    std::is_same<Args_t,void>::value,
+    OptimT_pri::imp_GADefaults_noParam<Var_t>,
+    OptimT_pri::imp_GADefaults_withParam<Var_t,Args_t>
+    >::type;
 
 
 }   //  namespace OptimT

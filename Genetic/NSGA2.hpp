@@ -84,9 +84,6 @@ protected:
 private:
 };
 
-
-
-
 #ifdef OptimT_GENETIC_USE_EIGEN
 
 /**
@@ -105,7 +102,13 @@ template<typename Var_t,
          RecordOption Record,
          PFOption ProtectPF,
          class Args_t>
-class NSGA2<Var_t,ObjNum,DoubleVectorOption::Eigen,isGreaterBetter,Record,ProtectPF,Args_t>
+class NSGA2<Var_t,
+            ObjNum,
+            DoubleVectorOption::Eigen,
+            isGreaterBetter,
+            Record,
+            ProtectPF,
+            Args_t>
     : public NSGA2Base<Var_t,
                     ObjNum,
                     EigenVecD_t<ObjNum>,
