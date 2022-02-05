@@ -30,7 +30,7 @@ This file is part of OptimTemplates.
 #include "./OptimTMaths.hpp"
 #include <type_traits>
 #include <vector>
-#include <valarray>
+
 #include <array>
 
 #ifdef OptimT_DO_PARALLELIZE
@@ -46,13 +46,46 @@ namespace OptimT
 ///Size identifier for dynamic size (fitness or var)
 const size_t Dynamic = 0;
 
+
+template<typename scalar_t,size_t Dim>
+using stdContainer = 
+    typename std::conditional<Dim==Dynamic,
+        std::vector<scalar_t>,
+        std::array<scalar_t,Dim>>::type;
+
+template<typename scalar_t,size_t Dim>
+struct iniSize4StdContainer
+{
+public:
+    inline static void iniSize(stdContainer<scalar_t,Dim> * v,size_t size) {}
+};
+
+template<typename scalar_t>
+struct iniSize4StdContainer<scalar_t,Dynamic>
+{
+
+public:
+    inline static void iniSize(stdContainer<scalar_t,Dim> * v,size_t size) {
+        v->resize(size);
+    }
+};
+
+#ifdef EIGEN_CORE_H
+template<typename scalar_t,size_t Dim>
+using EigenContainer = 
+    typename std::conditional<Dim==Dynamic,
+        Eigen::ArrayXd<scalar_t>,
+        Eigen::Array<scalar_t,Dim,1>>::type;  
+#endif
+
+
 template<size_t Size>
-using stdVecD_t = typename std::conditional<Size==Dynamic,std::valarray<double>,std::array<double,Size>>::type;
+using stdVecD_t = typename stdContainer<double,Size>;
 
 #ifdef EIGEN_CORE_H
 ///Array type when using Eigen array(s)
 template<size_t Size>
-using EigenVecD_t = typename std::conditional<Size==Dynamic,Eigen::ArrayXd,Eigen::Array<double,Size,1>>::type;
+using EigenVecD_t = typename EigenContainer<double,Size>;
 
 template<DoubleVectorOption dvo,size_t Dim>
 using FitnessVec_t= typename

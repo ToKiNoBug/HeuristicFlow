@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef OptimT_LAB4NSGA3_H
 #define OptimT_LAB4NSGA3_H
 
@@ -10,8 +29,8 @@
 Eigen::ArrayXd sample2Intercept(Eigen::MatrixXd);
 std::vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t precision);
 
-static const size_t VarDim=15;
-static const size_t ObjNum=10;
+static const size_t VarDim=4;
+static const size_t ObjNum=3;
 //static const double alpha=2;
 /**
  * @brief DTLZ7
@@ -118,7 +137,7 @@ protected:
     size_t _outerPrecision;
     Eigen::Array<double,ObjNum,Eigen::Dynamic> referencePoses;
 
-    void customOptWhenInitialization() {
+    void customOptAfterInitialization() {
         auto inner=makeReferencePoints(ObjNum,_innerPrecision);
         auto outer=makeReferencePoints(ObjNum,_outerPrecision);
         referencePoses.resize(ObjNum,inner.size()+outer.size());
