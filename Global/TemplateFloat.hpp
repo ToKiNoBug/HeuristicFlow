@@ -29,6 +29,7 @@ namespace OptimT {
  * 
  */
 enum DivCode : uint64_t {
+    Half=4294967298,
     Pi=2088567404207137453,
     Pi_mul_2=993512999210214248,
     Pi_mul_3=2111843339415065010,

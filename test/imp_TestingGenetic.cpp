@@ -270,7 +270,7 @@ void testTSP(const uint32_t PointNum) {
 
     auto crossoverFun
             =OptimT::GADefaults<vector<double>,Args_t>::
-                cFunRandXs<>;
+                cFunXd<OptimT::DivCode::Half>;
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
@@ -350,7 +350,7 @@ void testNSGA2_ZDT3() {
 
     auto cFun=
             OptimT::GADefaults<std::array<double,XNum>>::
-                cFunNd<OptimT::encode<1,2>::code>;
+                cFunNd<(OptimT::encode<1,2>::code)>;
 
     void (*mFun)(std::array<double,XNum>*)=
             [](std::array<double,XNum>*x){

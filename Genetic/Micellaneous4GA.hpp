@@ -61,14 +61,17 @@ struct imp_GADefaults_noParam
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        static const double constexpr r=decode<_r>::real;
-        static_assert(r>0,"r shouldn't be less than 0");
-        static_assert(r<1,"r shouldn't be greater than 1");
-        const size_t N=p1->size();
-        for(size_t i=0;i<N;i++) {
-            c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i));
-            c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i));
+#define OptimT_PRIVATE_IMP_cFunNd \
+        static const double constexpr r=decode<_r>::real; \
+        static_assert(r>0,"r shouldn't be less than 0"); \
+        static_assert(r<1,"r shouldn't be greater than 1"); \
+        const size_t N=p1->size(); \
+        for(size_t i=0;i<N;i++) { \
+            c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i)); \
+            c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i)); \
         }
+
+        OptimT_PRIVATE_IMP_cFunNd
     }
 
     /**
@@ -80,8 +83,12 @@ struct imp_GADefaults_noParam
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        c1->resize(p1->size());
+#define OptimT_PRIVATE_IMP_cFunX \
+        c1->resize(p1->size()); \
         c2->resize(p2->size());
+
+        OptimT_PRIVATE_IMP_cFunX
+
         cFunNd<_r>(p1,p2,c1,c2);
     }
 
@@ -93,20 +100,24 @@ struct imp_GADefaults_noParam
 
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        const size_t N=p1->size();
-        const size_t idx=randD(0,N);
-
-        for(size_t i=0;i<N;i++) {
-            if(i<idx) {
-                c1->operator[](i)=p1->operator[](i);
-                c2->operator[](i)=p2->operator[](i);
-            }
-            else {
-                c1->operator[](i)=p2->operator[](i);
-                c2->operator[](i)=p1->operator[](i);
-            }
+#define OptimT_PRIVATE_IMP_cFunSwapNs \
+        const size_t N=p1->size(); \
+        const size_t idx=randD(0,N); \
+        for(size_t i=0;i<N;i++) { \
+            if(i<idx) { \
+                c1->operator[](i)=p1->operator[](i); \
+                c2->operator[](i)=p2->operator[](i); \
+            } \
+            else { \
+                c1->operator[](i)=p2->operator[](i); \
+                c2->operator[](i)=p1->operator[](i); \
+            } \
         }
+
+        OptimT_PRIVATE_IMP_cFunSwapNs
+
     }
+
 
     /**
      * @brief Default crossover function for dynamic-size array/vector
@@ -115,8 +126,9 @@ struct imp_GADefaults_noParam
      */
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        c1->resize(p1->size());
-        c2->resize(p2->size());
+
+        OptimT_PRIVATE_IMP_cFunX
+
         cFunSwapNs(p1,p2,c1,c2);
     }
 
@@ -126,17 +138,21 @@ struct imp_GADefaults_noParam
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=encode<1,2>::code>
+    template<DivCode p=DivCode::Half>
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
-        static const double constexpr r=decode<p>::real;
-        static_assert(r>0,"A probability shoule be greater than 0");
-        static_assert(r<1,"A probability shoule be less than 1");
-        const size_t N=p1->size();
-        for(size_t i=0;i<N;i++) {
-            c1->operator[](i)=((randD()<r)?p1:p2)->operator[](i);
-            c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i);
+#define OptimT_PRIVATE_IMP_cFunRandNs \
+        static const double constexpr r=decode<p>::real; \
+        static_assert(r>0,"A probability shoule be greater than 0"); \
+        static_assert(r<1,"A probability shoule be less than 1"); \
+        const size_t N=p1->size(); \
+        for(size_t i=0;i<N;i++) { \
+            c1->operator[](i)=((randD()<r)?p1:p2)->operator[](i); \
+            c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i); \
         }
+
+        OptimT_PRIVATE_IMP_cFunRandNs
+
     }
 
     /**
@@ -145,11 +161,12 @@ struct imp_GADefaults_noParam
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=encode<1,2>::code>
+    template<DivCode p=DivCode::Half>
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
-        c1->resize(p1->size());
-        c2->resize(p1->size());
+
+        OptimT_PRIVATE_IMP_cFunX
+
         cFunRandNs(p1,p2,c1,c2);
     }
 };
@@ -182,7 +199,7 @@ struct imp_GADefaults_withParam
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        imp::cFunNd<_r>(p1,p2,c1,c2);
+        OptimT_PRIVATE_IMP_cFunNd
     }
 
     /**
@@ -195,8 +212,9 @@ struct imp_GADefaults_withParam
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
-                                const Args_t *) {
-        imp::cFunXd<_r>(p1,p2,c1,c2);
+                                const Args_t * a) {
+        OptimT_PRIVATE_IMP_cFunX
+        cFunNd<_r>(p1,p2,c1,c2,a);
     }
 
     /**
@@ -207,7 +225,7 @@ struct imp_GADefaults_withParam
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        imp::cFunSwapNs(p1,p2,c1,c2);
+        OptimT_PRIVATE_IMP_cFunSwapNs
     }
 
     /**
@@ -217,8 +235,9 @@ struct imp_GADefaults_withParam
      */
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
-                                const Args_t *) {
-        imp::cFunSwapXs(p1,p2,c1,c2);
+                                const Args_t * a) {
+        OptimT_PRIVATE_IMP_cFunX
+        cFunSwapXs(p1,p2,c1,c2,a);
     }
 
 
@@ -228,11 +247,11 @@ struct imp_GADefaults_withParam
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=encode<1,2>::code>
+    template<DivCode p=DivCode::Half>
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t *) {
-        imp::cFunRandNs<p>(p1,p2,c1,c2);
+        OptimT_PRIVATE_IMP_cFunRandNs
     }
 
     /**
@@ -241,12 +260,13 @@ struct imp_GADefaults_withParam
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode posCode=encode<1,2>::code>
+    template<DivCode posCode=DivCode::Half>
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
-                                  const Args_t *) {
+                                  const Args_t * a) {
+        OptimT_PRIVATE_IMP_cFunX
 
-        imp_GADefaults_noParam<Var_t>::cFunRandXs<posCode>(p1,p2,c1,c2);
+        cFunRandNs<posCode>(p1,p2,c1,c2,a);
     }
 
 };
