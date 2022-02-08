@@ -95,8 +95,8 @@ void testLoop(uint32_t loopN) {
 
 
 void testInverse() {
-    static const size_t N=10;
-    MatrixFixedSize<double,N,N> A,iA;
+    static const size_t N=Dynamic;
+    MatrixDynamicSize<double> A(50,50),iA(50,50);
     
     for(auto & i : A) {
         i=randD(-1,1);
@@ -120,6 +120,6 @@ void testInverse() {
         }
         cout<<";\n";
     }
-    cout<<"];\n\n\n\n";
+    cout<<"];\n\n\n\n"<<endl;
 
 }
