@@ -3,6 +3,7 @@
 #include "../OptimTemplates/Global"
 #include <type_traits>
 #include <assert.h>
+#include <iostream>
 #include "MatrixDynamicSize.hpp"
 #include "MatrixFixedSize.hpp"
 #include "MatrixMap.hpp"
@@ -21,12 +22,12 @@ namespace OptimT {
 template<typename Scalar_t,size_t N>
 using SquareMat_t = typename std::conditional<N==Dynamic,MatrixDynamicSize<Scalar_t>,MatrixFixedSize<Scalar_t,N,N>>::type;
 
-template<typename Scalar_t,size_t Size=Dynamic>
+template<typename Scalar_t,size_t Size>
 void MatrixProduct(const SquareMat_t<Scalar_t,Size> & A,
     const SquareMat_t<Scalar_t,Size> & B,
     SquareMat_t<Scalar_t,Size> * res) {
 
-const size_t N=A->rows();
+const size_t N=A.rows();
 if constexpr (Size==Dynamic) {
 res->resize(N,N);
 }
@@ -35,7 +36,7 @@ for(size_t r=0;r<N;r++) {
     for(size_t c=0;c<N;c++) {
         Scalar_t sum=0;
         for(size_t k=0;k<N;k++) {
-            sum+=A(r,k)*B(k,c);
+            sum+=A(k,c)*B(r,k);
         }
         res->operator()(r,c)=sum;
     }
@@ -43,11 +44,12 @@ for(size_t r=0;r<N;r++) {
 
 }
 
-
-template<typename Scalar_t,size_t Size=Dynamic>
-void InverseMatrix_LU(const SquareMat_t<Scalar_t,Size> & A,SquareMat_t<Scalar_t,Size> * invA) {
+template<typename Scalar_t,size_t Size>
+void InverseMatrix_LU(const SquareMat_t<Scalar_t,Size> & A,
+                      SquareMat_t<Scalar_t,Size> * invA) {
 
 assert(A.rows()==A.cols());
+
 
 SquareMat_t<Scalar_t,Size> L,U,iL,iU;
 const size_t N=A.rows();
@@ -58,38 +60,43 @@ iL.resize(N,N);
 iU.resize(N,N);
 }
 
+
 L.fill(0);
 U.fill(0);
 
+
 for(size_t i=0;i<N;i++) {
+    U(0,i)=A(0,i);
+    L(i,0)=A(i,0)/U(0,0);
     L(i,i)=1;
 }
 
 
 ///compute L and U
-for(size_t k=0;i<N;k++) {
-    for(size_t j=k;j<N;j++) {
+for(size_t r=0;r<N;r++) {
+    for(size_t j=r;j<N;j++) {
         Scalar_t temp=0;
-        for(size_t di=0;di<k-1;di++) {
-            temp+=L(k,di)*U(di,j);
+        for(size_t k=0;k<r;k++) {
+            temp+=L(r,k)*U(k,j);
         }
-        U(k,j)=A(k,j)-temp;
+        U(r,j)=A(r,j)-temp;
     }
 
-    for(size_t i=k;i<N;i++) {
-        Scalar_t temp=0;
-        for(size_t di=0;di<k-1;di++) {
-            temp+=L(i,di)*U(di,k);
+    for(size_t i=r+1;i<N;i++) {
+        Scalar_t  temp=0;
+        for(size_t k=0;k<r;k++) {
+            temp+=L(i,k)*U(k,r);
         }
-        L(i,k)=(A(i,k)-temp)/U(k,k);
+        L(i,r)=(A(i,r)-temp)/U(r,r);
     }
+
 }
 
-iL.fill(0);
-iU.fill(0);
+iL=L;
+iU=U;
 ///compute iL and iU
 for(size_t j=0;j<N;j++) {
-    for(size_t i=0;i<j;i++) {
+    for(size_t i=j-1;i!=-1;i--) {
         Scalar_t temp=0;
         for(size_t k=i+1;k<=j;k++) {
             temp+=iL(j,k)*L(k,i);
@@ -99,19 +106,18 @@ for(size_t j=0;j<N;j++) {
     iL(j,j)=1/L(j,j);
 }
 
-
-for(size_t j=0;j<N;j++) {
-        iU(j,j)=1/U(j,j);
+for(size_t j=N-1;j!=-1;j--) {
+    iU(j,j)=1/U(j,j);
     for(size_t i=j+1;i<N;i++) {
         Scalar_t temp=0;
-        for(size_t k=j+1;k<i;k++) {
+        for(size_t k=j+1;k<=i;k++) {
             temp+=U(j,k)*iU(k,i);
         }
-        iU(j,i)=-1/U(j,j)*temp;
+        iU(j,i)=-temp/U(j,j);
     }
 }
 
-MatrixProduct(iU,iL,invA);
+MatrixProduct<Scalar_t,Size>(iL,iU,invA);
 
 }
 

@@ -92,3 +92,34 @@ void testLoop(uint32_t loopN) {
     }
     cout<<double(clock()-c)*1000/CLOCKS_PER_SEC/loopN*10e3<<" ms per allocate"<<endl;
 }
+
+
+void testInverse() {
+    static const size_t N=10;
+    MatrixFixedSize<double,N,N> A,iA;
+    
+    for(auto & i : A) {
+        i=randD(-1,1);
+    }
+
+    cout<<"A=[";
+    for(size_t c=0;c<A.cols();c++) {
+        for(size_t r=0;r<A.rows();r++) {
+            cout<<A(r,c)<<',';
+        }
+        cout<<";\n";
+    }
+    cout<<"];\n\n\n\n";
+
+    InverseMatrix_LU<double,N>(A,&iA);
+
+    cout<<"iA=[";
+    for(size_t c=0;c<iA.cols();c++) {
+        for(size_t r=0;r<iA.rows();r++) {
+            cout<<iA(r,c)<<',';
+        }
+        cout<<";\n";
+    }
+    cout<<"];\n\n\n\n";
+
+}

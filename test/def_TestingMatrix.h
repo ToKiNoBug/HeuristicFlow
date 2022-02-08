@@ -28,4 +28,6 @@ void testCustomTypes();
 
 void testLoop(unsigned int = 100);
 
+void testInverse();
+
 #endif // DEF_TESTINGMATRIX_H

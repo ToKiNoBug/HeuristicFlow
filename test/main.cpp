@@ -19,16 +19,16 @@ This file is part of OptimTemplates.
 
 #include <iostream>
 #include <ctime>
-#include "def_TestingMatrix.h"
 #include "def_TestingGenetic.h"
 #include "def_TestingPSO.h"
+#include "def_TestingMatrix.h"
 
 using namespace std;
 
 OptimT_MAKE_GLOBAL
 
 int main() {
-    testNSGA2_Binh_and_Korn();
+    testInverse();
     system("pause");
     return 0;
 }

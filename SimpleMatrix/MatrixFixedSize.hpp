@@ -21,7 +21,7 @@ This file is part of OptimTemplates.
 #define OptimT_MATRIXFIXEDSIZE_H
 
 #include <stdint.h>
-
+#include <array>
 namespace OptimT {
 
 template<class Scalar_t,size_t Rows,size_t Cols>
@@ -46,44 +46,64 @@ public:
         }
     }
 
-    inline iterator begin() {
-        return array;
+    inline iterator begin() noexcept {
+        return array.data();
     }
 
-    inline iterator end() {
-        return array+size();
+    inline const iterator begin() const noexcept {
+        return array.data();
     }
 
-    inline constexpr size_t size() {
+    inline iterator end() noexcept {
+        return array.data()+size();
+    }
+
+    inline const iterator end() const noexcept {
+        return array.data()+size();
+    }
+
+    inline static constexpr size_t size() noexcept {
         return Rows*Cols;
     }
 
-    inline constexpr size_t rows() {
+    inline static constexpr size_t rows() noexcept {
         return Rows;
     }
 
-    inline constexpr size_t cols() {
+    inline static constexpr size_t cols() noexcept {
         return Cols;
     }
 
-    inline Scalar_t & operator()(size_t n) const {
+    inline const Scalar_t & operator()(size_t n) const noexcept {
         return array[n];
     }
     
-    inline Scalar_t & operator[](size_t n) const {
+    inline const Scalar_t & operator[](size_t n) const noexcept {
         return array[n];
     }
 
-    inline Scalar_t & operator()(size_t r,size_t c) const {
+    inline const Scalar_t & operator()(size_t r,size_t c) const noexcept {
         return array[Rows*c+r];
     }
 
-    inline Scalar_t * data() {
-        return array;
+    inline Scalar_t & operator()(size_t n) noexcept {
+        return array[n];
     }
 
-    inline const Scalar_t * cdata() const {
-        return array;
+    inline Scalar_t & operator[](size_t n) noexcept {
+        return array[n];
+    }
+
+    inline Scalar_t & operator()(size_t r,size_t c) noexcept {
+        return array[Rows*c+r];
+    }
+
+    inline Scalar_t * data() noexcept {
+        return array.data();
+    }
+
+    inline const Scalar_t * data() const noexcept {
+        return array.data();
     }
 
     ///Deep copy
@@ -94,7 +114,7 @@ public:
         return *this;
     }
 
-    inline void fill(fast_t src) {
+    inline void fill(fast_t src) noexcept {
         for(auto & i : *this) {
             i=src;
         }
@@ -103,7 +123,7 @@ public:
     static const bool isFixedSize=true;
 
 protected:
-    Scalar_t array[Rows*Cols];
+    std::array<Scalar_t,Rows*Cols> array;
 };
 }
 

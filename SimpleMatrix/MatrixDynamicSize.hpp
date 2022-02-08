@@ -81,15 +81,15 @@ public:
     using iterator = Scalar_t*;
     using citerator = const Scalar_t*;
 
-    inline iterator begin() {
+    inline iterator begin() noexcept{
         return dataPtr;
     }
 
-    inline iterator end() {
+    inline iterator end()  noexcept{
         return dataPtr+size();
     }
 
-    inline size_t size() const {
+    inline size_t size() const  noexcept{
         return rowNum*colNum;
     }
 
@@ -138,39 +138,51 @@ public:
         colNum=c;
     }
 
-    inline size_t rows() const {
+    inline size_t rows() const  noexcept{
         return rowNum;
     }
 
-    inline size_t cols() const {
+    inline size_t cols() const  noexcept{
         return colNum;
     }
 
-    inline size_t capacity() const {
+    inline size_t capacity() const  noexcept{
         return _capacity;
     }
 
-    inline Scalar_t & operator()(size_t n) const {
+    inline const  Scalar_t & operator[](size_t n) const  noexcept{
         return dataPtr[n];
     }
 
-    inline Scalar_t & operator[](size_t n) const {
+    inline const  Scalar_t & operator()(size_t n) const  noexcept{
         return dataPtr[n];
     }
 
-    inline Scalar_t & operator()(size_t r,size_t c) const {
+    inline const  Scalar_t & operator()(size_t r,size_t c) const  noexcept{
         return dataPtr[rowNum*c+r];
     }
 
-    inline Scalar_t * data() {
+    inline Scalar_t & operator[](size_t n) noexcept{
+        return dataPtr[n];
+    }
+
+    inline Scalar_t & operator()(size_t n) noexcept{
+        return dataPtr[n];
+    }
+
+    inline Scalar_t & operator()(size_t r,size_t c) noexcept{
+        return dataPtr[rowNum*c+r];
+    }
+
+    inline Scalar_t * data()  noexcept{
         return dataPtr;
     }
 
-    inline const Scalar_t * cdata() const {
+    inline const Scalar_t * data() const  noexcept{
         return dataPtr;
     }
 
-    inline void fill(fast_t src) {
+    inline void fill(fast_t src)  noexcept{
         for(auto & i : *this) {
             i=src;
         }
