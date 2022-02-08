@@ -27,6 +27,11 @@ namespace OptimT {
 template<class Scalar_t,size_t Rows,size_t Cols>
 class MatrixFixedSize
 {
+protected:
+using fast_t=typename std::conditional<sizeof(Scalar_t)<=3*sizeof(void*),
+    Scalar_t,
+    const Scalar_t &>::type;
+
 public:
     MatrixFixedSize() {};
     ~MatrixFixedSize() {};
@@ -49,19 +54,23 @@ public:
         return array+size();
     }
 
-    inline static size_t size() {
+    inline constexpr size_t size() {
         return Rows*Cols;
     }
 
-    inline static size_t rows() {
+    inline constexpr size_t rows() {
         return Rows;
     }
 
-    inline static size_t cols() {
+    inline constexpr size_t cols() {
         return Cols;
     }
 
     inline Scalar_t & operator()(size_t n) const {
+        return array[n];
+    }
+    
+    inline Scalar_t & operator[](size_t n) const {
         return array[n];
     }
 
@@ -84,6 +93,14 @@ public:
         }
         return *this;
     }
+
+    inline void fill(fast_t src) {
+        for(auto & i : *this) {
+            i=src;
+        }
+    }
+
+    static const bool isFixedSize=true;
 
 protected:
     Scalar_t array[Rows*Cols];

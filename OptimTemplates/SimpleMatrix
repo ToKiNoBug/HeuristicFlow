@@ -22,5 +22,7 @@ This file is part of OptimTemplates.
 
 #include "../SimpleMatrix/MatrixDynamicSize.hpp"
 #include "../SimpleMatrix/MatrixFixedSize.hpp"
+#include "../SimpleMatrix/MatrixMap.hpp"
+#include "../SimpleMatrix/StupidLU.hpp"
 
 #endif // OptimT_SIMPLEMATRIX_

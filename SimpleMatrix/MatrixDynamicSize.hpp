@@ -30,6 +30,8 @@ namespace OptimT
 template<class Scalar_t,class allocator_t=std::allocator<Scalar_t>>
 class MatrixDynamicSize
 {
+protected:
+using fast_t=typename std::conditional<sizeof(Scalar_t)<=3*sizeof(void*),Scalar_t,const Scalar_t &>::type;
 public:
     MatrixDynamicSize() {
         rowNum=0;
@@ -152,6 +154,10 @@ public:
         return dataPtr[n];
     }
 
+    inline Scalar_t & operator[](size_t n) const {
+        return dataPtr[n];
+    }
+
     inline Scalar_t & operator()(size_t r,size_t c) const {
         return dataPtr[rowNum*c+r];
     }
@@ -163,6 +169,14 @@ public:
     inline const Scalar_t * cdata() const {
         return dataPtr;
     }
+
+    inline void fill(fast_t src) {
+        for(auto & i : *this) {
+            i=src;
+        }
+    }
+
+    static const bool isFixedSize=false;
 
 protected:
     Scalar_t * dataPtr;
