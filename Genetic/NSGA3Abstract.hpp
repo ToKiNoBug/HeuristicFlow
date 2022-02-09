@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef OptimT_NSGA3ABSTRACT_HPP
 #define OptimT_NSGA3ABSTRACT_HPP
 
@@ -9,20 +28,20 @@ namespace OptimT {
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
-        FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t>
 class NSGA3Abstract
-    : public NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,Args_t>
+    : public NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>
 {
 public:
-    NSGA3Base() {};
-    virtual ~NSGA3Base() {};
-    using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,Args_t>;
+    NSGA3Abstract() {};
+    virtual ~NSGA3Abstract() {};
+    using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGABASE_TYPES
     using Fitness_t = FitnessVec_t<DVO,ObjNum>;
     using RefPointIdx_t = size_t;
+
 #ifdef EIGEN_CORE_H
     using RefMat_t= typename std::conditional<DVO==Std,
         MatrixDynamicSize<double>,
@@ -430,10 +449,10 @@ private:
 
 #define OptimT_MAKE_NSGA3ABSTRACT_TYPES \
 OptimT_MAKE_NSGABASE_TYPES \
-using RefMat_t = Base_t::RefMat_t; \
-using Fitness_t = Base_t::Fitness_t; \
-using infoUnit3 = Base_t::infoUnit3;
-
+using RefMat_t = typename Base_t::RefMat_t; \
+using Fitness_t = typename Base_t::Fitness_t; \
+using infoUnit3 = typename Base_t::infoUnit3; \
+using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 }
 
 #endif  //  OptimT_NSGA3ABSTRACT_HPP

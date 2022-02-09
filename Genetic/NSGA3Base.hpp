@@ -1,3 +1,22 @@
+/*
+ Copyright © 2022  TokiNoBug
+This file is part of OptimTemplates.
+
+    OptimTemplates is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OptimTemplates is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef OptimT_NSGA3BASE_HPP
 #define OptimT_NSGA3BASE_HPP
 
@@ -13,18 +32,17 @@ enum ReferencePointOption {
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
-        FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         ReferencePointOption rpOpt,
         class Args_t>
 class NSGA3Base
-    : public NSGA3Abstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
+    : public NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>
 {
 public:
-    NSGA3Abstract() {};
-    virtual ~NSGA3Abstract() {};
-    using Base_t = NSGA3Abstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
+    NSGA3Base() {};
+    virtual ~NSGA3Base() {};
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t referencePointPrecision() const {
@@ -58,12 +76,11 @@ protected:
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
-        FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t>
-class NSGA3Base<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,DoubleLayer,Args_t>
-    : public NSGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
+class NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,DoubleLayer,Args_t>
+    : public NSGAAbstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA3Abstract() {
@@ -71,7 +88,7 @@ public:
         _outerPrecision=4;
     };
     virtual ~NSGA3Abstract() {};
-    using Base_t = NSGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGAAbstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t innerPrecision() const {
