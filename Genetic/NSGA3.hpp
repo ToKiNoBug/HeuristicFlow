@@ -40,13 +40,19 @@ public:
     OptimT_MAKE_NSGA3ABSTRACT_TYPES
 
     virtual Fitness_t bestFitness() const {
-        Fitness_t best=this->_pfGenes.front()->_Fitness;
-        for(const auto & i : this->_pfGenes) {
-            for(size_t objIdx=0;objIdx<i->_Fitness.size();i++) {
+        Fitness_t best=this->_population.front()._Fitness;
+        for(const Gene * i : this->_pfGenes) {
+            for(size_t objIdx=0;objIdx<i->_Fitness.size();objIdx++) {
                 best[objIdx]=std::min(best[objIdx],i->_Fitness[objIdx]);
             }
         }
         return best;
+    }
+
+    
+    void initializePop() {
+        this->makeReferencePoses();
+        Base_t::initializePop();
     }
 };
 

@@ -655,12 +655,69 @@ cout<<"];"<<endl;
 }
 
 void testNSGA3_DTLZ7() {
-    static const size_t N=6,M=3;
-    using solver_t = NSGA3<array<double,N>,
-    Dynamic,
+static const size_t N=4,M=3;
+using solver_t = NSGA3<Eigen::Array<double,N,1>,
+    M,
     DoubleVectorOption::Eigen,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_DONT_MUTATE,
     SingleLayer,
     void>;
+
+using Var_t = Eigen::Array<double,N,1>;
+using Fitness_t = solver_t::Fitness_t;
+
+auto iFun=[](Var_t * v) {
+for(auto & i : *v) {
+    i=randD();
+}};
+
+
+auto fFun=[](const Var_t * v,Fitness_t * f) {
+    f->resize(M,1);
+    f->segment<M-1>(0)=v->segment<M-1>(0);
+    const double g=1+9*v->sum()/(std::sqrt(v->square().sum())+1e-20);
+    auto f_i=v->segment<M-1>(0);
+    const double h=M-(f_i*(1+(3*M_PI*f_i).sin())).sum()/(1+g);
+    f->operator[](M-1)=(1+g)*h;
+};
+
+auto cFun=GADefaults<Var_t>::cFunNd<encode<1,5>::code>;
+
+auto mFun=[](Var_t * v) {
+    const size_t idx=randD(0,v->size());
+    v->operator[](idx)+=0.05*randD(-1,1);
+    v->operator[](idx)=std::min(v->operator[](idx),1.0);
+    v->operator[](idx)=std::max(v->operator[](idx),0.0);
+};
+
+GAOption opt;
+opt.maxGenerations=3000;
+opt.maxFailTimes=400;
+opt.populationSize=400;
+
+solver_t solver;
+solver.setiFun(iFun);
+solver.setfFun(fFun);
+solver.setcFun(cFun);
+solver.setmFun(mFun);
+solver.setOption(opt);
+solver.setReferencePointPrecision(8);
+solver.initializePop();
+
+cout<<"Reference points=["<<solver.referencePoints()<<"];\n\n\n"<<endl;
+
+
+clock_t c=clock();
+solver.run();
+c=clock()-c;
+
+cout<<"solving finished in "<<c<<" ms with "<<solver.generation()<<" generations."<<endl;
+
+cout<<"PFV=[";
+for(const auto & i : solver.pfGenes()) {
+    cout<<i->_Fitness.transpose()<<";\n";
+}
+cout<<"];\n\n\n"<<endl;
+
 }

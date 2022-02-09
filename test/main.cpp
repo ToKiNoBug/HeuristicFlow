@@ -29,6 +29,7 @@ OptimT_MAKE_GLOBAL
 
 int main() {
     
+    testNSGA3_DTLZ7();
     system("pause");
     return 0;
 }

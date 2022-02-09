@@ -53,16 +53,16 @@ public:
     using RefMat_t = MatrixDynamicSize<double>;
 #endif
 
-const RefMat_t & referencePoints() const {
-    return referencePoses;
-}
+    inline const RefMat_t & referencePoints() const {
+        return referencePoses;
+    }
 
-struct infoUnit3 : public infoUnitBase_t
-{
-    Fitness_t translatedFitness;
-    size_t closestRefPoint;
-    double distance;
-};
+    struct infoUnit3 : public infoUnitBase_t
+    {
+        Fitness_t translatedFitness;
+        size_t closestRefPoint;
+        double distance;
+    };
 
 protected:
     RefMat_t referencePoses;
@@ -70,16 +70,10 @@ protected:
     void computeReferencePointPoses(const size_t dimN,
         const size_t precision,
         std::vector<Fitness_t> * dst) const {
+        dst->clear();
+        dst->reserve(OptimT::NchooseK(dimN+precision-1,precision));
 
-        if(precision<=0) {
-            exit(114514);
-        }
-
-        std::vector<Fitness_t> points;
-        
-        points.reserve(OptimT::NchooseK(dimN+precision-1,precision));
-
-        pri_startRP(dimN,precision,&points);
+        pri_startRP(dimN,precision,dst);
     }
 
     inline static bool sortByDominatedNum(const infoUnit3 * A,const infoUnit3* B) {
@@ -147,9 +141,7 @@ protected:
             ///Normalize procedure
             std::unordered_multimap<RefPointIdx_t,infoUnit3*> Fl;
             Fl.reserve(FlPtr->size());
-            for(auto i : *FlPtr) {
-                Fl.emplace(i);
-            }
+
             normalize(selected,*FlPtr);
             std::unordered_map<RefPointIdx_t,size_t> refPoints;
             refPoints.reserve(referencePoses.cols());
@@ -176,9 +168,10 @@ protected:
         const std::vector<infoUnit3*> & Fl) const {
 
         const size_t M=this->objectiveNum();
-        stdContainer<infoUnit3*,ObjNum> extremePtrs,intercepts;
-        iniSize4StdContainer<infoUnit3*,ObjNum>::iniSize(&extremePtrs,M);
-        iniSize4StdContainer<infoUnit3*,ObjNum>::iniSize(&intercepts,M);
+        stdContainer<const infoUnit3*,ObjNum> extremePtrs;
+        stdContainer<double,ObjNum> intercepts;
+        iniSize4StdContainer<const infoUnit3*,ObjNum>::iniSize(&extremePtrs,M);
+        iniSize4StdContainer<double,ObjNum>::iniSize(&intercepts,M);
 
         SquareMat_t<double,ObjNum> extremePoints;
         
@@ -189,7 +182,7 @@ protected:
         }
 
         for(size_t c=0;c<M;c++) {
-            extremePtrs[c]=&*(selected.begin());
+            extremePtrs[c]=*(selected.begin());
             for(size_t r=0;r<M;r++) {
                 extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r];
             }
@@ -424,7 +417,6 @@ private:
             dst->emplace_back(*rec);
             return;
         }
-        
 
         for(size_t p=0;p+accum<=precision;p++) {
             if(curDim>=0)
@@ -450,18 +442,18 @@ private:
     inline static void extremePoints2Intercept(const SquareMat_t<double,ObjNum> & P_T,
         stdContainer<double,ObjNum> * intercept) {
         
-        SquareMat_t<double,ObjNum> inv,one_div_intercept;
+        SquareMat_t<double,ObjNum> inv;
 
         InverseMatrix_LU<double,ObjNum>(P_T,&inv);
 
-        Matrix_t<double,ObjNum,1> Ones;
+        Matrix_t<double,ObjNum,1> Ones,one_div_intercept;
 
         if constexpr (ObjNum==Dynamic) {
             Ones.resize(P_T.rows(),1);
             intercept->resize(P_T.rows());
         }
 
-        MatrixProduct(inv,Ones,&one_div_intercept);
+        MatrixProduct<double,ObjNum,ObjNum,1>(inv,Ones,&one_div_intercept);
 
         for(size_t i=0;i<P_T.rows();i++) {
             intercept->operator[](i)=1.0/one_div_intercept[i];

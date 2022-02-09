@@ -88,9 +88,9 @@ protected:
 
     ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
-        //if(A==B) return false;
+        if(A==B) return false;
         for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if(fOpt) {
+            if constexpr(fOpt) {
                 //if any single fitness of A isn't better than B, A doesn't strong domain B
                 if((A->operator[](objIdx))<(B->operator[](objIdx))) {
                     return false;

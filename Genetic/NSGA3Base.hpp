@@ -59,10 +59,11 @@ public:
 
 protected:
     size_t _precision;
+
     void makeReferencePoses() {
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> rfP;
-        this->computeReferencePoses(this->objectiveNum(),_precision,&rfP);
+        this->computeReferencePointPoses(this->objectiveNum(),_precision,&rfP);
         for(size_t c=0;c<this->referencePoses.cols();c++) {
             for(size_t r=0;r<this->referencePoses.rows();r++) {
                 this->referencePoses(r,c)=rfP[c][r];
@@ -118,8 +119,8 @@ protected:
     void makeReferencePoses() {
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> irfP,orfP;        
-        this->computeReferencePoses(this->objectiveNum(),_innerPrecision,&irfP);
-        this->computeReferencePoses(this->objectiveNum(),_outerPrecision,&orfP);
+        this->computeReferencePointPoses(this->objectiveNum(),_innerPrecision,&irfP);
+        this->computeReferencePointPoses(this->objectiveNum(),_outerPrecision,&orfP);
 
         for(size_t c=0;c<this->referencePoses.cols();c++) {
             for(size_t r=0;r<this->objectiveNum();r++) {
