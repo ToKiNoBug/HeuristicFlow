@@ -46,4 +46,6 @@ void testNSGA2_Binh_and_Korn();
 void testNSGA2_Kursawe();
 
 void testNSGA2_ZDT3();
+
+void testNSGA3_DTLZ7();
 #endif // DEF_TESTINGGENETIC_H
