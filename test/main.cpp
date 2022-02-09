@@ -28,7 +28,7 @@ using namespace std;
 OptimT_MAKE_GLOBAL
 
 int main() {
-    testProduct();
+    
     system("pause");
     return 0;
 }
