@@ -30,4 +30,5 @@ void testLoop(unsigned int = 100);
 
 void testInverse();
 
+void testProduct();
 #endif // DEF_TESTINGMATRIX_H

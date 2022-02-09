@@ -123,3 +123,27 @@ void testInverse() {
     cout<<"];\n\n\n\n"<<endl;
 
 }
+
+void testProduct() {
+    MatrixDynamicSize<double> A(10,6);
+    MatrixDynamicSize<double> B(6,4);
+    MatrixDynamicSize<double> C;
+    for(auto & i : A) {
+        i=randD(-2,2);
+    }
+    for(auto & i : B) {
+        i=randD(-1,1);
+    }
+
+    {
+    Eigen::Map<Eigen::ArrayXXd> mA(A.data(),A.rows(),A.cols()),
+            mB(B.data(),B.rows(),B.cols());
+
+    cout<<"A=["<<mA<<"];\n\n\n"<<endl;
+    cout<<"B=["<<mB<<"];\n\n\n"<<endl;
+    }
+
+    MatrixProduct(A,B,&C);
+
+    cout<<"C=["<<Eigen::Map<Eigen::ArrayXXd>(C.data(),C.rows(),C.cols())<<"];\n\n\n"<<endl;
+}

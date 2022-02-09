@@ -3,7 +3,6 @@
 #include "../OptimTemplates/Global"
 #include <type_traits>
 #include <assert.h>
-#include <iostream>
 #include "MatrixDynamicSize.hpp"
 #include "MatrixFixedSize.hpp"
 #include "MatrixMap.hpp"
@@ -23,7 +22,7 @@ template<typename Scalar_t,size_t N>
 using SquareMat_t = typename std::conditional<N==Dynamic,MatrixDynamicSize<Scalar_t>,MatrixFixedSize<Scalar_t,N,N>>::type;
 
 template<typename Scalar_t,size_t Size>
-void MatrixProduct(const SquareMat_t<Scalar_t,Size> & A,
+void SquareMatrixProduct(const SquareMat_t<Scalar_t,Size> & A,
     const SquareMat_t<Scalar_t,Size> & B,
     SquareMat_t<Scalar_t,Size> * res) {
 
@@ -117,7 +116,7 @@ for(size_t j=N-1;j!=-1;j--) {
     }
 }
 
-MatrixProduct<Scalar_t,Size>(iL,iU,invA);
+SquareMatrixProduct<Scalar_t,Size>(iL,iU,invA);
 
 }
 

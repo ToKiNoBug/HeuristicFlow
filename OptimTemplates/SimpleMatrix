@@ -24,5 +24,6 @@ This file is part of OptimTemplates.
 #include "../SimpleMatrix/MatrixFixedSize.hpp"
 #include "../SimpleMatrix/MatrixMap.hpp"
 #include "../SimpleMatrix/StupidLU.hpp"
+#include "../SimpleMatrix/MatrixProduct.hpp"
 
 #endif // OptimT_SIMPLEMATRIX_
