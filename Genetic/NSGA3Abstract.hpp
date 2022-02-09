@@ -248,6 +248,11 @@ protected:
             }
         }
         else {
+            for(size_t r=0;r<M;r++) {
+                for(size_t c=0;c<r;c++) {
+                    std::swap(extremePoints(r,c),extremePoints(c,r));
+                }
+            }
             extremePoints2Intercept(extremePoints,&intercepts);
         }
 
@@ -267,6 +272,7 @@ protected:
 
     size_t findNearest(const Fitness_t & s,double * dist) const {
         std::vector<double> eachDistance(referencePoses.cols());
+#ifndef OptimT_NSGA_USE_THREADS
         for(size_t c=0;c<referencePoses.cols();c++) {
             double normW=0,w_T_s=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
@@ -282,6 +288,28 @@ protected:
             }
             eachDistance[c]=distance;
         }
+#else
+        static const size_t thN=OtGlobal::threadNum();
+#pragma omp parallel for
+        for(size_t begIdx=0;begIdx<thN;begIdx++) {
+            
+            for(size_t c=begIdx;c<referencePoses.cols();c+=thN) {
+            double normW=0,w_T_s=0;
+            for(size_t r=0;r<referencePoses.rows();r++) {
+                normW+=OT_square(referencePoses(r,c));
+                w_T_s+=s[r]*referencePoses(r,c);
+            }
+
+            const double w_T_s_div_normW=w_T_s/normW;
+
+            double distance=0;
+            for(size_t r=0;r<referencePoses.rows();r++) {
+                distance+=OT_square(w_T_s_div_normW*s[r]);
+            }
+            eachDistance[c]=distance;
+        }
+        }
+#endif
         size_t minIdx=0;
         for(size_t i=1;i<eachDistance.size();i++) {
             if(eachDistance[i]<eachDistance[minIdx]) {
