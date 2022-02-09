@@ -5,10 +5,6 @@
 
 namespace OptimT {
 
-enum ReferencePointOption {
-    SingleLayer,
-    DoubleLayer
-};
 
 template<typename Var_t,
         size_t ObjNum,
@@ -16,14 +12,13 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        ReferencePointOption rpOpt,
         class Args_t>
 class NSGA3Abstract
-    : public NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,rpOpt,Args_t>
+    : public NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,Args_t>
 {
     NSGA3Base() {};
     virtual ~NSGA3Base() {};
-    using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,rpOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,fOpt,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGABASE_TYPES
     using Fitness_t = FitnessVec_t<DVO,ObjNum>;
     static_assert(DVO!=DoubleVectorOption::Custom,
@@ -56,8 +51,8 @@ struct infoUnit3 : public infoUnitBase
 protected:
     RefMat_t referencePoses;
 
-    void computeReferencePointPoses(const uint64_t dimN,
-        const uint64_t precision,
+    void computeReferencePointPoses(const size_t dimN,
+        const size_t precision,
         std::vector<Fitness_t> * dst) const {
 
         if(precision<=0) {
@@ -72,8 +67,8 @@ protected:
     }
 
 private:
-    void pri_makeRP(const uint64_t dimN,const uint64_t precision,
-        const uint64_t curDim,const uint64_t curP,const uint64_t accum,
+    void pri_makeRP(const size_t dimN,const size_t precision,
+        const size_t curDim,const size_t curP,const size_t accum,
         Fitness_t * rec,
         std::vector<Fitness_t> * dst) const {
 
@@ -84,15 +79,15 @@ private:
         }
         
 
-        for(uint64_t p=0;p+accum<=precision;p++) {
+        for(size_t p=0;p+accum<=precision;p++) {
             if(curDim>=0)
                 rec->operator[](curDim)=double(p)/precision;
             pri_makeRP(dimN,precision,curDim+1,p,accum+p,rec,dst);
         }
     }
 
-    void pri_startRP(const uint64_t dimN,
-        const uint64_t precision,
+    void pri_startRP(const size_t dimN,
+        const size_t precision,
         vector<Eigen::ArrayXd> * dst) const {
 
         Fitness_t rec;
