@@ -63,8 +63,8 @@ protected:
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> rfP;
         this->computeReferencePoses(this->objectiveNum(),_precision,&rfP);
-        for(size_t c=0;c<referencePoses.cols();c++) {
-            for(size_t r=0;r<referencePoses.rows();r++) {
+        for(size_t c=0;c<this->referencePoses.cols();c++) {
+            for(size_t r=0;r<this->referencePoses.rows();r++) {
                 this->referencePoses(r,c)=rfP[c][r];
             }
         }
@@ -80,15 +80,15 @@ template<typename Var_t,
         PFOption pfOpt,
         class Args_t>
 class NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,DoubleLayer,Args_t>
-    : public NSGAAbstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>
+    : public NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>
 {
 public:
-    NSGA3Abstract() {
+    NSGA3Base() {
         _innerPrecision=3;
         _outerPrecision=4;
     };
-    virtual ~NSGA3Abstract() {};
-    using Base_t = NSGAAbstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
+    virtual ~NSGA3Base() {};
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
     OptimT_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t innerPrecision() const {
@@ -96,7 +96,7 @@ public:
     }
     
     size_t outerPrecision() const {
-        return _outerPrecision
+        return _outerPrecision;
     }
 
     void setReferencePointPrecision(size_t i,size_t o) {

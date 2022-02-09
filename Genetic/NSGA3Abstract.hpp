@@ -20,8 +20,11 @@ This file is part of OptimTemplates.
 #ifndef OptimT_NSGA3ABSTRACT_HPP
 #define OptimT_NSGA3ABSTRACT_HPP
 
+#include <unordered_map>
+#include <unordered_set>
 #include "NSGABase.hpp"
 #include "../OptimTemplates/SimpleMatrix"
+
 namespace OptimT {
 
 
@@ -45,11 +48,7 @@ public:
 #ifdef EIGEN_CORE_H
     using RefMat_t= typename std::conditional<DVO==Std,
         MatrixDynamicSize<double>,
-        typename std::conditional<
-            ObjNum==Dynamic,
-            Eigen::ArrayXXd,
-            Eigen::<double,ObjNum,Eigen::Dynamic>
-        ::type>::type;
+        Eigen::Array<double,(ObjNum==Dynamic?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
 #else
     using RefMat_t = MatrixDynamicSize<double>;
     static_assert(DVO!=DoubleVectorOption::Eigen,
@@ -60,7 +59,7 @@ const RefMat_t & referencePoints() const {
     return referencePoses;
 }
 
-struct infoUnit3 : public infoUnitBase
+struct infoUnit3 : public infoUnitBase_t
 {
     Fitness_t translatedFitness;
     size_t closestRefPoint;
@@ -322,8 +321,9 @@ protected:
         std::vector<std::unordered_map<RefPointIdx_t,size_t>::iterator> minNicheIterators;
         minNicheIterators.reserve(refPoints->size());
 
-        std::pair<std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator,
-            std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator> associatedGenesInFl;
+        std::pair<typename std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator,
+            typename std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator>
+                associatedGenesInFl;
         
         while(selected->size()<this->_option.populationSize) {
             findMinSet(*refPoints,&minNicheIterators);
@@ -333,10 +333,11 @@ protected:
             associatedGenesInFl=Fl->equal_range(curRefPoint->first);
 
             if(associatedGenesInFl.first!=associatedGenesInFl.second) { //  not empty
-                std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator pickedGene;
+                typename std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator
+                        pickedGene;
                 if(rhoJ==0) {
                     //find element in associatedGenesInFl with minimum distance
-                    std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator
+                    typename std::unordered_multimap<RefPointIdx_t,infoUnit3*>::iterator
                         minGene=associatedGenesInFl.first;
                     for(auto it=associatedGenesInFl.first;it!=associatedGenesInFl.second;++it) {
                         if(it->second->distance<minGene->second->distance) {
@@ -408,7 +409,7 @@ private:
 
     void pri_startRP(const size_t dimN,
         const size_t precision,
-        vector<Eigen::ArrayXd> * dst) const {
+        std::vector<Fitness_t> * dst) const {
 
         Fitness_t rec;
 
