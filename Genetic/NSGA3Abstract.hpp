@@ -51,8 +51,6 @@ public:
         Eigen::Array<double,(ObjNum==Dynamic?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
 #else
     using RefMat_t = MatrixDynamicSize<double>;
-    static_assert(DVO!=DoubleVectorOption::Eigen,
-        "Include Eigen before using Eigen arrays as Fitness types");
 #endif
 
 const RefMat_t & referencePoints() const {
@@ -442,10 +440,15 @@ private:
         }
         
     }
-
+#ifndef OptimT_NO_STATICASSERT
+#ifndef EIGEN_CORE_H
+    static_assert(DVO!=DoubleVectorOption::Eigen,
+        "Include Eigen before using Eigen arrays as Fitness types");
+#endif  //  EIGEN_CORE_H
     
     static_assert(DVO!=DoubleVectorOption::Custom,
         "Using custom double container as fitness isn't supported");
+#endif  //  OptimT_NO_STATICASSERT
 };
 
 #define OptimT_MAKE_NSGA3ABSTRACT_TYPES \

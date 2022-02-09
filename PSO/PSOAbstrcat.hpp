@@ -24,7 +24,7 @@ This file is part of OptimTemplates.
 #include "PSOOption.hpp"
 #include "PSOParameterPack.hpp"
 
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
 #include <iostream>
 #endif
 
@@ -150,19 +150,19 @@ public:
             calculateAll();
             updatePGBest();
             if(_generation>_option.maxGeneration) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
             }
 
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
             }
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
@@ -192,7 +192,7 @@ protected:
     Point gBest;
 
     virtual void calculateAll() {
-#ifdef OptimT_DO_PARALLELIZE
+#ifdef OptimT_USE_THREADS
         static const uint32_t thN=OtGlobal::threadNum();
 #pragma omp parallel for
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
@@ -250,19 +250,19 @@ public:
             this->updatePGBest();
             _record.emplace_back(bestFitness());
             if(this->_generation>this->_option.maxGeneration) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
                 }
                 if(this->_option.maxFailTimes>0
                         &&this->_failTimes>this->_option.maxFailTimes) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
                 }
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                 std::cout<<"Generation "<<this->_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;

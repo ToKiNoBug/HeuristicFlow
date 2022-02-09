@@ -33,7 +33,13 @@ This file is part of OptimTemplates.
 
 #include <array>
 
-#ifdef OptimT_DO_PARALLELIZE
+#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
+#ifdef OptimT_GENETIC_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
+#error You must include Eigen before you define OptimT_GENETIC_USE_EIGEN! Include Eigen before OptimT.
+#endif
+#endif
+
+#ifdef OptimT_USE_THREADS
 #include <omp.h>
 #include <thread>
 #endif

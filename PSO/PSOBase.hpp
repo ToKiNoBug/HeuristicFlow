@@ -23,12 +23,6 @@ This file is part of OptimTemplates.
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
 
-#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
-#ifdef OptimT_PSO_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
-#error You must include Eigen before you define OptimT_PSO_USE_EIGEN! Include Eigen before OptimT.
-#endif
-#endif
-
 namespace OptimT {
 
 ///Abstrcat base class for most PSO solvers

@@ -22,9 +22,7 @@ This file is part of OptimTemplates.
 
 #include <Eigen/Dense>
 #include <iostream>
-#define OptimT_NO_OUTPUT
-#define OptimT_PSO_USE_EIGEN
-#define OptimT_DO_PARALLELIZE
+#define OptimT_USE_THREADS
 #include <OptimTemplates/PSO>
 
 void testPSOBase();

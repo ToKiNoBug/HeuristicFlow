@@ -32,20 +32,13 @@ This file is part of OptimTemplates.
 #include <type_traits>
 #endif
 
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
 #include <iostream>
 #endif
 
 #include "../OptimTemplates/Global"
 
 namespace OptimT {
-
-
-#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
-#ifdef OptimT_GA_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
-#error You must include Eigen before you define OptimT_GA_USE_EIGEN! Include Eigen before OptimT.
-#endif
-#endif
 
 
     /**
@@ -167,18 +160,18 @@ public:
             select();
 
             if(_generation>_option.maxGenerations) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;
@@ -221,7 +214,7 @@ protected:
     virtual void customOptAfterEachGeneration() {}
 
     virtual void calculateAll() {
-#ifdef OptimT_DO_PARALLELIZE
+#ifdef OptimT_USE_THREADS
         static const uint32_t thN=OtGlobal::threadNum();
         std::vector<Gene*> tasks;
         tasks.resize(0);
@@ -351,18 +344,18 @@ public:
             this->select();
             _record.emplace_back(bestFitness());
             if(this->_generation>this->_option.maxGenerations) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(this->_option.maxFailTimes>0&&this->_failTimes>this->_option.maxFailTimes) {
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifndef OptimT_NO_OUTPUT
+#ifdef OptimT_DO_OUTPUT
             std::cout<<"Generation "<<this->_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;

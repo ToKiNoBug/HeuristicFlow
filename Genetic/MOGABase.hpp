@@ -26,8 +26,8 @@ This file is part of OptimTemplates.
 #include <assert.h>
 #endif
 
-#ifndef OptimT_MOGA_RTObjNum_MaxObjNum
-#define OptimT_MOGA_RTObjNum_MaxObjNum 16
+#ifndef OptimT_MOGA_MaxRunTimeObjNum
+#define OptimT_MOGA_MaxRunTimeObjNum 32
 #endif
 
 namespace OptimT {
@@ -100,7 +100,7 @@ public:
     inline void setObjectiveNum(size_t _objNum) {
 #ifndef OptimT_NO_RTASSERT
         assert(_objNum>1);
-        assert(_objNum<=OptimT_MOGA_RTObjNum_MaxObjNum);
+        assert(_objNum<=OptimT_MOGA_MaxRunTimeObjNum);
 #endif
         _objectiveNum=_objNum;
     }

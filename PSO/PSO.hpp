@@ -137,7 +137,7 @@ template<size_t DIM,
 using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>;
 
 
-#ifdef OptimT_PSO_USE_EIGEN
+#ifdef EIGEN_CORE_H
 
 template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void>
 using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>;
@@ -229,7 +229,7 @@ protected:
     }
 
 };
-#endif // OptimT_PSO_USE_EIGEN
+#endif // EIGEN_CORE_H
 
 }
 

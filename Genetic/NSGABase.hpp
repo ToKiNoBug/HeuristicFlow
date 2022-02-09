@@ -22,6 +22,13 @@ This file is part of OptimTemplates.
 
 #include "MOGABase.hpp"
 
+#ifdef OptimT_NSGA_USE_THREADS
+#ifndef OptimT_USE_THREADS
+#error You allowed parallelize in NSGA2 but not in global.  \
+    Macro OptimT_NSGA2_USE_THREADS can only be defined when OptimT_USE_THREADS is defined.
+#endif
+#endif
+
 namespace OptimT {
 
 template<typename Var_t,
@@ -61,7 +68,7 @@ protected:
     //calculate domainedByNum
     virtual void calculateDominatedNum(infoUnitBase ** pop,
         const size_t popSizeBefore) const {
-#ifdef OptimT_NSGA2_DO_PARALLELIZE
+#ifdef OptimT_NSGA_USE_THREADS
         static const size_t thN=OtGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {

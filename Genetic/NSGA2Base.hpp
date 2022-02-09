@@ -24,14 +24,6 @@ This file is part of OptimTemplates.
 
 namespace OptimT {
 
-#ifdef OptimT_NSGA2_DO_PARALLELIZE
-#ifndef OptimT_DO_PARALLELIZE
-#error You allowed parallelize in NSGA2 but not on global.  \
-    Macro OptimT_NSGA2_DO_PARALLELIZE can only be defined when OptimT_DO_PARALLELIZE is defined.
-#endif
-#endif
-
-
 enum CompareOption : int64_t {
     CompareByCongestion=-1,
     CompareByDominantedBy=-2
@@ -176,7 +168,7 @@ protected:
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
         static const size_t objCapacity=
-                (ObjNum==0)?(OptimT_MOGA_RTObjNum_MaxObjNum):ObjNum;
+                (ObjNum==0)?(OptimT_MOGA_MaxRunTimeObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 
@@ -245,17 +237,9 @@ protected:
 
         //calculate congestion
         if(needCongestion) {
-#ifdef OptimT_NSGA2_DO_PARALLELIZE
-#pragma omp parallel for
-#endif
             for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                //if don't parallelize,  cursortSpace is only a reference to sortSpace;
-                //otherwise it's copied to enable sorting concurrently
                 std::vector<infoUnit*>
-#ifndef OptimT_DO_PARALLELIZE
-                        &
-#endif
-                        cursortSpace=sortSpace;
+                        & cursortSpace=sortSpace;
 
                 std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
 

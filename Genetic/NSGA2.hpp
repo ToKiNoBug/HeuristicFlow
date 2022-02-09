@@ -25,11 +25,7 @@ This file is part of OptimTemplates.
 namespace OptimT
 {
 
-#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
-#ifdef OptimT_GENETIC_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
-#error You must include Eigen before you define OptimT_GENETIC_USE_EIGEN! Include Eigen before OptimT.
-#endif
-#endif
+
 
 /**
    *  @brief NSGA2 MOGA solver. Suitable for not too many objectives.
@@ -84,7 +80,7 @@ protected:
 private:
 };
 
-#ifdef OptimT_GENETIC_USE_EIGEN
+#ifdef EIGEN_CORE_H
 
 /**
  * @brief Partial specialization for NSGA2 using Eigen's array

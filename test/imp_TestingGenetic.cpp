@@ -656,8 +656,8 @@ cout<<"];"<<endl;
 
 void testNSGA3_DTLZ7() {
     static const size_t N=6,M=3;
-    using solver_t = NSGA3<array<double,6>,
-    M,
+    using solver_t = NSGA3<array<double,N>,
+    Dynamic,
     DoubleVectorOption::Eigen,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_DONT_MUTATE,
