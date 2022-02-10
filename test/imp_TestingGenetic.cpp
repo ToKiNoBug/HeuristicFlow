@@ -653,13 +653,13 @@ cout<<"];"<<endl;
 }
 
 void testNSGA3_DTLZ7() {
-static const size_t N=3,M=3;
-using solver_t = NSGA3<Eigen::Array<double,N,1>,
+static const size_t N=6,M=3;
+using solver_t = NSGA2<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
+    FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
-    PARETO_FRONT_DONT_MUTATE,
-    SingleLayer,
+    PARETO_FRONT_CAN_MUTATE,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
@@ -670,20 +670,38 @@ for(auto & i : *v) {
     i=randD();
 }};
 
+auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
+    f->resize(M,1);
+    auto xm=x->bottomRows<N-M+1>();
+    auto xm_sub_half_square=(xm-0.5).square();
+    auto cos_20pi_mul=(20*M_PI*(xm-0.5)).cos();
+    const double g=100*(std::sqrt(xm.square().sum())+(xm_sub_half_square-cos_20pi_mul).sum());
+    double accum=0.5*(1+g);
+    int64_t dim=0;
+    for(int64_t obj=M-1;obj>=0;obj--) {
+        if(obj>0) {
+            (*f)[obj]=accum*(1-(*x)[dim]);
+            accum*=(*x)[dim];
+            dim++;
+        }
+        else {
+            (*f)[obj]=accum;
+        }
+    }
+};
 
-auto DTLZ7=[](const Var_t * v,Fitness_t * f) {
-    *f=*v;
-    const double g=1+9*v->sum()/(std::sqrt(v->square().sum())+1e-20);
-    auto f_i=v->segment<M-1>(0);
-    auto sin_3pi_fi=(3*M_PI*f_i).sin();
-    auto befSum=f_i*(1+sin_3pi_fi);
-    double h=M-befSum.sum()/(1+g);
+auto DTLZ7=[](const Var_t * x,Fitness_t * f) {
+    f->resize(M,1);
+    auto xm=x->bottomRows<N-M+1>();
+    f->topRows<M-1>()=x->topRows<M-1>();
+    const double g=1+9*(xm.sum())/(N-M+1);
+    auto fi=f->topRows<M-1>();
+    auto one_add_sum3pifi=1+(3*M_PI*fi).sin();
+    const double h=M-(fi*one_add_sum3pifi/(1+g)).sum();
     f->operator[](M-1)=(1+g)*h;
 };
 
-auto cFun=[](const Var_t *p1,const Var_t *p2,Var_t *c1,Var_t *c2) {
-    GADefaults<Var_t>::cFunRandNs<>(p1,p2,c1,c2);
-};
+auto cFun=GADefaults<Var_t>::cFunNd<>;
 
 
 auto mFun=[](Var_t * v) {
@@ -694,9 +712,9 @@ auto mFun=[](Var_t * v) {
 };
 
 GAOption opt;
-opt.maxGenerations=2;
-opt.maxFailTimes=200;
-opt.populationSize=400;
+opt.maxGenerations=200;
+opt.maxFailTimes=100;
+opt.populationSize=200;
 opt.crossoverProb=0.8;
 opt.mutateProb=0.05;
 
@@ -706,10 +724,10 @@ solver.setfFun(DTLZ7);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);
-solver.setReferencePointPrecision(8);
+//solver.setReferencePointPrecision(8);
 solver.initializePop();
 
-cout<<"Reference points=["<<solver.referencePoints()<<"];\n\n\n"<<endl;
+//cout<<"Reference points=["<<solver.referencePoints()<<"];\n\n\n"<<endl;
 
 
 clock_t c=clock();
