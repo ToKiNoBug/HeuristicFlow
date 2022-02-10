@@ -89,20 +89,24 @@ protected:
     ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         if(A==B) return false;
+        uint32_t hasGreater=0;
         for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if constexpr(fOpt) {
+            if constexpr(fOpt==FITNESS_GREATER_BETTER) {
                 //if any single fitness of A isn't better than B, A doesn't strong domain B
                 if((A->operator[](objIdx))<(B->operator[](objIdx))) {
                     return false;
                 }
-            } else {
+                hasGreater+=(A->operator[](objIdx)>B->operator[](objIdx));
+            }
+            else {  //  fitness less better
                 //if any single fitness of A isn't better than B, A doesn't strong domain B
                 if((A->operator[](objIdx))>(B->operator[](objIdx))) {
                     return false;
                 }
+                hasGreater+=(A->operator[](objIdx)<B->operator[](objIdx));
             }
         }
-        return true;
+        return hasGreater;
     } //isStrongDomain
 
     virtual size_t makePFCheckSum() const {

@@ -28,7 +28,7 @@ using namespace std;
 OptimT_MAKE_GLOBAL
 
 int main() {
-    
+    //testNSGA2_Binh_and_Korn();
     testNSGA3_DTLZ7();
     system("pause");
     return 0;

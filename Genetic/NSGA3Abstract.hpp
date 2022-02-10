@@ -115,8 +115,7 @@ protected:
         std::unordered_set<infoUnit3*> selected;
         selected.reserve(this->_option.populationSize);
         std::vector<infoUnit3*> * FlPtr=nullptr;
-        bool needRefPoint=false;
-
+        bool needRefPoint;
 
         while(true) {
             if(selected.size()==this->_option.populationSize) {
@@ -136,7 +135,7 @@ protected:
 
         }
 
-        
+
         if(needRefPoint) {
             ///Normalize procedure
             std::unordered_multimap<RefPointIdx_t,infoUnit3*> Fl;
@@ -175,31 +174,22 @@ protected:
 
         SquareMat_t<double,ObjNum> extremePoints;
         
-        Fitness_t ideal;
+        Fitness_t ideal=(*Fl.begin())->iterator->_Fitness;
         if constexpr (ObjNum==Dynamic) {
-            ideal.resize(M);
             extremePoints.resize(M,M);
         }
 
         for(size_t c=0;c<M;c++) {
-            extremePtrs[c]=*(selected.begin());
+            extremePtrs[c]=*(Fl.begin());
             for(size_t r=0;r<M;r++) {
                 extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r];
             }
         }
 
-
-        for(size_t r=0;r<ideal.size();r++) {
-            ideal[r]=extremePoints(r,0);
-        }
-
         for(auto i : selected) {
             for(size_t objIdx=0;objIdx<M;objIdx++) {
                 ideal[objIdx]=std::min(ideal[objIdx],i->iterator->_Fitness[objIdx]);
-                if(i->iterator->_Fitness[objIdx]>extremePoints(objIdx,objIdx)) {
-                    for(size_t r=0;r<M;r++) {
-                        extremePoints(r,objIdx)=i->iterator->_Fitness[objIdx];
-                    }
+                if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
             }
@@ -208,10 +198,7 @@ protected:
         for(auto i : Fl) {
             for(size_t objIdx=0;objIdx<M;objIdx++) {
                 ideal[objIdx]=std::min(ideal[objIdx],i->iterator->_Fitness[objIdx]);
-                if(i->iterator->_Fitness[objIdx]>extremePoints(objIdx,objIdx)) {
-                    for(size_t r=0;r<M;r++) {
-                        extremePoints(r,objIdx)=i->iterator->_Fitness[objIdx];
-                    }
+                if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
             }
@@ -219,7 +206,7 @@ protected:
 
         for(size_t c=0;c<M;c++) {
             for(size_t r=0;r<M;r++) {
-                extremePoints(r,c)-=ideal[r];
+                extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r]-ideal[r];
             }
         }
 
@@ -241,26 +228,24 @@ protected:
             }
         }
         else {
-            for(size_t r=0;r<M;r++) {
-                for(size_t c=0;c<r;c++) {
-                    std::swap(extremePoints(r,c),extremePoints(c,r));
-                }
-            }
             extremePoints2Intercept(extremePoints,&intercepts);
         }
 
         for(auto i : selected) {
+            i->translatedFitness=i->iterator->_Fitness;
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                i->translatedFitness[objIdx]=(i->iterator->_Fitness[objIdx]-ideal[objIdx])/intercepts[objIdx];
+                i->translatedFitness[objIdx]-=ideal[objIdx];
+                i->translatedFitness[objIdx]/=intercepts[objIdx];
             }
         }
 
         for(auto i : Fl) {
+            i->translatedFitness=i->iterator->_Fitness;
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                i->translatedFitness[objIdx]=(i->iterator->_Fitness[objIdx]-ideal[objIdx])/intercepts[objIdx];
+                i->translatedFitness[objIdx]-=ideal[objIdx];
+                i->translatedFitness[objIdx]/=intercepts[objIdx];
             }
         }
-
     }
 
     size_t findNearest(const Fitness_t & s,double * dist) const {
@@ -325,6 +310,7 @@ protected:
         std::unordered_multimap<RefPointIdx_t,infoUnit3*> * Fl_dst) const {
             for(auto i : Fl_src) {
                 RefPointIdx_t idx=findNearest(i->translatedFitness,&i->distance);
+                i->closestRefPoint=idx;
                 Fl_dst->emplace(idx,i);
             }
     }
@@ -446,11 +432,21 @@ private:
 
         InverseMatrix_LU<double,ObjNum>(P_T,&inv);
 
+        for(size_t r=0;r<P_T.rows();r++) {
+            for(size_t c=0;c<r;c++) {
+                std::swap(inv(r,c),inv(c,r));
+            }
+        }
+
         Matrix_t<double,ObjNum,1> Ones,one_div_intercept;
 
         if constexpr (ObjNum==Dynamic) {
             Ones.resize(P_T.rows(),1);
             intercept->resize(P_T.rows());
+        }
+
+        for(size_t i=0;i<P_T.rows();i++) {
+            Ones[i]=1;
         }
 
         MatrixProduct<double,ObjNum,ObjNum,1>(inv,Ones,&one_div_intercept);

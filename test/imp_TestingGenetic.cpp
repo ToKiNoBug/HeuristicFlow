@@ -544,15 +544,13 @@ void testNSGA2_Binh_and_Korn() {
     cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
        <<" seconds and "<<algo.generation()<<"generations"<<endl;
 
-    /*
-    std::vector<std::array<double,2>> paretoFront;
-    algo.paretoFront(paretoFront);
+    
     cout<<"paretoFront=[";
-    for(const auto & i : paretoFront) {
-        cout<<i[0]<<" , "<<i[1]<<";\n";
+    for(const auto & i : algo.pfGenes()) {
+        cout<<i->_Fitness[0]<<" , "<<i->_Fitness[1]<<";\n";
     }
     cout<<"];"<<endl;
-    */
+    
 
     /*
     cout<<"\n\n\n population=[";
@@ -655,7 +653,7 @@ cout<<"];"<<endl;
 }
 
 void testNSGA3_DTLZ7() {
-static const size_t N=4,M=3;
+static const size_t N=3,M=3;
 using solver_t = NSGA3<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
@@ -673,16 +671,20 @@ for(auto & i : *v) {
 }};
 
 
-auto fFun=[](const Var_t * v,Fitness_t * f) {
-    f->resize(M,1);
-    f->segment<M-1>(0)=v->segment<M-1>(0);
+auto DTLZ7=[](const Var_t * v,Fitness_t * f) {
+    *f=*v;
     const double g=1+9*v->sum()/(std::sqrt(v->square().sum())+1e-20);
     auto f_i=v->segment<M-1>(0);
-    const double h=M-(f_i*(1+(3*M_PI*f_i).sin())).sum()/(1+g);
+    auto sin_3pi_fi=(3*M_PI*f_i).sin();
+    auto befSum=f_i*(1+sin_3pi_fi);
+    double h=M-befSum.sum()/(1+g);
     f->operator[](M-1)=(1+g)*h;
 };
 
-auto cFun=GADefaults<Var_t>::cFunNd<encode<1,5>::code>;
+auto cFun=[](const Var_t *p1,const Var_t *p2,Var_t *c1,Var_t *c2) {
+    GADefaults<Var_t>::cFunRandNs<>(p1,p2,c1,c2);
+};
+
 
 auto mFun=[](Var_t * v) {
     const size_t idx=randD(0,v->size());
@@ -692,13 +694,15 @@ auto mFun=[](Var_t * v) {
 };
 
 GAOption opt;
-opt.maxGenerations=3000;
-opt.maxFailTimes=400;
+opt.maxGenerations=2;
+opt.maxFailTimes=200;
 opt.populationSize=400;
+opt.crossoverProb=0.8;
+opt.mutateProb=0.05;
 
 solver_t solver;
 solver.setiFun(iFun);
-solver.setfFun(fFun);
+solver.setfFun(DTLZ7);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);

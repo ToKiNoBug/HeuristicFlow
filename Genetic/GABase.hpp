@@ -19,7 +19,7 @@ This file is part of OptimTemplates.
 
 #ifndef OptimT_GABASE_H
 #define OptimT_GABASE_H
-
+#include <iostream>
 #include "./GAOption.hpp"
 #include <tuple>
 #include <vector>
@@ -275,7 +275,7 @@ protected:
             crossoverQueue.pop_back();
         }
 
-        while(crossoverQueue.empty()) {
+        while(!crossoverQueue.empty()) {
             GeneIt_t a,b;
             a=crossoverQueue.back();
             crossoverQueue.pop_back();
