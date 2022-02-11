@@ -97,6 +97,14 @@ public:
         }
         return std::pow(result,1.0/p);
     }
+
+    inline void initializePop() {
+        if(_ccFun==nullptr) {
+            setCongestComposeFun();
+        }
+        Base_t::initializePop();
+    }
+
     /**
      * @brief calculate ideal point
      * 
@@ -131,16 +139,6 @@ public:
 
 protected:
     congestComposeFun _ccFun;
-
-    virtual void customOptWhenInitialization() {
-        
-        this->prevFrontSize=-1;
-        this->_pfGenes.clear();
-        this->_pfGenes.reserve(this->_option.populationSize*2);
-        if(_ccFun==nullptr) {
-            setCongestComposeFun();
-        }
-    }
 
     template<int64_t objIdx>
     static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {

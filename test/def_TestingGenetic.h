@@ -22,7 +22,6 @@ This file is part of OptimTemplates.
 
 #include <Eigen/Dense>
 #define OptimT_USE_THREADS
-#define OptimT_GA_USE_EIGEN
 #define OptimT_NSGA_USE_THREADS
 #include <OptimTemplates/Genetic>
 

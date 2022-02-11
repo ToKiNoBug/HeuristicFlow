@@ -652,23 +652,40 @@ cout<<"];"<<endl;
 
 }
 
+template<size_t M,size_t N>
+void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
+    f->resize(M,1);
+    auto xm=x->template bottomRows<N-M+1>();
+    f->template topRows<M-1>()=x->template topRows<M-1>();
+    const double g=1+9*(xm.sum())/
+            //std::sqrt(1e-40+xm.square().sum())
+            (N-M+1)
+            ;
+    auto fi=f->template topRows<M-1>();
+    auto one_add_sum3pifi=1+(3*M_PI*fi).sin();
+    const double h=M-(fi*one_add_sum3pifi/(1+g)).sum();
+    f->operator[](M-1)=(1+g)*h;
+};
+
+
 void testNSGA3_DTLZ7() {
-static const size_t N=6,M=3;
-using solver_t = NSGA2<Eigen::Array<double,N,1>,
+static const size_t N=6,M=2;
+using solver_t = NSGA3<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
-    FITNESS_LESS_BETTER,
+    //FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
+    SingleLayer,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
 using Fitness_t = solver_t::Fitness_t;
 
 auto iFun=[](Var_t * v) {
-for(auto & i : *v) {
-    i=randD();
-}};
+v->setRandom();
+*v=(*v+1)/2;
+};
 
 auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
     f->resize(M,1);
@@ -690,16 +707,6 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
     }
 };
 
-auto DTLZ7=[](const Var_t * x,Fitness_t * f) {
-    f->resize(M,1);
-    auto xm=x->bottomRows<N-M+1>();
-    f->topRows<M-1>()=x->topRows<M-1>();
-    const double g=1+9*(xm.sum())/(N-M+1);
-    auto fi=f->topRows<M-1>();
-    auto one_add_sum3pifi=1+(3*M_PI*fi).sin();
-    const double h=M-(fi*one_add_sum3pifi/(1+g)).sum();
-    f->operator[](M-1)=(1+g)*h;
-};
 
 auto cFun=GADefaults<Var_t>::cFunNd<>;
 
@@ -712,22 +719,22 @@ auto mFun=[](Var_t * v) {
 };
 
 GAOption opt;
-opt.maxGenerations=200;
-opt.maxFailTimes=100;
+opt.maxGenerations=500;
+opt.maxFailTimes=-1;
 opt.populationSize=200;
 opt.crossoverProb=0.8;
 opt.mutateProb=0.05;
 
 solver_t solver;
 solver.setiFun(iFun);
-solver.setfFun(DTLZ7);
+solver.setfFun(DTLZ7<M,N>);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);
-//solver.setReferencePointPrecision(8);
+solver.setReferencePointPrecision(10); cout<<"RPCount="<<solver.referencePointCount()<<endl;
 solver.initializePop();
 
-//cout<<"Reference points=["<<solver.referencePoints()<<"];\n\n\n"<<endl;
+//cout<<"RP=["<<solver.referencePoints()<<"]';\n\n\n"<<endl;
 
 
 clock_t c=clock();
@@ -742,4 +749,9 @@ for(const auto & i : solver.pfGenes()) {
 }
 cout<<"];\n\n\n"<<endl;
 
+}
+
+void searchPF() {
+    static const size_t N=6,M=2;
+    auto fun=DTLZ7<M,N>;
 }

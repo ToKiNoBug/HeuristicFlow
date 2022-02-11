@@ -81,6 +81,13 @@ public:
         return _pfGenes;
     }
 
+    inline void initializePop() {
+        this->prevFrontSize=-1;
+        this->_pfGenes.clear();
+        this->_pfGenes.reserve(this->_option.populationSize*2);
+        Base_t::initializePop();
+    }
+
 protected:
     size_t prevFrontSize;
     size_t prevPFCheckSum;
@@ -89,24 +96,20 @@ protected:
     ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         if(A==B) return false;
-        uint32_t hasGreater=0;
+        uint32_t notWorseNum=0,betterNum=0;
         for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if constexpr(fOpt==FITNESS_GREATER_BETTER) {
-                //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->operator[](objIdx))<(B->operator[](objIdx))) {
-                    return false;
-                }
-                hasGreater+=(A->operator[](objIdx)>B->operator[](objIdx));
+            if constexpr (fOpt==FITNESS_GREATER_BETTER) {
+                notWorseNum+=((*A)[objIdx]>=(*B)[objIdx]);
+                betterNum+=((*A)[objIdx]>(*B)[objIdx]);
             }
-            else {  //  fitness less better
-                //if any single fitness of A isn't better than B, A doesn't strong domain B
-                if((A->operator[](objIdx))>(B->operator[](objIdx))) {
-                    return false;
-                }
-                hasGreater+=(A->operator[](objIdx)<B->operator[](objIdx));
+            else {                
+                notWorseNum+=((*A)[objIdx]<=(*B)[objIdx]);
+                betterNum+=((*A)[objIdx]<(*B)[objIdx]);
             }
         }
-        return hasGreater;
+        if(notWorseNum<A->size())
+            return false;
+        return betterNum>0;
     } //isStrongDomain
 
     virtual size_t makePFCheckSum() const {

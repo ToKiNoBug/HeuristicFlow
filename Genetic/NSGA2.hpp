@@ -154,6 +154,13 @@ public:
         return std::pow(f->power(p).sum(),1.0/p);
     }
 
+    inline void initializePop() {
+        if(this->_ccFun==nullptr) {
+            setCongestComposeFun();
+        }
+        Base_t::initializePop();
+    }
+
     virtual Fitness_t bestFitness() const {
         Fitness_t best=Base_t::_population.front()._Fitness;
         for(const Gene & i : Base_t::_population) {
@@ -168,22 +175,18 @@ public:
 
 protected:
 
-    virtual void customOptWhenInitialization() {
-        this->prevFrontSize=-1;
-        this->_pfGenes.clear();
-        this->_pfGenes.reserve(Base_t::_option.populationSize*2);
-        if(this->_ccFun==nullptr) {
-            setCongestComposeFun();
-        }
-    }
-
     ///whether A strong domainates B
     static bool Eig_isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
-        if(isGreaterBetter) {
-            return (*A>*B).all();
-        } else {
-            return (*A<*B).all();
+        bool isNotWorse,isBetter;
+        if constexpr (isGreaterBetter==FITNESS_GREATER_BETTER) {
+            isNotWorse=((*A)>=(*B)).all();
+            isBetter=((*A)>(*B)).any();
         }
+        else {
+            isNotWorse=((*A)<=(*B)).all();
+            isBetter=((*A)<(*B)).any();
+        }
+        return isNotWorse&&isBetter;
     } //isStrongDomain
 
     //calculate domainedByNum
