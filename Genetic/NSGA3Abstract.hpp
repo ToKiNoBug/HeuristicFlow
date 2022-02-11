@@ -151,6 +151,30 @@ protected:
             ///Associate procedure
             associate(selected);
             associate(*FlPtr,&Fl);
+
+            /*
+            std::cout<<"FLC=[";
+            for(const auto & i : Fl) {
+                std::cout<<i.first<<',';
+            }
+            std::cout<<"];\n\n"<<std::endl;
+
+            std::cout<<"FLV=[";
+            for(const auto & i : Fl) {
+                std::cout<<i.second->iterator->_Fitness.transpose()<<';';
+            }
+            std::cout<<"]';\n\n"<<std::endl;
+
+            std::cout<<"FLtV=[";
+            for(const auto & i : Fl) {
+                std::cout<<i.second->translatedFitness.transpose()<<';';
+            }
+            std::cout<<"]';\n\n"<<std::endl;
+
+            exit(114);
+            */
+
+
             nichePreservation(&selected,&Fl,&refPoints);
         }
         
@@ -168,18 +192,20 @@ protected:
 
         const size_t M=this->objectiveNum();
         stdContainer<const infoUnit3*,ObjNum> extremePtrs;
-        stdContainer<double,ObjNum> intercepts;
         iniSize4StdContainer<const infoUnit3*,ObjNum>::iniSize(&extremePtrs,M);
-        iniSize4StdContainer<double,ObjNum>::iniSize(&intercepts,M);
 
         SquareMat_t<double,ObjNum> extremePoints;
         
-        Fitness_t ideal=(*Fl.begin())->iterator->_Fitness;
+        Fitness_t ideal,intercepts;
+        
         if constexpr (ObjNum==Dynamic) {
             extremePoints.resize(M,M);
+            ideal.resize(M);
+            intercepts.resize(M);
         }
 
         for(size_t c=0;c<M;c++) {
+            ideal[c]=pinfD;
             extremePtrs[c]=*(Fl.begin());
             for(size_t r=0;r<M;r++) {
                 extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r];
@@ -262,7 +288,7 @@ protected:
 
             double distance=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                distance+=OT_square(w_T_s_div_normW*s[r]);
+                distance+=OT_square(s[r]-w_T_s_div_normW*referencePoses(r,c));
             }
             eachDistance[c]=distance;
         }
@@ -282,7 +308,7 @@ protected:
 
             double distance=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                distance+=OT_square(w_T_s_div_normW*s[r]);
+                distance+=OT_square(s[r]-w_T_s_div_normW*referencePoses(r,c));
             }
             eachDistance[c]=distance;
         }
@@ -426,7 +452,7 @@ private:
 
     
     inline static void extremePoints2Intercept(const SquareMat_t<double,ObjNum> & P_T,
-        stdContainer<double,ObjNum> * intercept) {
+        Fitness_t * intercept) {
         
         SquareMat_t<double,ObjNum> inv;
 

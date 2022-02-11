@@ -669,14 +669,14 @@ void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
 
 
 void testNSGA3_DTLZ7() {
-static const size_t N=6,M=2;
-using solver_t = NSGA3<Eigen::Array<double,N,1>,
+static const size_t N=5,M=3;
+using solver_t = NSGA2<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
-    //FITNESS_LESS_BETTER,
+    FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
-    SingleLayer,
+    //SingleLayer,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
@@ -692,7 +692,8 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
     auto xm=x->bottomRows<N-M+1>();
     auto xm_sub_half_square=(xm-0.5).square();
     auto cos_20pi_mul=(20*M_PI*(xm-0.5)).cos();
-    const double g=100*(std::sqrt(xm.square().sum())+(xm_sub_half_square-cos_20pi_mul).sum());
+    const double g=100*(std::sqrt(xm.square().sum())
+        +(xm_sub_half_square-cos_20pi_mul).sum());
     double accum=0.5*(1+g);
     int64_t dim=0;
     for(int64_t obj=M-1;obj>=0;obj--) {
@@ -731,7 +732,7 @@ solver.setfFun(DTLZ7<M,N>);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);
-solver.setReferencePointPrecision(10); cout<<"RPCount="<<solver.referencePointCount()<<endl;
+//solver.setReferencePointPrecision(14); cout<<"RPCount="<<solver.referencePointCount()<<endl;
 solver.initializePop();
 
 //cout<<"RP=["<<solver.referencePoints()<<"]';\n\n\n"<<endl;
@@ -752,6 +753,6 @@ cout<<"];\n\n\n"<<endl;
 }
 
 void searchPF() {
-    static const size_t N=6,M=2;
+    static const size_t N=5,M=3;
     auto fun=DTLZ7<M,N>;
 }
