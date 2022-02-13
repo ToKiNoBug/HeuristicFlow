@@ -1,28 +1,28 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_NSGA3BASE_HPP
-#define OptimT_NSGA3BASE_HPP
+#ifndef Heu_NSGA3BASE_HPP
+#define Heu_NSGA3BASE_HPP
 
 #include "NSGA3Abstract.hpp"
 
-namespace OptimT {
+namespace Heu {
 
 enum ReferencePointOption {
     SingleLayer,
@@ -43,7 +43,7 @@ public:
     NSGA3Base() {};
     virtual ~NSGA3Base() {};
     using Base_t = NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
-    OptimT_MAKE_NSGA3ABSTRACT_TYPES
+    Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t referencePointPrecision() const {
         return _precision;
@@ -90,7 +90,7 @@ public:
     };
     virtual ~NSGA3Base() {};
     using Base_t = NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>;
-    OptimT_MAKE_NSGA3ABSTRACT_TYPES
+    Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t innerPrecision() const {
         return _innerPrecision;
@@ -141,4 +141,4 @@ protected:
 
 
 
-#endif  //  OptimT_NSGA3BASE_HPP
+#endif  //  Heu_NSGA3BASE_HPP

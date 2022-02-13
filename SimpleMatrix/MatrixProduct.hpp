@@ -1,33 +1,33 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of Heuristic.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    Heuristic is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    Heuristic is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with Heuristic.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_MATRIXPRODUCT_HPP
-#define OptimT_MATRIXPRODUCT_HPP
+#ifndef Heu_MATRIXPRODUCT_HPP
+#define Heu_MATRIXPRODUCT_HPP
 
-#include "../OptimTemplates/Global"
+#include "../Heuristic/Global"
 #include <type_traits>
 #include <assert.h>
 #include "MatrixDynamicSize.hpp"
 #include "MatrixFixedSize.hpp"
 #include "MatrixMap.hpp"
 
-namespace OptimT {
+namespace Heu {
 /**
  * @brief Matrix of different sizes
  * 
@@ -66,8 +66,8 @@ for(size_t i=0;i<M;i++) {
 
 }
 
-}//  namespace OptimT
+}//  namespace Heu
 
    
 
-#endif  //  OptimT_MATRIXPRODUCT_HPP
+#endif  //  Heu_MATRIXPRODUCT_HPP

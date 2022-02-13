@@ -1,24 +1,24 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_GABASE_H
-#define OptimT_GABASE_H
+#ifndef Heu_GABASE_H
+#define Heu_GABASE_H
 #include <iostream>
 #include "./GAOption.hpp"
 #include <tuple>
@@ -28,17 +28,17 @@ This file is part of OptimTemplates.
 #include <random>
 #include <algorithm>
 #include "GAAbstract.hpp"
-#ifndef OptimT_NO_STATICASSERT
+#ifndef Heu_NO_STATICASSERT
 #include <type_traits>
 #endif
 
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
 #include <iostream>
 #endif
 
-#include "../OptimTemplates/Global"
+#include "../HeuristicFlow/Global"
 
-namespace OptimT {
+namespace Heu {
 
 
     /**
@@ -62,7 +62,7 @@ public:
 
     using Base_t = GAAbstract<Var_t,Fitness_t,Args_t>;
 
-    OptimT_MAKE_GAABSTRACT_TYPES
+    Heu_MAKE_GAABSTRACT_TYPES
 
     ///Gene type for Var
     class Gene {
@@ -160,18 +160,18 @@ public:
             select();
 
             if(_generation>_option.maxGenerations) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;
@@ -214,7 +214,7 @@ protected:
     virtual void customOptAfterEachGeneration() {}
 
     virtual void calculateAll() {
-#ifdef OptimT_USE_THREADS
+#ifdef Heu_USE_THREADS
         static const uint32_t thN=OtGlobal::threadNum();
         std::vector<Gene*> tasks;
         tasks.resize(0);
@@ -302,10 +302,10 @@ protected:
 
 };
 
-#define OptimT_MAKE_GABASE_TYPES \
+#define Heu_MAKE_GABASE_TYPES \
 using Gene = typename Base_t::Gene; \
 using GeneIt_t = typename Base_t::GeneIt_t; \
-OptimT_MAKE_GAABSTRACT_TYPES
+Heu_MAKE_GAABSTRACT_TYPES
 
 /**
    *  @brief partial specialization for GABase with record.
@@ -322,7 +322,7 @@ class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t>
 {
 public:
     using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t>;
-    OptimT_MAKE_GABASE_TYPES
+    Heu_MAKE_GABASE_TYPES
 
 public:
     GABase() {};
@@ -344,18 +344,18 @@ public:
             this->select();
             _record.emplace_back(bestFitness());
             if(this->_generation>this->_option.maxGenerations) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                 std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                 break;
             }
             if(this->_option.maxFailTimes>0&&this->_failTimes>this->_option.maxFailTimes) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                 std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                 break;
             }
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
             std::cout<<"Generation "<<this->_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;

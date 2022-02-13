@@ -1,7 +1,7 @@
-#ifndef OptimT_PSOPARAMETERPACK_HPP
-#define OptimT_PSOPARAMETERPACK_HPP
+#ifndef Heu_PSOPARAMETERPACK_HPP
+#define Heu_PSOPARAMETERPACK_HPP
 
-namespace OptimT
+namespace Heu
 {
 
 template<class Var_t,class Fitness_t,class Arg_t=void>
@@ -61,12 +61,12 @@ public:
     }
 };
 
-#define OptimT_MAKE_PSOPARAMETERPACK_TYPES \
+#define Heu_MAKE_PSOPARAMETERPACK_TYPES \
 using Args_t = typename Base_t::Args_t; \
 using iFun_t = typename Base_t::iFun_t; \
 using fFun_t = typename Base_t::fFun_t;
 
-} // namespace OptimT
+} // namespace Heu
 
 
-#endif  //  OptimT_PSOPARAMETERPACK_HPP
+#endif  //  Heu_PSOPARAMETERPACK_HPP

@@ -1,24 +1,24 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of Heuristic.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    Heuristic is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    Heuristic is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with Heuristic.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_PSO_HPP
-#define OptimT_PSO_HPP
+#ifndef Heu_PSO_HPP
+#define Heu_PSO_HPP
 #include "PSOOption.hpp"
 #include "PSOBase.hpp"
 #include <array>
@@ -26,7 +26,7 @@ This file is part of OptimTemplates.
 #include <tuple>
 #include <type_traits>
 
-namespace OptimT {
+namespace Heu {
 
 ///Generalized PSO solver
 /**
@@ -47,7 +47,7 @@ class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Arg_t>
 {
 public:
     using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Arg_t>;
-    OptimT_MAKE_PSOABSTRACT_TYPES
+    Heu_MAKE_PSOABSTRACT_TYPES
 
     static const DoubleVectorOption Flag =
         (std::is_same<Var_t,stdVecD_t<DIM>>::value)?
@@ -155,7 +155,7 @@ class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t>
 {
 public:
     using Base_t = PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t>;
-    OptimT_MAKE_PSOABSTRACT_TYPES
+    Heu_MAKE_PSOABSTRACT_TYPES
     using Var_t = EigenVecD_t<DIM>;
 
     static const DoubleVectorOption Flag = DoubleVectorOption::Eigen;

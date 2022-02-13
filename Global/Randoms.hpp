@@ -1,37 +1,37 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_RANDOMS_HPP
-#define OptimT_RANDOMS_HPP
+#ifndef Heu_RANDOMS_HPP
+#define Heu_RANDOMS_HPP
 
 #include <stdint.h>
 #include <cmath>
 #include <ctime>
 #include <random>
 
-namespace OptimT {
+namespace Heu {
 
-///global random device(mt19937) for OptimT
+///global random device(mt19937) for Heu
 extern std::mt19937 global_mt19937;
 
 ///Calling anything in this namespace is deprecated
-namespace OptimTPrivate {    
+namespace HeuPrivate {    
 inline uint32_t makeRandSeed() {
         static bool isFirstCalled=true;
         if(isFirstCalled) {
@@ -48,7 +48,7 @@ inline uint32_t makeRandSeed() {
             return global_mt19937.operator()();
         }
     }
-}   // OptimTPrivate
+}   // HeuPrivate
 
 
 ///uniform random number in range [0,1)
@@ -62,6 +62,6 @@ inline double randD(const double min,const double max) {
     return (max-min)*randD()+min;
 }
 
-}   // OptimT
+}   // Heu
 
 #endif // RANDOMS_HPP

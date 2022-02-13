@@ -1,30 +1,30 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_MOGAABSTRACT_HPP
-#define OptimT_MOGAABSTRACT_HPP
+#ifndef Heu_MOGAABSTRACT_HPP
+#define Heu_MOGAABSTRACT_HPP
 
 #include "./GABase.hpp"
 #include <queue>
 #include <unordered_set>
 
-namespace OptimT {
+namespace Heu {
     
 ///whether to protect pareto front when mutation or not
 enum PFOption : unsigned char {
@@ -58,7 +58,7 @@ public:
     virtual ~MOGAAbstract() {};
 
     using Base_t = GABase<Var_t,Fitness_t,rOpt,Args_t>;
-    OptimT_MAKE_GABASE_TYPES
+    Heu_MAKE_GABASE_TYPES
 
     ///get pareto front in vec
     inline void paretoFront(std::vector<Fitness_t> & front) const {
@@ -148,13 +148,13 @@ protected:
 
 private:
     
-#ifndef OptimT_NO_STATICASSERT
+#ifndef Heu_NO_STATICASSERT
     static_assert(std::integral_constant<bool,(ObjNum!=1)>::value,
-    "OptimTemplates : You used less than 1 objective in NSGA2");
+    "HeuristicFlow : You used less than 1 objective in NSGA2");
 #endif
 
 };  // MOGAAbstract
 
-}   //  OptimT
+}   //  Heu
 
 #endif //   MOGAABSTRACT_HPP

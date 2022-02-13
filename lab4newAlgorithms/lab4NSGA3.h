@@ -1,24 +1,24 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_LAB4NSGA3_H
-#define OptimT_LAB4NSGA3_H
+#ifndef Heu_LAB4NSGA3_H
+#define Heu_LAB4NSGA3_H
 
 #include "includes.h"
 #include <vector>
@@ -37,12 +37,12 @@ static const size_t ObjNum=3;
  * 
  */
 class testNSGA3
-    : public OptimT::NSGABase<Eigen::Array<double,VarDim,1>,
+    : public Heu::NSGABase<Eigen::Array<double,VarDim,1>,
         ObjNum,
         Eigen::Array<double,ObjNum,1>,
-        OptimT::FITNESS_LESS_BETTER,
-        OptimT::RECORD_FITNESS,
-        OptimT::PARETO_FRONT_CAN_MUTATE>
+        Heu::FITNESS_LESS_BETTER,
+        Heu::RECORD_FITNESS,
+        Heu::PARETO_FRONT_CAN_MUTATE>
 {
 public:
     testNSGA3() {
@@ -54,14 +54,14 @@ public:
 
     }
 
-    using Base_t = OptimT::NSGABase<Eigen::Array<double,VarDim,1>,
+    using Base_t = Heu::NSGABase<Eigen::Array<double,VarDim,1>,
     ObjNum,
     Eigen::Array<double,ObjNum,1>,
-    OptimT::FITNESS_LESS_BETTER,
-    OptimT::RECORD_FITNESS,
-    OptimT::PARETO_FRONT_CAN_MUTATE>;
+    Heu::FITNESS_LESS_BETTER,
+    Heu::RECORD_FITNESS,
+    Heu::PARETO_FRONT_CAN_MUTATE>;
 
-    OptimT_MAKE_NSGABASE_TYPES
+    Heu_MAKE_NSGABASE_TYPES
     using RefPoint = size_t;
 
     struct infoUnit3 : public infoUnitBase_t
@@ -124,8 +124,8 @@ public:
     }
 
     static void mFun(Eigen::Array<double,VarDim,1> * v) {
-        double & x =v->operator[](size_t(OptimT::randD(0,VarDim)));
-        x+=OptimT::randD(-1,1)*0.05;
+        double & x =v->operator[](size_t(Heu::randD(0,VarDim)));
+        x+=Heu::randD(-1,1)*0.05;
         if(x<0)
             x=0;
         if(x>1)
@@ -342,7 +342,7 @@ protected:
 
         while(selected->size()<=this->_option.populationSize) {
             findMinSet(*refPoints,&minNicheIterators);
-            auto curRefPoint=minNicheIterators[size_t(OptimT::randD(0,minNicheIterators.size()))];
+            auto curRefPoint=minNicheIterators[size_t(Heu::randD(0,minNicheIterators.size()))];
             size_t rhoJ=curRefPoint->second;
             findAssociated(*Fl,curRefPoint,&associatedGenesInFl);
 
@@ -361,7 +361,7 @@ protected:
                 }
                 else {
                     //pick a random member in associatedGenesInFl
-                    pickedGene=associatedGenesInFl[size_t(OptimT::randD(0,associatedGenesInFl.size()))];
+                    pickedGene=associatedGenesInFl[size_t(Heu::randD(0,associatedGenesInFl.size()))];
                 }
                 selected->emplace(pickedGene);
                 Fl->erase(pickedGene);
@@ -412,4 +412,4 @@ protected:
 
 void testNSGA3Expri();
 
-#endif  //  OptimT_LAB4NSGA3_H
+#endif  //  Heu_LAB4NSGA3_H

@@ -1,28 +1,28 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_SOGA_H
-#define OptimT_SOGA_H
+#ifndef Heu_SOGA_H
+#define Heu_SOGA_H
 #include "./GABase.hpp"
 
 
-namespace OptimT
+namespace Heu
 {
 
 /**
@@ -44,7 +44,7 @@ public:
 
     };
     using Base_t = GABase<Var_t,double,Record,Args_t>;
-    OptimT_MAKE_GABASE_TYPES
+    Heu_MAKE_GABASE_TYPES
 
     virtual double bestFitness() const {
         return _eliteIt->_Fitness;

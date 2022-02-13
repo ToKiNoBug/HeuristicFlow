@@ -1,28 +1,28 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_TEMPLATEFLOAT_HPP
-#define OptimT_TEMPLATEFLOAT_HPP
+#ifndef Heu_TEMPLATEFLOAT_HPP
+#define Heu_TEMPLATEFLOAT_HPP
 
 #include <stdint.h>
 
-namespace OptimT {
+namespace Heu {
 
 /**
  * @brief Encode double by division of int32 and uint32 stored in uint64
@@ -168,6 +168,6 @@ public:
     static const constexpr double real=digital*powPart;
 };
 
-}   //  namespace OptimT
+}   //  namespace Heu
 
-#endif  //  OptimT_TEMPLATEFLOAT_HPP
+#endif  //  Heu_TEMPLATEFLOAT_HPP

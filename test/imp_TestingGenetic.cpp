@@ -1,19 +1,19 @@
 /*
  Copyright © 2021  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
@@ -21,7 +21,7 @@ This file is part of OptimTemplates.
 #include <iostream>
 #include <Eigen/Dense>
 #include <ctime>
-using namespace OptimT;
+using namespace Heu;
 using namespace std;
 /*
 double randD(const double min,const double max) {
@@ -33,8 +33,8 @@ void testAckley_withRecord() {
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
     using solver_t = 
     SOGA<array<double,2>,
-            OptimT::FITNESS_LESS_BETTER,
-            OptimT::RECORD_FITNESS,
+            Heu::FITNESS_LESS_BETTER,
+            Heu::RECORD_FITNESS,
             std::tuple<
             array<double,2>,//min
             array<double,2>,//max
@@ -269,8 +269,8 @@ void testTSP(const uint32_t PointNum) {
     }
 
     auto crossoverFun
-            =OptimT::GADefaults<vector<double>,Args_t>::
-                cFunXd<OptimT::DivCode::Half>;
+            =Heu::GADefaults<vector<double>,Args_t>::
+                cFunXd<Heu::DivCode::Half>;
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
         const uint32_t permL=x->size();
@@ -319,7 +319,7 @@ void testNSGA2_ZDT3() {
     static const size_t XNum=30;
     static const double r=0.2;
 
-    OptimT::NSGA2<std::array<double,XNum>,
+    Heu::NSGA2<std::array<double,XNum>,
             2,
             Std,
             FITNESS_LESS_BETTER,
@@ -329,7 +329,7 @@ void testNSGA2_ZDT3() {
     void (*iFun)(std::array<double,XNum>*) =
     [] (std::array<double,XNum> * x) {
         for(size_t i=0;i<XNum;i++) {
-            x->operator[](i)=OptimT::randD();
+            x->operator[](i)=Heu::randD();
         }
     };
 
@@ -349,14 +349,14 @@ void testNSGA2_ZDT3() {
     };
 
     auto cFun=
-            OptimT::GADefaults<std::array<double,XNum>>::
-                cFunNd<(OptimT::encode<1,2>::code)>;
+            Heu::GADefaults<std::array<double,XNum>>::
+                cFunNd<(Heu::encode<1,2>::code)>;
 
     void (*mFun)(std::array<double,XNum>*)=
             [](std::array<double,XNum>*x){
-        const size_t mutateIdx=size_t(OptimT::randD(0,XNum))%XNum;
+        const size_t mutateIdx=size_t(Heu::randD(0,XNum))%XNum;
 
-        x->operator[](mutateIdx)+=0.005*OptimT::randD(-1,1);
+        x->operator[](mutateIdx)+=0.005*Heu::randD(-1,1);
 
         x->operator[](mutateIdx)=std::min(x->operator[](mutateIdx),1.0);
         x->operator[](mutateIdx)=std::max(x->operator[](mutateIdx),0.0);
@@ -510,8 +510,8 @@ void testNSGA2_Binh_and_Korn() {
     };
 
     solver_t::crossoverFun cFun =
-    OptimT::GADefaults<std::array<double,2>,void>::
-            cFunNd<OptimT::encode<1,5>::code>;
+    Heu::GADefaults<std::array<double,2>,void>::
+            cFunNd<Heu::encode<1,5>::code>;
 
     auto mFun=[](std::array<double,2> * x) {
         const size_t idx=size_t(randD(0,2))%2;
@@ -574,7 +574,7 @@ using solver_t = NSGA2<Point_t,
     std::tuple<Eigen::Array<double,Dim,Eigen::Dynamic>>>;
 
 using Base_t = solver_t;
-OptimT_MAKE_NSGABASE_TYPES
+Heu_MAKE_NSGABASE_TYPES
 using Fitness_t = solver_t::Fitness_t;
 
 static const double r=0.2;

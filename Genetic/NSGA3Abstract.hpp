@@ -1,31 +1,31 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_NSGA3ABSTRACT_HPP
-#define OptimT_NSGA3ABSTRACT_HPP
+#ifndef Heu_NSGA3ABSTRACT_HPP
+#define Heu_NSGA3ABSTRACT_HPP
 
 #include <unordered_map>
 #include <unordered_set>
 #include "NSGABase.hpp"
-#include "../OptimTemplates/SimpleMatrix"
+#include "../Heu/SimpleMatrix"
 
-namespace OptimT {
+namespace Heu {
 
 
 template<typename Var_t,
@@ -41,7 +41,7 @@ public:
     NSGA3Abstract() {};
     virtual ~NSGA3Abstract() {};
     using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>;
-    OptimT_MAKE_NSGABASE_TYPES
+    Heu_MAKE_NSGABASE_TYPES
     using Fitness_t = FitnessVec_t<DVO,ObjNum>;
     using RefPointIdx_t = size_t;
 
@@ -71,7 +71,7 @@ protected:
         const size_t precision,
         std::vector<Fitness_t> * dst) const {
         dst->clear();
-        dst->reserve(OptimT::NchooseK(dimN+precision-1,precision));
+        dst->reserve(Heu::NchooseK(dimN+precision-1,precision));
 
         pri_startRP(dimN,precision,dst);
     }
@@ -276,7 +276,7 @@ protected:
 
     size_t findNearest(const Fitness_t & s,double * dist) const {
         std::vector<double> eachDistance(referencePoses.cols());
-#ifndef OptimT_NSGA_USE_THREADS
+#ifndef Heu_NSGA_USE_THREADS
         for(size_t c=0;c<referencePoses.cols();c++) {
             double normW=0,w_T_s=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
@@ -482,7 +482,7 @@ private:
         }
         
     }
-#ifndef OptimT_NO_STATICASSERT
+#ifndef Heu_NO_STATICASSERT
 #ifndef EIGEN_CORE_H
     static_assert(DVO!=DoubleVectorOption::Eigen,
         "Include Eigen before using Eigen arrays as Fitness types");
@@ -490,15 +490,15 @@ private:
     
     static_assert(DVO!=DoubleVectorOption::Custom,
         "Using custom double container as fitness isn't supported");
-#endif  //  OptimT_NO_STATICASSERT
+#endif  //  Heu_NO_STATICASSERT
 };
 
-#define OptimT_MAKE_NSGA3ABSTRACT_TYPES \
-OptimT_MAKE_NSGABASE_TYPES \
+#define Heu_MAKE_NSGA3ABSTRACT_TYPES \
+Heu_MAKE_NSGABASE_TYPES \
 using RefMat_t = typename Base_t::RefMat_t; \
 using Fitness_t = typename Base_t::Fitness_t; \
 using infoUnit3 = typename Base_t::infoUnit3; \
 using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 }
 
-#endif  //  OptimT_NSGA3ABSTRACT_HPP
+#endif  //  Heu_NSGA3ABSTRACT_HPP

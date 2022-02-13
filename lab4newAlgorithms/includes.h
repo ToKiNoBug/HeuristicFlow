@@ -1,31 +1,29 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_LAB_INCLUDES_H
-#define OptimT_LAB_INCLUDES_H
+#ifndef HeuristicFlow_LAB_INCLUDES_H
+#define HeuristicFlow_LAB_INCLUDES_H
 
 #include <Eigen/Dense>
-#define OptimT_NO_OUTPUT
-#define OptimT_DO_PARALLELIZE
-#include <OptimTemplates/Global>
-#include <OptimTemplates/Genetic>
-#include <OptimTemplates/SimpleMatrix>
+#include <HeuristicFlow/Global>
+#include <HeuristicFlow/Genetic>
+#include <HeuristicFlow/SimpleMatrix>
 
 
 enum DivCode : uint64_t {
@@ -83,4 +81,4 @@ double power(double base) {
 }
 
 DivCode findCodeOf(const double d,double * error=nullptr);
-#endif  //  OptimT_LAB_INCLUDES_H
+#endif  //  HeuristicFlow_LAB_INCLUDES_H

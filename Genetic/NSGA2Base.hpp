@@ -1,28 +1,28 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_NSGA2BASE_HPP
-#define OptimT_NSGA2BASE_HPP
+#ifndef Heu_NSGA2BASE_HPP
+#define Heu_NSGA2BASE_HPP
 
 #include "NSGABase.hpp"
 
-namespace OptimT {
+namespace Heu {
 
 enum CompareOption : int64_t {
     CompareByCongestion=-1,
@@ -50,7 +50,7 @@ public:
     virtual ~NSGA2Base() {};
 
     using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
-    OptimT_MAKE_NSGABASE_TYPES
+    Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *);
 
@@ -142,12 +142,12 @@ protected:
 
     template<int64_t objIdx>
     static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {
-#ifndef OptimT_NO_STATICASSERT
+#ifndef Heu_NO_STATICASSERT
     static_assert(std::integral_constant<bool,
         ((objIdx>=0)
         ||(objIdx==CompareOption::CompareByCongestion)
         ||(objIdx==CompareOption::CompareByDominantedBy))>::value,
-    "OptimTemplates : Invalid compare flag");
+    "Heu : Invalid compare flag");
 #endif
         if(A==B) return false;
         ///compare by congestion
@@ -166,7 +166,7 @@ protected:
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
         static const size_t objCapacity=
-                (ObjNum==0)?(OptimT_MOGA_MaxRunTimeObjNum):ObjNum;
+                (ObjNum==0)?(Heu_MOGA_MaxRunTimeObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 
@@ -241,8 +241,8 @@ protected:
 
                 std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
 
-                cursortSpace.front()->congestion[objIdx]=OptimT::pinfD;
-                cursortSpace.back()->congestion[objIdx]=OptimT::pinfD;
+                cursortSpace.front()->congestion[objIdx]=Heu::pinfD;
+                cursortSpace.back()->congestion[objIdx]=Heu::pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {

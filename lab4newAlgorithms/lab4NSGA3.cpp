@@ -1,25 +1,25 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
 #include "lab4NSGA3.h"
 #include <iostream>
-#include <OptimTemplates/Global>
+#include <HeuristicFlow/Global>
 
 using namespace std;
 
@@ -55,7 +55,7 @@ vector<Eigen::ArrayXd> makeReferencePoints(const uint64_t dimN,const uint64_t pr
     }
     vector<Eigen::ArrayXd> points;
 
-    points.reserve(OptimT::NchooseK(dimN+precision-1,precision));
+    points.reserve(Heu::NchooseK(dimN+precision-1,precision));
 
     pri_startRP(dimN,precision,points);
 
@@ -82,7 +82,7 @@ void testNSGA3Expri() {
     testNSGA3 solver;
 
     solver.setPrecision(3,2);
-    OptimT::GAOption opt;
+    Heu::GAOption opt;
     opt.maxGenerations=4000;
     opt.maxFailTimes=opt.maxGenerations/5;
     opt.populationSize=400;

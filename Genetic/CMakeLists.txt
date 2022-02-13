@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(OptimT_GA LANGUAGES CXX)
+project(Heu_GA LANGUAGES CXX)
 
 #include_directories(D:/CppLibs/eigen-3.4.0)
 

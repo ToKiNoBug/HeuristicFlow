@@ -8,13 +8,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-project(OptimT_Test LANGUAGES CXX)
+project(HeuristicFlow_Test LANGUAGES CXX)
 
 
 include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
-add_executable(OptimT_Test
+add_executable(HeuristicFlow_Test
     def_TestingMatrix.h
     imp_TestingMatrix.cpp   #Test simple matrix
     def_TestingGenetic.h
@@ -25,5 +25,5 @@ add_executable(OptimT_Test
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(OptimT_Test PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(HeuristicFlow_Test PUBLIC OpenMP::OpenMP_CXX)
 endif()

@@ -1,25 +1,25 @@
 
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of Heuristic.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    Heuristic is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    Heuristic is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with Heuristic.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_GLOBALS_HPP
-#define OptimT_GLOBALS_HPP
+#ifndef Heu_GLOBALS_HPP
+#define Heu_GLOBALS_HPP
 
 #include <random>
 #include <ctime>
@@ -27,24 +27,24 @@ This file is part of OptimTemplates.
 #include "./Enumerations.hpp"
 #include "./Chaotic.hpp"
 #include "./Randoms.hpp"
-#include "./OptimTMaths.hpp"
+#include "./HeuMaths.hpp"
 #include <type_traits>
 #include <vector>
 
 #include <array>
 
 #ifndef EIGEN_CORE_H    //Detects whether libEigen is included
-#ifdef OptimT_GENETIC_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
-#error You must include Eigen before you define OptimT_GENETIC_USE_EIGEN! Include Eigen before OptimT.
+#ifdef Heu_GENETIC_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
+#error You must include Eigen before you define Heu_GENETIC_USE_EIGEN! Include Eigen before Heu.
 #endif
 #endif
 
-#ifdef OptimT_USE_THREADS
+#ifdef Heu_USE_THREADS
 #include <omp.h>
 #include <thread>
 #endif
 
-namespace OptimT
+namespace Heu
 {
 ///macro function for square
 #define OT_square(x) (x)*(x)
@@ -134,10 +134,10 @@ private:
 };
 
 
-#define OptimT_MAKE_GLOBAL \
-std::mt19937 OptimT::global_mt19937(OptimT::OptimTPrivate::makeRandSeed()); \
-OptimT::LogisticChaos OptimT::global_logistic(randD()); \
-uint32_t OptimT::OtGlobal::concurrency=std::thread::hardware_concurrency();
+#define Heu_MAKE_GLOBAL \
+std::mt19937 Heu::global_mt19937(Heu::HeuPrivate::makeRandSeed()); \
+Heu::LogisticChaos Heu::global_logistic(randD()); \
+uint32_t Heu::OtGlobal::concurrency=std::thread::hardware_concurrency();
 
 }
 

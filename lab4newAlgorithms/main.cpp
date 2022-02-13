@@ -1,19 +1,19 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
@@ -22,14 +22,14 @@ This file is part of OptimTemplates.
 #include "lab4NSGA2.h"
 #include "lab4NSGA3.h"
 
-OptimT_MAKE_GLOBAL
+Heu_MAKE_GLOBAL
 using namespace std;
 using namespace Eigen;
-using namespace OptimT;
+using namespace Heu;
 
 int main() {
     static const double threshold=10000000000000000ULL;
-    static const uint64_t res=OptimT::amplifier<12345>::result;
+    static const uint64_t res=Heu::amplifier<12345>::result;
     static const double decode=res/threshold;
 
 

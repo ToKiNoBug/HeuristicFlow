@@ -1,31 +1,31 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of Heuristic.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    Heuristic is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    Heuristic is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with Heuristic.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_STUPIDLU_HPP
-#define OptimT_STUPIDLU_HPP
-#include "../OptimTemplates/Global"
+#ifndef Heu_STUPIDLU_HPP
+#define Heu_STUPIDLU_HPP
+#include "../Heuristic/Global"
 #include <type_traits>
 #include <assert.h>
 #include "MatrixDynamicSize.hpp"
 #include "MatrixFixedSize.hpp"
 #include "MatrixMap.hpp"
-namespace OptimT {
+namespace Heu {
 
 /**
  * @brief A simple LU implementation. 
@@ -139,6 +139,6 @@ SquareMatrixProduct<Scalar_t,Size>(iL,iU,invA);
 
 }
 
-}   //  namespace OptimT
+}   //  namespace Heu
 
-#endif  //  OptimT_STUPIDLU_HPP
+#endif  //  Heu_STUPIDLU_HPP

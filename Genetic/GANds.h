@@ -1,29 +1,29 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
 #if false
-#ifndef OptimT_GANDS_H
-#define OptimT_GANDS_H
+#ifndef Heu_GANDS_H
+#define Heu_GANDS_H
 #include "./SOGA.hpp"
 #include "./NSGA2.hpp"
 
-namespace OptimT
+namespace Heu
 {
 ///No-constraint N-d GA optimizer
 template<size_t N,FitnessOption isGreaterBetter>
@@ -42,7 +42,7 @@ public:
         DONT_RECORD_FITNESS,
         std::array<double,N>,std::array<double,N>,double>::Base_t;
         
-    OptimT_MAKE_GABASE_TYPES
+    Heu_MAKE_GABASE_TYPES
 
     static const size_t tuple_minIdx=0;
     static const size_t tuple_maxIdx=1;

@@ -1,35 +1,35 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_NSGABASE_HPP
-#define OptimT_NSGABASE_HPP
+#ifndef Heu_NSGABASE_HPP
+#define Heu_NSGABASE_HPP
 
 #include "MOGABase.hpp"
 
-#ifdef OptimT_NSGA_USE_THREADS
-#ifndef OptimT_USE_THREADS
+#ifdef Heu_NSGA_USE_THREADS
+#ifndef Heu_USE_THREADS
 #error You allowed parallelize in NSGA2 but not in global.  \
-    Macro OptimT_NSGA2_USE_THREADS can only be defined when OptimT_USE_THREADS is defined.
+    Macro Heu_NSGA2_USE_THREADS can only be defined when Heu_USE_THREADS is defined.
 #endif
 #endif
 
-namespace OptimT {
+namespace Heu {
 
 template<typename Var_t,
         size_t ObjNum,
@@ -46,7 +46,7 @@ public:
     virtual ~NSGABase() {};
 
     using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
-    OptimT_MAKE_GABASE_TYPES
+    Heu_MAKE_GABASE_TYPES
     
     /**
      * @brief basical unit for NS
@@ -68,7 +68,7 @@ protected:
     //calculate domainedByNum
     virtual void calculateDominatedNum(infoUnitBase ** pop,
         const size_t popSizeBefore) const {
-#ifdef OptimT_NSGA_USE_THREADS
+#ifdef Heu_NSGA_USE_THREADS
         static const size_t thN=OtGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {
@@ -125,10 +125,10 @@ protected:
 };  //NSGABase
 
 
-#define OptimT_MAKE_NSGABASE_TYPES \
-OptimT_MAKE_GABASE_TYPES \
+#define Heu_MAKE_NSGABASE_TYPES \
+Heu_MAKE_GABASE_TYPES \
 using infoUnitBase_t = typename Base_t::infoUnitBase;
 
-}   // OptimT
+}   // Heu
 
 #endif  //  NSGABASE_HPP

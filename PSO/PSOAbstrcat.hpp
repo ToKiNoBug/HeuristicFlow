@@ -1,34 +1,34 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of Heuristic.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    Heuristic is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    Heuristic is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with Heuristic.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_PSOABSTRCAT_HPP
-#define OptimT_PSOABSTRCAT_HPP
+#ifndef Heu_PSOABSTRCAT_HPP
+#define Heu_PSOABSTRCAT_HPP
 
-#include <OptimTemplates/Global>
+#include <Heuristic/Global>
 #include "PSOOption.hpp"
 #include "PSOParameterPack.hpp"
 
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
 #include <iostream>
 #endif
 
-namespace OptimT {
+namespace Heu {
 
 /**
  * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
@@ -45,7 +45,7 @@ class PSOAbstract : public PSOParameterPack<Var_t,Fitness_t,Arg_t>
 {
 public:
     using Base_t = PSOParameterPack<Var_t,Fitness_t,Arg_t>;
-    OptimT_MAKE_PSOPARAMETERPACK_TYPES
+    Heu_MAKE_PSOPARAMETERPACK_TYPES
     
     class Point
     {
@@ -150,19 +150,19 @@ public:
             calculateAll();
             updatePGBest();
             if(_generation>_option.maxGeneration) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
             }
 
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
             }
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
@@ -192,7 +192,7 @@ protected:
     Point gBest;
 
     virtual void calculateAll() {
-#ifdef OptimT_USE_THREADS
+#ifdef Heu_USE_THREADS
         static const uint32_t thN=OtGlobal::threadNum();
 #pragma omp parallel for
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
@@ -215,8 +215,8 @@ protected:
     virtual void customOptAfterEachGeneration() {};
 };
 
-#define OptimT_MAKE_PSOABSTRACT_TYPES \
-OptimT_MAKE_PSOPARAMETERPACK_TYPES \
+#define Heu_MAKE_PSOABSTRACT_TYPES \
+Heu_MAKE_PSOPARAMETERPACK_TYPES \
 using Point_t = typename Base_t::Point; \
 using Particle_t = typename Base_t::Particle;
 
@@ -231,7 +231,7 @@ class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t>
 {
 public:
     using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t>;
-    OptimT_MAKE_PSOABSTRACT_TYPES
+    Heu_MAKE_PSOABSTRACT_TYPES
 
     const std::vector<Fitness_t> & record() const {
         return _record;
@@ -250,19 +250,19 @@ public:
             this->updatePGBest();
             _record.emplace_back(bestFitness());
             if(this->_generation>this->_option.maxGeneration) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
                 }
                 if(this->_option.maxFailTimes>0
                         &&this->_failTimes>this->_option.maxFailTimes) {
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
                 }
-#ifdef OptimT_DO_OUTPUT
+#ifdef Heu_DO_OUTPUT
                 std::cout<<"Generation "<<this->_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;

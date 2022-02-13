@@ -1,30 +1,30 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_MICELLANEOUS4GA_HPP
-#define OptimT_MICELLANEOUS4GA_HPP
+#ifndef Heu_MICELLANEOUS4GA_HPP
+#define Heu_MICELLANEOUS4GA_HPP
 
 #include "GAAbstract.hpp"
-#include "../OptimTemplates/Global"
+#include "../HeuristicFlow/Global"
 #include <assert.h>
 
-namespace OptimT {
+namespace Heu {
 
 /*
 template<DivCode _min,DivCode _max>
@@ -43,7 +43,7 @@ inline void stdGAiFunNd(Var_t * v,const Args_t *) {
 
 */
 
-namespace OptimT_pri
+namespace Heu_pri
 {
 
 /**
@@ -61,7 +61,7 @@ struct imp_GADefaults_noParam
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-#define OptimT_PRIVATE_IMP_cFunNd \
+#define Heu_PRIVATE_IMP_cFunNd \
         static const double constexpr r=decode<_r>::real; \
         static_assert(r>0,"r shouldn't be less than 0"); \
         static_assert(r<1,"r shouldn't be greater than 1"); \
@@ -71,7 +71,7 @@ struct imp_GADefaults_noParam
             c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i)); \
         }
 
-        OptimT_PRIVATE_IMP_cFunNd
+        Heu_PRIVATE_IMP_cFunNd
     }
 
     /**
@@ -83,11 +83,11 @@ struct imp_GADefaults_noParam
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-#define OptimT_PRIVATE_IMP_cFunX \
+#define Heu_PRIVATE_IMP_cFunX \
         c1->resize(p1->size()); \
         c2->resize(p2->size());
 
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
 
         cFunNd<_r>(p1,p2,c1,c2);
     }
@@ -100,7 +100,7 @@ struct imp_GADefaults_noParam
 
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-#define OptimT_PRIVATE_IMP_cFunSwapNs \
+#define Heu_PRIVATE_IMP_cFunSwapNs \
         const size_t N=p1->size(); \
         const size_t idx=randD(0,N); \
         for(size_t i=0;i<N;i++) { \
@@ -114,7 +114,7 @@ struct imp_GADefaults_noParam
             } \
         }
 
-        OptimT_PRIVATE_IMP_cFunSwapNs
+        Heu_PRIVATE_IMP_cFunSwapNs
 
     }
 
@@ -127,7 +127,7 @@ struct imp_GADefaults_noParam
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
 
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
 
         cFunSwapNs(p1,p2,c1,c2);
     }
@@ -141,7 +141,7 @@ struct imp_GADefaults_noParam
     template<DivCode p=DivCode::Half>
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
-#define OptimT_PRIVATE_IMP_cFunRandNs \
+#define Heu_PRIVATE_IMP_cFunRandNs \
         static const double constexpr r=decode<p>::real; \
         static_assert(r>0,"A probability shoule be greater than 0"); \
         static_assert(r<1,"A probability shoule be less than 1"); \
@@ -151,7 +151,7 @@ struct imp_GADefaults_noParam
             c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i); \
         }
 
-        OptimT_PRIVATE_IMP_cFunRandNs
+        Heu_PRIVATE_IMP_cFunRandNs
 
     }
 
@@ -165,7 +165,7 @@ struct imp_GADefaults_noParam
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
 
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
 
         cFunRandNs(p1,p2,c1,c2);
     }
@@ -199,7 +199,7 @@ struct imp_GADefaults_withParam
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        OptimT_PRIVATE_IMP_cFunNd
+        Heu_PRIVATE_IMP_cFunNd
     }
 
     /**
@@ -213,7 +213,7 @@ struct imp_GADefaults_withParam
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
         cFunNd<_r>(p1,p2,c1,c2,a);
     }
 
@@ -225,7 +225,7 @@ struct imp_GADefaults_withParam
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        OptimT_PRIVATE_IMP_cFunSwapNs
+        Heu_PRIVATE_IMP_cFunSwapNs
     }
 
     /**
@@ -236,7 +236,7 @@ struct imp_GADefaults_withParam
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
         cFunSwapXs(p1,p2,c1,c2,a);
     }
 
@@ -251,7 +251,7 @@ struct imp_GADefaults_withParam
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t *) {
-        OptimT_PRIVATE_IMP_cFunRandNs
+        Heu_PRIVATE_IMP_cFunRandNs
     }
 
     /**
@@ -264,14 +264,14 @@ struct imp_GADefaults_withParam
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t * a) {
-        OptimT_PRIVATE_IMP_cFunX
+        Heu_PRIVATE_IMP_cFunX
 
         cFunRandNs<posCode>(p1,p2,c1,c2,a);
     }
 
 };
 
-}   //  namespace OptimT_pri
+}   //  namespace Heu_pri
 
 
 
@@ -279,11 +279,11 @@ template<typename Var_t,class Args_t=void>
 using GADefaults =
     typename std::conditional<
     std::is_same<Args_t,void>::value,
-    OptimT_pri::imp_GADefaults_noParam<Var_t>,
-    OptimT_pri::imp_GADefaults_withParam<Var_t,Args_t>
+    Heu_pri::imp_GADefaults_noParam<Var_t>,
+    Heu_pri::imp_GADefaults_withParam<Var_t,Args_t>
     >::type;
 
 
-}   //  namespace OptimT
+}   //  namespace Heu
 
-#endif  //  OptimT_MICELLANEOUS4GA_HPP
+#endif  //  Heu_MICELLANEOUS4GA_HPP

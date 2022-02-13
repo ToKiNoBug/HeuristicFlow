@@ -1,26 +1,26 @@
 /*
  Copyright © 2022  TokiNoBug
-This file is part of OptimTemplates.
+This file is part of HeuristicFlow.
 
-    OptimTemplates is free software: you can redistribute it and/or modify
+    HeuristicFlow is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    OptimTemplates is distributed in the hope that it will be useful,
+    HeuristicFlow is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OptimTemplates.  If not, see <https://www.gnu.org/licenses/>.
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef OptimT_GAABSTRACT_HPP
-#define OptimT_GAABSTRACT_HPP
+#ifndef Heu_GAABSTRACT_HPP
+#define Heu_GAABSTRACT_HPP
 
-namespace OptimT {
+namespace Heu {
 
 /**
  * @brief The GAAbstract class declares 4 operator functions and related reloaded functions.
@@ -112,13 +112,13 @@ public:
     static const bool HasParameters=false;
 };
 
-#define OptimT_MAKE_GAABSTRACT_TYPES \
+#define Heu_MAKE_GAABSTRACT_TYPES \
 using initializeFun = typename Base_t::initializeFun; \
 using fitnessFun = typename Base_t::fitnessFun; \
 using crossoverFun = typename Base_t::crossoverFun; \
 using mutateFun = typename Base_t::mutateFun; \
 using ArgsType = typename Base_t::ArgsType;
 
-}   //  OptimT
+}   //  Heu
 
-#endif  //  OptimT_GAABSTRACT_HPP
+#endif  //  Heu_GAABSTRACT_HPP
