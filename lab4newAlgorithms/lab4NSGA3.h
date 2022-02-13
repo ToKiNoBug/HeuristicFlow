@@ -39,7 +39,7 @@ static const size_t ObjNum=3;
 class testNSGA3
     : public Heu::NSGABase<Eigen::Array<double,VarDim,1>,
         ObjNum,
-        Eigen::Array<double,ObjNum,1>,
+        Heu::Eigen,
         Heu::FITNESS_LESS_BETTER,
         Heu::RECORD_FITNESS,
         Heu::PARETO_FRONT_CAN_MUTATE>
@@ -56,7 +56,7 @@ public:
 
     using Base_t = Heu::NSGABase<Eigen::Array<double,VarDim,1>,
     ObjNum,
-    Eigen::Array<double,ObjNum,1>,
+    Heu::Eigen,
     Heu::FITNESS_LESS_BETTER,
     Heu::RECORD_FITNESS,
     Heu::PARETO_FRONT_CAN_MUTATE>;

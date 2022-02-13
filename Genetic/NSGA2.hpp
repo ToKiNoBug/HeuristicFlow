@@ -25,8 +25,6 @@ This file is part of HeuristicFlow.
 namespace Heu
 {
 
-
-
 /**
    *  @brief NSGA2 MOGA solver. Suitable for not too many objectives.
    *
@@ -53,7 +51,7 @@ template<typename Var_t,
 class NSGA2
     : public NSGA2Base<Var_t,
                     ObjNum,
-                    stdVecD_t<ObjNum>,
+                    DVO,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
@@ -62,12 +60,11 @@ class NSGA2
 public:
     using Base_t = NSGA2Base<Var_t,
                     ObjNum,
-                    stdVecD_t<ObjNum>,
+                    DVO,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
                     Args_t>;
-    using Fitness_t = stdVecD_t<ObjNum>;
     Heu_MAKE_NSGABASE_TYPES
 
     NSGA2() {
@@ -107,7 +104,7 @@ class NSGA2<Var_t,
             Args_t>
     : public NSGA2Base<Var_t,
                     ObjNum,
-                    EigenVecD_t<ObjNum>,
+                    DoubleVectorOption::Eigen,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
@@ -116,12 +113,11 @@ class NSGA2<Var_t,
 public:
     using Base_t =NSGA2Base<Var_t,
                     ObjNum,
-                    EigenVecD_t<ObjNum>,
+                    DoubleVectorOption::Eigen,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
                     Args_t>;
-    using Fitness_t = EigenVecD_t<ObjNum>;
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = typename Base_t::congestComposeFun;
@@ -174,55 +170,6 @@ public:
     }
 
 protected:
-
-    ///whether A strong domainates B
-    static bool Eig_isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
-        bool isNotWorse,isBetter;
-        if constexpr (isGreaterBetter==FITNESS_GREATER_BETTER) {
-            isNotWorse=((*A)>=(*B)).all();
-            isBetter=((*A)>(*B)).any();
-        }
-        else {
-            isNotWorse=((*A)<=(*B)).all();
-            isBetter=((*A)<(*B)).any();
-        }
-        return isNotWorse&&isBetter;
-    } //isStrongDomain
-
-    //calculate domainedByNum
-    virtual void calculateDominatedNum(infoUnitBase_t ** pop,
-        const size_t popSizeBefore) const {
-#ifdef Heu_NSGA2_DO_PARALLELIZE
-        static const size_t thN=OtGlobal::threadNum();
-#pragma omp parallel for
-        for(size_t begIdx=0;begIdx<thN;begIdx++) {
-
-            for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
-                pop[ed]->domainedByNum=0;
-                for(size_t er=0;er<popSizeBefore;er++) {
-                    if(er==ed)
-                        continue;
-                    pop[ed]->domainedByNum+=
-                            Eig_isStrongDomain(&(pop[er]->iterator->_Fitness),
-                                           &(pop[ed]->iterator->_Fitness));
-                }
-            }
-        }
-
-#else
-        for(size_t ed=0;ed<popSizeBefore;ed++) {
-            pop[ed]->domainedByNum=0;
-            for(size_t er=0;er<popSizeBefore;er++) {
-                if(er==ed)
-                    continue;
-                pop[ed]->domainedByNum+=
-                        Eig_isStrongDomain(&(pop[er]->iterator->_Fitness),
-                                       &(pop[ed]->iterator->_Fitness));
-            }
-        }
-#endif
-
-    }
 
 private:
 

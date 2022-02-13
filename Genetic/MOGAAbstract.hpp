@@ -45,20 +45,21 @@ enum PFOption : unsigned char {
   */
 template<typename Var_t,
         size_t ObjNum,
-        typename Fitness_t,
+        DoubleVectorOption DVO,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t>
 class MOGAAbstract
-    : public GABase<Var_t,Fitness_t,rOpt,Args_t>
+    : public GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t>
 {
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
 
-    using Base_t = GABase<Var_t,Fitness_t,rOpt,Args_t>;
+    using Base_t = GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t>;
     Heu_MAKE_GABASE_TYPES
+    using Fitness_t = FitnessVec_t<DVO,ObjNum>;
 
     ///get pareto front in vec
     inline void paretoFront(std::vector<Fitness_t> & front) const {
@@ -96,6 +97,7 @@ protected:
     ///whether A strong domainates B
     static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
         if(A==B) return false;
+        if constexpr (DVO!=Eigen) {
         uint32_t notWorseNum=0,betterNum=0;
         for(size_t objIdx=0;objIdx<A->size();objIdx++) {
             if constexpr (fOpt==FITNESS_GREATER_BETTER) {
@@ -110,6 +112,19 @@ protected:
         if(notWorseNum<A->size())
             return false;
         return betterNum>0;
+        }
+        else {
+            bool isNotWorse,isBetter;
+            if constexpr (fOpt==FITNESS_GREATER_BETTER) {
+                isNotWorse=((*A)>=(*B)).all();
+                isBetter=((*A)>(*B)).any();
+            }
+            else {
+                isNotWorse=((*A)<=(*B)).all();
+                isBetter=((*A)<(*B)).any();
+            }
+            return isNotWorse&&isBetter;
+        }
     } //isStrongDomain
 
     virtual size_t makePFCheckSum() const {
@@ -147,10 +162,15 @@ protected:
     }
 
 private:
-    
 #ifndef Heu_NO_STATICASSERT
     static_assert(std::integral_constant<bool,(ObjNum!=1)>::value,
-    "HeuristicFlow : You used less than 1 objective in NSGA2");
+    "HeuristicFlow : You assigned single objective in MOGA");
+
+#ifndef EIGEN_CORE_H
+    static_assert(DVO!=DoubleVectorOption::Eigen,
+        "Include Eigen before using Eigen arrays as Fitness types");
+#endif  //  EIGEN_CORE_H
+
 #endif
 
 };  // MOGAAbstract

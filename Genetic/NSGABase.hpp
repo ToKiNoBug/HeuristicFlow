@@ -33,19 +33,19 @@ namespace Heu {
 
 template<typename Var_t,
         size_t ObjNum,
-        typename Fitness_t,
+        DoubleVectorOption DVO,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t=void>
 class NSGABase
-    : public MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
+    : public MOGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
-    using Base_t = MOGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = MOGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
     Heu_MAKE_GABASE_TYPES
     
     /**
@@ -127,7 +127,8 @@ protected:
 
 #define Heu_MAKE_NSGABASE_TYPES \
 Heu_MAKE_GABASE_TYPES \
-using infoUnitBase_t = typename Base_t::infoUnitBase;
+using infoUnitBase_t = typename Base_t::infoUnitBase; \
+using Fitness_t = typename Base_t::Fitness_t;
 
 }   // Heu
 

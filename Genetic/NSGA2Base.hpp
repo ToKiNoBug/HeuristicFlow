@@ -35,13 +35,13 @@ enum CompareOption : int64_t {
  */
 template<typename Var_t,
         size_t ObjNum,
-        typename Fitness_t,
+        DoubleVectorOption DVO,
         FitnessOption fOpt=FITNESS_LESS_BETTER,
         RecordOption rOpt=DONT_RECORD_FITNESS,
         PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
         class Args_t=void>
 class NSGA2Base
-    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
+    :public NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA2Base() {
@@ -49,7 +49,7 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *);
@@ -133,7 +133,6 @@ public:
     public:
         /** @brief whether this gene is selected
         */
-        bool isSelected;
         Fitness_t congestion;
     };
 
@@ -176,8 +175,15 @@ protected:
 
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
-            pop.back().isSelected=false;
             pop.back().iterator=it;
+            if constexpr (ObjNum==Dynamic) {
+                if constexpr (DVO==DoubleVectorOption::Eigen) {
+                    pop.back().congestion.resize(this->objectiveNum(),1);
+                }
+                else {
+                    pop.back().congestion.resize(this->objectiveNum());
+                }
+            }
         }
 
         std::vector<infoUnit*> sortSpace(popSizeBefore);
@@ -208,12 +214,14 @@ protected:
                 unLayeredNum--;
             }
         }
-
-        this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
+        const size_t PFSize=paretoLayers.front().size();
+        if(PFSize<=this->_option.populationSize)
+            this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
                          paretoLayers.front().size());
 
 
-        std::queue<infoUnit *> selected;
+        std::unordered_set<infoUnit *> selected;
+        selected.reserve(this->_option.populationSize);
         bool needCongestion=true;
         while(true) {
             //don't need to calculate congestion
@@ -236,8 +244,7 @@ protected:
         //calculate congestion
         if(needCongestion) {
             for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                std::vector<infoUnit*>
-                        & cursortSpace=sortSpace;
+                std::vector<infoUnit*> & cursortSpace=sortSpace;
 
                 std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
 
@@ -269,16 +276,21 @@ protected:
 
         } // end applying congestion
 
-        //mark selected genes
-        while(!selected.empty()) {
-            selected.front()->isSelected=true;
-            selected.pop();
-        }
+        
         //erase unselected
-        for(infoUnit & i : pop) {
-            if(!i.isSelected) {
+        for(auto & i : pop) {
+            if(selected.find(&i)==selected.end()) {
                 this->_population.erase(i.iterator);
             }
+        }
+
+        if(PFSize>this->_option.populationSize) {
+            std::vector<const infoUnitBase_t*> PF;
+            PF.reserve(selected.size());
+            for(auto i : selected) {
+                PF.emplace_back(i);
+            }
+            this->updatePF(PF.data(),PF.size());
         }
     }
 

@@ -24,9 +24,13 @@ This file is part of HeuristicFlow.
 
 namespace Heu {
 
+/**
+ * @brief Layers of Reference points
+ * 
+ */
 enum ReferencePointOption {
-    SingleLayer,
-    DoubleLayer
+    SINGLE_LAYER,
+    DOUBLE_LAYER
 };
 
 template<typename Var_t,
@@ -80,7 +84,7 @@ template<typename Var_t,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t>
-class NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,DoubleLayer,Args_t>
+class NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,DOUBLE_LAYER,Args_t>
     : public NSGA3Abstract<Var_t,ObjNum,DVO,rOpt,pfOpt,Args_t>
 {
 public:
