@@ -14,6 +14,7 @@ Modules:
 1. [Genetic](./docs/Genetic.md)
 2. [Global](./docs/Genetic.md)
 3. [SimpleMatrix](./docs/SimpleMatrix.md)
+4. PSO
 
 
 Implemented : 
