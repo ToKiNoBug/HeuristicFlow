@@ -23,7 +23,7 @@ This file is part of HeuristicFlow.
 #include "../Global/Globals.hpp"
 #include "../Global/LogisticChaos.hpp"
 #include "../Global/TentChaos.hpp"
-#include "../Global/OptimTMaths.hpp"
+#include "../Global/HeuMaths.hpp"
 #include "../Global/TemplateFloat.hpp"
 
 #endif // GLOBAL_H

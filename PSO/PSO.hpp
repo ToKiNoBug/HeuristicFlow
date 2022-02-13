@@ -54,7 +54,6 @@ public:
         DoubleVectorOption::Std : DoubleVectorOption::Custom;
     
     void setPVRange(double pMin,double pMax,double vMax) {
-        std::cerr<<__FILE__<<" , "<<__LINE__<<std::endl;
         for(size_t i=0;i<this->dimensions();i++) {
             this->_posMin[i]=pMin;
             this->_posMax[i]=pMax;

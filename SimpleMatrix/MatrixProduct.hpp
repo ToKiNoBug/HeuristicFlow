@@ -20,7 +20,7 @@ This file is part of Heuristic.
 #ifndef Heu_MATRIXPRODUCT_HPP
 #define Heu_MATRIXPRODUCT_HPP
 
-#include "../Heuristic/Global"
+#include "../HeuristicFlow/Global"
 #include <type_traits>
 #include <assert.h>
 #include "MatrixDynamicSize.hpp"

@@ -23,7 +23,7 @@ This file is part of HeuristicFlow.
 #include <unordered_map>
 #include <unordered_set>
 #include "NSGABase.hpp"
-#include "../Heu/SimpleMatrix"
+#include "../HeuristicFlow/SimpleMatrix"
 
 namespace Heu {
 
