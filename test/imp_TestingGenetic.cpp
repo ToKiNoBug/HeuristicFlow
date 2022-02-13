@@ -654,6 +654,7 @@ cout<<"];"<<endl;
 
 template<size_t M,size_t N,size_t realM=M>
 void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
+    static_assert(realM<2,"actural objective amount mustn't be less than 2")
     f->resize(realM,1);
     auto xm=x->template bottomRows<N-realM+1>();
     f->template topRows<realM-1>()=x->template topRows<realM-1>();
@@ -672,12 +673,12 @@ void testNSGA3_DTLZ7() {
 static const size_t N=5;
 static const size_t M=3;
 using solver_t = NSGA3<Eigen::Array<double,N,1>,
-    Dynamic,
+    M,
     DoubleVectorOption::Eigen,
     //FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
-    SingleLayer,
+    SINGLE_LAYER,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
@@ -723,16 +724,16 @@ auto mFun=[](Var_t * v) {
 };
 
 GAOption opt;
-opt.maxGenerations=500;
+opt.maxGenerations=2000;
 opt.maxFailTimes=-1;
-opt.populationSize=200;
+opt.populationSize=800;
 opt.crossoverProb=0.8;
 opt.mutateProb=0.05;
 
 solver_t solver;
-solver.setObjectiveNum(M);
+//solver.setObjectiveNum(M);
 solver.setiFun(iFun);
-solver.setfFun(DTLZ7<Dynamic,N,M>);
+solver.setfFun(DTLZ7<M,N,M>);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);

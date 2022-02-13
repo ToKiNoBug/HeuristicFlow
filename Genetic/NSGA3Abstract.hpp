@@ -110,7 +110,10 @@ protected:
             pfLayers.back().emplace_back(i);
         }
 
-        this->updatePF((const infoUnitBase_t **)pfLayers.front().data(),pfLayers.front().size());
+        const size_t PFSize=pfLayers.front().size();
+
+        if(PFSize<=this->_option.populationSize)
+            this->updatePF((const infoUnitBase_t **)pfLayers.front().data(),pfLayers.front().size());
 
         std::unordered_set<infoUnit3*> selected;
         selected.reserve(this->_option.populationSize);
@@ -160,6 +163,16 @@ protected:
                 this->_population.erase(i->iterator);
             }
         }
+
+        if(PFSize>this->_option.populationSize) {
+            std::vector<const infoUnitBase_t*> PF;
+            PF.reserve(selected.size());
+            for(auto i : selected) {
+                PF.emplace_back(i);
+            }
+            this->updatePF(PF.data(),PF.size());
+        }
+
     }   //  end selection
 
     /// to be reloaded

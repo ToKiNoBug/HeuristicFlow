@@ -133,7 +133,6 @@ public:
     public:
         /** @brief whether this gene is selected
         */
-        bool isSelected;
         Fitness_t congestion;
     };
 
@@ -176,7 +175,6 @@ protected:
 
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
-            pop.back().isSelected=false;
             pop.back().iterator=it;
             if constexpr (ObjNum==Dynamic) {
                 if constexpr (DVO==DoubleVectorOption::Eigen) {
@@ -216,12 +214,14 @@ protected:
                 unLayeredNum--;
             }
         }
-
-        this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
+        const size_t PFSize=paretoLayers.front().size();
+        if(PFSize<=this->_option.populationSize)
+            this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
                          paretoLayers.front().size());
 
 
-        std::queue<infoUnit *> selected;
+        std::unordered_set<infoUnit *> selected;
+        selected.reserve(this->_option.populationSize);
         bool needCongestion=true;
         while(true) {
             //don't need to calculate congestion
@@ -276,16 +276,21 @@ protected:
 
         } // end applying congestion
 
-        //mark selected genes
-        while(!selected.empty()) {
-            selected.front()->isSelected=true;
-            selected.pop();
-        }
+        
         //erase unselected
-        for(infoUnit & i : pop) {
-            if(!i.isSelected) {
+        for(auto & i : pop) {
+            if(selected.find(&i)==selected.end()) {
                 this->_population.erase(i.iterator);
             }
+        }
+
+        if(PFSize>this->_option.populationSize) {
+            std::vector<const infoUnitBase_t*> PF;
+            PF.reserve(selected.size());
+            for(auto i : selected) {
+                PF.emplace_back(i);
+            }
+            this->updatePF(PF.data(),PF.size());
         }
     }
 

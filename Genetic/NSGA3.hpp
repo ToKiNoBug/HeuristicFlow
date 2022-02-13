@@ -27,10 +27,10 @@ namespace Heu {
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
-        RecordOption rOpt,
-        PFOption pfOpt,
-        ReferencePointOption rpOpt,
-        class Args_t>
+        RecordOption rOpt=DONT_RECORD_FITNESS,
+        PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
+        ReferencePointOption rpOpt=ReferencePointOption::SINGLE_LAYER,
+        class Args_t=void>
 class NSGA3 : public NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t>
 {
 public:
