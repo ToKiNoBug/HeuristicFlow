@@ -35,14 +35,13 @@ template<typename Var_t,
         PFOption pfOpt,
         class Args_t>
 class NSGA3Abstract
-    : public NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>
+    : public NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA3Abstract() {};
     virtual ~NSGA3Abstract() {};
-    using Base_t = NSGABase<Var_t,ObjNum,FitnessVec_t<DVO,ObjNum>,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>;
     Heu_MAKE_NSGABASE_TYPES
-    using Fitness_t = FitnessVec_t<DVO,ObjNum>;
     using RefPointIdx_t = size_t;
 
 #ifdef EIGEN_CORE_H
@@ -151,29 +150,6 @@ protected:
             ///Associate procedure
             associate(selected);
             associate(*FlPtr,&Fl);
-
-            /*
-            std::cout<<"FLC=[";
-            for(const auto & i : Fl) {
-                std::cout<<i.first<<',';
-            }
-            std::cout<<"];\n\n"<<std::endl;
-
-            std::cout<<"FLV=[";
-            for(const auto & i : Fl) {
-                std::cout<<i.second->iterator->_Fitness.transpose()<<';';
-            }
-            std::cout<<"]';\n\n"<<std::endl;
-
-            std::cout<<"FLtV=[";
-            for(const auto & i : Fl) {
-                std::cout<<i.second->translatedFitness.transpose()<<';';
-            }
-            std::cout<<"]';\n\n"<<std::endl;
-
-            exit(114);
-            */
-
 
             nichePreservation(&selected,&Fl,&refPoints);
         }
@@ -483,11 +459,6 @@ private:
         
     }
 #ifndef Heu_NO_STATICASSERT
-#ifndef EIGEN_CORE_H
-    static_assert(DVO!=DoubleVectorOption::Eigen,
-        "Include Eigen before using Eigen arrays as Fitness types");
-#endif  //  EIGEN_CORE_H
-    
     static_assert(DVO!=DoubleVectorOption::Custom,
         "Using custom double container as fitness isn't supported");
 #endif  //  Heu_NO_STATICASSERT
@@ -496,7 +467,6 @@ private:
 #define Heu_MAKE_NSGA3ABSTRACT_TYPES \
 Heu_MAKE_NSGABASE_TYPES \
 using RefMat_t = typename Base_t::RefMat_t; \
-using Fitness_t = typename Base_t::Fitness_t; \
 using infoUnit3 = typename Base_t::infoUnit3; \
 using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 }

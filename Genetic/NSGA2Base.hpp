@@ -35,13 +35,13 @@ enum CompareOption : int64_t {
  */
 template<typename Var_t,
         size_t ObjNum,
-        typename Fitness_t,
+        DoubleVectorOption DVO,
         FitnessOption fOpt=FITNESS_LESS_BETTER,
         RecordOption rOpt=DONT_RECORD_FITNESS,
         PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
         class Args_t=void>
 class NSGA2Base
-    :public NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>
+    :public NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
 {
 public:
     NSGA2Base() {
@@ -49,7 +49,7 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = NSGABase<Var_t,ObjNum,Fitness_t,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *);
