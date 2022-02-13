@@ -94,6 +94,7 @@ protected:
             sortSpace[i]=pop.data()+i;
         }
 
+
         this->calculateDominatedNum((infoUnitBase_t**)sortSpace.data(),popSizeBef);
 
         std::list<std::vector<infoUnit3*>> pfLayers;
@@ -139,7 +140,6 @@ protected:
             ///Normalize procedure
             std::unordered_multimap<RefPointIdx_t,infoUnit3*> Fl;
             Fl.reserve(FlPtr->size());
-
             normalize(selected,*FlPtr);
             std::unordered_map<RefPointIdx_t,size_t> refPoints;
             refPoints.reserve(referencePoses.cols());

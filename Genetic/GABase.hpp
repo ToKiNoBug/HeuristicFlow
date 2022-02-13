@@ -19,7 +19,6 @@ This file is part of HeuristicFlow.
 
 #ifndef Heu_GABASE_H
 #define Heu_GABASE_H
-#include <iostream>
 #include "./GAOption.hpp"
 #include <tuple>
 #include <vector>
@@ -67,6 +66,8 @@ public:
     ///Gene type for Var
     class Gene {
     public:
+    using fastFitness_t = typename
+        std::conditional<(sizeof(Fitness_t)>sizeof(double)),const Fitness_t &,Fitness_t>::type;
         Var_t self;
         bool isCalculated() const {
             return _isCalculated;
@@ -74,12 +75,14 @@ public:
         void setUncalculated() {
             _isCalculated=false;
         }
-        Fitness_t fitness() const {
+        fastFitness_t fitness() const {
             return _Fitness;
         }
 
         bool _isCalculated;
         Fitness_t _Fitness;
+
+
     };
     ///list iterator to Gene
     using GeneIt_t = typename std::list<Gene>::iterator;

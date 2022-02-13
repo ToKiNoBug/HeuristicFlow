@@ -178,6 +178,14 @@ protected:
             pop.emplace_back();
             pop.back().isSelected=false;
             pop.back().iterator=it;
+            if constexpr (ObjNum==Dynamic) {
+                if constexpr (DVO==DoubleVectorOption::Eigen) {
+                    pop.back().congestion.resize(this->objectiveNum(),1);
+                }
+                else {
+                    pop.back().congestion.resize(this->objectiveNum());
+                }
+            }
         }
 
         std::vector<infoUnit*> sortSpace(popSizeBefore);
@@ -236,8 +244,7 @@ protected:
         //calculate congestion
         if(needCongestion) {
             for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                std::vector<infoUnit*>
-                        & cursortSpace=sortSpace;
+                std::vector<infoUnit*> & cursortSpace=sortSpace;
 
                 std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
 

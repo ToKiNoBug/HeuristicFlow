@@ -121,7 +121,7 @@ protected:
         }
 
         for(auto i : selected) {
-            ideal=ideal.min(ideal,i->iterator->_Fitness);
+            ideal=ideal.min(i->iterator->_Fitness);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
                 if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
@@ -130,7 +130,7 @@ protected:
         }
 
         for(auto i : Fl) {
-            ideal=ideal.min(ideal,i->iterator->_Fitness);
+            ideal=ideal.min(i->iterator->_Fitness);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
                 if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
@@ -182,7 +182,7 @@ protected:
         auto distance=s_sub_norm_wTsw.colwise().squaredNorm();
 
         int minIdx;
-        *dist=distance.mincoeff(&minIdx);
+        *dist=distance.minCoeff(&minIdx);
         return minIdx;
     }
 
