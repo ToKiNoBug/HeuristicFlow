@@ -269,7 +269,7 @@ void testTSP(const uint32_t PointNum) {
     }
 
     auto crossoverFun
-            =Heu::GADefaults<vector<double>,Args_t>::
+            =Heu::GADefaults<vector<double>,DoubleVectorOption::Std,Args_t>::
                 cFunXd<Heu::DivCode::Half>;
 
     auto mutateFun=[](vector<double>*x,const Args_t*) {
@@ -510,7 +510,7 @@ void testNSGA2_Binh_and_Korn() {
     };
 
     solver_t::crossoverFun cFun =
-    Heu::GADefaults<std::array<double,2>,void>::
+    Heu::GADefaults<std::array<double,2>,DoubleVectorOption::Std>::
             cFunNd<Heu::encode<1,5>::code>;
 
     auto mFun=[](std::array<double,2> * x) {
@@ -711,7 +711,7 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
 };
 
 
-auto cFun=GADefaults<Var_t>::cFunXd<encode<1,10>::code>;
+auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunXd<encode<1,10>::code>;
 
 
 auto mFun=[](Var_t * v) {

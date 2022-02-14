@@ -49,7 +49,7 @@ namespace Heu_pri
 /**
  * @brief Partial specialization for GADefault struct without args
  */
-template<typename Var_t>
+template<typename Var_t,DoubleVectorOption dvo>
 struct imp_GADefaults_noParam
 {
     /**
@@ -65,11 +65,18 @@ struct imp_GADefaults_noParam
         static const double constexpr r=decode<_r>::real; \
         static_assert(r>0,"r shouldn't be less than 0"); \
         static_assert(r<1,"r shouldn't be greater than 1"); \
-        const size_t N=p1->size(); \
-        for(size_t i=0;i<N;i++) { \
+        if constexpr (dvo==DoubleVectorOption::Eigen) { \
+            *c1=r**p1+(1-r)**p2; \
+            *c2=r**p2+(1-r)**p1; \
+        } \
+        else { \
+            const size_t N=p1->size(); \
+            for(size_t i=0;i<N;i++) { \
             c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i)); \
             c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i)); \
+        } \
         }
+        
 
         Heu_PRIVATE_IMP_cFunNd
     }
@@ -103,14 +110,22 @@ struct imp_GADefaults_noParam
 #define Heu_PRIVATE_IMP_cFunSwapNs \
         const size_t N=p1->size(); \
         const size_t idx=randD(0,N); \
-        for(size_t i=0;i<N;i++) { \
-            if(i<idx) { \
-                c1->operator[](i)=p1->operator[](i); \
-                c2->operator[](i)=p2->operator[](i); \
-            } \
-            else { \
-                c1->operator[](i)=p2->operator[](i); \
-                c2->operator[](i)=p1->operator[](i); \
+        if constexpr (dvo==DoubleVectorOption::Eigen) { \
+            c1->topRows(idx)=p1->topRows(idx); \
+            c2->topRows(idx)=p2->topRows(idx); \
+            c1->bottomRows(N-idx)=p2->bottomRows(N-idx); \
+            c2->bottomRows(N-idx)=p1->bottomRows(N-idx); \
+        } \
+        else { \
+            for(size_t i=0;i<N;i++) { \
+                if(i<idx) { \
+                    c1->operator[](i)=p1->operator[](i); \
+                    c2->operator[](i)=p2->operator[](i); \
+                } \
+                else { \
+                    c1->operator[](i)=p2->operator[](i); \
+                    c2->operator[](i)=p1->operator[](i); \
+                } \
             } \
         }
 
@@ -179,13 +194,12 @@ struct imp_GADefaults_noParam
  * @tparam Args_t type of other parameters in genetic solver
  */
 
-template<typename Var_t,class Args_t>
+template<typename Var_t,class Args_t,DoubleVectorOption dvo>
 struct imp_GADefaults_withParam
 {
     static_assert(!std::is_same<Args_t,void>::value,
         "The compiler run into a incorrect branch of partial specialization");
 
-    using imp=imp_GADefaults_noParam<Var_t>;
 
 
     /**
@@ -275,12 +289,12 @@ struct imp_GADefaults_withParam
 
 
 
-template<typename Var_t,class Args_t=void>
+template<typename Var_t,DoubleVectorOption dvo=DoubleVectorOption::Std,class Args_t=void>
 using GADefaults =
     typename std::conditional<
     std::is_same<Args_t,void>::value,
-    Heu_pri::imp_GADefaults_noParam<Var_t>,
-    Heu_pri::imp_GADefaults_withParam<Var_t,Args_t>
+    Heu_pri::imp_GADefaults_noParam<Var_t,dvo>,
+    Heu_pri::imp_GADefaults_withParam<Var_t,Args_t,dvo>
     >::type;
 
 
