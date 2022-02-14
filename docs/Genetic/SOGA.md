@@ -1,7 +1,7 @@
 # SOGA
 Single-object genetic solver.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [SOGA.hpp](../../Genetic/SOGA.hpp) |
 | Inherits from: | [GABase](./GABase.md) |
@@ -10,7 +10,7 @@ Single-object genetic solver.
 
 ## Defination
 ```cpp
-template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args> class OptimT::SOGA;
+template<typename Var_t,FitnessOption isGreaterBetter,RecordOption Record,class ...Args> class Heu::SOGA;
 ```
 <br>
 

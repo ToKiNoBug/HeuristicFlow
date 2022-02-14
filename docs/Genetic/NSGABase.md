@@ -1,7 +1,7 @@
 # NSGABase
 Base class for nondominated sorting series of genetic algorithm solvers, like NSGA2 and NSGA3.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [NSGABase.hpp](../../Genetic/NSGABase.hpp) |
 | Inherits from: | [MOGABase](./MOGABase.md) |
@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class OptimT::NSGABase;
+        class ...Args> class Heu::NSGABase;
 ```
 <br>
 
@@ -48,7 +48,7 @@ Some other functions are inherited from [MOGABase](./MOGABase.md).
 ## Macros
 | Name | Usage |
 | :----: | :----: |
-| [`OptimT_MAKE_NSGABASE_TYPES`](#optimt_make_nsgabase_types) | to be expanded |
+| [`Heu_MAKE_NSGABASE_TYPES`](#Heu_make_nsgabase_types) | to be expanded |
 
 <br>
 
@@ -61,7 +61,7 @@ Base class for nondominated sorting series of genetic algorithm solvers, like NS
 ### `infoUnitBase`
 Defination:
 ```cpp
-struct OptimT::NSGABase::infoUnitBase
+struct Heu::NSGABase::infoUnitBase
 {
 public:
     bool isSelected;
@@ -93,11 +93,11 @@ Function to update Pareto front. If element count in PF doesn't change, checksum
 <br>
 
 ## Macro details
-### `OptimT_MAKE_NSGABASE_TYPES`
+### `Heu_MAKE_NSGABASE_TYPES`
 Defination:
 ```cpp
-#define OptimT_MAKE_NSGABASE_TYPES \
-OptimT_MAKE_GABASE_TYPES \
+#define Heu_MAKE_NSGABASE_TYPES \
+Heu_MAKE_GABASE_TYPES \
 using infoUnitBase_t = typename Base_t::infoUnitBase;
 ```
-Replacement for `OptimT_MAKE_GABASE_TYPES` used in derived class of this.
+Replacement for `Heu_MAKE_GABASE_TYPES` used in derived class of this.

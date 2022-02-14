@@ -1,7 +1,7 @@
 # MatrixDynamicSize
 Col-major dynamic-size 2d array template implementation.
 
-| Header: | `#include<SimpleMatrix>` |
+| Header: | `#include<HeuristicFlow/SimpleMatrix>` |
 | ----: | :---- |
 | Location: | [MatrixDynamicSize.hpp](../../SimpleMatrix/MatrixDynamicSize.hpp) |
 
@@ -9,7 +9,7 @@ Col-major dynamic-size 2d array template implementation.
 
 ## Defination
 ```cpp
-template<class Scalar_t> class OptimT::MatrixDynamicSize;
+template<class Scalar_t> class Heu::MatrixDynamicSize;
 ```
 <br>
 

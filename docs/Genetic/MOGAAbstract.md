@@ -1,7 +1,7 @@
 # MOGAAbstract
 An abstract base class for multiple objective genetic algorithm solvers.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [MOGAAbstract.hpp](../../Genetic/MOGAAbstract.hpp) |
 | Inherits from: | [GABase](./GABase.md) |
@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class OptimT::MOGAAbstract;
+        class ...Args> class Heu::MOGAAbstract;
 ```
 <br>
 
@@ -79,7 +79,7 @@ A container to store fitness value of all objectives must be somehow an array of
 2. Has a constant member function named `size()` to show element amount in this array.
 
 ### `ObjNum`
-Number of objectives. If a integer equals to 1 provided, static assertion emerged. Use `OptimT::Dynamic`(`0`) to mark that number of objectives are determined at runtime.
+Number of objectives. If a integer equals to 1 provided, static assertion emerged. Use `Heu::Dynamic`(`0`) to mark that number of objectives are determined at runtime.
 
 ### `pfOpt`
 Whether to protect the Pareto front from mutation or not.

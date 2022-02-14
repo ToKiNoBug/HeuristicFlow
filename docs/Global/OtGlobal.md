@@ -1,7 +1,7 @@
 # OtGlobal
 Empty class to put global functions and non-constant-variables.
 
-| Header: | `#include<OtGlobal>` |
+| Header: | `#include<HeuristicFlow/Global>` |
 | ----: | :---- |
 | Location: | [Globals.hpp](../../Global/Globals.hpp) |
 

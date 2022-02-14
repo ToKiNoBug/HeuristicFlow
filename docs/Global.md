@@ -2,5 +2,5 @@
 
 Global variables and functions are put here.
 
-## Struct/Classes
+## Structs/Classes
 1. [OtGlobal](./Global/OtGlobal.md)

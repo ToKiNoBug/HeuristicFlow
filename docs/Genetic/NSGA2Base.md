@@ -1,7 +1,7 @@
 # NSGA2Base
 Direct base class of NSGA2.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [NSGA2Base.hpp](../../Genetic/NSGA2Base.hpp) |
 | Inherits from: | [NSGABase](./NSGABase.md) |
@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class OptimT::NSGA2Base;
+        class ...Args> class Heu::NSGA2Base;
 ```
 <br>
 
@@ -61,7 +61,7 @@ Some other functions are inherited from [MOGABase](./MOGABase.md).
 ## Macros
 | Name | Usage |
 | :----: | :----: |
-| [`OptimT_NSGA2_DO_PARALLELIZE`](#optimt_nsga2_do_parallelize) | conditional compiling |
+| [`Heu_NSGA2_DO_PARALLELIZE`](#Heu_nsga2_do_parallelize) | conditional compiling |
 
 <br>
 
@@ -85,8 +85,8 @@ Function pointer to calculate congestion.
 
 ### `infoUnit`
 ```cpp
-struct OptimT::NSGA2Base::infoUnit
-    : public OptimT::NSGABase::infoUnitBase
+struct Heu::NSGA2Base::infoUnit
+    : public Heu::NSGABase::infoUnitBase
 {
 public:
     Fitness_t congestion;
@@ -188,7 +188,7 @@ If `objIdx` is an non-negative integer, it's a comparison function to sort accor
 
 Some template metaprogramming tricks will be used to generate an static constant array of function pointers consists of different instances of this function template with parameter ranging from 0 to `ObjNum-1`.
 
-If objective number is dynamic, `ObjNum-1` will be replaced by 255(see [`OptimT_MOGA_RTObjNum_MaxObjNum`](MOGABase.md)). 
+If objective number is dynamic, `ObjNum-1` will be replaced by 255(see [`Heu_MOGA_RTObjNum_MaxObjNum`](MOGABase.md)). 
 
 I believe in most cases no body will tries to solve a multi-objective problem with more than 255 objectives using NSGA-II.
 
@@ -214,5 +214,5 @@ Really complicated, isn't it?
 <br>
 
 ## Macro details
-### `OptimT_NSGA2_DO_PARALLELIZE`
-This macro should only be defined if you defined `OptimT_DO_PARALLELIZE` before including OptimTemplates and you want some multi-threading boostings for `NSGA2`'s selection operator.
+### `Heu_NSGA2_DO_PARALLELIZE`
+This macro should only be defined if you defined `Heu_DO_PARALLELIZE` before including HeuristicFlow and you want some multi-threading boostings for `NSGA2`'s selection operator.

@@ -1,7 +1,7 @@
 # GABase
 Abstrcat base class of genetic algorithm solvers.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [GABase.hpp](./../../Genetic/GABase.hpp) |
 | Inherited by : | [SOGA](./SOGA.md), ,[MOGAAbstract](./MOGAAbstract.md), [MOGABase](./MOGABase.md), [NSGA2Base](./NSGA2Base.md),[NSGA2](./NSGA2.md) |
@@ -10,7 +10,7 @@ Abstrcat base class of genetic algorithm solvers.
 
 ## Defination
 ```cpp
-template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args> class OptimT::GABase;
+template<typename Var_t,typename Fitness_t,RecordOption Record,class ...Args> class Heu::GABase;
 ```
 <br>
 
@@ -124,8 +124,8 @@ Use `RECORD_FITNESS`(`true`) here to enable recording function, or use `DONT_REC
 ### `Args...`
 Extra custom parameters. They can be some datas to calculate the fitness of a Var_tiable like trainning data set, or some other parameters like maximum and minimum value of `Var_t`, or even trainning rate. Also you can leave it blank. Several examples:
 ```cpp
-OptimT::GABase<std::array<double,16>,pathL_t,true,DotsData_t> * tspSolver;
-OptimT::GABase<BPNetwork_t,loss_t,false,DataSet_t> * networkTrainner;
+Heu::GABase<std::array<double,16>,pathL_t,true,DotsData_t> * tspSolver;
+Heu::GABase<BPNetwork_t,loss_t,false,DataSet_t> * networkTrainner;
 ```
 
 ### `ArgsType`

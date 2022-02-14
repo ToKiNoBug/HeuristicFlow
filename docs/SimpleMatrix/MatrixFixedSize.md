@@ -1,7 +1,7 @@
 # MatrixFixedSize
 Col-major fixed-size 2d array template implementation.
 
-| Header: | `#include<SimpleMatrix>` |
+| Header: | `#include<HeuristicFlow/SimpleMatrix>` |
 | ----: | :---- |
 | Location: | [MatrixFixedSize.hpp](../../SimpleMatrix/MatrixFixedSize.hpp) |
 
@@ -9,7 +9,7 @@ Col-major fixed-size 2d array template implementation.
 
 ## Defination
 ```cpp
-template<class Scalar_t,size_t Rows,size_t Cols> class MatrixFixedSize;
+template<class Scalar_t,size_t Rows,size_t Cols> class Heu::MatrixFixedSize;
 ```
 <br>
 

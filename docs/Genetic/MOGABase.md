@@ -1,7 +1,7 @@
 # MOGABase
 Base class for multiple objective genetic solvers.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [MOGABase.hpp](../../Genetic/MOGABase.hpp) |
 | Inherits from: | [MOGAAbstract](./MOGAAbstract.md) |
@@ -17,7 +17,7 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class ...Args> class OptimT::MOGABase;
+        class ...Args> class Heu::MOGABase;
 ```
 <br>
 
@@ -46,7 +46,7 @@ Some other members are inherited from [MOGAAbstract](./MOGAAbstract.md).
 ## Macros
 | Name | Usage |
 | :----: | :----: |
-| [`OptimT_MOGA_RTObjNum_MaxObjNum`](#optimt_moga_rtobjnum_maxobjnum) | value |
+| [`Heu_MOGA_RTObjNum_MaxObjNum`](#Heu_moga_rtobjnum_maxobjnum) | value |
 
 <br>
 
@@ -61,7 +61,7 @@ Lots of code-copying can be avoided by such inheritance and parital specializati
 ### `_objectiveNum`
 Numbers of objectives. 
 
-**This member only exists when template parameter `ObjNum` is `OptimT::Dynamic`(`0`).**
+**This member only exists when template parameter `ObjNum` is `Heu::Dynamic`(`0`).**
 
 <br>
 
@@ -73,21 +73,21 @@ Default constructor.
 Default destrcutor.
 
 ### `objectiveNum() const`
-Get number of objectives. If template parameter `ObjNum` is `OptimT::Dynamic`(`0`), this function returns the value of member [`_objectiveNum`](#_objectivenum), otherwise it returns the value of `ObjNum`.
+Get number of objectives. If template parameter `ObjNum` is `Heu::Dynamic`(`0`), this function returns the value of member [`_objectiveNum`](#_objectivenum), otherwise it returns the value of `ObjNum`.
 
 ### `setObjectiveNum(size_t)`
 Set the number of objectives.
 
-**This function only exists when template parameter `ObjNum` is `OptimT::Dynamic`(`0`).**
+**This function only exists when template parameter `ObjNum` is `Heu::Dynamic`(`0`).**
 
 <br>
 
 ## Macro details
-### `OptimT_MOGA_RTObjNum_MaxObjNum`
+### `Heu_MOGA_RTObjNum_MaxObjNum`
 Defination:
 ```cpp
-#ifndef OptimT_MOGA_RTObjNum_MaxObjNum
-#define OptimT_MOGA_RTObjNum_MaxObjNum 255
+#ifndef Heu_MOGA_RTObjNum_MaxObjNum
+#define Heu_MOGA_RTObjNum_MaxObjNum 255
 #endif
 ```
 

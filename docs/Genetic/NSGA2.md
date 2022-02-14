@@ -1,7 +1,7 @@
 # NSGA2
 Nondomainance sorting genetic algorithm II template class.
 
-| Header: | `#include<OptimTemplates/Genetic>` |
+| Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
 | Location: | [NSGA2.hpp](../../Genetic/NSGA2.hpp) |
 | Inherits from: | [NSGA2Base](./NSGA2Base.md) |
@@ -16,7 +16,7 @@ template<typename Var_t,
          FitnessOption isGreaterBetter,
          RecordOption Record,
          PFOption ProtectPF,
-         class ...Args> class OptimT::NSGA2;
+         class ...Args> class Heu::NSGA2;
 ```
 <br>
 
@@ -43,7 +43,7 @@ All members are inherited from [NSGA2Base](./NSGA2Base.md).
 ## Detailed description
 NSGA-II is a template for multi-objective genetic algorithm based on Pareto Optimality. It selects by nondomainance sorting, and you can order whether mutation happens on pareto front in template.
 
-If template parameter `DVO` is `OptimT::DoubleVectorOption::Eigen`, a parital specialization implementation will be activated. This speical version reloads many functions with a boosted type. **However, exposed API isn't changed.**
+If template parameter `DVO` is `Heu::DoubleVectorOption::Eigen`, a parital specialization implementation will be activated. This speical version reloads many functions with a boosted type. **However, exposed API isn't changed.**
 
 <br>
 
