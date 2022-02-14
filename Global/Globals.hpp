@@ -114,22 +114,22 @@ const float pinfF=1.0f/0.0f;
 ///Infinet value for double
 const double pinfD=1.0/0.0;
 
-///negative infinet value for floa
+///negative infinet value for float
 const float nInfF=-pinfF;
 
 ///negative infinet value for double
 const double ninfD=-pinfD;
 
 ///Empty class to put global variable and functions, instances of it is meanningless
-class OtGlobal
+class HfGlobal
 {
 public:
     inline static uint32_t threadNum() {
         return concurrency;
     }
 private:
-    OtGlobal() {};
-    ~OtGlobal() {};
+    HfGlobal() {};
+    ~HfGlobal() {};
     static uint32_t concurrency;
 };
 
@@ -137,7 +137,7 @@ private:
 #define Heu_MAKE_GLOBAL \
 std::mt19937 Heu::global_mt19937(Heu::HeuPrivate::makeRandSeed()); \
 Heu::LogisticChaos Heu::global_logistic(randD()); \
-uint32_t Heu::OtGlobal::concurrency=std::thread::hardware_concurrency();
+uint32_t Heu::HfGlobal::concurrency=std::thread::hardware_concurrency();
 
 }
 

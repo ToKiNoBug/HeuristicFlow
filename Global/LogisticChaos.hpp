@@ -22,10 +22,11 @@ This file is part of HeuristicFlow.
 
 #include <cstdint>
 #include "Macros.hpp"
+#include "ChaosBase.hpp"
 
 namespace Heu {
 
-class LogisticChaos
+class LogisticChaos : public ChaoseBase<double>
 {
 public:
     LogisticChaos() {

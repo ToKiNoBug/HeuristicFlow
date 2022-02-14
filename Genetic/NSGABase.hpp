@@ -69,7 +69,7 @@ protected:
     virtual void calculateDominatedNum(infoUnitBase ** pop,
         const size_t popSizeBefore) const {
 #ifdef Heu_NSGA_USE_THREADS
-        static const size_t thN=OtGlobal::threadNum();
+        static const size_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {
 

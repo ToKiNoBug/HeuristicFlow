@@ -193,7 +193,7 @@ protected:
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
-        static const uint32_t thN=OtGlobal::threadNum();
+        static const uint32_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
             for(uint32_t i=begIdx;i<_population.size();i+=thN) {

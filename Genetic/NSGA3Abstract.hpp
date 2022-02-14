@@ -282,7 +282,7 @@ protected:
             eachDistance[c]=distance;
         }
 #else
-        static const size_t thN=OtGlobal::threadNum();
+        static const size_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {
             

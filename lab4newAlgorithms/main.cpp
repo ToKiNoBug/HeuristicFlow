@@ -28,25 +28,6 @@ using namespace Eigen;
 using namespace Heu;
 
 int main() {
-    static const double threshold=10000000000000000ULL;
-    static const uint64_t res=Heu::amplifier<12345>::result;
-    static const double decode=res/threshold;
-
-
-    static const bool exceedsTh=(res>=threshold);
-
-
-    static const bool excedds10Th=((res)>=10ULL*threshold);
-
-    static const PowCode pc=powEncode<-12345678,255>::code;
-
-    static const double val=powDecode<pc>::real;
-
-
-    return 0;
-
-    testNSGA3Expri();
-
-
+    
     return 0;
 }

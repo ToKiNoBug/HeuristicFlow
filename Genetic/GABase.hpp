@@ -218,7 +218,7 @@ protected:
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
-        static const uint32_t thN=OtGlobal::threadNum();
+        static const uint32_t thN=HfGlobal::threadNum();
         std::vector<Gene*> tasks;
         tasks.resize(0);
         tasks.reserve(_population.size());
