@@ -25,6 +25,11 @@ This file is part of HeuristicFlow.
 #include <cmath>
 namespace Heu {
 
+template<typename A>
+inline A square(A a) {
+    return a*a;
+}
+
 inline double sign(double x) {
     if(x>0) return 1;
     if(x<0) return -1;

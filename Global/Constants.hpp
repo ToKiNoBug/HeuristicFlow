@@ -17,21 +17,28 @@ This file is part of HeuristicFlow.
 
 */
 
-#ifndef Heu_CHAOSBASE_HPP
-#define Heu_CHAOSBASE_HPP
+#ifndef Heu_CONSTANTS_HPP
+#define Heu_CONSTANTS_HPP
 
-#include <type_traits>
+#include <stdint.h>
 
 namespace Heu {
 
-template<typename ele_ts>
-class ChaoseBase
-{
-protected:
-    ChaoseBase() {};
-    ~ChaoseBase() {};
-};
+///Size identifier for dynamic size (fitness or var)
+const size_t Dynamic = 0;
 
-};  //  namespace Heu
+///Infinet value for float
+const float pinfF=1.0f/0.0f;
 
-#endif  //  Heu_CHAOSBASE_HPP
+///Infinet value for double
+const double pinfD=1.0/0.0;
+
+///negative infinet value for float
+const float nInfF=-pinfF;
+
+///negative infinet value for double
+const double ninfD=-pinfD;
+
+}
+
+#endif // Heu_CONSTANTS_HPP

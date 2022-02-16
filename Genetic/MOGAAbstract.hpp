@@ -94,38 +94,7 @@ protected:
     size_t prevPFCheckSum;
     std::unordered_set<const Gene*> _pfGenes;
 
-    ///whether A strong domainates B
-    static bool isStrongDomain(const Fitness_t * A,const Fitness_t * B) {
-        if(A==B) return false;
-        if constexpr (DVO!=Eigen) {
-        uint32_t notWorseNum=0,betterNum=0;
-        for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if constexpr (fOpt==FITNESS_GREATER_BETTER) {
-                notWorseNum+=((*A)[objIdx]>=(*B)[objIdx]);
-                betterNum+=((*A)[objIdx]>(*B)[objIdx]);
-            }
-            else {                
-                notWorseNum+=((*A)[objIdx]<=(*B)[objIdx]);
-                betterNum+=((*A)[objIdx]<(*B)[objIdx]);
-            }
-        }
-        if(notWorseNum<A->size())
-            return false;
-        return betterNum>0;
-        }
-        else {
-            bool isNotWorse,isBetter;
-            if constexpr (fOpt==FITNESS_GREATER_BETTER) {
-                isNotWorse=((*A)>=(*B)).all();
-                isBetter=((*A)>(*B)).any();
-            }
-            else {
-                isNotWorse=((*A)<=(*B)).all();
-                isBetter=((*A)<(*B)).any();
-            }
-            return isNotWorse&&isBetter;
-        }
-    } //isStrongDomain
+
 
     virtual size_t makePFCheckSum() const {
         std::vector<const Gene*> pfvec;

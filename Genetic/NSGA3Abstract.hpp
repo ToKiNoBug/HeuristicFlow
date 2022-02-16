@@ -269,7 +269,7 @@ protected:
         for(size_t c=0;c<referencePoses.cols();c++) {
             double normW=0,w_T_s=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                normW+=OT_square(referencePoses(r,c));
+                normW+=square(referencePoses(r,c));
                 w_T_s+=s[r]*referencePoses(r,c);
             }
 
@@ -277,7 +277,7 @@ protected:
 
             double distance=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                distance+=OT_square(s[r]-w_T_s_div_normW*referencePoses(r,c));
+                distance+=square(s[r]-w_T_s_div_normW*referencePoses(r,c));
             }
             eachDistance[c]=distance;
         }
@@ -289,7 +289,7 @@ protected:
             for(size_t c=begIdx;c<referencePoses.cols();c+=thN) {
             double normW=0,w_T_s=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                normW+=OT_square(referencePoses(r,c));
+                normW+=square(referencePoses(r,c));
                 w_T_s+=s[r]*referencePoses(r,c);
             }
 
@@ -297,7 +297,7 @@ protected:
 
             double distance=0;
             for(size_t r=0;r<referencePoses.rows();r++) {
-                distance+=OT_square(s[r]-w_T_s_div_normW*referencePoses(r,c));
+                distance+=square(s[r]-w_T_s_div_normW*referencePoses(r,c));
             }
             eachDistance[c]=distance;
         }

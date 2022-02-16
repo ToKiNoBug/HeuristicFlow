@@ -412,7 +412,7 @@ void testNSGA2_Kursawe() {
     auto fFun=[](const std::array<double,3> * x,std::array<double,2> *f) {
         double f1=0,f2=0;
         for(int i=0;i<2;i++) {
-            f1+=-10*exp(-0.2*sqrt(OT_square(x->operator[](i))+OT_square(x->operator[](i+1))));
+            f1+=-10*exp(-0.2*sqrt(square(x->operator[](i))+square(x->operator[](i+1))));
         }
         for(int i=0;i<3;i++) {
             f2+=pow(abs(x->operator[](i)),0.8)+5*sin(x->operator[](i)*x->operator[](i)*x->operator[](i));
@@ -497,10 +497,10 @@ void testNSGA2_Binh_and_Korn() {
         double & f2=f->operator[](1);
         const double x=_x->operator[](0),y=_x->operator[](1);
         f1=4*(x*x+y*y);
-        f2=OT_square(x-5)+OT_square(y-5);
+        f2=square(x-5)+square(y-5);
 
-        double constraint_g1=OT_square(x-5)+y*y-25;
-        double constraint_g2=7.7-(OT_square(x-8)+OT_square(y+3));
+        double constraint_g1=square(x-5)+y*y-25;
+        double constraint_g2=7.7-(square(x-8)+square(y+3));
         if(constraint_g1>0) {
             f1+=1e4+constraint_g1;
         }

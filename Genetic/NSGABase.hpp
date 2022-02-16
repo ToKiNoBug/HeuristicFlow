@@ -79,7 +79,7 @@ protected:
                     if(er==ed)
                         continue;
                     pop[ed]->domainedByNum+=
-                            Base_t::isStrongDomain(&(pop[er]->iterator->_Fitness),
+                            Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(pop[er]->iterator->_Fitness),
                                            &(pop[ed]->iterator->_Fitness));
                 }
             }
@@ -92,7 +92,7 @@ protected:
                 if(er==ed)
                     continue;
                 pop[ed]->domainedByNum+=
-                        Base_t::isStrongDomain(&(pop[er]->iterator->_Fitness),
+                        Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(pop[er]->iterator->_Fitness),
                                        &(pop[ed]->iterator->_Fitness));
             }
         }

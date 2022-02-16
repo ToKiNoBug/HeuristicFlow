@@ -263,7 +263,7 @@ void runNSGA2() {
     algo.setfFun(    [](const Var_t * v,std::array<double,2>*fitness) {
         const double & x=v->at(0),y=v->at(1);
         fitness->at(0)=4*x*x+4*y*y;
-        fitness->at(1)=OT_square(x-5)+OT_square(y-5);
+        fitness->at(1)=square(x-5)+square(y-5);
         });
 
     algo.setcFun(    [](const Var_t * p1,const Var_t * p2,Var_t * c1,Var_t * c2) {
