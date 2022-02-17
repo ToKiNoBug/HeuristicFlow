@@ -45,4 +45,6 @@ void testNSGA2_Kursawe();
 void testNSGA2_ZDT3();
 
 void testNSGA3_DTLZ7();
+
+void searchPF();
 #endif // DEF_TESTINGGENETIC_H

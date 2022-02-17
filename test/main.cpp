@@ -30,6 +30,7 @@ Heu_MAKE_GLOBAL
 int main() {
     //testNSGA2_Binh_and_Korn();
     testNSGA3_DTLZ7();
+    //searchPF();
     system("pause");
     return 0;
 }

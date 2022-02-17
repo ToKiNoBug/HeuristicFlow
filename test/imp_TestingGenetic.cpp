@@ -100,8 +100,8 @@ void testAckley_withRecord() {
             x->operator[](mutateIdx)*=-1;
         for(uint32_t idx=0;idx<x->size();idx++) {
             auto & var=x->operator[](idx);
-            var=min(var,get<MaxIdx>(*a)[idx]);
-            var=max(var,get<MinIdx>(*a)[idx]);
+            var=std::min(var,get<MaxIdx>(*a)[idx]);
+            var=std::max(var,get<MinIdx>(*a)[idx]);
         }
     });
 
@@ -277,8 +277,8 @@ void testTSP(const uint32_t PointNum) {
         if(randD()<0.5) {//modify one element's value
             double & v=x->operator[](std::rand()%permL);
             v+=randD(-0.01,0.01);
-            v=min(v,1.0);
-            v=max(v,0.0);
+            v=std::min(v,1.0);
+            v=std::max(v,0.0);
         }
         else {
             const uint32_t flipB=std::rand()%(permL-1);
@@ -433,8 +433,8 @@ void testNSGA2_Kursawe() {
     auto mFun=[](std::array<double,3> * x) {
         const size_t idx=size_t(randD(0,3))%3;
         x->operator[](idx)+=0.1*randD(-1,1);
-        x->operator[](idx)=min(x->operator[](idx),5.0);
-        x->operator[](idx)=max(x->operator[](idx),-5.0);
+        x->operator[](idx)=std::min(x->operator[](idx),5.0);
+        x->operator[](idx)=std::max(x->operator[](idx),-5.0);
     };
 
     GAOption opt;
@@ -516,10 +516,10 @@ void testNSGA2_Binh_and_Korn() {
     auto mFun=[](std::array<double,2> * x) {
         const size_t idx=size_t(randD(0,2))%2;
         x->operator[](idx)+=0.1*randD(-1,1);
-        x->operator[](0)=min(x->operator[](0),5.0);
-        x->operator[](0)=max(x->operator[](0),0.0);
-        x->operator[](1)=min(x->operator[](1),3.0);
-        x->operator[](1)=max(x->operator[](1),0.0);
+        x->operator[](0)=std::min(x->operator[](0),5.0);
+        x->operator[](0)=std::max(x->operator[](0),0.0);
+        x->operator[](1)=std::min(x->operator[](1),3.0);
+        x->operator[](1)=std::max(x->operator[](1),0.0);
     };
 
     GAOption opt;
@@ -671,22 +671,23 @@ void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
 
 void testNSGA3_DTLZ7() {
 static const size_t N=20;
-static const size_t M=3;
-using solver_t = NSGA3<Eigen::Array<double,N,1>,
+static const size_t M=6;
+using solver_t = NSGA2<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
-    //FITNESS_LESS_BETTER,
+    FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
-    SINGLE_LAYER,
+    //DOUBLE_LAYER,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
 using Fitness_t = solver_t::Fitness_t;
 
 auto iFun=[](Var_t * v) {
-v->setRandom(N,1);
-*v=(*v+1)/2;
+v->resize(N,1);
+for(double & i : *v)
+    i=randD();
 };
 
 auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
@@ -711,14 +712,15 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
 };
 
 
-auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunXd<encode<1,10>::code>;
+auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code>;
 
 
 auto mFun=[](Var_t * v) {
     const size_t idx=randD(0,v->size());
-    v->operator[](idx)+=0.05*randD(-1,1);
-    v->operator[](idx)=std::min(v->operator[](idx),1.0);
-    v->operator[](idx)=std::max(v->operator[](idx),0.0);
+    double & p=v->operator[](idx);
+    p+=0.5*randD(-1,1);
+    p=std::min(p,1.0);
+    p=std::max(p,0.0);
 };
 
 GAOption opt;
@@ -735,7 +737,7 @@ solver.setfFun(DTLZ7<M,N,M>);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);
-solver.setReferencePointPrecision(7); cout<<"RPCount="<<solver.referencePointCount()<<endl;
+//solver.setReferencePointPrecision(6,4); cout<<"RPCount="<<solver.referencePointCount()<<endl;
 solver.initializePop();
 
 //cout<<"RP=["<<solver.referencePoints()<<"]';\n\n\n"<<endl;
@@ -755,7 +757,68 @@ cout<<"];\n\n\n"<<endl;
 
 }
 
+template<size_t M,size_t N,size_t precision>
+void searchPFfun(
+    size_t nIdx,
+    Eigen::Array<double,N,1> * var,
+    vector<pair<Eigen::Array<double,M,1>,size_t>> * dst) {
+
+    static_assert(precision>=2,"You should assign at least 2 on a single dim");
+    if(nIdx+1>=N) {
+        Eigen::Array<double,M,1> f;
+        for(size_t i=0;i<=precision;i++) {
+            var->operator[](nIdx)=double(i)/precision;
+            DTLZ7<M,N>(var,&f);
+            dst->emplace_back(make_pair(f,0ULL));
+        }
+        return;
+    }
+
+    for(size_t i=0;i<=precision;i++) {
+        var->operator[](nIdx)=double(i)/precision;
+        searchPFfun<M,N,precision>(nIdx+1,var,dst);
+    }
+
+}
+
 void searchPF() {
     static const size_t N=5,M=3;
     auto fun=DTLZ7<M,N>;
+    using Var_t = Eigen::Array<double,N,1>;
+    using Fitness_t = Eigen::Array<double,M,1>;
+    using pair_t = pair<Fitness_t,size_t>;
+    vector<pair_t> pop;
+    static const size_t precision=10;
+    pop.reserve(pow(N,precision));
+    Var_t v;
+
+    cout<<"traversing"<<endl;
+    clock_t c=clock();
+    searchPFfun<M,N,precision>(0,&v,&pop);
+    c=clock()-c;
+    cout<<"traversing cost "<<c<<" ms"<<endl;
+
+    cout<<"Nondominated sorting"<<endl;
+    c=clock();
+    static const size_t thN=2;
+#pragma omp parallel for
+    for(size_t begIdx=0;begIdx<thN;begIdx++) {
+        for(size_t idx=begIdx;idx<pop.size();idx+=thN) {
+            pop[idx].second=0;
+            for(size_t er=0;er<pop.size();er++) {
+                pop[idx].second
+                    +=Pareto<M,DoubleVectorOption::Eigen,FITNESS_LESS_BETTER>::
+                    isStrongDominate(&pop[er].first,&pop[idx].first);
+            }
+        }
+    }
+    c=clock()-c;
+    cout<<"NS cost "<<c<<" ms"<<endl;
+
+    cout<<"StdPFV=[";
+    for(const auto & i : pop) {
+        if(i.second==0)
+            cout<<i.first.transpose()<<";\n";
+    }
+    cout<<"];\n\n\n"<<endl;
 }

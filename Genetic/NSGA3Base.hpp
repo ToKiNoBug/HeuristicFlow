@@ -68,6 +68,7 @@ protected:
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> rfP;
         this->computeReferencePointPoses(this->objectiveNum(),_precision,&rfP);
+        std::shuffle(rfP.begin(),rfP.end(),global_mt19937);
         for(size_t c=0;c<this->referencePoses.cols();c++) {
             for(size_t r=0;r<this->referencePoses.rows();r++) {
                 this->referencePoses(r,c)=rfP[c][r];
@@ -113,7 +114,7 @@ public:
 
     size_t referencePointCount() const {
         return NchooseK(_innerPrecision+this->objectiveNum()-1,_innerPrecision)
-            +NchooseK(_outerPrecision,this->objectiveNum()-1,_outerPrecision);
+            +NchooseK(_outerPrecision+this->objectiveNum()-1,_outerPrecision);
     }
 
 protected:
@@ -123,6 +124,8 @@ protected:
     void makeReferencePoses() {
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> irfP,orfP;        
+        std::shuffle(irfP.begin(),irfP.end(),global_mt19937);
+        std::shuffle(orfP.begin(),orfP.end(),global_mt19937);
         this->computeReferencePointPoses(this->objectiveNum(),_innerPrecision,&irfP);
         this->computeReferencePointPoses(this->objectiveNum(),_outerPrecision,&orfP);
 
