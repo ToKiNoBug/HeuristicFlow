@@ -21,6 +21,7 @@ This file is part of HeuristicFlow.
 #define Heu_MOGAABSTRACT_HPP
 
 #include "./GABase.hpp"
+#include "../EAGlobal/Pareto.hpp"
 #include <queue>
 #include <unordered_set>
 

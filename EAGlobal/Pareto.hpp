@@ -20,9 +20,9 @@ This file is part of HeuristicFlow.
 #ifndef Heu_PARETO_HPP
 #define Heu_PARETO_HPP
 
-#include "Enumerations.hpp"
-#include "Types.hpp"
-#include "Constants.hpp"
+#include "../Global/Enumerations.hpp"
+#include "../Global/Types.hpp"
+#include "../Global/Constants.hpp"
 
 namespace Heu {
 template<size_t ObjNum,DoubleVectorOption dvo,FitnessOption fOpt>

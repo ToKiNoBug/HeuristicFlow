@@ -22,6 +22,8 @@ This file is part of Heuristic.
 
 #include <stdint.h>
 #include <array>
+#include <assert.h>
+
 namespace Heu {
 
 template<class Scalar_t,size_t Rows,size_t Cols>
@@ -104,6 +106,11 @@ public:
 
     inline const Scalar_t * data() const noexcept {
         return array.data();
+    }
+
+    inline static const void resize(size_t _r,size_t _c) {
+        assert(_r==Rows);
+        assert(_c==Cols);
     }
 
     ///Deep copy

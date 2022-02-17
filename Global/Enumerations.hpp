@@ -93,6 +93,11 @@ inline const char * Enum2String(DoubleVectorOption e) {
     }
 }
 
+enum BoxShape {
+    RECTANGLE_BOX,
+    SQUARE_BOX
+};
+
 }
 
 #endif // ENUMERATIONS_HPP
