@@ -672,13 +672,13 @@ void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
 void testNSGA3_DTLZ7() {
 static const size_t N=20;
 static const size_t M=6;
-using solver_t = NSGA2<Eigen::Array<double,N,1>,
+using solver_t = NSGA3<Eigen::Array<double,N,1>,
     M,
     DoubleVectorOption::Eigen,
-    FITNESS_LESS_BETTER,
+    //FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
-    //DOUBLE_LAYER,
+    DOUBLE_LAYER,
     void>;
 
 using Var_t = Eigen::Array<double,N,1>;
@@ -724,9 +724,12 @@ auto mFun=[](Var_t * v) {
 };
 
 GAOption opt;
-opt.maxGenerations=2000;
+cout<<"maxGenerations=";
+cin>>opt.maxGenerations;
+
 opt.maxFailTimes=-1;
-opt.populationSize=800;
+cout<<"populationSize=";
+cin>>opt.populationSize;
 opt.crossoverProb=0.8;
 opt.mutateProb=0.1;
 
@@ -737,7 +740,7 @@ solver.setfFun(DTLZ7<M,N,M>);
 solver.setcFun(cFun);
 solver.setmFun(mFun);
 solver.setOption(opt);
-//solver.setReferencePointPrecision(6,4); cout<<"RPCount="<<solver.referencePointCount()<<endl;
+solver.setReferencePointPrecision(6,4); cout<<"RPCount="<<solver.referencePointCount()<<endl;
 solver.initializePop();
 
 //cout<<"RP=["<<solver.referencePoints()<<"]';\n\n\n"<<endl;
