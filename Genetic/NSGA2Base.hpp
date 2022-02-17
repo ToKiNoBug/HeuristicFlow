@@ -248,6 +248,10 @@ protected:
 
                 std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
 
+                const double scale=std::abs(cursortSpace.front()->iterator->_Fitness[objIdx]
+                        -cursortSpace.back()->iterator->_Fitness[objIdx])
+                    +1e-100;
+
                 cursortSpace.front()->congestion[objIdx]=Heu::pinfD;
                 cursortSpace.back()->congestion[objIdx]=Heu::pinfD;
 
@@ -257,7 +261,7 @@ protected:
                     cursortSpace[idx]->congestion[objIdx]=std::abs(
                                 cursortSpace[idx-1]->iterator->_Fitness[objIdx]
                                -cursortSpace[idx+1]->iterator->_Fitness[objIdx]
-                                );
+                                )/scale;
                 }
             } // end sort on objIdx
 
