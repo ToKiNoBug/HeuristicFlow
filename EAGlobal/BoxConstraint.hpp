@@ -55,6 +55,8 @@ public:
 #endif  //  #ifdef EIGEN_CORE_H
 
 private:
+    static_assert(!std::is_same<Scalar_t,bool>::value,
+        "For boolean box, use class BooleanBox");
     static_assert(DVO!=DoubleVectorOption::Custom,
         "Box constraint for custom array types isn't provided");
     static_assert(DIM!=1,
@@ -111,7 +113,7 @@ public:
         return _max;
     }
 
-    static const bool Heu_isInheritedFromBoxBase=true;
+    static const bool Heu_isBox=true;
     static const bool Heu_isSquareBox=false;
 
 protected:
@@ -156,7 +158,7 @@ public:
         return _max_s;
     }
 
-    static const bool Heu_isInheritedFromBoxBase=true;
+    static const bool Heu_isBox=true;
     static const bool Heu_isSquareBox=true;
 protected:
     Scalar_t _min_s;
@@ -178,6 +180,10 @@ public:
 
     inline constexpr size_t varDim() const {
         return DIM;
+    }
+    
+    inline void setVarDim(size_t d) const {
+        assert(d==DIM);
     }
 
 protected:
@@ -258,7 +264,8 @@ public:
         _learningRate=lr;
     }
 
-    static const bool Heu_isBoxFloat=true;
+    static const EncodeType encodeType=RealEncoding;
+    
 protected:
     Scalar_t _learningRate;
 
@@ -306,9 +313,13 @@ public:
         return _editMat;
     }
 
+    static const EncodeType encodeType=SymbolicEncoding;
 protected:
     EditMat_t _editMat;
 };
+
+
+
 
 }   //  namespace Heu
 

@@ -98,6 +98,12 @@ enum BoxShape {
     SQUARE_BOX
 };
 
+enum EncodeType {
+    RealEncoding,
+    BinaryEncoding,
+    SymbolicEncoding
+};
+
 }
 
 #endif // ENUMERATIONS_HPP
