@@ -684,11 +684,7 @@ using solver_t = NSGA3<Eigen::Array<double,N,1>,
 using Var_t = Eigen::Array<double,N,1>;
 using Fitness_t = solver_t::Fitness_t;
 
-auto iFun=[](Var_t * v) {
-v->resize(N,1);
-for(double & i : *v)
-    i=randD();
-};
+auto iFun=GADefaults<Var_t,DoubleVectorOption::Eigen,void>::iFunNd<>;
 
 auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
     f->resize(M,1);

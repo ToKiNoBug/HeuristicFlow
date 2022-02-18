@@ -14,18 +14,18 @@ template<typename VarEle,
     BoxShape BS=SQUARE_BOX,
     FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
     RecordOption Record=DONT_RECORD_FITNESS,
-    class Args_t=void>
+    class otherArgs_t=void>
 class SOGABox
-    : public SOGA<typename BoxConstraint<VarEle,VARDIM,DVO,Args_t,BS>::Var_t,
+    : public SOGA<typename BoxConstraint<VarEle,VARDIM,DVO,otherArgs_t,BS>::Var_t,
         isGreaterBetter,
         Record,
-        BoxConstraint<VarEle,VARDIM,DVO,Args_t,BS>>
+        BoxConstraint<VarEle,VARDIM,DVO,otherArgs_t,BS>>
 {
 public:
-    using Base_t = SOGA<typename BoxConstraint<VarEle,VARDIM,DVO,Args_t,BS>::Var_t,
+    using Base_t = SOGA<typename BoxConstraint<VarEle,VARDIM,DVO,otherArgs_t,BS>::Var_t,
         isGreaterBetter,
         Record,
-        BoxConstraint<VarEle,VARDIM,DVO,Args_t,BS>>;
+        BoxConstraint<VarEle,VARDIM,DVO,otherArgs_t,BS>>;
     
     Heu_MAKE_GABASE_TYPES
 

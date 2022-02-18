@@ -52,6 +52,24 @@ namespace Heu_pri
 template<typename Var_t,DoubleVectorOption dvo>
 struct imp_GADefaults_noParam
 {
+
+    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    inline static void iFunNd(Var_t * p) {
+        static const double min=decode<_min>::real;
+        static const double max=decode<_max>::real;
+        //static const constexpr bool isValid=(max>min);
+        //static_assert(isValid,"Max should be greater than min");
+
+        for(size_t idx=0;idx<p->size();idx++) {
+            p->operator[](idx)=randD(min,max);
+        }
+    }
+
+    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    inline static void iFunNf(Var_t * p) {
+        iFunNd<_min,_max>(p);
+    }
+
     /**
      * @brief Default crossover function for fixed-size float/double array/vector
      *        (Genetic without args)
@@ -200,7 +218,40 @@ struct imp_GADefaults_withParam
     static_assert(!std::is_same<Args_t,void>::value,
         "The compiler run into a incorrect branch of partial specialization");
 
+    template<BoxShape BS=SQUARE_BOX>
+    inline static void iFunNd(Var_t * p,Args_t * arg) {
+        static_assert(Args_t::Heu_isBox,
+            "Args_t in GADefaults' paramater is not a box constraint type");
+        static_assert(Args_t::encodeType==EncodeType::RealEncoding,
+            "Args_t in GADefaults' paramater is real encoded");
 
+        if constexpr (Args_t::Heu_isSquareBox) {
+            for(auto & i : *p)
+                i=randD(arg->min(),arg->max());
+        }
+        else {
+            for(size_t idx=0;idx<arg->varDim();idx++)
+                p->operator[](idx)=randD(arg->min()[idx],arg->max()[idx]);
+        }
+
+    }
+
+    template<BoxShape BS=SQUARE_BOX>
+    inline static void iFunNf(Var_t * p,Args_t * arg) {
+        iFunNd<BS>(p,arg);
+    }
+
+    template<BoxShape BS=SQUARE_BOX>
+    inline static void iFunXd(Var_t * p,Args_t * arg) {
+        p->resize(arg->varDim());
+        iFunNd<BS>(p,arg);
+    }
+
+    template<BoxShape BS=SQUARE_BOX>
+    inline static void iFunXf(Var_t * p,Args_t * arg) {
+        p->resize(arg->varDim());
+        iFunNf<BS>(p,arg);
+    }
 
     /**
      * @brief Default crossover function for fixed-size float/double array/vector
