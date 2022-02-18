@@ -168,27 +168,19 @@ protected:
             pop.back().closestIdx=-1;
         }
 
-        std::vector<infoUnit3*> sortSpace(popSizeBef);
+        this->sortSpace.resize(popSizeBef);
         for(size_t i=0;i<popSizeBef;i++) {
-            sortSpace[i]=pop.data()+i;
+            this->sortSpace[i]=pop.data()+i;
         }
 
-        this->calculateDominatedNum((infoUnitBase_t**)sortSpace.data(),popSizeBef);
+        this->calculateDominatedNum();
+        this->divideLayers();
 
-        std::list<std::vector<infoUnit3*>> pfLayers;
-        std::sort(sortSpace.begin(),sortSpace.end(),sortByDominatedNum);
+        const size_t PFSize=this->pfLayers.front().size();
 
-        size_t curDM=-1;
-        for(auto i : sortSpace) {
-            if(curDM!=i->domainedByNum) {
-                curDM=i->domainedByNum;
-                pfLayers.emplace_back();
-                pfLayers.back().reserve(popSizeBef);
-            }
-            pfLayers.back().emplace_back(i);
-        }
-
-        this->updatePF((const infoUnitBase_t **)pfLayers.front().data(),pfLayers.front().size());
+        if(PFSize<=this->_option.populationSize)
+            this->updatePF((const infoUnitBase_t **)this->pfLayers.front().data(),
+                           this->pfLayers.front().size());
 
         std::unordered_set<infoUnit3*> selected;
         selected.reserve(this->_option.populationSize);
@@ -201,16 +193,16 @@ protected:
                 needRefPoint=false;
                 break;
             }
-            if(selected.size()+pfLayers.front().size()>this->_option.populationSize) {
+            if(selected.size()+this->pfLayers.front().size()>this->_option.populationSize) {
                 needRefPoint=true;
-                FlPtr=&pfLayers.front();
+                FlPtr=(typeof(FlPtr))&this->pfLayers.front();
                 break;
             }
 
-            for(infoUnit3* i : pfLayers.front()) {
-                selected.emplace(i);
+            for(infoUnitBase_t* i : this->pfLayers.front()) {
+                selected.emplace((infoUnit3*)i);
             }
-            pfLayers.pop_front();
+            this->pfLayers.pop_front();
 
         }
 
@@ -237,8 +229,8 @@ protected:
         }
 
         //erase all unselected genes
-        for(auto i : sortSpace) {
-            if(selected.find(i)==selected.end()) {
+        for(auto i : this->sortSpace) {
+            if(selected.find((infoUnit3*)i)==selected.end()) {
                 this->_population.erase(i->iterator);
             }
         }

@@ -153,7 +153,7 @@ protected:
         if constexpr(objIdx==CompareByCongestion) {
             return A->congestion[0]>B->congestion[0];
         }
-        ///compare by paretoLayers
+        ///compare by this->pfLayers
         if constexpr(objIdx==CompareByDominantedBy) {
             return A->domainedByNum<B->domainedByNum;
         }
@@ -186,38 +186,19 @@ protected:
             }
         }
 
-        std::vector<infoUnit*> sortSpace(popSizeBefore);
         //make sortspace
         for(size_t i=0;i<popSizeBefore;i++) {
-            sortSpace[i]=pop.data()+i;
+            this->sortSpace[i]=pop.data()+i;
         }
 
-        this->calculateDominatedNum((infoUnitBase_t **)sortSpace.data(),popSizeBefore);
+        this->calculateDominatedNum();
 
-        //sort by paretoLayers
-        std::sort(sortSpace.begin(),sortSpace.end(),
-                universialCompareFun<CompareByDominantedBy>);
-
-        std::list<std::vector<infoUnit *>> paretoLayers;
-        //seperate them into layers
-        {
-            size_t unLayeredNum=popSizeBefore;
-            size_t prevDomainedByNum=-1;
-            for(const auto i : sortSpace) {
-                if(i->domainedByNum!=prevDomainedByNum) {
-                    paretoLayers.emplace_back();
-                    paretoLayers.back().clear();
-                    paretoLayers.back().reserve(unLayeredNum);
-                    prevDomainedByNum=i->domainedByNum;
-                }
-                paretoLayers.back().emplace_back(i);
-                unLayeredNum--;
-            }
-        }
-        const size_t PFSize=paretoLayers.front().size();
+        this->divideLayers();
+        
+        const size_t PFSize=this->pfLayers.front().size();
         if(PFSize<=this->_option.populationSize)
-            this->updatePF((const infoUnitBase_t **)paretoLayers.front().data(),
-                         paretoLayers.front().size());
+            this->updatePF((const infoUnitBase_t **)(this->pfLayers.front().data()),
+                         this->pfLayers.front().size());
 
 
         std::unordered_set<infoUnit *> selected;
@@ -230,37 +211,38 @@ protected:
                 break;
             }
             //need to calculate congestion
-            if(selected.size()+paretoLayers.front().size()>this->_option.populationSize) {
+            if(selected.size()+this->pfLayers.front().size()>this->_option.populationSize) {
                 needCongestion=true;
                 break;
             }
             //emplace every element of this layer into selected
-            for(const auto i : paretoLayers.front()) {
-                selected.emplace(i);
+            for(const auto i : this->pfLayers.front()) {
+                selected.emplace((infoUnit*)i);
             }
-            paretoLayers.pop_front();
+            this->pfLayers.pop_front();
         }
 
         //calculate congestion
         if(needCongestion) {
             for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                std::vector<infoUnit*> & cursortSpace=sortSpace;
 
-                std::sort(cursortSpace.begin(),cursortSpace.end(),fitnessCmpFuns[objIdx]);
+                std::sort((infoUnit**)(this->sortSpace.data()),
+                            (infoUnit**)(this->sortSpace.data()+this->sortSpace.size()),
+                          fitnessCmpFuns[objIdx]);
 
-                const double scale=std::abs(cursortSpace.front()->iterator->_Fitness[objIdx]
-                        -cursortSpace.back()->iterator->_Fitness[objIdx])
+                const double scale=std::abs(this->sortSpace.front()->iterator->_Fitness[objIdx]
+                        -this->sortSpace.back()->iterator->_Fitness[objIdx])
                     +1e-100;
 
-                cursortSpace.front()->congestion[objIdx]=Heu::pinfD;
-                cursortSpace.back()->congestion[objIdx]=Heu::pinfD;
+                ((infoUnit*)this->sortSpace.front())->congestion[objIdx]=Heu::pinfD;
+                ((infoUnit*)this->sortSpace.back())->congestion[objIdx]=Heu::pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
 
-                    cursortSpace[idx]->congestion[objIdx]=std::abs(
-                                cursortSpace[idx-1]->iterator->_Fitness[objIdx]
-                               -cursortSpace[idx+1]->iterator->_Fitness[objIdx]
+                    ((infoUnit*)this->sortSpace[idx])->congestion[objIdx]=std::abs(
+                                this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
+                               -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
                                 )/scale;
                 }
             } // end sort on objIdx
@@ -270,11 +252,12 @@ protected:
                 i.congestion[0]=_ccFun(&i.congestion);
             }
 
-            std::sort(paretoLayers.front().begin(),paretoLayers.front().end(),
+            std::sort((infoUnit**)(this->sortSpace.data()),
+                      (infoUnit**)(this->sortSpace.data()+this->sortSpace.size()),
                       universialCompareFun<CompareByCongestion>);
             size_t idx=0;
             while(selected.size()<this->_option.populationSize) {
-                selected.emplace(paretoLayers.front()[idx]);
+                selected.emplace((infoUnit*)this->pfLayers.front()[idx]);
                 idx++;
             }
 

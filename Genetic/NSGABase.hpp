@@ -64,41 +64,69 @@ public:
         GeneIt_t iterator;
     };  //  infoUnitBase
 
+    void initializePop() {
+        sortSpace.clear();
+        sortSpace.reserve(2*this->_option.populationSize);
+        Base_t::initializePop();
+    }
+
 protected:
+    std::vector<infoUnitBase*> sortSpace;
+    std::list<std::vector<infoUnitBase*>> pfLayers;
+
+    inline static bool sortByDominatedNum(const infoUnitBase * A,const infoUnitBase* B) {
+        return (A->domainedByNum)<(B->domainedByNum);
+    }
+
     //calculate domainedByNum
-    virtual void calculateDominatedNum(infoUnitBase ** pop,
-        const size_t popSizeBefore) const {
+    virtual void calculateDominatedNum() {
+        const size_t popSizeBefore=sortSpace.size();
 #ifdef Heu_NSGA_USE_THREADS
         static const size_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
         for(size_t begIdx=0;begIdx<thN;begIdx++) {
 
             for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
-                pop[ed]->domainedByNum=0;
+                sortSpace[ed]->domainedByNum=0;
                 for(size_t er=0;er<popSizeBefore;er++) {
                     if(er==ed)
                         continue;
-                    pop[ed]->domainedByNum+=
-                            Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(pop[er]->iterator->_Fitness),
-                                           &(pop[ed]->iterator->_Fitness));
+                    sortSpace[ed]->domainedByNum+=
+                            Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(sortSpace[er]->iterator->_Fitness),
+                                           &(sortSpace[ed]->iterator->_Fitness));
                 }
             }
         }
 
 #else
         for(size_t ed=0;ed<popSizeBefore;ed++) {
-            pop[ed]->domainedByNum=0;
+            sortSpace[ed]->domainedByNum=0;
             for(size_t er=0;er<popSizeBefore;er++) {
                 if(er==ed)
                     continue;
-                pop[ed]->domainedByNum+=
-                        Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(pop[er]->iterator->_Fitness),
-                                       &(pop[ed]->iterator->_Fitness));
+                sortSpace[ed]->domainedByNum+=
+                        Pareto<ObjNum,DVO,fOpt>::isStrongDominate(&(sortSpace[er]->iterator->_Fitness),
+                                       &(sortSpace[ed]->iterator->_Fitness));
             }
         }
 #endif
 
     }   //calculateDominatedNum()
+
+    virtual void divideLayers() {
+        std::sort(sortSpace.begin(),sortSpace.end(),sortByDominatedNum);
+        pfLayers.clear();
+        const size_t popSizeBef=sortSpace.size();
+        size_t curDM=-1;
+        for(auto i : sortSpace) {
+            if(curDM!=i->domainedByNum) {
+                curDM=i->domainedByNum;
+                pfLayers.emplace_back();
+                pfLayers.back().reserve(popSizeBef);
+            }
+            pfLayers.back().emplace_back(i);
+        }
+    }
 
     void updatePF(const infoUnitBase ** pfs,const size_t curFrontSize) {
             this->_pfGenes.clear();
