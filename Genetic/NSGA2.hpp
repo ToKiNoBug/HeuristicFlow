@@ -65,6 +65,7 @@ public:
                     Record,
                     ProtectPF,
                     Args_t>;
+    using infoUnit2 = typename Base_t::infoUnit2;
     Heu_MAKE_NSGABASE_TYPES
 
     NSGA2() {
@@ -121,7 +122,7 @@ public:
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = typename Base_t::congestComposeFun;
-    using infoUnit = typename Base_t::infoUnit;
+    using infoUnit2 = typename Base_t::infoUnit2;
 
     NSGA2() {
         setCongestComposeFun();

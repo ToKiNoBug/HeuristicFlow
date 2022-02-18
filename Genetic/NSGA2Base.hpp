@@ -128,7 +128,7 @@ public:
 
     /** @brief temporary struct to store infos when selection
      */
-    struct infoUnit:public Base_t::infoUnitBase
+    struct infoUnit2 : public infoUnitBase_t
     {
     public:
         /** @brief whether this gene is selected
@@ -140,7 +140,7 @@ protected:
     congestComposeFun _ccFun;
 
     template<int64_t objIdx>
-    static bool universialCompareFun(const infoUnit * A,const infoUnit * B) {
+    static bool universialCompareFun(const infoUnit2 * A,const infoUnit2 * B) {
 #ifndef Heu_NO_STATICASSERT
     static_assert(std::integral_constant<bool,
         ((objIdx>=0)
@@ -163,14 +163,14 @@ protected:
 
     ///fast nondominated sorting
     virtual void select() {
-        using cmpFun_t = bool(*)(const infoUnit * ,const infoUnit * );
+        using cmpFun_t = bool(*)(const infoUnit2 * ,const infoUnit2 * );
         static const size_t objCapacity=
                 (ObjNum==0)?(Heu_MOGA_MaxRunTimeObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 
         const size_t popSizeBefore=this->_population.size();
-        std::vector<infoUnit> pop;
+        std::vector<infoUnit2> pop;
         pop.clear();pop.reserve(popSizeBefore);
 
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
@@ -201,7 +201,7 @@ protected:
                          this->pfLayers.front().size());
 
 
-        std::unordered_set<infoUnit *> selected;
+        std::unordered_set<infoUnit2 *> selected;
         selected.reserve(this->_option.populationSize);
         bool needCongestion=true;
         while(true) {
@@ -217,7 +217,7 @@ protected:
             }
             //emplace every element of this layer into selected
             for(const auto i : this->pfLayers.front()) {
-                selected.emplace((infoUnit*)i);
+                selected.emplace((infoUnit2 *)i);
             }
             this->pfLayers.pop_front();
         }
@@ -226,38 +226,38 @@ protected:
         if(needCongestion) {
             for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
 
-                std::sort((infoUnit**)(this->sortSpace.data()),
-                            (infoUnit**)(this->sortSpace.data()+this->sortSpace.size()),
+                std::sort((infoUnit2 **)(this->sortSpace.data()),
+                            (infoUnit2 **)(this->sortSpace.data()+this->sortSpace.size()),
                           fitnessCmpFuns[objIdx]);
 
                 const double scale=std::abs(this->sortSpace.front()->iterator->_Fitness[objIdx]
                         -this->sortSpace.back()->iterator->_Fitness[objIdx])
                     +1e-100;
 
-                ((infoUnit*)this->sortSpace.front())->congestion[objIdx]=Heu::pinfD;
-                ((infoUnit*)this->sortSpace.back())->congestion[objIdx]=Heu::pinfD;
+                ((infoUnit2 *)this->sortSpace.front())->congestion[objIdx]=Heu::pinfD;
+                ((infoUnit2 *)this->sortSpace.back())->congestion[objIdx]=Heu::pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
 
-                    ((infoUnit*)this->sortSpace[idx])->congestion[objIdx]=std::abs(
+                    ((infoUnit2 *)this->sortSpace[idx])->congestion[objIdx]=std::abs(
                                 this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
                                -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
                                 )/scale;
                 }
             } // end sort on objIdx
 
-            for(infoUnit & i : pop) {
+            for(infoUnit2 & i : pop) {
                 //store final congestion at the first congestion
                 i.congestion[0]=_ccFun(&i.congestion);
             }
 
-            std::sort((infoUnit**)(this->sortSpace.data()),
-                      (infoUnit**)(this->sortSpace.data()+this->sortSpace.size()),
+            std::sort((infoUnit2 **)(this->sortSpace.data()),
+                      (infoUnit2 **)(this->sortSpace.data()+this->sortSpace.size()),
                       universialCompareFun<CompareByCongestion>);
             size_t idx=0;
             while(selected.size()<this->_option.populationSize) {
-                selected.emplace((infoUnit*)this->pfLayers.front()[idx]);
+                selected.emplace((infoUnit2 *)this->pfLayers.front()[idx]);
                 idx++;
             }
 
@@ -285,7 +285,7 @@ protected:
 private:
     //some template metaprogramming to make a function pointer array as below:
     //universialCompareFun<0>,universialCompareFun<1>,...,universialCompareFun<ObjNum-1>
-    using fun_t = bool(*)(const infoUnit * ,const infoUnit * );
+    using fun_t = bool(*)(const infoUnit2 * ,const infoUnit2 * );
     template<int64_t cur,int64_t max>
     struct expandStruct
     {
