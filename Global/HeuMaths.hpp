@@ -70,7 +70,7 @@ namespace HeuPrivate {
         }
     };
     
-}
+}   //  namespace HeuPrivate
 
 
 template<int64_t p,typename val_t>
@@ -93,6 +93,64 @@ val_t power(val_t v,int64_t p) {
         res*=v;
     }
     return res;
+}
+
+
+namespace HeuPrivate 
+{
+
+template<typename T>
+inline T imp_min(T a,T b) {
+    if (a>=b) {
+        return b;
+    }
+    return a;
+}
+
+template<typename T,typename U,class ... Args_t>
+inline T imp_min(T a,U b,Args_t ... args) {
+    static_assert(std::is_same<T,U>::value,
+        "All parameters must be of same types");
+    return imp_min(imp_min(a,b),args...);
+}
+
+template<typename T>
+inline T imp_max(T a,T b) {
+    if (a<=b) {
+        return b;
+    }
+    return a;
+}
+
+template<typename T,typename U,class ... Args_t>
+inline T imp_max(T a,U b,Args_t ... args) {
+    static_assert(std::is_same<T,U>::value,
+        "All parameters must be of same types");
+    return imp_max(imp_max(a,b),args...);
+}
+
+}   //  namespace HeuPrivate 
+/**
+ * @brief minimum value for multiple parameters
+ */
+template<typename T,class ... Args_t>
+inline T min(T a,Args_t ... args) {
+    if constexpr (sizeof...(Args_t)>=1)
+        return HeuPrivate::imp_min(a,args...);
+    else
+        return a;
+}
+
+
+/**
+ * @brief maximum value for multiple parameters
+ */
+template<typename T,class ... Args_t>
+inline T max(T a,Args_t ... args) {
+    if constexpr (sizeof...(Args_t)>=1)
+        return HeuPrivate::imp_max(a,args...);
+    else
+        return a;
 }
 
 }
