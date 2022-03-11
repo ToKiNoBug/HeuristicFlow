@@ -52,7 +52,7 @@ public:
         return array.data();
     }
 
-    inline const iterator begin() const noexcept {
+    inline citerator begin() const noexcept {
         return array.data();
     }
 
@@ -60,7 +60,7 @@ public:
         return array.data()+size();
     }
 
-    inline const iterator end() const noexcept {
+    inline citerator end() const noexcept {
         return array.data()+size();
     }
 
@@ -108,7 +108,7 @@ public:
         return array.data();
     }
 
-    inline static const void resize(size_t _r,size_t _c) {
+    inline static void resize(size_t _r,size_t _c) {
         assert(_r==Rows);
         assert(_c==Cols);
     }
