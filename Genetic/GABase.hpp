@@ -53,9 +53,18 @@ namespace Heu {
    * 
   */
 template<typename Var_t,typename Fitness_t,
-    RecordOption Record=DONT_RECORD_FITNESS,
-    class Args_t=void>
-class GABase : public GAAbstract<Var_t,Fitness_t,Args_t>
+    RecordOption Record,
+    class Args_t,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::mutateFun _mFun_>
+class GABase :
+    public GAAbstract<Var_t,Fitness_t,Args_t> ,
+    public GAAbstract<Var_t,Fitness_t,Args_t>::template iFunBody<_iFun_>,
+    public GAAbstract<Var_t,Fitness_t,Args_t>::template fFunBody<_fFun_>,
+    public GAAbstract<Var_t,Fitness_t,Args_t>::template cFunBody<_cFun_>,
+    public GAAbstract<Var_t,Fitness_t,Args_t>::template mFunBody<_mFun_>
 {
 public:
 
@@ -89,46 +98,10 @@ public:
 
 public:
     GABase() {
-        _iFun=nullptr;
-        _fFun=nullptr;
-        _fFun=nullptr;
-        _mFun=nullptr;
     };
     virtual ~GABase() {};
 
     ///initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
-
-    inline void setiFun(initializeFun i) {
-        _iFun=i;
-    }
-
-    inline initializeFun iFun() const {
-        return _iFun;
-    }
-
-    inline void setfFun(fitnessFun f) {
-        _fFun=f;
-    }
-
-    inline fitnessFun fFun() const {
-        return _fFun;
-    }
-    
-    inline void setcFun(crossoverFun c) {
-        _cFun=c;
-    }
-
-    inline crossoverFun cFun() const {
-        return _cFun;
-    }
-
-    inline void setmFun(mutateFun m) {
-        _mFun=m;
-    }
-
-    inline mutateFun mFun() const {
-        return _mFun;
-    }
 
     inline void setOption(const GAOption & o) {
         _option=o;
@@ -144,9 +117,9 @@ public:
         for(auto & i : _population) {
 
             if constexpr (Base_t::HasParameters)
-                _iFun(&i.self,&this->_args);
+                    this->runiFun(&i.self,&this->_args);
             else
-                _iFun(&i.self);
+                this->runiFun(&i.self);
 
             i.setUncalculated();
         }
@@ -209,10 +182,6 @@ protected:
     size_t _generation;
     size_t _failTimes;
 
-    fitnessFun _fFun;
-    initializeFun _iFun;
-    crossoverFun _cFun;
-    mutateFun _mFun;
     virtual void customOptAfterInitialization() {}
     virtual void customOptAfterEachGeneration() {}
 
@@ -233,10 +202,10 @@ protected:
             for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
                 Gene * ptr=tasks[i];
                 if constexpr (Base_t::HasParameters)
-                    _fFun(&ptr->self,&this->_args,&ptr->_Fitness);
-                else {
-                    _fFun(&ptr->self,&ptr->_Fitness);
-                }
+                        this->runfFun(&ptr->self,&this->_args,&ptr->_Fitness);
+                else
+                    this->runfFun(&ptr->self,&ptr->_Fitness);
+
                 ptr->_isCalculated=true;
             }
         }
@@ -246,9 +215,9 @@ protected:
                 continue;
             }
             if constexpr (Base_t::HasParameters)
-                _fFun(&i.self,&this->_args,&i._Fitness);
+                    this->runfFun(&i.self,&this->_args,&i._Fitness);
             else
-                _fFun(&i.self,&i._Fitness);
+                this->runfFun(&i.self,&i._Fitness);
 
             i._isCalculated=true;
         }
@@ -289,9 +258,9 @@ protected:
             _population.emplace_back();
             Gene * childB=&_population.back();
             if constexpr (Base_t::HasParameters)
-                _cFun(&a->self,&b->self,&childA->self,&childB->self,&this->_args);
+                    this->runcFun(&a->self,&b->self,&childA->self,&childB->self,&this->_args);
             else
-                _cFun(&a->self,&b->self,&childA->self,&childB->self);
+                this->runcFun(&a->self,&b->self,&childA->self,&childB->self);
 
             childA->setUncalculated();
             childB->setUncalculated();
@@ -319,12 +288,18 @@ Heu_MAKE_GAABSTRACT_TYPES
    *  @tparam RecordOption  Whether the solver records fitness changelog
    *  @tparam Args_t  Type of other parameters.
   */
-template<typename Var_t,typename Fitness_t,class Args_t>
-class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t>
-    : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t>
+template<typename Var_t,typename Fitness_t,class Args_t,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Fitness_t,Args_t>::mutateFun _mFun_>
+class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>
+    : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t>;
+    using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t,
+                                            _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
 public:

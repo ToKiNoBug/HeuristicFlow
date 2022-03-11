@@ -30,13 +30,19 @@ template<typename Var_t,
         RecordOption rOpt=DONT_RECORD_FITNESS,
         PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
         ReferencePointOption rpOpt=ReferencePointOption::SINGLE_LAYER,
-        class Args_t=void>
-class NSGA3 : public NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t>
+        class Args_t=void,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
+class NSGA3 : public NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA3() {};
     virtual ~NSGA3() {};
-    using Base_t = NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t>;
+    using Base_t = NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     virtual Fitness_t bestFitness() const {
@@ -66,12 +72,19 @@ template<typename Var_t,
     RecordOption rOpt,
     PFOption pfOpt,
     ReferencePointOption rpOpt,
-    class Args_t>
-class NSGA3<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t>
-        : public NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t>
+    class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::mutateFun _mFun_>
+class NSGA3<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
+        : public NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t = NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t>;
+    using Base_t = NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     virtual Fitness_t bestFitness() const {

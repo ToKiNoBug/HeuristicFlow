@@ -49,12 +49,18 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class Args_t>
+        class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
 class MOGABase
-        : public MOGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
+        : public MOGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t = MOGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = MOGAAbstract<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
     MOGABase() {};
@@ -81,16 +87,23 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class Args_t>
-class MOGABase<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t>
-        : public MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t>
+        class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::mutateFun _mFun_>
+class MOGABase<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
+        : public MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
 
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    using Base_t = MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
     inline size_t objectiveNum() const {

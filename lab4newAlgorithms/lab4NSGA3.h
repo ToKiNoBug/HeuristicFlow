@@ -42,7 +42,7 @@ class testNSGA3
         Heu::Eigen,
         Heu::FITNESS_LESS_BETTER,
         Heu::RECORD_FITNESS,
-        Heu::PARETO_FRONT_CAN_MUTATE>
+        Heu::PARETO_FRONT_CAN_MUTATE,void,nullptr,nullptr,nullptr,nullptr>
 {
 public:
     testNSGA3() {
@@ -59,7 +59,7 @@ public:
     Heu::Eigen,
     Heu::FITNESS_LESS_BETTER,
     Heu::RECORD_FITNESS,
-    Heu::PARETO_FRONT_CAN_MUTATE>;
+    Heu::PARETO_FRONT_CAN_MUTATE,void,nullptr,nullptr,nullptr,nullptr>;
 
     Heu_MAKE_NSGABASE_TYPES
     using RefPoint = size_t;

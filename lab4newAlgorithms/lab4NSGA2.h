@@ -31,12 +31,13 @@ class testNsga2 :
         public Heu::GABase<
         std::array<double,2>,//Var_t
         std::array<double,2>,//Fitness_t
-        Heu::RECORD_FITNESS>
+        Heu::RECORD_FITNESS,void,nullptr,nullptr,nullptr,nullptr>
 {
 public:
     testNsga2();
     using Base_t =
-        GABase<std::array<double,2>,std::array<double,2>,Heu::RECORD_FITNESS>;
+        Heu::GABase<std::array<double,2>,std::array<double,2>,Heu::RECORD_FITNESS,
+            void,nullptr,nullptr,nullptr,nullptr>;
     struct infoUnit
     {
     public:

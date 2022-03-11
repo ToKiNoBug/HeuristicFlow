@@ -50,15 +50,21 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
-        class Args_t>
+        class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
 class MOGAAbstract
-    : public GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t>
+    : public GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
 
-    using Base_t = GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t>;
+    using Base_t = GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
     using Fitness_t = FitnessVec_t<DVO,ObjNum>;
 
@@ -124,7 +130,11 @@ protected:
                     }
                 }
 
-                Base_t::doMutate(this->_mFun,&it->self);
+                if constexpr(Base_t::HasParameters)
+                        this->runmFun(&it->self,&this->_args);
+                else
+                        this->runmFun(&it->self);
+
 
                 it->setUncalculated();
             }

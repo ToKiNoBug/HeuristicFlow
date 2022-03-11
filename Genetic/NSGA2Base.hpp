@@ -36,12 +36,17 @@ enum CompareOption : int64_t {
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
-        FitnessOption fOpt=FITNESS_LESS_BETTER,
-        RecordOption rOpt=DONT_RECORD_FITNESS,
-        PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
-        class Args_t=void>
+        FitnessOption fOpt,
+        RecordOption rOpt,
+        PFOption pfOpt,
+        class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA2Base
-    :public NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>
+    :public NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA2Base() {
@@ -49,7 +54,8 @@ public:
     };
     virtual ~NSGA2Base() {};
 
-    using Base_t = NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,DVO,fOpt,rOpt,pfOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = double(*)(const Fitness_t *);

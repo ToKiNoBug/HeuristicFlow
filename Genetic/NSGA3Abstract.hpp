@@ -33,14 +33,20 @@ template<typename Var_t,
         DoubleVectorOption DVO,
         RecordOption rOpt,
         PFOption pfOpt,
-        class Args_t>
+        class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA3Abstract
-    : public NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>
+    : public NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA3Abstract() {};
     virtual ~NSGA3Abstract() {};
-    using Base_t = NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t>;
+    using Base_t = NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
     using RefPointIdx_t = size_t;
 

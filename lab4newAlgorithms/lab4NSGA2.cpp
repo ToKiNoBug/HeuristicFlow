@@ -186,7 +186,7 @@ void testNsga2::mutate() {
 
     for(auto & i : _population) {
         if(Heu::randD()<_option.mutateProb) {
-            _mFun(&i.self);
+            this->runmFun(&i.self);
             i.setUncalculated();
         }
     }

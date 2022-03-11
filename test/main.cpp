@@ -27,9 +27,14 @@ using namespace std;
 
 Heu_MAKE_GLOBAL
 
+void fun() {
+    cout<<"fun"<<endl;
+}
+
 int main() {
+    testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    testNSGA3_DTLZ7();
+    //testNSGA3_DTLZ7();
     //searchPF();
     system("pause");
     return 0;

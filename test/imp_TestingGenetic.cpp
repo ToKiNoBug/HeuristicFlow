@@ -28,24 +28,31 @@ double randD(const double min,const double max) {
     return (max-min)*randD()+min;
 }
 */
+
 void testAckley_withRecord() {
 
     static const uint8_t MinIdx=0,MaxIdx=1,LrIdx=2;
+    using args_t =
+    std::tuple<
+    array<double,2>,//min
+    array<double,2>,//max
+    double//learning rate
+    >;
+
     using solver_t = 
     SOGA<array<double,2>,
             Heu::FITNESS_LESS_BETTER,
             Heu::RECORD_FITNESS,
-            std::tuple<
-            array<double,2>,//min
-            array<double,2>,//max
-            double//learning rate
-            >>;
+            args_t,
+    nullptr,nullptr,
+    Heu::GADefaults<array<double,2>,Std,args_t>::cFunNd,
+    nullptr>;
     solver_t algo;
     
     GAOption opt;
-    opt.populationSize=200;
+    opt.populationSize=50;
     opt.maxFailTimes=-1;
-    opt.maxGenerations=3000;
+    opt.maxGenerations=100;
     
     algo.setOption(opt);
 
@@ -73,8 +80,9 @@ void testAckley_withRecord() {
                 +20+M_E;}
     );
 
-    algo.setcFun(
+    //algo.setcFun(**);
         //crossover
+    /*
     [](const array<double,2>* x,const array<double,2>* y,
             array<double,2> *X,array<double,2>*Y,
             const solver_t::ArgsType *) {
@@ -90,8 +98,8 @@ void testAckley_withRecord() {
             else {
                 Y->operator[](idx)=copyy[idx];
             }
-        }}
-    );
+        }};
+    */
 
     algo.setmFun([](array<double,2>* x,const solver_t::ArgsType * a) {
         uint8_t mutateIdx=rand()%x->size();

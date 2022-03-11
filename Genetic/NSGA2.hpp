@@ -30,7 +30,6 @@ namespace Heu
    *
    *  @tparam Var_t  Type of decisition variable.
    *  @tparam ObjNum Numbers of objectives.
-   *  @tparam Fitness_t Type of fitness value.
    *  @tparam fOpt Whether greater fitness value means better.
    *  @tparam rOpt Whether the solver records fitness changelog.
    *  @tparam pfOpt Whether to protect the Pareto front from mutation.
@@ -47,7 +46,11 @@ template<typename Var_t,
          FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
          RecordOption Record=DONT_RECORD_FITNESS,
          PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
-         class Args_t=void>
+         class Args_t=void,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
 class NSGA2
     : public NSGA2Base<Var_t,
                     ObjNum,
@@ -55,7 +58,8 @@ class NSGA2
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args_t>
+                    Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     using Base_t = NSGA2Base<Var_t,
@@ -64,7 +68,8 @@ public:
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args_t>;
+                    Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     using infoUnit2 = typename Base_t::infoUnit2;
     Heu_MAKE_NSGABASE_TYPES
 
@@ -95,21 +100,27 @@ template<typename Var_t,
          FitnessOption isGreaterBetter,
          RecordOption Record,
          PFOption ProtectPF,
-         class Args_t>
+         class Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA2<Var_t,
             ObjNum,
             DoubleVectorOption::Eigen,
             isGreaterBetter,
             Record,
             ProtectPF,
-            Args_t>
+            Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
     : public NSGA2Base<Var_t,
                     ObjNum,
                     DoubleVectorOption::Eigen,
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args_t>
+                    Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     using Base_t =NSGA2Base<Var_t,
@@ -118,7 +129,8 @@ public:
                     isGreaterBetter,
                     Record,
                     ProtectPF,
-                    Args_t>;
+                    Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
 
     using congestComposeFun = typename Base_t::congestComposeFun;
