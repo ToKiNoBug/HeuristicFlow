@@ -302,7 +302,7 @@ struct imp_GADefaults_withParam
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
         Heu_PRIVATE_IMP_cFunX
-        cFunSwapXs(p1,p2,c1,c2,a);
+        cFunSwapNs(p1,p2,c1,c2,a);
     }
 
 
