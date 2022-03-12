@@ -21,22 +21,23 @@ This file is part of HeuristicFlow.
 #define Heu_CONSTANTS_HPP
 
 #include <stdint.h>
+#include <limits>
 
 namespace Heu {
 
 ///Size identifier for dynamic size (fitness or var)
 const size_t Dynamic = 0;
 
-///Infinet value for float
-const float pinfF=1.0f/0.0f;
+///inf value for float
+const float pinfF=std::numeric_limits<float>::infinity();
 
-///Infinet value for double
-const double pinfD=1.0/0.0;
+///inf value for double
+const double pinfD=std::numeric_limits<double>::infinity();
 
-///negative infinet value for float
+///negative inf value for float
 const float nInfF=-pinfF;
 
-///negative infinet value for double
+///negative inf value for double
 const double ninfD=-pinfD;
 
 }
