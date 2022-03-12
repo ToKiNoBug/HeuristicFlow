@@ -28,7 +28,8 @@ This file is part of Heuristic.
 #include <iostream>
 #endif
 
-namespace Heu {
+namespace Heu
+{
 
 /**
  * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
@@ -39,9 +40,14 @@ namespace Heu {
  */
 template<class Var_t,
     class Fitness_t,
-    RecordOption Record=DONT_RECORD_FITNESS,
-    class Arg_t=void>
-class PSOAbstract : public PSOParameterPack<Var_t,Fitness_t,Arg_t>
+    RecordOption Record,
+    class Arg_t,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::iFun_t _iFun_,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
+class PSOAbstract :
+        public PSOParameterPack<Var_t,Fitness_t,Arg_t>,
+        public PSOParameterPack<Var_t,Fitness_t,Arg_t>::template iFunBody<_iFun_>,
+        public PSOParameterPack<Var_t,Fitness_t,Arg_t>::template fFunBody<_fFun_>
 {
 public:
     using Base_t = PSOParameterPack<Var_t,Fitness_t,Arg_t>;
@@ -95,22 +101,6 @@ public:
         return _velocityMax;
     }
 
-    void setInitializeFun(iFun_t i) {
-        _iFun=i;
-    }
-
-    inline iFun_t initializeFun() const {
-        return _iFun;
-    }
-
-    void setFitnessFun(fFun_t f) {
-        _fFun=f;
-    }
-
-    inline fFun_t fitnessFun() const {
-        return _fFun;
-    }
-
     inline const std::vector<Particle> & population() const {
         return _population;
     }
@@ -131,8 +121,15 @@ public:
         _population.resize(_option.populationSize);
 
         for(Particle & i : _population) {
-            Base_t::doInitialize(_iFun,&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax);
-            Base_t::doFitness(_fFun,&i.position,&i.fitness);
+
+            if constexpr (Base_t::HasParameters) {
+                this->runiFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&this->_arg);
+                this->runfFun(&i.position,&this->_arg,&i.fitness);
+            }
+            else {
+                this->runiFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax);
+                this->runfFun(&i.position,&i.fitness);
+            }
             i.pBest=i;
         }
 
@@ -184,9 +181,6 @@ protected:
     Var_t _posMax;
     Var_t _velocityMax;
 
-    iFun_t _iFun;
-    fFun_t _fFun;
-
     std::vector<Particle> _population;
 
     Point gBest;
@@ -198,12 +192,19 @@ protected:
         for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
             for(uint32_t i=begIdx;i<_population.size();i+=thN) {
                 Particle * ptr=&_population[i];
-                Base_t::doFitness(_fFun,&ptr->position,&ptr->fitness);
+                if constexpr (Base_t::HasParameters)
+                    this->runfFun(&ptr->position,&this->_arg,&ptr->fitness);
+                else
+                    this->runfFun(&ptr->position,&ptr->fitness);
             }
         }
 #else
         for(Particle & i : _population) {
-            Base_t::doFitness(_fFun,&i.position,&i.fitness);
+            if constexpr (Base_t::HasParameters)
+                this->runfFun(&i.position,&this->_arg,&i.fitness);
+            else
+                this->runfFun(&i.position,&i.fitness);
+
         }
 #endif
     }
@@ -225,12 +226,14 @@ using Particle_t = typename Base_t::Particle;
 
 
 ///partial specialization for PSO with recording
-template<class Var_t,class Fitness_t,class Arg_t>
-class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t>
-        : public PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t>
+template<class Var_t,class Fitness_t,class Arg_t,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::iFun_t _iFun_,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
+class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t,_iFun_,_fFun_>
+        : public PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t,_iFun_,_fFun_>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t>;
+    using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t,_iFun_,_fFun_>;
     Heu_MAKE_PSOABSTRACT_TYPES
 
     const std::vector<Fitness_t> & record() const {

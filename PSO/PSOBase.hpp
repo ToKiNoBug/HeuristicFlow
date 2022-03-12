@@ -26,11 +26,13 @@ This file is part of Heuristic.
 namespace Heu {
 
 ///Abstrcat base class for most PSO solvers
-template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class Arg_t=void>
-class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t>
+template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class Arg_t,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::iFun_t _iFun_,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
+class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t>;
+    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
     Heu_MAKE_PSOABSTRACT_TYPES
 
 public:
@@ -47,12 +49,14 @@ protected:
 };
 
 ///partial specialization for PSOBase with dynamic dimensions
-template<class Var_t,class Fitness_t,RecordOption Record,class Arg_t>
-class PSOBase<Var_t,Dynamic,Fitness_t,Record,Arg_t>
-        : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t>
+template<class Var_t,class Fitness_t,RecordOption Record,class Arg_t,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::iFun_t _iFun_,
+         typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
+class PSOBase<Var_t,Dynamic,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
+        : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
 public:
-    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t>;
+    using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
     Heu_MAKE_PSOABSTRACT_TYPES
 
     inline size_t dimensions() const {

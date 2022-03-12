@@ -28,19 +28,19 @@ void testPSOBase() {
 
     PSOAbstract<Var_t,
             double,
-            DONT_RECORD_FITNESS> * abstractNoRec;
+            DONT_RECORD_FITNESS,void,nullptr,nullptr> * abstractNoRec;
 
     PSOAbstract<Var_t,
             double,
-            RecordOption::RECORD_FITNESS> * abstractDoRec;
+            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * abstractDoRec;
 
     PSOBase<Var_t,10,
             double,
-            RecordOption::DONT_RECORD_FITNESS> * baseNoRec;
+            RecordOption::DONT_RECORD_FITNESS,void,nullptr,nullptr> * baseNoRec;
 
     PSOBase<Var_t,0,
             double,
-            RecordOption::RECORD_FITNESS> * baseDoRec;
+            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * baseDoRec;
 
     //DoRec is derived from NoRec
     abstractNoRec=abstractDoRec;
@@ -85,9 +85,9 @@ void testRastriginFun() {
 
     solver.setPVRange(-5.12,5.12,0.1);
 
-    solver.setInitializeFun(iFun);
+    solver.setiFun(iFun);
 
-    solver.setFitnessFun(fFun);
+    solver.setfFun(fFun);
 
     solver.setOption(opt);
 
@@ -205,8 +205,8 @@ static const size_t SpaceDim=2;
 
     solver.setPVRange(0,1,0.5);
 
-    solver.setInitializeFun(Solver_t::default_iFun);
-    solver.setFitnessFun(fFun);
+    solver.setiFun(Solver_t::default_iFun);
+    solver.setfFun(fFun);
     solver.setOption(opt);
     solver.setArgs(dMat);
     solver.initializePop();
