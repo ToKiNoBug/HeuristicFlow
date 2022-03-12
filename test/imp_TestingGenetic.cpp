@@ -150,20 +150,21 @@ void testWithEigenLib() {
             RECORD_FITNESS,
             std::tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double>> algo;
     //val min max learning_rate
-    tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> Arg;
+    using arg_t = tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> ;
+    arg_t Arg;
     static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
     get<TargetOffset>(Arg)=target;
     get<MinOffset>(Arg).setConstant(-1);
     get<MaxOffset>(Arg).setConstant(2);
     get<LROffset>(Arg)=0.01;
 
-    algo.setiFun([](Eigen::Array4d* x,const typeof(Arg)*){x->setRandom();});
-    algo.setfFun(    [](const Eigen::Array4d* x,const typeof(Arg)* arg,double *f){
+    algo.setiFun([](Eigen::Array4d* x,const arg_t*){x->setRandom();});
+    algo.setfFun(    [](const Eigen::Array4d* x,const arg_t * arg,double *f){
         *f = -(*x-get<TargetOffset>(*arg)).square().maxCoeff();
     });
     algo.setcFun(    [](const Eigen::Array4d*x,const Eigen::Array4d*y,
                      Eigen::Array4d*X,Eigen::Array4d*Y,
-                     const typeof(Arg)*) {
+                     const arg_t *) {
                  for(uint32_t i=0;i<4;i++) {
                      X->operator()(i)=
                              (rand()%2)?
@@ -172,7 +173,7 @@ void testWithEigenLib() {
                              (rand()%2)?
                                  x->operator()(i):y->operator()(i);
                  }});
-    algo.setmFun(    [](Eigen::Array4d*x,const typeof(Arg)* arg) {
+    algo.setmFun(    [](Eigen::Array4d*x,const arg_t * arg) {
         uint32_t idx=rand()%4;
         x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
 
