@@ -20,7 +20,7 @@ This file is part of HeuristicFlow.
 #ifndef Heu_PSOOPTION_HPP
 #define Heu_PSOOPTION_HPP
 
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 
 #include <stdint.h>
 

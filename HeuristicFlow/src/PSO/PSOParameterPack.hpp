@@ -1,7 +1,7 @@
 #ifndef Heu_PSOPARAMETERPACK_HPP
 #define Heu_PSOPARAMETERPACK_HPP
 
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 
 namespace Heu
 {

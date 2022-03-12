@@ -20,18 +20,18 @@ This file is part of HeuristicFlow.
 #ifndef Heu_GLOBAL_INCLUDE
 #define Heu_GLOBAL_INCLUDE
 
-#include "../Global/FunBody.hpp"
+#include "src/Global/FunBody.hpp"
 
-#include "../Global/Enumerations.hpp"
-#include "../Global/Types.hpp"
-#include "../Global/Constants.hpp"
-#include "../Global/TemplateFloat.hpp"
-#include "../Global/ChaosBase.hpp"
-#include "../Global/Chaotic.hpp"
-#include "../Global/TentChaos.hpp"
-#include "../Global/LogisticChaos.hpp"
-#include "../Global/HeuMaths.hpp"
-#include "../Global/Randoms.hpp"
-#include "../Global/Globals.hpp"
+#include "src/Global/Enumerations.hpp"
+#include "src/Global/Types.hpp"
+#include "src/Global/Constants.hpp"
+#include "src/Global/TemplateFloat.hpp"
+#include "src/Global/ChaosBase.hpp"
+#include "src/Global/Chaotic.hpp"
+#include "src/Global/TentChaos.hpp"
+#include "src/Global/LogisticChaos.hpp"
+#include "src/Global/HeuMaths.hpp"
+#include "src/Global/Randoms.hpp"
+#include "src/Global/Globals.hpp"
 
 #endif // GLOBAL_H

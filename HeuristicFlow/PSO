@@ -20,9 +20,9 @@ This file is part of HeuristicFlow.
 #ifndef Heu_PSO_INCLUDE
 #define Heu_PSO_INCLUDE
 
-#include "../PSO/PSOParameterPack.hpp"
-#include "../PSO/PSOOption.hpp"
-#include "../PSO/PSOBase.hpp"
-#include "../PSO/PSO.hpp"
+#include "src/PSO/PSOParameterPack.hpp"
+#include "src/PSO/PSOOption.hpp"
+#include "src/PSO/PSOBase.hpp"
+#include "src/PSO/PSO.hpp"
 
 #endif // Heu_PSO_INCLUDE

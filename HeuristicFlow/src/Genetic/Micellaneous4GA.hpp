@@ -21,7 +21,7 @@ This file is part of HeuristicFlow.
 #define Heu_MICELLANEOUS4GA_HPP
 
 #include "GAAbstract.hpp"
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 #include <assert.h>
 
 namespace Heu {

@@ -35,7 +35,7 @@ This file is part of HeuristicFlow.
 #include <iostream>
 #endif
 
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 
 namespace Heu {
 

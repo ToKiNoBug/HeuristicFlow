@@ -22,7 +22,7 @@ This file is part of HeuristicFlow.
 
 #include <type_traits>
 
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 
 namespace Heu {
 

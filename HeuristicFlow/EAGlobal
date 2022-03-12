@@ -20,7 +20,7 @@ This file is part of HeuristicFlow.
 #ifndef Heu_EAGLOBAL_INCLUDE
 #define Heu_EAGLOBAL_INCLUDE
 
-#include "../EAGlobal/BoxConstraint.hpp"
-#include "../EAGlobal/Pareto.hpp"
+#include "src/EAGlobal/BoxConstraint.hpp"
+#include "src/EAGlobal/Pareto.hpp"
 
 #endif  //  Heu_EAGLOBAL_INCLUDE

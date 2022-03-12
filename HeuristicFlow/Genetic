@@ -20,15 +20,14 @@ This file is part of HeuristicFlow.
 #ifndef Heu_Genetic_INCLUDE
 #define Heu_Genetic_INCLUDE
 
-#include "../Genetic/GAOption.hpp"
-#include "../Genetic/GABase.hpp"
-#include "../Genetic/SOGA.hpp"
-#include "../Genetic/MOGAAbstract.hpp"
-#include "../Genetic/MOGABase.hpp"
-#include "../Genetic/NSGA2Base.hpp"
-#include "../Genetic/NSGA2.hpp"
-#include "../Genetic/Micellaneous4GA.hpp"
-#include "../Genetic/NSGA3.hpp"
-//#include "../Genetic/GANds.h"
+#include "src/Genetic/GAOption.hpp"
+#include "src/Genetic/GABase.hpp"
+#include "src/Genetic/SOGA.hpp"
+#include "src/Genetic/MOGAAbstract.hpp"
+#include "src/Genetic/MOGABase.hpp"
+#include "src/Genetic/NSGA2Base.hpp"
+#include "src/Genetic/NSGA2.hpp"
+#include "src/Genetic/Micellaneous4GA.hpp"
+#include "src/Genetic/NSGA3.hpp"
 
 #endif

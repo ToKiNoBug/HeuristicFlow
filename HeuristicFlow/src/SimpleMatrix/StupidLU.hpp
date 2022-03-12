@@ -19,7 +19,7 @@ This file is part of Heuristic.
 
 #ifndef Heu_STUPIDLU_HPP
 #define Heu_STUPIDLU_HPP
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 #include <type_traits>
 #include <assert.h>
 #include "MatrixDynamicSize.hpp"

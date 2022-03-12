@@ -20,10 +20,10 @@ This file is part of HeuristicFlow.
 #ifndef Heu_SIMPLEMATRIX_INCLUDE
 #define Heu_SIMPLEMATRIX_INCLUDE
 
-#include "../SimpleMatrix/MatrixDynamicSize.hpp"
-#include "../SimpleMatrix/MatrixFixedSize.hpp"
-#include "../SimpleMatrix/MatrixMap.hpp"
-#include "../SimpleMatrix/StupidLU.hpp"
-#include "../SimpleMatrix/MatrixProduct.hpp"
+#include "src/SimpleMatrix/MatrixDynamicSize.hpp"
+#include "src/SimpleMatrix/MatrixFixedSize.hpp"
+#include "src/SimpleMatrix/MatrixMap.hpp"
+#include "src/SimpleMatrix/StupidLU.hpp"
+#include "src/SimpleMatrix/MatrixProduct.hpp"
 
 #endif // Heu_SIMPLEMATRIX_

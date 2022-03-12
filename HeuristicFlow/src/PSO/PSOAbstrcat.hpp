@@ -20,7 +20,7 @@ This file is part of Heuristic.
 #ifndef Heu_PSOABSTRCAT_HPP
 #define Heu_PSOABSTRCAT_HPP
 
-#include "../HeuristicFlow/Global"
+#include "../../Global"
 #include "PSOOption.hpp"
 #include "PSOParameterPack.hpp"
 
