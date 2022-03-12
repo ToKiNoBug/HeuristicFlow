@@ -76,22 +76,6 @@ public:
         _args=a;
     }
 
-    inline void doInitialize(initializeFun iFun,Var_t * v) {
-        iFun(v,&_args);
-    }
-
-    inline void doFitness(fitnessFun fFun,const Var_t*v,Fitness_t*f) {
-        fFun(v,&_args,f);
-    }
-
-    inline void doCrossover(crossoverFun cFun,
-                                   const Var_t*p1,const Var_t*p2,Var_t*c1,Var_t*c2) const {
-        cFun(p1,p2,c1,c2,&_args);
-    }
-    inline void doMutate(mutateFun mFun,Var_t * v) {
-        mFun(v,&_args);
-    }
-
     static const bool HasParameters=true;
 
 protected:
@@ -128,25 +112,6 @@ public:
 
     template<mutateFun m>
     using mFunBody= typename HeuPrivate::mFunArea_GA<void,Var_t *>::template funBody<m>;
-
-
-    inline static void doInitialize(initializeFun iFun,Var_t * v) {
-        iFun(v);
-    }
-
-    inline static void doFitness(fitnessFun fFun,const Var_t*v,Fitness_t*f) {
-        fFun(v,f);
-    }
-
-    inline static void doCrossover(crossoverFun cFun,
-                                   const Var_t*p1,const Var_t*p2,Var_t*c1,Var_t*c2) {
-        cFun(p1,p2,c1,c2);
-    }
-    inline static void doMutate(mutateFun mFun,Var_t * v) {
-        mFun(v);
-    }
-
-
 
     static const bool HasParameters=false;
 };
