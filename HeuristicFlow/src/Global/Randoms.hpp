@@ -35,7 +35,15 @@ namespace HeuPrivate {
 inline uint32_t makeRandSeed() {
         static bool isFirstCalled=true;
         if(isFirstCalled) {
-            uint32_t seed=std::time(nullptr),seed_=seed;
+            uint32_t seed,seed_;
+            if(sizeof(std::time_t)==4) {
+                seed=uint32_t(std::time(nullptr));
+            }
+            else {
+                uint64_t _s=std::time(nullptr);
+                seed=(_s>>32)^(_s&0xFFFFFFFF);
+            }
+            seed_=seed;
             std::srand(seed);
             uint8_t * swapper=(uint8_t *)&seed;
             std::swap(swapper[0],swapper[3]);

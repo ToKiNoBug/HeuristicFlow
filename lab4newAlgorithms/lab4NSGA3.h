@@ -195,7 +195,7 @@ protected:
             }
             if(selected.size()+this->pfLayers.front().size()>this->_option.populationSize) {
                 needRefPoint=true;
-                FlPtr=(typeof(FlPtr))&this->pfLayers.front();
+                FlPtr=(decltype(FlPtr))&this->pfLayers.front();
                 break;
             }
 

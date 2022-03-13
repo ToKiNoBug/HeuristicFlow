@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(HeuristicFlow_Test LANGUAGES CXX)
 
+add_definitions("-D _USE_MATH_DEFINES")
 
 include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
@@ -24,6 +25,7 @@ add_executable(HeuristicFlow_Test
     main.cpp)
 
 find_package(OpenMP)
+
 if(OpenMP_CXX_FOUND)
     target_link_libraries(HeuristicFlow_Test PUBLIC OpenMP::OpenMP_CXX)
 endif()

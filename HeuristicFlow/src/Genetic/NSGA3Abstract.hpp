@@ -116,7 +116,7 @@ protected:
             }
             if(selected.size()+this->pfLayers.front().size()>this->_option.populationSize) {
                 needRefPoint=true;
-                FlPtr=(typeof(FlPtr))&this->pfLayers.front();
+                FlPtr=(decltype(FlPtr))&this->pfLayers.front();
                 break;
             }
 
@@ -271,13 +271,13 @@ protected:
             eachDistance[c]=distance;
         }
 #else
-        static const size_t thN=HfGlobal::threadNum();
+        static const int64_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
-        for(size_t begIdx=0;begIdx<thN;begIdx++) {
+        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
             
-            for(size_t c=begIdx;c<referencePoses.cols();c+=thN) {
+            for(int64_t c=begIdx;c<referencePoses.cols();c+=thN) {
             double normW=0,w_T_s=0;
-            for(size_t r=0;r<referencePoses.rows();r++) {
+            for(int64_t r=0;r<referencePoses.rows();r++) {
                 normW+=square(referencePoses(r,c));
                 w_T_s+=s[r]*referencePoses(r,c);
             }
@@ -336,7 +336,7 @@ protected:
         
         while(selected->size()<this->_option.populationSize) {
             findMinSet(*refPoints,&minNicheIterators);
-            auto curRefPoint=minNicheIterators[size_t(randD(0,minNicheIterators.size()))];
+            auto curRefPoint=minNicheIterators[size_t(randD(0,double(minNicheIterators.size())))];
             size_t rhoJ=curRefPoint->second;
 
             associatedGenesInFl=Fl->equal_range(curRefPoint->first);

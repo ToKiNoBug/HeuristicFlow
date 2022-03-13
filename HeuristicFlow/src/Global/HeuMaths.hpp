@@ -24,6 +24,16 @@ This file is part of HeuristicFlow.
 #include <type_traits>
 #include <cmath>
 namespace Heu {
+/*
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
+#ifndef M_PI
+#define M_2_PI		0.63661977236758134308
+#endif
+
+*/
 
 template<typename A>
 inline A square(A a) {

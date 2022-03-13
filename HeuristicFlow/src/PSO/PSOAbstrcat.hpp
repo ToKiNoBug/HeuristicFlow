@@ -187,10 +187,10 @@ protected:
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
-        static const uint32_t thN=HfGlobal::threadNum();
+        static const int32_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
-        for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
-            for(uint32_t i=begIdx;i<_population.size();i+=thN) {
+        for(int32_t begIdx=0;begIdx<thN;begIdx++) {
+            for(int32_t i=begIdx;i<_population.size();i+=thN) {
                 Particle * ptr=&_population[i];
                 if constexpr (Base_t::HasParameters)
                     this->runfFun(&ptr->position,&this->_arg,&ptr->fitness);

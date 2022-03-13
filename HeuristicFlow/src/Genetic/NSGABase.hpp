@@ -88,11 +88,11 @@ protected:
     virtual void calculateDominatedNum() {
         const size_t popSizeBefore=sortSpace.size();
 #ifdef Heu_NSGA_USE_THREADS
-        static const size_t thN=HfGlobal::threadNum();
+        static const int64_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
-        for(size_t begIdx=0;begIdx<thN;begIdx++) {
+        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
 
-            for(size_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
+            for(int64_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
                 sortSpace[ed]->domainedByNum=0;
                 for(size_t er=0;er<popSizeBefore;er++) {
                     if(er==ed)

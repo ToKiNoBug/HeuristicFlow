@@ -187,7 +187,6 @@ protected:
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
-        static const uint32_t thN=HfGlobal::threadNum();
         std::vector<Gene*> tasks;
         tasks.resize(0);
         tasks.reserve(_population.size());
@@ -197,9 +196,10 @@ protected:
             }
             tasks.emplace_back(&i);
         }
+        static const int64_t  thN=HfGlobal::threadNum();
 #pragma omp parallel for
-        for(uint32_t begIdx=0;begIdx<thN;begIdx++) {
-            for(uint32_t i=begIdx;i<tasks.size();i+=thN) {
+        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
+            for(int64_t i=begIdx;i<tasks.size();i+=thN) {
                 Gene * ptr=tasks[i];
                 if constexpr (Base_t::HasParameters)
                         this->runfFun(&ptr->self,&this->_args,&ptr->_Fitness);

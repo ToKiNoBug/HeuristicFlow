@@ -28,19 +28,19 @@ void testPSOBase() {
 
     PSOAbstract<Var_t,
             double,
-            DONT_RECORD_FITNESS,void,nullptr,nullptr> * abstractNoRec;
+            DONT_RECORD_FITNESS,void,nullptr,nullptr> * abstractNoRec=nullptr;
 
     PSOAbstract<Var_t,
             double,
-            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * abstractDoRec;
+            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * abstractDoRec=nullptr;
 
     PSOBase<Var_t,10,
             double,
-            RecordOption::DONT_RECORD_FITNESS,void,nullptr,nullptr> * baseNoRec;
+            RecordOption::DONT_RECORD_FITNESS,void,nullptr,nullptr> * baseNoRec=nullptr;
 
     PSOBase<Var_t,0,
             double,
-            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * baseDoRec;
+            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * baseDoRec=nullptr;
 
     //DoRec is derived from NoRec
     abstractNoRec=abstractDoRec;

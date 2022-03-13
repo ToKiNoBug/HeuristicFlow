@@ -8,7 +8,7 @@ project(HeuristicFlow LANGUAGES CXX)
 
 add_subdirectory(./HeuristicFlow)
 add_subdirectory(./test)
-add_subdirectory(./lab4newAlgorithms)
+#add_subdirectory(./lab4newAlgorithms)
 add_subdirectory(./HeuristicFlow/src/Genetic)
 add_subdirectory(./HeuristicFlow/src/Global)
 add_subdirectory(./HeuristicFlow/src/SimpleMatrix)

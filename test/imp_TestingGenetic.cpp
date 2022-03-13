@@ -797,7 +797,7 @@ void searchPF() {
     using pair_t = pair<Fitness_t,size_t>;
     vector<pair_t> pop;
     static const size_t precision=10;
-    pop.reserve(pow(N,precision));
+    pop.reserve(size_t(pow(N,precision)));
     Var_t v;
 
     cout<<"traversing"<<endl;
@@ -808,10 +808,10 @@ void searchPF() {
 
     cout<<"Nondominated sorting"<<endl;
     c=clock();
-    static const size_t thN=2;
+    static const int32_t thN=HfGlobal::threadNum();
 #pragma omp parallel for
-    for(size_t begIdx=0;begIdx<thN;begIdx++) {
-        for(size_t idx=begIdx;idx<pop.size();idx+=thN) {
+    for(int32_t begIdx=0;begIdx<thN;begIdx++) {
+        for(int32_t idx=begIdx;idx<pop.size();idx+=thN) {
             pop[idx].second=0;
             for(size_t er=0;er<pop.size();er++) {
                 pop[idx].second
