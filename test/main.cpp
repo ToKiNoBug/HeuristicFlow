@@ -30,9 +30,9 @@ void fun() {
 }
 
 int main() {
-    //testAckley_withRecord();
+    testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    testNSGA3_DTLZ7();
+    //testNSGA3_DTLZ7();
     //searchPF();
     system("pause");
     return 0;

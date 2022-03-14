@@ -21,48 +21,33 @@ This file is part of HeuristicFlow.
 #define Heu_RANDOMS_HPP
 
 #include <stdint.h>
+#include <random>
 #include <cmath>
 #include <ctime>
-#include <random>
 
 namespace Heu {
 
-///global random device(mt19937) for Heu
-//extern std::mt19937 global_mt19937;
+#ifdef __GNUC__
+#if (defined __WIN32) || (defined __WIN64)
+#define Heu_std_random_device_UNRELIABLE
+#endif
+#endif  //  #ifdef __CNUC__
 
-inline std::mt19937 & global_mt19937() {
-    static std::mt19937 mt;
-    return mt;
+inline std::random_device & global_random_device() {
+    static std::random_device rdv;
+    return rdv;
 }
 
-///Calling anything in this namespace is deprecated
-namespace HeuPrivate {
-inline uint32_t makeRandSeed() {
-        static bool isFirstCalled=true;
-        if(isFirstCalled) {
-            uint32_t seed,seed_;
-            if(sizeof(std::time_t)==4) {
-                seed=uint32_t(std::time(nullptr));
-            }
-            else {
-                uint64_t _s=std::time(nullptr);
-                seed=(_s>>32)^(_s&0xFFFFFFFF);
-            }
-            seed_=seed;
-            std::srand(seed);
-            uint8_t * swapper=(uint8_t *)&seed;
-            std::swap(swapper[0],swapper[3]);
-            std::swap(swapper[1],swapper[2]);
-            isFirstCalled=false;
-
-            return seed_^seed;
-        }
-        else {
-            return global_mt19937()();
-        }
-    }
-}   // HeuPrivate
-
+inline std::mt19937 & global_mt19937() {
+#ifdef Heu_std_random_device_UNRELIABLE
+    static std::time_t time=std::time(nullptr);
+    static uint32_t seed=std::hash<std::time_t>()(time);
+    static std::mt19937 mt(seed);
+#else
+    static std::mt19937 mt(global_random_device()());
+#endif
+    return mt;
+}
 
 ///uniform random number in range [0,1)
 inline double randD() {
