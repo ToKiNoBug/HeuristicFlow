@@ -32,6 +32,8 @@ class MatrixDynamicSize
 {
 protected:
 using fast_t=typename std::conditional<sizeof(Scalar_t)<=3*sizeof(void*),Scalar_t,const Scalar_t &>::type;
+
+using allocT_t = std::allocator_traits<allocator_t>;
 public:
     MatrixDynamicSize() {
         rowNum=0;
@@ -74,7 +76,7 @@ public:
             alloc().deallocate(dataPtr,_capacity);
             if constexpr (isClass)
                 for(size_t i=0;i<_capacity;i++) {
-                    alloc().destroy(dataPtr+i);
+                    allocT_t::destroy(alloc(),dataPtr+i);
                 }
         }
     };
@@ -119,7 +121,7 @@ public:
                 if(dataPtr!=nullptr) {
                     if(isClass)
                         for(size_t i=0;i<_capacity;i++) {
-                            alloc().destroy(dataPtr+i);
+                            allocT_t::destroy(alloc(),dataPtr+i);
                         }
                     alloc().deallocate(dataPtr,_capacity);
                 }
@@ -129,7 +131,7 @@ public:
 
                 if(isClass)
                     for(size_t i=0;i<_capacity;i++) {
-                        alloc().construct(dataPtr+i);
+                        allocT_t::construct(alloc(),dataPtr+i);
                     }
             }
             
@@ -204,7 +206,6 @@ private:
         static allocator_t alloctor;
         return alloctor;
     }
-
 };
 
 
