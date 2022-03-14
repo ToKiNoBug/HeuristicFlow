@@ -115,11 +115,7 @@ public:
     void initializePop() {
         _population.resize(_option.populationSize);
         for(auto & i : _population) {
-
-            if constexpr (Base_t::HasParameters)
-                    this->runiFun(&i.self,&this->_args);
-            else
-                this->runiFun(&i.self);
+            GAExecutor<Base_t::HasParameters>::doInitialization(this,&i.self);
 
             i.setUncalculated();
         }
@@ -158,9 +154,6 @@ public:
         }
         _generation--;
     }
-
-    ///best fitness
-    //virtual Fitness_t bestFitness() const=0;
 
     ///the whole population
     inline const std::list<Gene> & population() const {
@@ -201,10 +194,8 @@ protected:
         for(int64_t begIdx=0;begIdx<thN;begIdx++) {
             for(int64_t i=begIdx;i<tasks.size();i+=thN) {
                 Gene * ptr=tasks[i];
-                if constexpr (Base_t::HasParameters)
-                        this->runfFun(&ptr->self,&this->_args,&ptr->_Fitness);
-                else
-                    this->runfFun(&ptr->self,&ptr->_Fitness);
+
+                GAExecutor<Base_t::HasParameters>::doFitness(this,&ptr->self,&ptr->_Fitness);
 
                 ptr->_isCalculated=true;
             }
@@ -214,10 +205,8 @@ protected:
             if(i._isCalculated) {
                 continue;
             }
-            if constexpr (Base_t::HasParameters)
-                    this->runfFun(&i.self,&this->_args,&i._Fitness);
-            else
-                this->runfFun(&i.self,&i._Fitness);
+
+            GAExecutor<Base_t::HasParameters>::doFitness(this,&i.self,&i._Fitness);
 
             i._isCalculated=true;
         }
@@ -257,10 +246,9 @@ protected:
             Gene * childA=&_population.back();
             _population.emplace_back();
             Gene * childB=&_population.back();
-            if constexpr (Base_t::HasParameters)
-                    this->runcFun(&a->self,&b->self,&childA->self,&childB->self,&this->_args);
-            else
-                this->runcFun(&a->self,&b->self,&childA->self,&childB->self);
+
+            GAExecutor<Base_t::HasParameters>::
+                    doCrossover(this,&a->self,&b->self,&childA->self,&childB->self);
 
             childA->setUncalculated();
             childB->setUncalculated();
@@ -270,6 +258,56 @@ protected:
 
     ///mutate
     virtual void mutate()=0;
+
+protected:
+    template<bool HasParameters,class unused=GABase>
+    struct GAExecutor
+    {
+        inline static void doInitialization(GABase * s,Var_t * v) {
+            s->runiFun(v,&s->_args);
+        }
+
+        inline static void doFitness(GABase * s,const Var_t * v,Fitness_t * f) {
+            s->runfFun(v,&s->_args,f);
+        }
+
+        inline static void doCrossover(GABase * s,const Var_t * p1,const Var_t *p2,
+                                Var_t *c1,Var_t * c2) {
+            s->runcFun(p1,p2,c1,c2,&s->_args);
+        }
+
+        inline static void doMutation(GABase * s,Var_t * v ) {
+            s->runmFun(v,&s->_args);
+
+            static_assert (HasParameters==GABase::HasParameters,
+                    "struct GAExecutor actived with wrong template parameter.");
+        }
+    };
+
+    template<class unused>
+    struct GAExecutor<false,unused>
+    {
+        inline static void doInitialization(GABase * s,Var_t * v) {
+            s->runiFun(v);
+        }
+
+        inline static void doFitness(GABase * s,const Var_t * v,Fitness_t * f) {
+            s->runfFun(v,f);
+        }
+
+        inline static void doCrossover(GABase * s,const Var_t * p1,const Var_t *p2,
+                                Var_t *c1,Var_t * c2) {
+            s->runcFun(p1,p2,c1,c2);
+        }
+
+        inline static void doMutation(GABase * s,Var_t * v) {
+            s->runmFun(v);
+        }
+
+        static_assert(GABase::HasParameters==false,
+                "struct GAExecutor actived with wrong template parameter.");
+    };
+
 
 
 };
