@@ -56,7 +56,7 @@ void testAckley_withRecord() {
     
     algo.setOption(opt);
 
-    tuple<array<double,2>,array<double,2>,double> args;
+    args_t args;
     get<MinIdx>(args)={-5,-5};
     get<MaxIdx>(args)={5,5};
     get<LrIdx>(args)=0.05;

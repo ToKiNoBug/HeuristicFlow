@@ -196,25 +196,8 @@ protected:
             pop.emplace_back();
             pop.back().iterator=it;
 
-#if __cplusplus >= 201703L
-            if constexpr (ObjNum==Dynamic) {
-                if constexpr (DVO==DoubleVectorOption::Eigen) {
-                    pop.back().congestion.resize(this->objectiveNum(),1);
-                }
-                else {
-                    pop.back().congestion.resize(this->objectiveNum());
-                }
-            }
-#else   //  these if constexpr will be done by compiler's optimization
-            if (ObjNum==Dynamic) {
-                if (DVO==DoubleVectorOption::Eigen) {
-                    pop.back().congestion.resize(this->objectiveNum(),1);
-                }
-                else {
-                    pop.back().congestion.resize(this->objectiveNum());
-                }
-            }
-#endif  //  #if __cplusplus >= 201703L
+            initializeSize<ObjNum>::
+                    template resize<Fitness_t>(&pop.back().congestion,this->objectiveNum());
 
         }
 
@@ -341,6 +324,7 @@ private:
         expandStruct<beg,end>::expand(funs.data());
         return funs;
     }
+
 
 };
 

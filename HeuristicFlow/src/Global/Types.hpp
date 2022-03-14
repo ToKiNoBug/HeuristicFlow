@@ -81,6 +81,25 @@ using FitnessVec_t= typename
         std::enable_if<dvo==DoubleVectorOption::Std,stdVecD_t<Dim>>::type;
 #endif
 
+
+template<size_t _ObjNum>
+struct initializeSize
+{
+    template<typename A>
+    inline static void resize(A * v,size_t sz) {
+        assert(v->size()==sz);
+    }
+};
+
+template<>
+struct initializeSize<Dynamic>
+{
+    template<typename A>
+    inline static void resize(A * v,size_t sz) {
+        v->resize(sz);
+    }
+};
+
 };
 
 #endif // Heu_TYPES_HPP

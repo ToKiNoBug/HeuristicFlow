@@ -26,183 +26,81 @@ This file is part of HeuristicFlow.
 
 namespace Heu {
 
-/*
-template<DivCode _min,DivCode _max>
-inline void stdGAiFunNd(Var_t * v) {
-    static const double min=decode<_min>::real;
-    static const double max=decode<_max>::real;
-    for(size_t idx=0;idx<v->size();idx++) {
-        v->operator[](idx)=randD(min,max);
-    }
-}
+namespace HeuPrivate {
 
-template<DivCode _min,DivCode _max>
-inline void stdGAiFunNd(Var_t * v,const Args_t *) {
-    stdGAiFunNd<_min,_max>(v);
-}
-
-*/
-
-namespace Heu_pri
+template<typename Var_t,DoubleVectorOption dvo>
+struct imp_GADefaults_DVO
 {
+
+    template<DivCode _r>
+    inline static void imp_cFunNd(const Var_t * p1,const Var_t * p2,
+                              Var_t * c1, Var_t * c2) {
+
+        static const double constexpr r=decode<_r>::real;
+        static_assert(r>0,"r shouldn't be less than 0");
+        static_assert(r<1,"r shouldn't be greater than 1");
+
+        const size_t N=p1->size();
+        for(size_t i=0;i<N;i++) {
+            c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i));
+            c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i));
+        }
+    }
+
+    inline static void imp_cFunSwapNs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        const size_t N=p1->size();
+        const size_t idx=randD(0,N);
+
+            c1->topRows(idx)=p1->topRows(idx);
+            c2->topRows(idx)=p2->topRows(idx);
+            c1->bottomRows(N-idx)=p2->bottomRows(N-idx);
+            c2->bottomRows(N-idx)=p1->bottomRows(N-idx);
+
+    }
+
+
+};
+
+template<typename Var_t>
+struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
+{
+    template<DivCode _r>
+    inline static void imp_cFunNd(const Var_t * p1,const Var_t * p2,
+                              Var_t * c1, Var_t * c2) {
+
+        static const double constexpr r=decode<_r>::real;
+        static_assert(r>0,"r shouldn't be less than 0");
+        static_assert(r<1,"r shouldn't be greater than 1");
+
+        *c1=r**p1+(1-r)**p2;
+        *c2=r**p2+(1-r)**p1;
+    }
+
+    inline static void imp_cFunSwapNs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        const size_t N=p1->size();
+        const size_t idx=randD(0,N);
+
+            for(size_t i=0;i<N;i++) {
+                if(i<idx) {
+                    c1->operator[](i)=p1->operator[](i);
+                    c2->operator[](i)=p2->operator[](i);
+                }
+                else {
+                    c1->operator[](i)=p2->operator[](i);
+                    c2->operator[](i)=p1->operator[](i);
+                }
+            }
+    }
+
+
+};
 
 /**
  * @brief Partial specialization for GADefault struct without args
  */
-template<typename Var_t,DoubleVectorOption dvo>
-struct imp_GADefaults_noParam
-{
 
-    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
-    inline static void iFunNd(Var_t * p) {
-        static const double min=decode<_min>::real;
-        static const double max=decode<_max>::real;
-        //static const constexpr bool isValid=(max>min);
-        //static_assert(isValid,"Max should be greater than min");
-
-        for(size_t idx=0;idx<p->size();idx++) {
-            p->operator[](idx)=randD(min,max);
-        }
-    }
-
-    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
-    inline static void iFunNf(Var_t * p) {
-        iFunNd<_min,_max>(p);
-    }
-
-    /**
-     * @brief Default crossover function for fixed-size float/double array/vector
-     *        (Genetic without args)
-     *
-     * @tparam _r crossover ratio, 0<r<1
-     */
-    template<DivCode _r=encode<1,5>::code>
-    inline static void cFunNd(const Var_t * p1,const Var_t * p2,
-                                Var_t * c1, Var_t * c2) {
-#define Heu_PRIVATE_IMP_cFunNd \
-        static const double constexpr r=decode<_r>::real; \
-        static_assert(r>0,"r shouldn't be less than 0"); \
-        static_assert(r<1,"r shouldn't be greater than 1"); \
-        if constexpr (dvo==DoubleVectorOption::Eigen) { \
-            *c1=r**p1+(1-r)**p2; \
-            *c2=r**p2+(1-r)**p1; \
-        } \
-        else { \
-            const size_t N=p1->size(); \
-            for(size_t i=0;i<N;i++) { \
-            c1->operator[](i)=r*(p1->operator[](i))+(1-r)*(p2->operator[](i)); \
-            c2->operator[](i)=r*(p2->operator[](i))+(1-r)*(p1->operator[](i)); \
-        } \
-        }
-        
-
-        Heu_PRIVATE_IMP_cFunNd
-    }
-
-    /**
-     * @brief Defaults crossover function for dynamic-size float/double array/vector
-     *        (Genetic without args)
-     *
-     * @tparam _r crossover ratio, 0<r<1
-     */
-    template<DivCode _r=encode<1,5>::code>
-    inline static void cFunXd(const Var_t * p1,const Var_t * p2,
-                                Var_t * c1, Var_t * c2) {
-#define Heu_PRIVATE_IMP_cFunX \
-        c1->resize(p1->size()); \
-        c2->resize(p2->size());
-
-        Heu_PRIVATE_IMP_cFunX
-
-        cFunNd<_r>(p1,p2,c1,c2);
-    }
-
-    /**
-     * @brief Default crossover function for fixed-size array/vector
-     *        (Genetic without args)
-     *
-     */
-
-    inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
-                                Var_t * c1, Var_t * c2) {
-#define Heu_PRIVATE_IMP_cFunSwapNs \
-        const size_t N=p1->size(); \
-        const size_t idx=randD(0,N); \
-        if constexpr (dvo==DoubleVectorOption::Eigen) { \
-            c1->topRows(idx)=p1->topRows(idx); \
-            c2->topRows(idx)=p2->topRows(idx); \
-            c1->bottomRows(N-idx)=p2->bottomRows(N-idx); \
-            c2->bottomRows(N-idx)=p1->bottomRows(N-idx); \
-        } \
-        else { \
-            for(size_t i=0;i<N;i++) { \
-                if(i<idx) { \
-                    c1->operator[](i)=p1->operator[](i); \
-                    c2->operator[](i)=p2->operator[](i); \
-                } \
-                else { \
-                    c1->operator[](i)=p2->operator[](i); \
-                    c2->operator[](i)=p1->operator[](i); \
-                } \
-            } \
-        }
-
-        Heu_PRIVATE_IMP_cFunSwapNs
-
-    }
-
-
-    /**
-     * @brief Default crossover function for dynamic-size array/vector
-     *        (Genetic without args)
-     *
-     */
-    inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
-                                Var_t * c1, Var_t * c2) {
-
-        Heu_PRIVATE_IMP_cFunX
-
-        cFunSwapNs(p1,p2,c1,c2);
-    }
-
-    /**
-     * @brief Discrete random selection crossover by probability for fixed-size array/vector
-     *             (without args)
-     *
-     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
-     */
-    template<DivCode p=DivCode::Half>
-    inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
-                                  Var_t * c1, Var_t * c2) {
-#define Heu_PRIVATE_IMP_cFunRandNs \
-        static const double constexpr r=decode<p>::real; \
-        static_assert(r>0,"A probability shoule be greater than 0"); \
-        static_assert(r<1,"A probability shoule be less than 1"); \
-        const size_t N=p1->size(); \
-        for(size_t i=0;i<N;i++) { \
-            c1->operator[](i)=((randD()<r)?p1:p2)->operator[](i); \
-            c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i); \
-        }
-
-        Heu_PRIVATE_IMP_cFunRandNs
-
-    }
-
-    /**
-     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
-     *             (without args)
-     *
-     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
-     */
-    template<DivCode p=DivCode::Half>
-    inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
-                                  Var_t * c1, Var_t * c2) {
-
-        Heu_PRIVATE_IMP_cFunX
-
-        cFunRandNs(p1,p2,c1,c2);
-    }
-};
 
 
 /**
@@ -212,9 +110,14 @@ struct imp_GADefaults_noParam
  * @tparam Args_t type of other parameters in genetic solver
  */
 
-template<typename Var_t,class Args_t,DoubleVectorOption dvo>
-struct imp_GADefaults_withParam
+}   //  namespace Heu_pri
+
+template<typename Var_t,
+         DoubleVectorOption dvo=DoubleVectorOption::Std,
+         class Args_t=void>
+struct GADefaults
 {
+
     static_assert(!std::is_same<Args_t,void>::value,
         "The compiler run into a incorrect branch of partial specialization");
 
@@ -233,7 +136,6 @@ struct imp_GADefaults_withParam
             for(size_t idx=0;idx<arg->varDim();idx++)
                 p->operator[](idx)=randD(arg->min()[idx],arg->max()[idx]);
         }
-
     }
 
     template<BoxShape BS=SQUARE_BOX>
@@ -264,7 +166,8 @@ struct imp_GADefaults_withParam
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        Heu_PRIVATE_IMP_cFunNd
+        GADefaults<Var_t,dvo,void>::
+                template cFunNd<_r>(p1,p2,c1,c2);
     }
 
     /**
@@ -278,8 +181,7 @@ struct imp_GADefaults_withParam
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        Heu_PRIVATE_IMP_cFunX
-        cFunNd<_r>(p1,p2,c1,c2,a);
+        GADefaults<Var_t,dvo,void>::template cFunXd<_r>(p1,p2,c1,c2);
     }
 
     /**
@@ -290,7 +192,7 @@ struct imp_GADefaults_withParam
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        Heu_PRIVATE_IMP_cFunSwapNs
+        GADefaults<Var_t,dvo,void>::template cFunSwapNs(p1,p2,c1,c2);
     }
 
     /**
@@ -301,8 +203,7 @@ struct imp_GADefaults_withParam
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        Heu_PRIVATE_IMP_cFunX
-        cFunSwapNs(p1,p2,c1,c2,a);
+        GADefaults<Var_t,dvo,void>::template cFunSwapXs(p1,p2,c1,c2);
     }
 
 
@@ -316,7 +217,7 @@ struct imp_GADefaults_withParam
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t *) {
-        Heu_PRIVATE_IMP_cFunRandNs
+        GADefaults<Var_t,dvo,void>::template cFunRandNs<p>(p1,p2,c1,c2);
     }
 
     /**
@@ -329,25 +230,132 @@ struct imp_GADefaults_withParam
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t * a) {
-        Heu_PRIVATE_IMP_cFunX
-
-        cFunRandNs<posCode>(p1,p2,c1,c2,a);
+        GADefaults<Var_t,dvo,void>::template cFunRandXs<posCode>(p1,p2,c1,c2);
     }
-
 };
 
-}   //  namespace Heu_pri
+template<typename Var_t,
+         DoubleVectorOption dvo>
+struct GADefaults<Var_t,dvo,void>
+{
+
+    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    inline static void iFunNd(Var_t * p) {
+        static const double min=decode<_min>::real;
+        static const double max=decode<_max>::real;
+        //static const constexpr bool isValid=(max>min);
+        //static_assert(isValid,"Max should be greater than min");
+
+        for(size_t idx=0;idx<p->size();idx++) {
+            p->operator[](idx)=randD(min,max);
+        }
+    }
+
+    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    inline static void iFunNf(Var_t * p) {
+        iFunNd<_min,_max>(p);
+    }
+
+    /**
+     * @brief Default crossover function for fixed-size float/double array/vector
+     *        (Genetic without args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunNd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        HeuPrivate::template imp_GADefaults_DVO<Var_t,dvo>::
+                template imp_cFunNd<_r>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Defaults crossover function for dynamic-size float/double array/vector
+     *        (Genetic without args)
+     *
+     * @tparam _r crossover ratio, 0<r<1
+     */
+    template<DivCode _r=encode<1,5>::code>
+    inline static void cFunXd(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+#define Heu_PRIVATE_IMP_cFunX \
+        c1->resize(p1->size()); \
+        c2->resize(p2->size());
+
+        Heu_PRIVATE_IMP_cFunX
+
+        cFunNd<_r>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default crossover function for fixed-size array/vector
+     *        (Genetic without args)
+     *
+     */
+
+    inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
+        HeuPrivate::template imp_GADefaults_DVO<Var_t,dvo>::
+                imp_cFunSwapNs(p1,p2,c1,c2);
+    }
 
 
+    /**
+     * @brief Default crossover function for dynamic-size array/vector
+     *        (Genetic without args)
+     *
+     */
+    inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
+                                Var_t * c1, Var_t * c2) {
 
+        Heu_PRIVATE_IMP_cFunX
+
+        cFunSwapNs(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Discrete random selection crossover by probability for fixed-size array/vector
+     *             (without args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode p=DivCode::Half>
+    inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        static const double constexpr r=decode<p>::real;
+        static_assert(r>0,"A probability shoule be greater than 0");
+        static_assert(r<1,"A probability shoule be less than 1");
+        const size_t N=p1->size();
+        for(size_t i=0;i<N;i++) {
+            c1->operator[](i)=((randD()<r)?p1:p2)->operator[](i);
+            c2->operator[](i)=((randD()<r)?p2:p1)->operator[](i);
+        }
+
+    }
+
+    /**
+     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
+     *             (without args)
+     *
+     * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+     */
+    template<DivCode p=DivCode::Half>
+    inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
+                                  Var_t * c1, Var_t * c2) {
+        Heu_PRIVATE_IMP_cFunX
+        cFunRandNs(p1,p2,c1,c2);
+    }
+};
+/*
 template<typename Var_t,DoubleVectorOption dvo=DoubleVectorOption::Std,class Args_t=void>
 using GADefaults =
     typename std::conditional<
     std::is_same<Args_t,void>::value,
     Heu_pri::imp_GADefaults_noParam<Var_t,dvo>,
-    Heu_pri::imp_GADefaults_withParam<Var_t,Args_t,dvo>
+    Heu_pri::imp_GADefaults_withParam<Var_t,dvo,Args_t>
     >::type;
 
+*/
 
 }   //  namespace Heu
 
