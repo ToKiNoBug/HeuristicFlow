@@ -20,8 +20,8 @@ add_executable(HeuristicFlow_Test
     imp_TestingMatrix.cpp   #Test simple matrix
     def_TestingGenetic.h
     imp_TestingGenetic.cpp  #Test SOGA and NSGA2
-    #def_TestingPSO.h
-    #imp_TestingPSO.cpp  #Test PSO
+    def_TestingPSO.h
+    imp_TestingPSO.cpp  #Test PSO
     main.cpp)
 
 find_package(OpenMP)

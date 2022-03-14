@@ -50,7 +50,11 @@ const size_t M=A.rows();
 const size_t N=A.cols();
 const size_t S=B.cols();
 
-if constexpr(_M==Dynamic||_S==Dynamic) {
+if
+#if __cplusplus >=201703L
+    constexpr
+#endif
+        (_M==Dynamic||_S==Dynamic) {
     dst->resize(M,S);
 }
 

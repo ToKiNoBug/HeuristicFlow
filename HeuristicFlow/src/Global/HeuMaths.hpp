@@ -147,10 +147,7 @@ inline T imp_max(T a,U b,Args_t ... args) {
  */
 template<typename T,class ... Args_t>
 inline T min(T a,Args_t ... args) {
-    if constexpr (sizeof...(Args_t)>=1)
-        return HeuPrivate::imp_min(a,args...);
-    else
-        return a;
+    return HeuPrivate::imp_min(a,args...);
 }
 
 
@@ -159,10 +156,7 @@ inline T min(T a,Args_t ... args) {
  */
 template<typename T,class ... Args_t>
 inline T max(T a,Args_t ... args) {
-    if constexpr (sizeof...(Args_t)>=1)
-        return HeuPrivate::imp_max(a,args...);
-    else
-        return a;
+    return HeuPrivate::imp_max(a,args...);
 }
 
 }

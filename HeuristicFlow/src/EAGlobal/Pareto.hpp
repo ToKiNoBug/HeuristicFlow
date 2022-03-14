@@ -33,7 +33,11 @@ struct Pareto
         if(A==B) return false;
         uint32_t notWorseNum=0,betterNum=0;
         for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if constexpr (fOpt==FITNESS_GREATER_BETTER) {
+            if
+        #if __cplusplus >=201703L
+                constexpr
+        #endif
+        (fOpt==FITNESS_GREATER_BETTER) {
                 notWorseNum+=((*A)[objIdx]>=(*B)[objIdx]);
                 betterNum+=((*A)[objIdx]>(*B)[objIdx]);
             }
@@ -57,7 +61,11 @@ struct Pareto<ObjNum,DoubleVectorOption::Eigen,fOpt>
     using Fitness_t = EigenVecD_t<ObjNum>;
     static bool isStrongDominate(const Fitness_t * A,const Fitness_t * B) {
         bool isNotWorse,isBetter;
-        if constexpr (fOpt==FITNESS_GREATER_BETTER) {
+        if
+        #if __cplusplus >=201703L
+                constexpr
+        #endif
+        (fOpt==FITNESS_GREATER_BETTER) {
             isNotWorse=((*A)>=(*B)).all();
             isBetter=((*A)>(*B)).any();
         }

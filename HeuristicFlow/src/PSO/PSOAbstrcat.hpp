@@ -121,15 +121,12 @@ public:
         _population.resize(_option.populationSize);
 
         for(Particle & i : _population) {
+            PSOExecutor<Base_t::HasParameters>::doInitialize(this,&i.position,
+                                                             &i.velocity,&_posMin,
+                                                             &_posMax,&_velocityMax);
 
-            if constexpr (Base_t::HasParameters) {
-                this->runiFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax,&this->_arg);
-                this->runfFun(&i.position,&this->_arg,&i.fitness);
-            }
-            else {
-                this->runiFun(&i.position,&i.velocity,&_posMin,&_posMax,&_velocityMax);
-                this->runfFun(&i.position,&i.fitness);
-            }
+            PSOExecutor<Base_t::HasParameters>::doFitness(this,&i.position,&i.fitness);
+
             i.pBest=i;
         }
 
@@ -192,19 +189,13 @@ protected:
         for(int32_t begIdx=0;begIdx<thN;begIdx++) {
             for(int32_t i=begIdx;i<_population.size();i+=thN) {
                 Particle * ptr=&_population[i];
-                if constexpr (Base_t::HasParameters)
-                    this->runfFun(&ptr->position,&this->_arg,&ptr->fitness);
-                else
-                    this->runfFun(&ptr->position,&ptr->fitness);
+                PSOExecutor<Base_t::HasParameters>::
+                        doFitness(this,&ptr->position,&ptr->fitness);
             }
         }
 #else
         for(Particle & i : _population) {
-            if constexpr (Base_t::HasParameters)
-                this->runfFun(&i.position,&this->_arg,&i.fitness);
-            else
-                this->runfFun(&i.position,&i.fitness);
-
+            PSOExecutor<Base_t::HasParameters>::doFitness(this,&i.position,&i.fitness);
         }
 #endif
     }
@@ -214,6 +205,41 @@ protected:
     virtual void updatePopulation()=0;
 
     virtual void customOptAfterEachGeneration() {};
+
+
+    template<bool _HasParameters,class unused=void>
+    struct PSOExecutor
+    {
+        inline static void doInitialize(PSOAbstract * s,Var_t * pos,Var_t * velocity,
+                                        const Var_t * pMin,const Var_t * pMax,const Var_t * vMax) {
+            s->runiFun(pos,velocity,pMin,pMax,vMax,&s->_arg);
+        }
+
+        inline static void doFitness(PSOAbstract * s,
+                                     const Var_t * pos,Fitness_t * f) {
+            s->runfFun(pos,&s->_arg,f);
+        }
+
+        static_assert (Base_t::HasParameters==_HasParameters,
+            "A wrong specialization of PSOExecuter is called");
+    };
+
+    template<class unused>
+    struct PSOExecutor<false,unused>
+    {
+        inline static void doInitialize(PSOAbstract * s,Var_t * pos,Var_t * velocity,
+                                        const Var_t * pMin,const Var_t * pMax,const Var_t * vMax) {
+            s->runiFun(pos,velocity,pMin,pMax,vMax);
+        }
+
+        inline static void doFitness(PSOAbstract * s,
+                                     const Var_t * pos,Fitness_t * f) {
+            s->runfFun(pos,f);
+        }
+
+        static_assert (Base_t::HasParameters==false,
+            "A wrong specialization of PSOExecuter is called");
+    };
 };
 
 #define Heu_MAKE_PSOABSTRACT_TYPES \
@@ -278,6 +304,7 @@ public:
     }
 protected:
     std::vector<Fitness_t> _record;
+
 };
 
 }

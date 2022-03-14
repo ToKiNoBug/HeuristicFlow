@@ -39,10 +39,7 @@ private: \
             return _fun; \
         } \
         inline return_t run##FunFlag(a... _a) const { \
-            if constexpr (std::is_same<return_t,void>::value) \
-                    _fun(_a...); \
-            else \
-                return _fun(_a...); \
+            return _fun(_a...); \
         } \
     private: \
         static_assert (_fun!=nullptr, "Template function mustn't be nullptr"); \
@@ -58,10 +55,7 @@ private: \
             return _funPtr; \
         } \
         inline return_t run##FunFlag(a... _a) const { \
-            if constexpr (std::is_same<return_t,void>::value) \
-                    _funPtr(_a...); \
-            else \
-                return _funPtr(_a...); \
+            return _funPtr(_a...); \
         } \
         inline void set##FunFlag(funPtr_t __) { \
             _funPtr=__; \

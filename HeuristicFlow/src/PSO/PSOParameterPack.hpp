@@ -48,16 +48,6 @@ public:
         return _arg;
     }
 
-    /*
-    inline void doInitialize(iFun_t iFun,Var_t * pos,Var_t * velocity,
-        const Var_t * pMin,const Var_t * pMax,const Var_t * vMax) {
-            iFun(pos,velocity,pMin,pMax,vMax,&_arg);
-    }
-
-    inline void doFitness(fFun_t fFun,const Var_t * v,Fitness_t * f) {
-        fFun(v,&_arg,f);
-    }
-    */
     static const bool HasParameters=true;
 
 protected:
@@ -87,16 +77,6 @@ public:
     using fFunBody = typename
         HeuPrivate::fFunArea_PSO<void,const Var_t *,Fitness_t *>::template funBody<_i>;
 
-    /*
-    inline static void doInitialize(iFun_t iFun,Var_t * pos,Var_t * velocity,
-        const Var_t * pMin,const Var_t * pMax,const Var_t * vMax) {
-            iFun(pos,velocity,pMin,pMax,vMax);
-    }
-
-    inline static void doFitness(fFun_t fFun,const Var_t * v,Fitness_t * f) {
-        fFun(v,f);
-    }
-    */
 
     static const bool HasParameters=false;
 };

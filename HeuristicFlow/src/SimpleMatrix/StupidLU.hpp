@@ -46,10 +46,13 @@ void SquareMatrixProduct(const SquareMat_t<Scalar_t,Size> & A,
     SquareMat_t<Scalar_t,Size> * res) {
 
 const size_t N=A.rows();
-if constexpr (Size==Dynamic) {
+if
+#if __cplusplus >=201703L
+        constexpr
+#endif
+(Size==Dynamic) {
 res->resize(N,N);
 }
-
 for(size_t r=0;r<N;r++) {
     for(size_t c=0;c<N;c++) {
         Scalar_t sum=0;
@@ -71,7 +74,11 @@ assert(A.rows()==A.cols());
 
 SquareMat_t<Scalar_t,Size> L,U,iL,iU;
 const size_t N=A.rows();
-if constexpr (Size==Dynamic) {
+if
+#if __cplusplus >=201703L
+    constexpr
+#endif
+(Size==Dynamic) {
 L.resize(N,N);
 U.resize(N,N);
 iL.resize(N,N);
