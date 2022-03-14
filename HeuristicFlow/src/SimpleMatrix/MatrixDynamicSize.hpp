@@ -48,7 +48,6 @@ public:
         _capacity=r*c;
         dataPtr=alloc().allocate(_capacity);
 
-        if constexpr (isClass)
             for(size_t i=0;i<_capacity;i++) {
                 alloc().construct(dataPtr+i);
             }
@@ -74,7 +73,6 @@ public:
     ~MatrixDynamicSize() {
         if(dataPtr!=nullptr) {
             alloc().deallocate(dataPtr,_capacity);
-            if constexpr (isClass)
                 for(size_t i=0;i<_capacity;i++) {
                     allocT_t::destroy(alloc(),dataPtr+i);
                 }
