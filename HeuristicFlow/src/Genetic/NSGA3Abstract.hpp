@@ -175,12 +175,19 @@ protected:
         SquareMat_t<double,ObjNum> extremePoints;
         
         Fitness_t ideal,intercepts;
-        
+#if __cplusplus >= 201703L
         if constexpr (ObjNum==Dynamic) {
             extremePoints.resize(M,M);
             ideal.resize(M);
             intercepts.resize(M);
         }
+#else
+        if (ObjNum==Dynamic) {
+            extremePoints.resize(M,M);
+            ideal.resize(M);
+            intercepts.resize(M);
+        }
+#endif  //  #if __cplusplus >= 201703L
 
         for(size_t c=0;c<M;c++) {
             ideal[c]=pinfD;
@@ -420,14 +427,18 @@ private:
         std::vector<Fitness_t> * dst) const {
 
         Fitness_t rec;
-
+#if __cplusplus >=201703L
         if constexpr(ObjNum==Dynamic) {
             rec.resize(this->objectiveNum());
         }
+#else
+        if (ObjNum==Dynamic) {
+            rec.resize(this->objectiveNum());
+        }
+#endif
 
         pri_makeRP(dimN,precision,0,0,0,&rec,dst);
     }
-
     
     inline static void extremePoints2Intercept(const SquareMat_t<double,ObjNum> & P_T,
         Fitness_t * intercept) {
@@ -444,11 +455,17 @@ private:
 
         Matrix_t<double,ObjNum,1> Ones,one_div_intercept;
 
+#if __cplusplus >=201703L
         if constexpr (ObjNum==Dynamic) {
             Ones.resize(P_T.rows(),1);
             intercept->resize(P_T.rows());
         }
-
+#else
+        if (ObjNum==Dynamic) {
+            Ones.resize(P_T.rows(),1);
+            intercept->resize(P_T.rows());
+        }
+#endif
         for(size_t i=0;i<P_T.rows();i++) {
             Ones[i]=1;
         }

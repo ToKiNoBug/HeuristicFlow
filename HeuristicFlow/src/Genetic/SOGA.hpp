@@ -116,11 +116,8 @@ protected:
                 continue;
             }
             if(randD()<=this->_option.mutateProb) {
-
-                if constexpr (std::is_same<Args_t,void>::value)
-                        this->runmFun(&it->self);
-                else
-                    this->runmFun(&it->self,&this->_args);
+                Base_t::template GAExecutor<Base_t::HasParameters>
+                        ::doMutation(this,&it->self);
 
                 it->setUncalculated();
             }

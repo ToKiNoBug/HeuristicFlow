@@ -260,7 +260,7 @@ protected:
     virtual void mutate()=0;
 
 protected:
-    template<bool HasParameters,class unused=GABase>
+    template<bool HasParameters,class unused=void>
     struct GAExecutor
     {
         inline static void doInitialization(GABase * s,Var_t * v) {
@@ -276,7 +276,7 @@ protected:
             s->runcFun(p1,p2,c1,c2,&s->_args);
         }
 
-        inline static void doMutation(GABase * s,Var_t * v ) {
+        inline static void doMutation(GABase * s,Var_t * v) {
             s->runmFun(v,&s->_args);
 
             static_assert (HasParameters==GABase::HasParameters,

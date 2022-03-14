@@ -155,14 +155,27 @@ protected:
     "Heu : Invalid compare flag");
 #endif
         if(A==B) return false;
+
+#if __cplusplus >= 201703L
         ///compare by congestion
-        if constexpr(objIdx==CompareByCongestion) {
+        if constexpr (objIdx==CompareByCongestion) {
             return A->congestion[0]>B->congestion[0];
         }
         ///compare by this->pfLayers
         if constexpr(objIdx==CompareByDominantedBy) {
             return A->domainedByNum<B->domainedByNum;
         }
+#else   //  these if constexpr will be done by compiler's optimization
+        ///compare by congestion
+        if (objIdx==CompareByCongestion) {
+            return A->congestion[0]>B->congestion[0];
+        }
+        ///compare by this->pfLayers
+        if (objIdx==CompareByDominantedBy) {
+            return A->domainedByNum<B->domainedByNum;
+        }
+#endif  //  #if __cplusplus >= 201703L
+
         ///compare by fitness on single objective
         return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
     }
@@ -182,6 +195,8 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
+
+#if __cplusplus >= 201703L
             if constexpr (ObjNum==Dynamic) {
                 if constexpr (DVO==DoubleVectorOption::Eigen) {
                     pop.back().congestion.resize(this->objectiveNum(),1);
@@ -190,6 +205,17 @@ protected:
                     pop.back().congestion.resize(this->objectiveNum());
                 }
             }
+#else   //  these if constexpr will be done by compiler's optimization
+            if (ObjNum==Dynamic) {
+                if (DVO==DoubleVectorOption::Eigen) {
+                    pop.back().congestion.resize(this->objectiveNum(),1);
+                }
+                else {
+                    pop.back().congestion.resize(this->objectiveNum());
+                }
+            }
+#endif  //  #if __cplusplus >= 201703L
+
         }
 
         //make sortspace

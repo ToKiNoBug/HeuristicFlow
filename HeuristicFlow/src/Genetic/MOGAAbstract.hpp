@@ -130,11 +130,8 @@ protected:
                     }
                 }
 
-                if constexpr(Base_t::HasParameters)
-                        this->runmFun(&it->self,&this->_args);
-                else
-                        this->runmFun(&it->self);
-
+                Base_t::template GAExecutor<Base_t::HasParameters>
+                        ::doMutation(this,&it->self);
 
                 it->setUncalculated();
             }
