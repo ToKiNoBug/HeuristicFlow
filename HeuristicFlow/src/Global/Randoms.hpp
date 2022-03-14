@@ -28,10 +28,15 @@ This file is part of HeuristicFlow.
 namespace Heu {
 
 ///global random device(mt19937) for Heu
-extern std::mt19937 global_mt19937;
+//extern std::mt19937 global_mt19937;
+
+inline std::mt19937 & global_mt19937() {
+    static std::mt19937 mt;
+    return mt;
+}
 
 ///Calling anything in this namespace is deprecated
-namespace HeuPrivate {    
+namespace HeuPrivate {
 inline uint32_t makeRandSeed() {
         static bool isFirstCalled=true;
         if(isFirstCalled) {
@@ -53,7 +58,7 @@ inline uint32_t makeRandSeed() {
             return seed_^seed;
         }
         else {
-            return global_mt19937.operator()();
+            return global_mt19937()();
         }
     }
 }   // HeuPrivate
@@ -62,7 +67,7 @@ inline uint32_t makeRandSeed() {
 ///uniform random number in range [0,1)
 inline double randD() {
     static std::uniform_real_distribution<double> rnd(0,1);
-    return rnd(global_mt19937);
+    return rnd(global_mt19937());
 }
 
 ///uniform random number in range [min,max)

@@ -51,19 +51,13 @@ class HfGlobal
 {
 public:
     inline static uint32_t threadNum() {
-        return concurrency;
+        return 4*std::thread::hardware_concurrency();
     }
 private:
     HfGlobal() {};
     ~HfGlobal() {};
-    static uint32_t concurrency;
+
 };
-
-
-#define Heu_MAKE_GLOBAL \
-std::mt19937 Heu::global_mt19937(Heu::HeuPrivate::makeRandSeed()); \
-Heu::LogisticChaos Heu::global_logistic(randD()); \
-uint32_t Heu::HfGlobal::concurrency=std::thread::hardware_concurrency();
 
 }
 

@@ -137,13 +137,13 @@ protected:
     void makeReferencePoses() {
         this->referencePoses.resize(this->objectiveNum(),referencePointCount());
         std::vector<Fitness_t> irfP,orfP;        
-        std::shuffle(irfP.begin(),irfP.end(),global_mt19937);
-        std::shuffle(orfP.begin(),orfP.end(),global_mt19937);
+        std::shuffle(irfP.begin(),irfP.end(),global_mt19937());
+        std::shuffle(orfP.begin(),orfP.end(),global_mt19937());
         this->computeReferencePointPoses(this->objectiveNum(),_innerPrecision,&irfP);
         this->computeReferencePointPoses(this->objectiveNum(),_outerPrecision,&orfP);
 
-        for(size_t c=0;c<this->referencePoses.cols();c++) {
-            for(size_t r=0;r<this->objectiveNum();r++) {
+        for(int c=0;c<this->referencePoses.cols();c++) {
+            for(int r=0;r<this->objectiveNum();r++) {
                 if(c<irfP.size()) {
                     this->referencePoses(r,c)=irfP[c][r]*M_SQRT1_2;
                 }

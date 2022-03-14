@@ -241,7 +241,7 @@ protected:
         std::shuffle(
                     crossoverQueue.begin(),
                     crossoverQueue.end(),
-                    global_mt19937);
+                    global_mt19937());
 
         if(crossoverQueue.size()%2==1) {
             crossoverQueue.pop_back();
