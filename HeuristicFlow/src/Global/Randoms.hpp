@@ -33,6 +33,8 @@ namespace Heu {
 #endif
 #endif  //  #ifdef __CNUC__
 
+inline std::mt19937 & global_mt19937();
+
 inline std::random_device & global_random_device() {
     static std::random_device rdv;
     return rdv;
