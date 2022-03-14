@@ -34,23 +34,6 @@ using stdContainer =
         std::vector<scalar_t>,
         std::array<scalar_t,Dim>>::type;
 
-template<typename scalar_t,size_t Dim>
-struct iniSize4StdContainer
-{
-public:
-    inline static void iniSize(stdContainer<scalar_t,Dim> * v,size_t size) {}
-};
-
-template<typename scalar_t>
-struct iniSize4StdContainer<scalar_t,Dynamic>
-{
-
-public:
-    inline static void iniSize(stdContainer<scalar_t,Dynamic> * v,size_t size) {
-        v->resize(size);
-    }
-};
-
 #ifdef EIGEN_CORE_H
 template<typename scalar_t,size_t Dim>
 using EigenContainer =

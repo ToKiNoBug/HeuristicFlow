@@ -114,7 +114,7 @@ protected:
 
         const size_t M=this->objectiveNum();
         stdContainer<const infoUnit3*,ObjNum> extremePtrs;
-        iniSize4StdContainer<const infoUnit3*,ObjNum>::iniSize(&extremePtrs,M);
+        initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs,M);
         
         Eigen::Array<double,eigSizeFlag,eigSizeFlag> extremePoints;
         
