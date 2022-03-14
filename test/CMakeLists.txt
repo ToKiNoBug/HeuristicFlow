@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 #set(CMAKE_ADD2LINE D:/mingw/mingw64/bin/addr2line.exe)
 #set(CMAKE_AR D:/mingw/mingw64/bin/ar.exe)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -20,8 +20,8 @@ add_executable(HeuristicFlow_Test
     imp_TestingMatrix.cpp   #Test simple matrix
     def_TestingGenetic.h
     imp_TestingGenetic.cpp  #Test SOGA and NSGA2
-    def_TestingPSO.h
-    imp_TestingPSO.cpp  #Test PSO
+    #def_TestingPSO.h
+    #imp_TestingPSO.cpp  #Test PSO
     main.cpp)
 
 find_package(OpenMP)
