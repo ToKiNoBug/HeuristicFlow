@@ -13,9 +13,14 @@ template<typename Scalar_t,size_t Dim,
          size_t RangeType=Runtime,
          TemplateVal_t<Scalar_t> MinCT=TemplateVal_t<Scalar_t>(1),
          TemplateVal_t<Scalar_t> MaxCT=TemplateVal_t<Scalar_t>(1)>
-using RealBox = typename std::enable_if<std::is_floating_point<Scalar_t>::value,
-    BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>>::type;
-
+class RealBox : public BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
+{
+private:
+    static_assert(std::is_floating_point<Scalar_t>::value,
+        "Scalar_t must be a floating point number");
+public:
+    static const constexpr EncodeType Encoding=EncodeType::Real;
+};
 
 /**
  * Fixed(N) dim real(d) square(S) box
@@ -48,6 +53,28 @@ using BoxNdN = RealBox<double,Dim,DVO,BoxShape::RECTANGLE_BOX>;
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXdN = RealBox<double,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
+
+/**
+ * Binary box
+ */
+template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+class BooleanBox : public BoxDims<bool,Dim,DVO,BoxShape::SQUARE_BOX,1,false,true>
+{
+public:
+    static const constexpr EncodeType Encoding=EncodeType::Binary;
+};
+
+/**
+ * Binary box with fixed dim
+ */
+template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxNb = typename std::enable_if<Dim!=Runtime,BooleanBox<Dim,DVO>>::type;
+
+/**
+ * Binary box with dynamic dims
+ */
+template<DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxXb = BooleanBox<Runtime,DVO>;
 
 }
 

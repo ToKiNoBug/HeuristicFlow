@@ -38,6 +38,14 @@ public:
     static const constexpr bool isBox=true;
     static const constexpr char Flag[]="Non-square box with runtime range.";
 
+    inline Var_t & min() {
+        return _minV;
+    }
+
+    inline Var_t & max() {
+        return _maxV;
+    }
+
     inline const Var_t & min() const {
         return _minV;
     }
@@ -79,6 +87,14 @@ public:
     }
 
     inline Scalar_t max() const {
+        return _maxS;
+    }
+
+    inline Scalar_t & min() {
+        return _minS;
+    }
+
+    inline Scalar_t & max() {
         return _maxS;
     }
 

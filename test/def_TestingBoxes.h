@@ -9,4 +9,6 @@
 
 void test_Box_double();
 
+void test_Box_bool();
+
 #endif // DEF_TESTINGBOXES_H
