@@ -16,7 +16,7 @@ This file is part of HeuristicFlow.
     along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-
+# if false
 #ifndef Heu_BOXCONSTRAINT_HPP
 #define Heu_BOXCONSTRAINT_HPP
 
@@ -324,3 +324,4 @@ protected:
 }   //  namespace Heu
 
 #endif  //  Heu_BOXCONSTRAINT_HPP
+#endif

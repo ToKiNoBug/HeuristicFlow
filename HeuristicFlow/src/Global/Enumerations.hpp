@@ -99,9 +99,9 @@ enum BoxShape {
 };
 
 enum EncodeType {
-    RealEncoding,
-    BinaryEncoding,
-    SymbolicEncoding
+    Real,
+    Binary,
+    Symbolic
 };
 
 }

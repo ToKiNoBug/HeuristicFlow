@@ -46,24 +46,28 @@ using EigenContainer =
 template<size_t Size>
 using stdVecD_t = stdContainer<double,Size>;
 
+
+#ifdef EIGEN_CORE_H
+template<typename scalar_t,size_t Size,DoubleVectorOption DVO>
+using Container = typename std::conditional<
+    (DVO!=DoubleVectorOption::Eigen),
+    stdContainer<scalar_t,Size>,
+    EigenContainer<scalar_t,Size>>::type;
+#else
+template<typename scalar_t,size_t Size,DoubleVectorOption DVO>
+using Container = typename std::enable_if
+    <(DVO!=DoubleVectorOption::Eigen),
+    stdContainer<scalar_t,Size>>::type;
+#endif
+
 #ifdef EIGEN_CORE_H
 ///Array type when using Eigen array(s)
 template<size_t Size>
 using EigenVecD_t = EigenContainer<double,Size>;
-
-template<DoubleVectorOption dvo,size_t Dim>
-using FitnessVec_t= typename
-    std::enable_if<dvo!=DoubleVectorOption::Custom,
-    typename std::conditional<
-    dvo==DoubleVectorOption::Eigen,
-    EigenVecD_t<Dim>,
-    stdVecD_t<Dim>>::type>::type;
-#else
-template<DoubleVectorOption dvo,size_t Dim>
-using FitnessVec_t= typename
-        std::enable_if<dvo==DoubleVectorOption::Std,stdVecD_t<Dim>>::type;
 #endif
 
+template<DoubleVectorOption dvo,size_t Dim>
+using FitnessVec_t= Container<double,Dim,dvo>;
 
 template<size_t _ObjNum>
 struct initializeSize

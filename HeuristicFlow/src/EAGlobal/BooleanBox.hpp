@@ -1,3 +1,4 @@
+#if false
 #ifndef Heu_BOOLEANBOX_HPP
 #define Heu_BOOLEANBOX_HPP
 
@@ -144,3 +145,4 @@ using BoxConstraint = typename std::conditional<
 }   //  namespace Heu
 
 #endif  //  Heu_BOOLEANBOX_HPP
+#endif
