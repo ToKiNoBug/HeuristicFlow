@@ -53,9 +53,9 @@ public:
 #ifdef EIGEN_CORE_H
     using RefMat_t= typename std::conditional<DVO==Std,
         MatrixDynamicSize<double>,
-        Eigen::Array<double,(ObjNum==Dynamic?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
+        Eigen::Array<double,(ObjNum==Runtime?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
 #else
-    using RefMat_t = MatrixDynamicSize<double>;
+    using RefMat_t = MatrixRuntimeSize<double>;
 #endif
 
     inline const RefMat_t & referencePoints() const {
@@ -176,13 +176,13 @@ protected:
         
         Fitness_t ideal,intercepts;
 #if __cplusplus >= 201703L
-        if constexpr (ObjNum==Dynamic) {
+        if constexpr (ObjNum==Runtime) {
             extremePoints.resize(M,M);
             ideal.resize(M);
             intercepts.resize(M);
         }
 #else
-        if (ObjNum==Dynamic) {
+        if (ObjNum==Runtime) {
             extremePoints.resize(M,M);
             ideal.resize(M);
             intercepts.resize(M);
@@ -428,11 +428,11 @@ private:
 
         Fitness_t rec;
 #if __cplusplus >=201703L
-        if constexpr(ObjNum==Dynamic) {
+        if constexpr(ObjNum==Runtime) {
             rec.resize(this->objectiveNum());
         }
 #else
-        if (ObjNum==Dynamic) {
+        if (ObjNum==Runtime) {
             rec.resize(this->objectiveNum());
         }
 #endif
@@ -456,12 +456,12 @@ private:
         Matrix_t<double,ObjNum,1> Ones,one_div_intercept;
 
 #if __cplusplus >=201703L
-        if constexpr (ObjNum==Dynamic) {
+        if constexpr (ObjNum==Runtime) {
             Ones.resize(P_T.rows(),1);
             intercept->resize(P_T.rows());
         }
 #else
-        if (ObjNum==Dynamic) {
+        if (ObjNum==Runtime) {
             Ones.resize(P_T.rows(),1);
             intercept->resize(P_T.rows());
         }

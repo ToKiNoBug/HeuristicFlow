@@ -575,7 +575,7 @@ void testDistance(const size_t N) {
 static const size_t Dim=2;
 using Point_t = Eigen::Array<double,Dim,1>;
 using solver_t = NSGA2<Point_t,
-    Dynamic,
+    Runtime,
     DoubleVectorOption::Eigen,
     FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,

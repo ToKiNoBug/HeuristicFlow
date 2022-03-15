@@ -57,11 +57,11 @@ public:
 
 
 template<DoubleVectorOption DVO>
-class BoxBoolean<Dynamic,DVO>
-    : public BoxBooleanBase<Dynamic,DVO>
+class BoxBoolean<Runtime,DVO>
+    : public BoxBooleanBase<Runtime,DVO>
 {
 public:
-    using Base_t = BoxBooleanBase<Dynamic,DVO>;
+    using Base_t = BoxBooleanBase<Runtime,DVO>;
     Heu_MAKE_BOXABSTRACT_TYPES
 
     BoxBoolean() {
@@ -90,7 +90,7 @@ private:
     static const bool isBoolean=std::is_same<Scalar_t,bool>::value;
     static const bool isSymbolic=(!isReal)&&(!isBoolean);
 
-    static_assert(isReal||(BS==SQUARE_BOX)),"Non-real box must be a square box");
+    static_assert(isReal||(BS==SQUARE_BOX),"Non-real box must be a square box");
 public:
     using type = typename std::conditional<
         isReal,

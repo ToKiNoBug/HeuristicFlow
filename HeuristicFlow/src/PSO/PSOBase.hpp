@@ -48,11 +48,11 @@ protected:
 
 };
 
-///partial specialization for PSOBase with dynamic dimensions
+///partial specialization for PSOBase with Runtime dimensions
 template<class Var_t,class Fitness_t,RecordOption Record,class Arg_t,
          typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::iFun_t _iFun_,
          typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
-class PSOBase<Var_t,Dynamic,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
+class PSOBase<Var_t,Runtime,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
         : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
 public:

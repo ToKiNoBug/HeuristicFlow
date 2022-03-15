@@ -104,7 +104,7 @@ private:
     template<size_t HeuSize>
     struct HeuSize2EigenSize
     {
-        static const constexpr int64_t value=(HeuSize==Dynamic)?(Eigen::Dynamic):(HeuSize);
+        static const constexpr int64_t value=(HeuSize==Runtime)?(Eigen::Dynamic):(HeuSize);
     };
 protected:
     static const int64_t eigSizeFlag=HeuSize2EigenSize<ObjNum>::value;

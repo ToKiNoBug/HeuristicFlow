@@ -187,7 +187,7 @@ public:
     }
 
 protected:
-    static_assert(DIM!=0,"class Box's partial specialization for dynamic-sized Var_t isn't activated");
+    static_assert(DIM!=0,"class Box's partial specialization for Runtime-sized Var_t isn't activated");
 };
 
 
@@ -196,8 +196,8 @@ protected:
  * @brief For runtime dimensional box
  */
 template<typename Scalar_t,BoxShape BS,DoubleVectorOption DVO>
-class Box<Scalar_t,Dynamic,BS,DVO>
-    : public BoxBase<Scalar_t,Dynamic,BS,DVO>
+class Box<Scalar_t,Runtime,BS,DVO>
+    : public BoxBase<Scalar_t,Runtime,BS,DVO>
 {
 public:
     Box() {
@@ -208,7 +208,7 @@ public:
 
     }
 
-    using Base_t = BoxBase<Scalar_t,Dynamic,BS,DVO>;
+    using Base_t = BoxBase<Scalar_t,Runtime,BS,DVO>;
     Heu_MAKE_BOXABSTRACT_TYPES
 
     inline size_t varDim() const {
@@ -282,8 +282,8 @@ public:
     Heu_MAKE_BOXABSTRACT_TYPES
 
     using EditMat_t = typename std::conditional<
-        DIM==Dynamic,
-        MatrixDynamicSize<Scalar_t>,
+        DIM==Runtime,
+        MatrixRuntimeSize<Scalar_t>,
         MatrixFixedSize<Scalar_t,DIM,DIM-1>>::type;
 
     template<bool randShuffle=false>

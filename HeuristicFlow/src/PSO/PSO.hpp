@@ -130,7 +130,7 @@ protected:
 
 };
 
-///Convenient typedef for stdArray (fix-sized and dynamic sized)
+///Convenient typedef for stdArray (fix-sized and Runtime sized)
 template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,

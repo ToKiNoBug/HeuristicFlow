@@ -103,15 +103,16 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
 
 
 
+}   //  namespace Heu_pri
+
+
 /**
  * @brief The GADefaults struct defines several candidate operations for GA
  *
  * @tparam Var_t type of determinate vector
+ * @tparam dvo double vector option of Var_t
  * @tparam Args_t type of other parameters in genetic solver
  */
-
-}   //  namespace Heu_pri
-
 template<typename Var_t,
          DoubleVectorOption dvo=DoubleVectorOption::Std,
          class Args_t=void>
@@ -171,7 +172,7 @@ struct GADefaults
     }
 
     /**
-     * @brief Default crossover function for dynamic-size float/double array/vector
+     * @brief Default crossover function for Runtime-size float/double array/vector
      *        (Genetic with args)
      *
      * @tparam _r crossover ratio, 0<r<1
@@ -196,7 +197,7 @@ struct GADefaults
     }
 
     /**
-     * @brief Default crossover function for dynamic-size array/vector
+     * @brief Default crossover function for Runtime-size array/vector
      *        (Genetic with args)
      *
      */
@@ -221,7 +222,7 @@ struct GADefaults
     }
 
     /**
-     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
+     * @brief Discrete random selection crossover by probability for Runtime-size array/vector
      *             (with args)
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
@@ -270,7 +271,7 @@ struct GADefaults<Var_t,dvo,void>
     }
 
     /**
-     * @brief Defaults crossover function for dynamic-size float/double array/vector
+     * @brief Defaults crossover function for Runtime-size float/double array/vector
      *        (Genetic without args)
      *
      * @tparam _r crossover ratio, 0<r<1
@@ -301,7 +302,7 @@ struct GADefaults<Var_t,dvo,void>
 
 
     /**
-     * @brief Default crossover function for dynamic-size array/vector
+     * @brief Default crossover function for Runtime-size array/vector
      *        (Genetic without args)
      *
      */
@@ -334,7 +335,7 @@ struct GADefaults<Var_t,dvo,void>
     }
 
     /**
-     * @brief Discrete random selection crossover by probability for dynamic-size array/vector
+     * @brief Discrete random selection crossover by probability for Runtime-size array/vector
      *             (without args)
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5

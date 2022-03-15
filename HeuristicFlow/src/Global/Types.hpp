@@ -30,14 +30,14 @@ namespace Heu {
 
 template<typename scalar_t,size_t Dim>
 using stdContainer =
-    typename std::conditional<Dim==Dynamic,
+    typename std::conditional<Dim==Runtime,
         std::vector<scalar_t>,
         std::array<scalar_t,Dim>>::type;
 
 #ifdef EIGEN_CORE_H
 template<typename scalar_t,size_t Dim>
 using EigenContainer =
-    typename std::conditional<Dim==Dynamic,
+    typename std::conditional<Dim==Runtime,
         Eigen::Array<scalar_t,Eigen::Dynamic,1>,
         Eigen::Array<scalar_t,Dim,1>>::type;
 #endif
@@ -75,7 +75,7 @@ struct initializeSize
 };
 
 template<>
-struct initializeSize<Dynamic>
+struct initializeSize<Runtime>
 {
     template<typename A>
     inline static void resize(A * v,size_t sz) {

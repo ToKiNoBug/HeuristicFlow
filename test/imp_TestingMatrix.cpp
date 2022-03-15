@@ -95,7 +95,7 @@ void testLoop(uint32_t loopN) {
 
 
 void testInverse() {
-    static const size_t N=Dynamic;
+    static const size_t N=Runtime;
     MatrixDynamicSize<double> A(50,50),iA(50,50);
     
     for(auto & i : A) {

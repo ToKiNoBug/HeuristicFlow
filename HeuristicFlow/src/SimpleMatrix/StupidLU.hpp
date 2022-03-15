@@ -38,7 +38,7 @@ namespace Heu {
  */
 
 template<typename Scalar_t,size_t N>
-using SquareMat_t = typename std::conditional<N==Dynamic,MatrixDynamicSize<Scalar_t>,MatrixFixedSize<Scalar_t,N,N>>::type;
+using SquareMat_t = typename std::conditional<N==Runtime,MatrixDynamicSize<Scalar_t>,MatrixFixedSize<Scalar_t,N,N>>::type;
 
 template<typename Scalar_t,size_t Size>
 void SquareMatrixProduct(const SquareMat_t<Scalar_t,Size> & A,
@@ -50,7 +50,7 @@ if
 #if __cplusplus >=201703L
         constexpr
 #endif
-(Size==Dynamic) {
+(Size==Runtime) {
 res->resize(N,N);
 }
 for(size_t r=0;r<N;r++) {
@@ -78,7 +78,7 @@ if
 #if __cplusplus >=201703L
     constexpr
 #endif
-(Size==Dynamic) {
+(Size==Runtime) {
 L.resize(N,N);
 U.resize(N,N);
 iL.resize(N,N);

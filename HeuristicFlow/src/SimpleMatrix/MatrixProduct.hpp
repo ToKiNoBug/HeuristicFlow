@@ -36,9 +36,9 @@ namespace Heu {
  * @tparam cS Coloumn num
  */
 template<typename Scalar_t,size_t rS,size_t cS>
-using Matrix_t = typename std::conditional<(rS!=Dynamic)&&(cS!=Dynamic),MatrixFixedSize<Scalar_t,rS,cS>,MatrixDynamicSize<Scalar_t>>::type;
+using Matrix_t = typename std::conditional<(rS!=Runtime)&&(cS!=Runtime),MatrixFixedSize<Scalar_t,rS,cS>,MatrixDynamicSize<Scalar_t>>::type;
 
-template<typename Scalar_t=double,size_t _M=Dynamic,size_t _N=Dynamic,size_t _S=Dynamic>
+template<typename Scalar_t=double,size_t _M=Runtime,size_t _N=Runtime,size_t _S=Runtime>
 void MatrixProduct(const Matrix_t<Scalar_t,_M,_N> & A,
                 const Matrix_t<Scalar_t,_N,_S> & B,
                 Matrix_t<Scalar_t,_M,_S> * dst) {
@@ -54,7 +54,7 @@ if
 #if __cplusplus >=201703L
     constexpr
 #endif
-        (_M==Dynamic||_S==Dynamic) {
+        (_M==Runtime||_S==Runtime) {
     dst->resize(M,S);
 }
 

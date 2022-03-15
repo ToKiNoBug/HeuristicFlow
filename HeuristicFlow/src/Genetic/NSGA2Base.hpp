@@ -66,7 +66,7 @@ public:
 
     static double default_ccFun_liner(const Fitness_t * f) {
         double result=f->operator[](0);
-        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
             result+=f->operator[](objIdx);
         }
         return result;
@@ -74,7 +74,7 @@ public:
 
     static double default_ccFun_sphere(const Fitness_t * f) {
         double result=OT_square(f->operator[](0));
-        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
             result+=OT_square(f->operator[](objIdx));
         }
         return std::sqrt(result);
@@ -82,7 +82,7 @@ public:
 
     static double default_ccFun_max(const Fitness_t * f) {
         double result=f->operator[](0);
-        for(size_t objIdx=1;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
             result=std::max(f->operator[](objIdx),result);
         }
         return result;
@@ -98,7 +98,7 @@ public:
     template<int64_t p>
     static double default_ccFun_powered(const Fitness_t * f) {
         double result=0;
-        for(size_t objIdx=0;objIdx<((ObjNum==Dynamic)?f->size():ObjNum);objIdx++) {
+        for(size_t objIdx=0;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
             result+=power<p>(f->operator[](objIdx));
         }
         return std::pow(result,1.0/p);

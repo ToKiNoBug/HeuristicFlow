@@ -88,13 +88,13 @@ template<typename Var_t,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,Dynamic>,Args_t>::mutateFun _mFun_>
-class MOGABase<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Runtime>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Runtime>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Runtime>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,FitnessVec_t<DVO,Runtime>,Args_t>::mutateFun _mFun_>
+class MOGABase<Var_t,Runtime,DVO,fOpt,rOpt,pfOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
-        : public MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+        : public MOGAAbstract<Var_t,Runtime,DVO,fOpt,rOpt,pfOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
@@ -102,7 +102,7 @@ public:
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    using Base_t = MOGAAbstract<Var_t,Dynamic,DVO,fOpt,rOpt,pfOpt,Args_t,
+    using Base_t = MOGAAbstract<Var_t,Runtime,DVO,fOpt,rOpt,pfOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
