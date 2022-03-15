@@ -126,7 +126,7 @@ struct GADefaults
     inline static void iFunNd(Var_t * p,Args_t * arg) {
         static_assert(Args_t::Heu_isBox,
             "Args_t in GADefaults' paramater is not a box constraint type");
-        static_assert(Args_t::encodeType==EncodeType::RealEncoding,
+        static_assert(Args_t::encodeType==EncodeType::Real,
             "Args_t in GADefaults' paramater is real encoded");
 
         if constexpr (Args_t::Heu_isSquareBox) {

@@ -22,6 +22,7 @@ This file is part of HeuristicFlow.
 #include "def_TestingGenetic.h"
 #include "def_TestingPSO.h"
 #include "def_TestingMatrix.h"
+#include "def_TestingBoxes.h"
 
 using namespace std;
 
@@ -30,7 +31,8 @@ void fun() {
 }
 
 int main() {
-    testAckley_withRecord();
+    test_Box_double();
+    //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA3_DTLZ7();
     //searchPF();

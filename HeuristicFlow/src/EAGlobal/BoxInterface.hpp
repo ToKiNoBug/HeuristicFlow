@@ -49,6 +49,6 @@ using BoxNdN = RealBox<double,Dim,DVO,BoxShape::RECTANGLE_BOX>;
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXdN = RealBox<double,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
 
-};
+}
 
 #endif // BOXINTERFACE_HPP

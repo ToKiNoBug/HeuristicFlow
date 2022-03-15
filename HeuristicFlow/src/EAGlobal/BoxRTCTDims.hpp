@@ -21,14 +21,6 @@ private:
 public:
     using Var_t = typename Base_t::Var_t;
 
-    inline void setMin(Scalar_t s) {
-        Base_t::setMin(s);
-    }
-
-    inline void setMax(Scalar_t s) {
-        Base_t::setMax(s);
-    }
-
     inline constexpr size_t dimensions() const {
         return Dim;
     }
@@ -51,14 +43,6 @@ private:
     using Base_t = NonsquareBox<Scalar_t,Dim,DVO>;
 public:
     using Var_t = typename Base_t::Var_t;
-
-    inline void setMin(const Var_t & v) {
-        Base_t::setMin(v);
-    }
-
-    inline void setMax(const Var_t & v) {
-        Base_t::setMax(v);
-    }
 
     inline constexpr size_t dimensions() const {
         return Dim;

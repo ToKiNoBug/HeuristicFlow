@@ -28,7 +28,7 @@ namespace Heu
 
 
 /**
- * @brief Box with runtime range and nonSquare box
+ * @brief Non-square box with runtime range.
  */
 template<typename Scalar_t,size_t Size,BoxShape BS,DoubleVectorOption DVO>
 class BoxDynamicRange
@@ -36,6 +36,7 @@ class BoxDynamicRange
 public:
     using Var_t = Container<Scalar_t,Size,DVO>;
     static const constexpr bool isBox=true;
+    static const constexpr char Flag[]="Non-square box with runtime range.";
 
     inline const Var_t & min() const {
         return _minV;
@@ -44,7 +45,6 @@ public:
     inline const Var_t & max() const {
         return _maxV;
     }
-protected:
 
     inline void setMin(const Var_t _m) {
         _minV=_m;
@@ -53,6 +53,7 @@ protected:
     inline void setMax(const Var_t _m) {
         _maxV=_m;
     }
+protected:
 
     Var_t _minV;
     Var_t _maxV;
@@ -61,11 +62,17 @@ private:
         "Non square box specialization used for square box");
 };
 
+
+/**
+ * @brief Square box with runtime range
+ */
 template<typename Scalar_t,size_t Size,DoubleVectorOption DVO>
 class BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 {
 public:
     static const constexpr bool isBox=true;
+    static const constexpr char Flag[]="Square box with runtime range.";
+    using Var_t = Container<Scalar_t,Size,DVO>;
 
     inline Scalar_t min() const {
         return _minS;
@@ -75,7 +82,6 @@ public:
         return _maxS;
     }
 
-protected:
     inline Scalar_t setMin(Scalar_t s) {
         _minS=s;
     }
@@ -84,6 +90,8 @@ protected:
         _maxS=s;
     }
 
+protected:
+
     Scalar_t _minS;
     Scalar_t _maxS;
 };
@@ -91,7 +99,7 @@ protected:
 
 template<typename Scalar_t>
 using TemplateVal_t = typename std::conditional<
-    std::is_floating_point<Scalar_t>::value,DivCode,Scalar_t>::value;
+    std::is_floating_point<Scalar_t>::value,DivCode,Scalar_t>::type;
 
 /**
  * @brief Square box with compile-time range
@@ -102,7 +110,7 @@ class BoxFixedRange
 {
 public:
     static const constexpr bool isBox=true;
-
+    static const constexpr char Flag[]="Square box with compile-time range";
     inline constexpr Scalar_t min() const {
         return Decoder<isFloatPoint>::minCT;
     }
@@ -111,7 +119,6 @@ public:
         return Decoder<isFloatPoint>::maxCT;
     }
 
-protected:
     inline void setMin(Scalar_t s) const {
         assert(s==min());
     }
@@ -119,6 +126,8 @@ protected:
     inline void setMax(Scalar_t s) const {
         assert(s==max());
     }
+
+protected:
 
 private:
     static const constexpr bool isFloatPoint=std::is_floating_point<Scalar_t>::value;
@@ -128,7 +137,7 @@ private:
     {
         static const constexpr Scalar_t minCT=MinCT;
         static const constexpr Scalar_t maxCT=MaxCT;
-        static_assert (isFl==isFloatPoint,"Wrong specialization");
+        static_assert(isFl==isFloatPoint,"Wrong specialization");
     };
 
     template<typename unused>

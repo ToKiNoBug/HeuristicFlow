@@ -18,29 +18,31 @@ using NonsquareBox =
 template<typename Scalar_t,size_t Size,
          DoubleVectorOption DVO,
          size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class SquareBox : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
+class SquareBox : public BoxFixedRange<Scalar_t,MinCT,MaxCT>
 {
 private:
-    using Base_t = BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>;
+    using Base_t = BoxFixedRange<Scalar_t,MinCT,MaxCT>;
 public:
+    using Var_t = Container<Scalar_t,Size,DVO>;
+    //using Var_t = typename Base_t::Var_t;
 
 protected:
 
 };
 
 /**
- * @brief Square box with compile-time ranges
+ * @brief Square box with runtime ranges
  */
 template<typename Scalar_t,size_t Size,
          DoubleVectorOption DVO,
          TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
 class SquareBox<Scalar_t,Size,DVO,Runtime,MinCT,MaxCT>
-        : public BoxFixedRange<Scalar_t,MinCT,MaxCT>
+        : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 {
-public:
-    using Var_t = Container<Scalar_t,Size,DVO>;
 private:
-    using Base_t = BoxFixedRange<Scalar_t,MinCT,MaxCT>;
+    using Base_t = BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>;
+public:
+    using Var_t = typename Base_t::Var_t;
 };
 
 
