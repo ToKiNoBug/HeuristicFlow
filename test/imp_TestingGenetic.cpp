@@ -23,11 +23,6 @@ This file is part of HeuristicFlow.
 #include <ctime>
 using namespace Heu;
 using namespace std;
-/*
-double randD(const double min,const double max) {
-    return (max-min)*randD()+min;
-}
-*/
 
 void testAckley_withRecord() {
 
@@ -339,7 +334,7 @@ void testNSGA2_ZDT3() {
 
     void (*mFun)(std::array<double,XNum>*)=
             [](std::array<double,XNum>*x){
-        const size_t mutateIdx=size_t(Heu::randD(0,XNum))%XNum;
+        const size_t mutateIdx=Heu::randIdx(XNum);
 
         x->operator[](mutateIdx)+=0.005*Heu::randD(-1,1);
 
@@ -416,7 +411,7 @@ void testNSGA2_Kursawe() {
     };
 
     auto mFun=[](std::array<double,3> * x) {
-        const size_t idx=size_t(randD(0,3))%3;
+        const size_t idx=randIdx(3);
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](idx)=std::min(x->operator[](idx),5.0);
         x->operator[](idx)=std::max(x->operator[](idx),-5.0);
@@ -499,7 +494,7 @@ void testNSGA2_Binh_and_Korn() {
             cFunNd<Heu::encode<1,5>::code>;
 
     auto mFun=[](std::array<double,2> * x) {
-        const size_t idx=size_t(randD(0,2))%2;
+        const size_t idx=randIdx(2);
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](0)=std::min(x->operator[](0),5.0);
         x->operator[](0)=std::max(x->operator[](0),0.0);
@@ -697,7 +692,7 @@ auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code
 
 
 auto mFun=[](Var_t * v) {
-    const size_t idx=randD(0,v->size());
+    const size_t idx=randIdx(v->size());
     double & p=v->operator[](idx);
     p+=0.5*randD(-1,1);
     p=std::min(p,1.0);

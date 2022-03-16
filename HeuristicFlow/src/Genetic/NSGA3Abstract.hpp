@@ -343,7 +343,7 @@ protected:
         
         while(selected->size()<this->_option.populationSize) {
             findMinSet(*refPoints,&minNicheIterators);
-            auto curRefPoint=minNicheIterators[size_t(randD(0,double(minNicheIterators.size())))];
+            auto curRefPoint=minNicheIterators[randIdx(minNicheIterators.size())];
             size_t rhoJ=curRefPoint->second;
 
             associatedGenesInFl=Fl->equal_range(curRefPoint->first);

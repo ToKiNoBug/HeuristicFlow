@@ -50,7 +50,7 @@ struct imp_GADefaults_DVO
     inline static void imp_cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
         const size_t N=p1->size();
-        const size_t idx=randD(0,N);
+        const size_t idx=randIdx(N);
 
             c1->topRows(idx)=p1->topRows(idx);
             c2->topRows(idx)=p2->topRows(idx);
@@ -80,7 +80,7 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
     inline static void imp_cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
         const size_t N=p1->size();
-        const size_t idx=randD(0,N);
+        const size_t idx=randIdx(N);
 
             for(size_t i=0;i<N;i++) {
                 if(i<idx) {
@@ -133,7 +133,7 @@ private:
         }
 
         inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
-            size_t idx=randD(0,v->size());
+            size_t idx=randIdx(v->size());
             v->operator[](idx)+=randD(-1,1)*box->learnRate()[idx];
             v->operator[](idx)=std::max(v->operator[](idx),box->min()[idx]);
             v->operator[](idx)=std::min(v->operator[](idx),box->max()[idx]);
@@ -153,7 +153,7 @@ private:
         }
 
         inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
-            size_t idx=randD(0,v->size());
+            size_t idx=randIdx(v->size());
             v->operator[](idx)+=randD(-1,1)*box->learnRate();
             v->operator[](idx)=std::max(v->operator[](idx),box->min());
             v->operator[](idx)=std::min(v->operator[](idx),box->max());
@@ -312,7 +312,7 @@ public:
         static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
                 "Box and Var_t types must be same");
 
-        size_t idx=randD(0,v->size());
+        size_t idx=randIdx(v->size());
         v->operator[](idx)=!v->operator[](idx);
     }
 };
