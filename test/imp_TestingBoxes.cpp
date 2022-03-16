@@ -5,7 +5,7 @@ using namespace std;
 
 void test_Box_double() {
     BoxNdS<50,DoubleVectorOption::Eigen,
-            10,encode<0,1>::code,encode<1,1>::code> box0;
+            10,encode<0,1>::code,encode<1,1>::code,encode<1,50>::code> box0;
     //50 dim square box in [0,1]
     BoxXdN<DoubleVectorOption::Eigen> box;
 
@@ -14,7 +14,11 @@ void test_Box_double() {
     box.max().setConstant(50,1,1.0);
     box.min().setConstant(50,1,0.0);
 
-    cout<<box.dimensions()<<endl;
+    box0.min();
+
+    cout<<box0.dimensions()<<endl;
+    cout<<box0.learnRate()<<endl;
+    cout<<"sizeof(box0) = "<<sizeof(box0)<<endl;
 
 }
 

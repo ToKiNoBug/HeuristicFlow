@@ -37,6 +37,7 @@ public:
     using Var_t = Container<Scalar_t,Size,DVO>;
     static const constexpr bool isBox=true;
     static const constexpr char Flag[]="Non-square box with runtime range.";
+    static const constexpr BoxShape Shape = BoxShape::RECTANGLE_BOX;
 
     inline Var_t & min() {
         return _minV;
@@ -80,6 +81,7 @@ class BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 public:
     static const constexpr bool isBox=true;
     static const constexpr char Flag[]="Square box with runtime range.";
+    static const constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
     using Var_t = Container<Scalar_t,Size,DVO>;
 
     inline Scalar_t min() const {
@@ -127,6 +129,7 @@ class BoxFixedRange
 public:
     static const constexpr bool isBox=true;
     static const constexpr char Flag[]="Square box with compile-time range";
+    static const constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
     inline constexpr Scalar_t min() const {
         return Decoder<isFloatPoint>::minCT;
     }
@@ -134,15 +137,6 @@ public:
     inline constexpr Scalar_t max() const {
         return Decoder<isFloatPoint>::maxCT;
     }
-
-    inline void setMin(Scalar_t s) const {
-        assert(s==min());
-    }
-
-    inline void setMax(Scalar_t s) const {
-        assert(s==max());
-    }
-
 protected:
 
 private:

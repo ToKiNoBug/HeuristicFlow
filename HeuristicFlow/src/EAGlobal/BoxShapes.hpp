@@ -46,15 +46,6 @@ public:
 };
 
 
-/*
-template<typename Scalar_t,size_t Size,
-         DoubleVectorOption DVO,BoxShape BS,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-using ShapedBox = typename std::conditional<BS==BoxShape::SQUARE_BOX,
-    SquareBox<Scalar_t,Size,DVO,RangeType,MinCT,MaxCT>,
-    NonsquareBox<Scalar_t,Size,DVO,RangeType,MinCT,MaxCT>>::type;
-
-*/
 }   //  namespace
 
 #endif // BOXSHAPES_HPP

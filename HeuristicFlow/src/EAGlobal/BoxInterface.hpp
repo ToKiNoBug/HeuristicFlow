@@ -2,25 +2,10 @@
 #define BOXINTERFACE_HPP
 
 #include "BoxRTCTDims.hpp"
-
+#include "BoxReal.h"
 namespace Heu
 {
-/**
- * @brief Real boxes of different types
- */
-template<typename Scalar_t,size_t Dim,
-         DoubleVectorOption DVO,BoxShape BS,
-         size_t RangeType=Runtime,
-         TemplateVal_t<Scalar_t> MinCT=TemplateVal_t<Scalar_t>(1),
-         TemplateVal_t<Scalar_t> MaxCT=TemplateVal_t<Scalar_t>(1)>
-class RealBox : public BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
-{
-private:
-    static_assert(std::is_floating_point<Scalar_t>::value,
-        "Scalar_t must be a floating point number");
-public:
-    static const constexpr EncodeType Encoding=EncodeType::Real;
-};
+
 
 /**
  * Fixed(N) dim real(d) square(S) box
@@ -28,9 +13,10 @@ public:
 template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
          size_t RangeType=Runtime,
          TemplateVal_t<double> MinCT=encode<0,1>::code,
-         TemplateVal_t<double> MaxCT=encode<0,1>::code>
+         TemplateVal_t<double> MaxCT=encode<0,1>::code,
+         TemplateVal_t<double> LRCT=encode<0,1>::code>
 using BoxNdS = RealBox<double,Dim,DVO,BoxShape::SQUARE_BOX,
-    RangeType,MinCT,MaxCT>;
+    RangeType,MinCT,MaxCT,LRCT>;
 
 /**
  * Runtime(X) dim real(d) square(S) box
@@ -38,9 +24,10 @@ using BoxNdS = RealBox<double,Dim,DVO,BoxShape::SQUARE_BOX,
 template<DoubleVectorOption DVO=DoubleVectorOption::Std,
          size_t RangeType=Runtime,
          TemplateVal_t<double> MinCT=encode<0,1>::code,
-         TemplateVal_t<double> MaxCT=encode<0,1>::code>
+         TemplateVal_t<double> MaxCT=encode<0,1>::code,
+         TemplateVal_t<double> LRCT=encode<0,1>::code>
 using BoxXdS = RealBox<double,Runtime,DVO,BoxShape::SQUARE_BOX,
-    RangeType,MinCT,MaxCT>;
+    RangeType,MinCT,MaxCT,LRCT>;
 
 /**
  * Fixed(N) dim real(d) nonsquare(N) box
@@ -75,6 +62,41 @@ using BoxNb = typename std::enable_if<Dim!=Runtime,BooleanBox<Dim,DVO>>::type;
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXb = BooleanBox<Runtime,DVO>;
+
+
+template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         BoxShape BS=BoxShape::SQUARE_BOX,size_t RangeType=Runtime,
+         Scalar_t MinCT=0,Scalar_t MaxCT=1>
+class IntegerBox : public BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
+{
+private:
+    static_assert(std::is_integral<Scalar_t>::value,"Use integer as Scalar_t");
+public:
+    static const constexpr EncodeType Encoding=EncodeType::Integer;
+};
+
+template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         size_t RangeType=Runtime,
+         int MinCT=0,int MaxCT=1>
+using BoxNiS = typename std::enable_if<Dim!=Runtime,
+    IntegerBox<int,Dim,DVO,BoxShape::SQUARE_BOX,RangeType,MinCT,MaxCT>>::type;
+
+
+template<DoubleVectorOption DVO=DoubleVectorOption::Std,
+         size_t RangeType=Runtime,
+         int MinCT=0,int MaxCT=1>
+using BoxXiS = IntegerBox<int,Runtime,DVO,BoxShape::SQUARE_BOX,
+    RangeType,MinCT,MaxCT>;
+
+
+template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxNiN = typename std::enable_if<Dim!=Runtime,
+    IntegerBox<int,Dim,DVO,BoxShape::RECTANGLE_BOX>>::type;
+
+
+
+template<DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxXiN = IntegerBox<int,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
 
 }
 

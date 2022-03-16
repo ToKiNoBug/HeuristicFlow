@@ -31,7 +31,7 @@ void fun() {
 }
 
 int main() {
-    test_Box_bool();
+    test_Box_double();
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA3_DTLZ7();
