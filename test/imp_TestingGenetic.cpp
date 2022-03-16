@@ -63,45 +63,25 @@ void testAckley_withRecord() {
                 +20+M_E;}
     );
 
-    //algo.setcFun(**);
-        //crossover
-    /*
-    [](const array<double,2>* x,const array<double,2>* y,
-            array<double,2> *X,array<double,2>*Y,
-            const solver_t::ArgsType *) {
-        const array<double,2> &copyx=*x,&copyy=*y;
-        for(uint32_t idx=0;idx<x->size();idx++) {
-            if(rand()%2)
-                X->operator[](idx)=copyy[idx];
-            else {
-                X->operator[](idx)=copyx[idx];
-            }
-            if(rand()%2)
-                Y->operator[](idx)=copyx[idx];
-            else {
-                Y->operator[](idx)=copyy[idx];
-            }
-        }};
-    */
-
     algo.initializePop();
 
     std::clock_t t=std::clock();
     algo.run();
     t=std::clock()-t;
-
+    cout<<algo.bestFitness();
+/*
     cout<<"Solving spend "<<algo.generation()<<" generations in "
        <<double(t)/CLOCKS_PER_SEC<<" sec\n";
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
-
+*/
+    /*
     cout<<"Fitness history :\n";
 
     for(auto i : algo.record()) {
         cout<<i<<'\n';
     }
     cout<<endl;
-
-    //cout<<"Result idx = "<<algo.eliteIdx()<<endl;
+    */
 }
 
 

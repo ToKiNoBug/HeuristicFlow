@@ -160,6 +160,51 @@ private:
         }
     };
 
+
+    template<BoxShape BS,typename unused=void>
+    struct SymBoxOp //  non-square box
+    {
+        inline static void imp_doiFunNs(Var_t * v,const Args_t * box) {
+            for(size_t idx=0;idx<v->size();idx++) {
+                v->operator[](idx)=randIdx(box->min()[idx],box->max()[idx]+1);
+            }
+        }
+
+        inline static void imp_domFunNs(Var_t * v,const Args_t * box) {
+            const size_t idx=randIdx(v->size());
+            const auto val=v->operator[](idx);
+            const size_t numLess=val-box->min()[idx];
+            const size_t numGreater=box->max()[idx]-val;
+
+            if(randD()*(numLess+numGreater)<=numLess)
+                v->operator[](idx)=randIdx(box->min()[idx],val);
+            else
+                v->operator[](idx)=randIdx(val+1,box->max()[idx]+1);
+        }
+    };
+
+    template<typename unused>
+    struct SymBoxOp<BoxShape::SQUARE_BOX,unused>
+    {
+        inline static void imp_doiFunNs(Var_t * v,const Args_t * box) {
+            for(size_t idx=0;idx<v->size();idx++) {
+                v->operator[](idx)=randIdx(box->min(),box->max()+1);
+            }
+        }
+
+        inline static void imp_domFunNs(Var_t * v,const Args_t * box) {
+            const size_t idx=randIdx(v->size());
+            const auto val=v->operator[](idx);
+            const size_t numLess=val-box->min();
+            const size_t numGreater=box->max()-val;
+
+            if(randD()*(numLess+numGreater)<=numLess)
+                v->operator[](idx)=randIdx(box->min(),val);
+            else
+                v->operator[](idx)=randIdx(val+1,box->max()+1);
+        }
+    };
+
 public:
     /**
      * @brief Default initialize function for fixed-sized real vectors
@@ -207,6 +252,23 @@ public:
     inline static void iFunXb(Var_t * v,const Args_t * box) {
         v->resize(box->dimensions());
         iFunNb<unused>(v,box);
+    }
+
+    template<typename unused=void>
+    inline static void iFunNs(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default iFun requires Args_t to be a box constriant");
+        static_assert(Args_t::Encoding==EncodeType::Symbolic,"iFunNs requires symbolic box");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+        SymBoxOp<Args_t::Shape>::imp_doiFunNs(v,box);
+    }
+
+
+    template<typename unused=void>
+    inline static void iFunXs(Var_t * v,const Args_t * box) {
+        v->resize(box->dimensions());
+        iFunNs<unused>(v,box);
     }
 
     /**
@@ -314,6 +376,17 @@ public:
 
         size_t idx=randIdx(v->size());
         v->operator[](idx)=!v->operator[](idx);
+    }
+
+    template<typename unused=void>
+    inline static void mFun_s(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default mFun requires Args_t to be a box constriant");
+        static_assert (Args_t::Encoding==EncodeType::Symbolic,"mFun_s requires symbolic box");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+
+        SymBoxOp<Args_t::Shape>::imp_domFunNs(v,box);
     }
 };
 
