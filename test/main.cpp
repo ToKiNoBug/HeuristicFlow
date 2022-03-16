@@ -26,16 +26,23 @@ This file is part of HeuristicFlow.
 
 using namespace std;
 
-void fun() {
-    cout<<"fun"<<endl;
+int mutateFun(int min,int max,int val) {
+const int choiceNLess=val-min;
+const int choiceNGreater=max-val;
+if(Heu::randD()*(choiceNGreater+choiceNLess)<=choiceNLess) {
+    return Heu::randIdx(min,val);
+}
+else
+    return Heu::randIdx(val+1,max+1);
 }
 
 int main() {
     //test_Box_double();
-    testAckley_withRecord();
+    //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA3_DTLZ7();
     //searchPF();
+
     system("pause");
     return 0;
 }
