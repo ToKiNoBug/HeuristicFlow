@@ -63,7 +63,57 @@ using BoxNb = typename std::enable_if<Dim!=Runtime,BooleanBox<Dim,DVO>>::type;
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXb = BooleanBox<Runtime,DVO>;
 
+/**
+ * @brief Symbolic box constraint
+ */
+template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         BoxShape BS=BoxShape::SQUARE_BOX,size_t RangeType=Runtime,
+         Scalar_t MinCT=0,Scalar_t MaxCT=1>
+class SymbolBox : public BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
+{
+private:
+    static_assert(std::is_integral<Scalar_t>::value,"Symbol box requires integer Scalar_t");
+public:
+    static const constexpr EncodeType Encoding=EncodeType::Symbolic;
+};
 
+
+/**
+ * @brief Square symbolic box with fixed dim
+ */
+template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         size_t RangeType=Runtime,
+         Scalar_t MinCT=0,Scalar_t MaxCT=1>
+using BoxNsS = typename std::enable_if<Dim!=Runtime,
+    SymbolBox<Scalar_t,Dim,DVO,BoxShape::SQUARE_BOX,
+        RangeType,MinCT,MaxCT>>::type;
+
+
+/**
+ * @brief Square symbolic box with runtime dim
+ */
+template<typename Scalar_t,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         size_t RangeType=Runtime,
+         Scalar_t MinCT=0,Scalar_t MaxCT=1>
+using BoxXsS = SymbolBox<Scalar_t,Runtime,DVO,
+    BoxShape::SQUARE_BOX,RangeType,MinCT,MaxCT>;
+
+
+/**
+ * @brief Non-square symbolic box with fixed dim
+ */
+template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxNsN = typename std::enable_if<Dim!=Runtime,
+    SymbolBox<Scalar_t,Dim,DVO,BoxShape::RECTANGLE_BOX>>::type;
+
+
+/**
+ * @brief Non-square symbolic box with runtime dim
+ */
+template<typename Scalar_t,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxXsN = SymbolBox<Scalar_t,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
+
+/*
 template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
          BoxShape BS=BoxShape::SQUARE_BOX,size_t RangeType=Runtime,
          Scalar_t MinCT=0,Scalar_t MaxCT=1>
@@ -97,6 +147,8 @@ using BoxNiN = typename std::enable_if<Dim!=Runtime,
 
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXiN = IntegerBox<int,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
+
+*/
 
 }
 

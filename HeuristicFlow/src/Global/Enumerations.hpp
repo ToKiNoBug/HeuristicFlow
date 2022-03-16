@@ -101,7 +101,7 @@ enum BoxShape {
 enum EncodeType {
     Real,
     Binary,
-    Integer,
+    //Integer,
     Symbolic
 };
 
