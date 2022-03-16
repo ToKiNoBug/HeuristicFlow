@@ -20,6 +20,8 @@ This file is part of HeuristicFlow.
 #ifndef Heu_Genetic_INCLUDE
 #define Heu_Genetic_INCLUDE
 
+#include "Global"
+#include "EAGlobal"
 #include "src/Genetic/GAOption.hpp"
 #include "src/Genetic/GABase.hpp"
 #include "src/Genetic/SOGA.hpp"

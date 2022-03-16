@@ -118,42 +118,95 @@ template<typename Var_t,
          class Args_t=void>
 struct GADefaults
 {
-
+private:
     static_assert(!std::is_same<Args_t,void>::value,
         "The compiler run into a incorrect branch of partial specialization");
 
-    template<BoxShape BS=SQUARE_BOX>
-    inline static void iFunNd(Var_t * p,Args_t * arg) {
-        static_assert(Args_t::Heu_isBox,
-            "Args_t in GADefaults' paramater is not a box constraint type");
-        static_assert(Args_t::encodeType==EncodeType::Real,
-            "Args_t in GADefaults' paramater is real encoded");
-
-        if constexpr (Args_t::Heu_isSquareBox) {
-            for(auto & i : *p)
-                i=randD(arg->min(),arg->max());
+    template<BoxShape BS,typename unused=void>
+    struct RealBoxOp
+    {
+        //non-square box
+        inline static void imp_doiFunNd(Var_t * v,const Args_t * box) {
+            for(size_t idx=0;idx<v->size();idx++) {
+                v->operator[](idx)=randD(box->min()[idx],box->max()[idx]);
+            }
         }
-        else {
-            for(size_t idx=0;idx<arg->varDim();idx++)
-                p->operator[](idx)=randD(arg->min()[idx],arg->max()[idx]);
+
+        inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
+            size_t idx=randD(0,v->size());
+            v->operator[](idx)+=randD(-1,1)*box->learnRate()[idx];
+            v->operator[](idx)=std::max(v->operator[](idx),box->min()[idx]);
+            v->operator[](idx)=std::min(v->operator[](idx),box->max()[idx]);
+        }
+
+    private:
+    };
+
+    template<typename unused>
+    struct RealBoxOp<BoxShape::SQUARE_BOX,unused>
+    {
+        //square box
+        inline static void imp_doiFunNd(Var_t * v,const Args_t * box) {
+            for(size_t idx=0;idx<v->size();idx++) {
+                v->operator[](idx)=randD(box->min(),box->max());
+            }
+        }
+
+        inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
+            size_t idx=randD(0,v->size());
+            v->operator[](idx)+=randD(-1,1)*box->learnRate();
+            v->operator[](idx)=std::max(v->operator[](idx),box->min());
+            v->operator[](idx)=std::min(v->operator[](idx),box->max());
+        }
+    };
+
+public:
+    /**
+     * @brief Default initialize function for fixed-sized real vectors
+     *
+      * @tparam unused template parameter is introduced to avoid
+      * assertion failuer when non-box Args_t is used.
+     */
+    template<typename unused=void>
+    inline static void iFunNd(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default iFun requires Args_t to be a box constriant");
+        static_assert (Args_t::Encoding==EncodeType::Real,
+                "iFunNd requires real number encoding");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+
+        RealBoxOp<Args_t::Shape>::imp_doiFunNd(v,box);
+    }
+
+    /**
+     * @brief Default initialize function for runtime-sized real vectors
+     */
+    template<typename unused=void>
+    inline static void iFunXd(Var_t * v,const Args_t * box) {
+        v->resize(box->dimensions());
+        iFunNd<unused>(v,box);
+    }
+
+    /**
+     * @brief Default initialize function for fixed-sized boolean vectors
+     */
+    template<typename unused=void>
+    inline static void iFunNb(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default iFun requires Args_t to be a box constriant");
+        static_assert(Args_t::Encoding==EncodeType::Binary,"iFunNb requires binary box");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+        for(size_t idx=0;idx<v->size();idx++) {
+            v->operator[](idx)=bool(randD()>=0.5);
         }
     }
 
-    template<BoxShape BS=SQUARE_BOX>
-    inline static void iFunNf(Var_t * p,Args_t * arg) {
-        iFunNd<BS>(p,arg);
-    }
-
-    template<BoxShape BS=SQUARE_BOX>
-    inline static void iFunXd(Var_t * p,Args_t * arg) {
-        p->resize(arg->varDim());
-        iFunNd<BS>(p,arg);
-    }
-
-    template<BoxShape BS=SQUARE_BOX>
-    inline static void iFunXf(Var_t * p,Args_t * arg) {
-        p->resize(arg->varDim());
-        iFunNf<BS>(p,arg);
+    template<typename unused=void>
+    inline static void iFunXb(Var_t * v,const Args_t * box) {
+        v->resize(box->dimensions());
+        iFunNb<unused>(v,box);
     }
 
     /**
@@ -232,6 +285,35 @@ struct GADefaults
                                   Var_t * c1, Var_t * c2,
                                   const Args_t * a) {
         GADefaults<Var_t,dvo,void>::template cFunRandXs<posCode>(p1,p2,c1,c2);
+    }
+
+    /**
+     * @brief Default mutate function for real vectors (fixed and runtime size)
+     */
+    template<typename unused=void>
+    inline static void mFun_d(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default mFun requires Args_t to be a box constriant");
+        static_assert(Args_t::Encoding==EncodeType::Real,"mFun_d requires real box");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+
+        RealBoxOp<Args_t::Shape>::imp_domFund_single(v,box);
+    }
+
+    /**
+     * @brief Default mutate function for binary vectors (fixed and runtime size)
+     */
+    template<typename unused=void>
+    inline static void mFun_b(Var_t * v,const Args_t * box) {
+        static_assert (Args_t::isBox,
+                "Default mFun requires Args_t to be a box constriant");
+        static_assert (Args_t::Encoding==EncodeType::Binary,"mFun_b requires binary box");
+        static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
+                "Box and Var_t types must be same");
+
+        size_t idx=randD(0,v->size());
+        v->operator[](idx)=!v->operator[](idx);
     }
 };
 

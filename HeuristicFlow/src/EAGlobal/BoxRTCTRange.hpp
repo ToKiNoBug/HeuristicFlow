@@ -3,19 +3,6 @@
 #include <stdint.h>
 #include <assert.h>
 #include "../../Global"
-/**
- * For boxes:
- * real square box: double min double max setMin(double) setMax(double)
- * real box: Var min Var max setMin(Var) setMax(var)
- * Bin box: size only
- * Symbollic box:h
- *
- * SquareBox & fixed : scalar
- * SquareBox & runtime : scalar & size
- * NonsquareBox & fixed : Var
- * NonsquareBox & runtime : Var
- *
- */
 
 /**
  * This file has implementation for different min() and max()
@@ -100,11 +87,11 @@ public:
         return _maxS;
     }
 
-    inline Scalar_t setMin(Scalar_t s) {
+    inline void setMin(Scalar_t s) {
         _minS=s;
     }
 
-    inline Scalar_t setMax(Scalar_t s) {
+    inline void setMax(Scalar_t s) {
         _maxS=s;
     }
 
