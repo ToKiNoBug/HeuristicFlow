@@ -80,7 +80,7 @@ val_t power(val_t v) {
     if(p>=0)
         return internal::Heu_expander<val_t,p>::expand(v);
     else
-        return HeuPrivate::Heu_expander<val_t,p>::expand(1/v);
+        return internal::Heu_expander<val_t,p>::expand(1/v);
 }
 
 template<typename val_t>
