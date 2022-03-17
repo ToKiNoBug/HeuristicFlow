@@ -23,6 +23,9 @@
 namespace Heu
 {
 
+namespace internal
+{
+    
 /**
  * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
  * 
@@ -299,7 +302,9 @@ protected:
 
 };
 
-}
+}   //  internal
+
+}   //  Heu
 
 
 #endif // PSOABSTRCAT_HPP

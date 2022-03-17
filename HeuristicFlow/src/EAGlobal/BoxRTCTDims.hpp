@@ -15,6 +15,9 @@
 namespace Heu
 {
 
+namespace internal
+{
+
 /**
  * @brief Square box with fixed dims
  */
@@ -134,6 +137,8 @@ template<typename Scalar_t,size_t Dim,
 using BoxDims = typename std::conditional<Dim==Runtime,
     BoxRTDim<Scalar_t,DVO,BS,RangeType,MinCT,MaxCT>,
     BoxCTDim<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>>::type;
+
+}   //  internal
 
 }   //  namespace
 

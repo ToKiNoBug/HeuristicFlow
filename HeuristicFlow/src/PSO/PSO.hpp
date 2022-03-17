@@ -35,12 +35,12 @@ template<class Var_t,
          FitnessOption FitnessOpt=FITNESS_LESS_BETTER,
          RecordOption RecordOpt=DONT_RECORD_FITNESS,
          class Arg_t=void,
-         typename PSOParameterPack<Var_t,double,Arg_t>::iFun_t _iFun_=nullptr,
-         typename PSOParameterPack<Var_t,double,Arg_t>::fFun_t _fFun_=nullptr>
-class PSO : public PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
+         typename internal::PSOParameterPack<Var_t,double,Arg_t>::iFun_t _iFun_=nullptr,
+         typename internal::PSOParameterPack<Var_t,double,Arg_t>::fFun_t _fFun_=nullptr>
+class PSO : public internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
 public:
-    using Base_t = PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
+    using Base_t = internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
     Heu_MAKE_PSOABSTRACT_TYPES
 
     static const DoubleVectorOption Flag =
@@ -127,16 +127,16 @@ template<size_t DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class Arg_t=void,
-         typename PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
-         typename PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
+         typename internal::PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
+         typename internal::PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
 using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
 
 
 #ifdef EIGEN_CORE_H
 
 template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void,
-         typename PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
-         typename PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
+         typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
+         typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
 using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
 
 
@@ -146,14 +146,14 @@ template<
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class Arg_t,
-        typename PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_,
-        typename PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_>
+        typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_,
+        typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_>
 class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
 ///Partial specilization for PSO using Eigen's fix-sized Array
-    : public PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
+    : public internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
 public:
-    using Base_t = PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
+    using Base_t = internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
     Heu_MAKE_PSOABSTRACT_TYPES
     using Var_t = EigenVecD_t<DIM>;
 
@@ -213,8 +213,8 @@ protected:
     virtual void updatePopulation() {
         for(Particle_t & i : this->_population) {
             i.velocity=this->_option.inertiaFactor*i.velocity
-                        +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
-                        +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
+                        +this->_option.learnFactorP*internal::randD()*(i.pBest.position-i.position)
+                        +this->_option.learnFactorG*internal::randD()*(this->gBest.position-i.position);
 
             i.velocity=i.velocity.min(this->_velocityMax);
             i.velocity=i.velocity.max(-this->_velocityMax);

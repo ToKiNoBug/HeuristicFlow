@@ -15,6 +15,7 @@
 #include "../Global/Constants.hpp"
 
 namespace Heu {
+    
 template<size_t ObjNum,DoubleVectorOption dvo,FitnessOption fOpt>
 struct Pareto
 {

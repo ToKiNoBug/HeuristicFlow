@@ -15,7 +15,11 @@
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
 
-namespace Heu {
+namespace Heu
+{
+
+namespace internal
+{
 
 ///Abstrcat base class for most PSO solvers
 template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class Arg_t,
@@ -64,5 +68,7 @@ protected:
 
 };
 
-}
+}   //  internal
+
+}   //  Heu
 #endif // PSOBASE_HPP

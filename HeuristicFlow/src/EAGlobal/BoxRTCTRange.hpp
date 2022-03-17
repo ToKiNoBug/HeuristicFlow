@@ -21,8 +21,8 @@
 namespace Heu
 {
 
-
-
+namespace internal
+{
 /**
  * @brief Non-square box with runtime range.
  */
@@ -154,6 +154,8 @@ private:
         static_assert(isFloatPoint,"Wrong specialization");
     };
 };
+
+}   //  internal
 
 }   //  namespace
 

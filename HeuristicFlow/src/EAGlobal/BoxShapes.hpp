@@ -15,6 +15,9 @@
 namespace Heu
 {
 
+namespace internal
+{
+
 template<typename Scalar_t,size_t Size,
          DoubleVectorOption DVO>
 using NonsquareBox =
@@ -54,6 +57,7 @@ public:
     using Var_t = typename Base_t::Var_t;
 };
 
+}   //  internal
 
 }   //  namespace
 

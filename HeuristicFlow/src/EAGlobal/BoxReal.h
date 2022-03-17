@@ -14,6 +14,10 @@
 
 namespace Heu
 {
+
+namespace internal
+{
+
 /**
  * @brief Real boxes of different types
  */
@@ -87,6 +91,8 @@ class RealBox<Scalar_t,Dim,DVO,BS,Runtime,MinCT,MaxCT,LearnRateCT>
             Container<Scalar_t,Dim,DVO>,Scalar_t>::type>
 {
 };
+
+}   //  internal
 
 }   //  namespace
 

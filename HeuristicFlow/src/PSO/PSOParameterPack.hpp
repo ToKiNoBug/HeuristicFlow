@@ -18,13 +18,12 @@ namespace Heu
 {
 
 
-namespace HeuPrivate
+namespace internal
 {
 
 Heu_MAKE_FUNAREA(iFun,iFun,PSO)
 Heu_MAKE_FUNAREA(fFun,fFun,PSO)
 
-}
 
 template<class Var_t,class Fitness_t,class Arg_t=void>
 class PSOParameterPack
@@ -41,13 +40,13 @@ public:
 
     template <iFun_t _i>
     using iFunBody = typename
-        HeuPrivate::iFunArea_PSO<void,Var_t *,Var_t *,
+        iFunArea_PSO<void,Var_t *,Var_t *,
             const Var_t *,const Var_t *,
             const Var_t *,const Args_t *>::template funBody<_i>;
 
     template <fFun_t _i>
     using fFunBody = typename
-        HeuPrivate::fFunArea_PSO<void,const Var_t * ,
+        fFunArea_PSO<void,const Var_t * ,
             const Args_t *,Fitness_t *>::template funBody<_i>;
 
 
@@ -80,13 +79,13 @@ public:
 
     template <iFun_t _i>
     using iFunBody = typename
-        HeuPrivate::iFunArea_PSO<void,Var_t *,Var_t *,
+        iFunArea_PSO<void,Var_t *,Var_t *,
             const Var_t *,const Var_t *,
             const Var_t *>::template funBody<_i>;
 
     template <fFun_t _i>
     using fFunBody = typename
-        HeuPrivate::fFunArea_PSO<void,const Var_t *,Fitness_t *>::template funBody<_i>;
+        fFunArea_PSO<void,const Var_t *,Fitness_t *>::template funBody<_i>;
 
 
     static const bool HasParameters=false;
@@ -96,6 +95,8 @@ public:
 using Args_t = typename Base_t::Args_t; \
 using iFun_t = typename Base_t::iFun_t; \
 using fFun_t = typename Base_t::fFun_t;
+
+}   //  internal
 
 } // namespace Heu
 

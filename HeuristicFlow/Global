@@ -15,7 +15,6 @@
 #include "src/Global/Types.hpp"
 #include "src/Global/Constants.hpp"
 #include "src/Global/TemplateFloat.hpp"
-#include "src/Global/TentChaos.hpp"
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 #include "src/Global/Globals.hpp"
