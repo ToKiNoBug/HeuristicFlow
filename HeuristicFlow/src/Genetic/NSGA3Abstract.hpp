@@ -135,7 +135,7 @@ protected:
             normalize(selected,*FlPtr);
             std::unordered_map<RefPointIdx_t,size_t> refPoints;
             refPoints.reserve(referencePoses.cols());
-            for(size_t i=0;i<referencePoses.cols();i++) {
+            for(int i=0;i<referencePoses.cols();i++) {
                 refPoints.emplace(i,0);
             }
 
@@ -292,7 +292,7 @@ protected:
             const double w_T_s_div_normW=w_T_s/normW;
 
             double distance=0;
-            for(size_t r=0;r<referencePoses.rows();r++) {
+            for(int64_t r=0;r<referencePoses.rows();r++) {
                 distance+=square(s[r]-w_T_s_div_normW*referencePoses(r,c));
             }
             eachDistance[c]=distance;

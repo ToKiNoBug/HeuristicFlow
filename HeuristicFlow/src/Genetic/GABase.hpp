@@ -192,7 +192,7 @@ protected:
         static const int64_t  thN=HfGlobal::threadNum();
 #pragma omp parallel for
         for(int64_t begIdx=0;begIdx<thN;begIdx++) {
-            for(int64_t i=begIdx;i<tasks.size();i+=thN) {
+            for(size_t i=begIdx;i<tasks.size();i+=thN) {
                 Gene * ptr=tasks[i];
 
                 GAExecutor<Base_t::HasParameters>::doFitness(this,&ptr->self,&ptr->_Fitness);

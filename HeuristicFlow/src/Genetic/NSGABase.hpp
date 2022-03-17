@@ -92,7 +92,7 @@ protected:
 #pragma omp parallel for
         for(int64_t begIdx=0;begIdx<thN;begIdx++) {
 
-            for(int64_t ed=begIdx;ed<popSizeBefore;ed+=thN) {
+            for(size_t  ed=begIdx;ed<popSizeBefore;ed+=thN) {
                 sortSpace[ed]->domainedByNum=0;
                 for(size_t er=0;er<popSizeBefore;er++) {
                     if(er==ed)

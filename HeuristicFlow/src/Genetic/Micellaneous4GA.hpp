@@ -402,7 +402,7 @@ struct GADefaults<Var_t,dvo,void>
         //static const constexpr bool isValid=(max>min);
         //static_assert(isValid,"Max should be greater than min");
 
-        for(size_t idx=0;idx<p->size();idx++) {
+        for(int64_t idx=0;idx<p->size();idx++) {
             p->operator[](idx)=randD(min,max);
         }
     }
