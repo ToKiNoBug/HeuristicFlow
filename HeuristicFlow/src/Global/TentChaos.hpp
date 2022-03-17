@@ -13,12 +13,11 @@
 #define Heu_TENTCHAOS_H
 
 #include <stdint.h>
-#include "ChaosBase.hpp"
 
 namespace Heu {
 
 template <uint8_t BitN>
-class TentChaosI : public ChaoseBase<uint64_t>
+class TentChaosI
 {
 public:
     TentChaosI() {

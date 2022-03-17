@@ -13,11 +13,10 @@
 
 #include <cstdint>
 #include "Macros.hpp"
-#include "ChaosBase.hpp"
 
 namespace Heu {
 
-class LogisticChaos : public ChaoseBase<double>
+class LogisticChaos
 {
 public:
     LogisticChaos() {

@@ -50,36 +50,37 @@ inline num_t NchooseK(num_t N,num_t K) {
     return fractorial<num_t>(N)/(fractorial<num_t>(K)*fractorial<num_t>(N-K));
 }
 
-namespace HeuPrivate {
+namespace internal
+{
 
     template<typename val_t,int64_t N>
-    struct expander
+    struct Heu_expander
     {
         static val_t expand(val_t v) {
 
-            return v*expander<val_t,
+            return v*Heu_expander<val_t,
                     std::integral_constant<int64_t,N-((N>0)?(1):(-1))>::value
                                                          >::expand(v);
         }
     };
 
     template<typename val_t>
-    struct expander<val_t,0>
+    struct Heu_expander<val_t,0>
     {
         static val_t expand(val_t v) {
             return 1;
         }
     };
     
-}   //  namespace HeuPrivate
+}   //  namespace internal
 
 
 template<int64_t p,typename val_t>
 val_t power(val_t v) {
     if(p>=0)
-        return HeuPrivate::expander<val_t,p>::expand(v);
+        return internal::Heu_expander<val_t,p>::expand(v);
     else
-        return HeuPrivate::expander<val_t,p>::expand(1/v);
+        return HeuPrivate::Heu_expander<val_t,p>::expand(1/v);
 }
 
 template<typename val_t>
@@ -97,7 +98,7 @@ val_t power(val_t v,int64_t p) {
 }
 
 
-namespace HeuPrivate 
+namespace internal
 {
 
 template<typename T>
@@ -138,7 +139,7 @@ inline T imp_max(T a,U b,Args_t ... args) {
  */
 template<typename T,class ... Args_t>
 inline T min(T a,Args_t ... args) {
-    return HeuPrivate::imp_min(a,args...);
+    return internal::imp_min(a,args...);
 }
 
 
@@ -147,7 +148,7 @@ inline T min(T a,Args_t ... args) {
  */
 template<typename T,class ... Args_t>
 inline T max(T a,Args_t ... args) {
-    return HeuPrivate::imp_max(a,args...);
+    return internal::imp_max(a,args...);
 }
 
 }

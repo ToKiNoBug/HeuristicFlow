@@ -11,15 +11,11 @@
 #define Heu_GLOBAL_INCLUDE
 
 #include "src/Global/FunBody.hpp"
-
 #include "src/Global/Enumerations.hpp"
 #include "src/Global/Types.hpp"
 #include "src/Global/Constants.hpp"
 #include "src/Global/TemplateFloat.hpp"
-#include "src/Global/ChaosBase.hpp"
-#include "src/Global/Chaotic.hpp"
 #include "src/Global/TentChaos.hpp"
-#include "src/Global/LogisticChaos.hpp"
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 #include "src/Global/Globals.hpp"
