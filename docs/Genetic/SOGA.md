@@ -3,7 +3,7 @@ Single-object genetic solver.
 
 | Header: | `#include<HeuristicFlow/Genetic>` |
 | ----: | :---- |
-| Location: | [SOGA.hpp](../../Genetic/SOGA.hpp) |
+| Location: | [SOGA.hpp](../../GA/SOGA.hpp) |
 | Inherits from: | [GABase](./GABase.md) |
 
 <br>
