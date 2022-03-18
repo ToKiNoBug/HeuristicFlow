@@ -93,7 +93,7 @@ public:
     Heu_MAKE_GABASE_TYPES
 
     inline size_t objectiveNum() const {
-    return _objectiveNum;
+        return _objectiveNum;
     }
 
     inline void setObjectiveNum(size_t _objNum) {

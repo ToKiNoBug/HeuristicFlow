@@ -38,12 +38,13 @@ class NSGABase
     : public MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
+private:
+    using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
-    using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
     
     /**
@@ -72,7 +73,7 @@ protected:
     std::vector<infoUnitBase*> sortSpace;
     std::list<std::vector<infoUnitBase*>> pfLayers;
 
-    inline static bool sortByDominatedNum(const infoUnitBase * A,const infoUnitBase* B) {
+    static bool sortByDominatedNum(const infoUnitBase * A,const infoUnitBase* B) {
         return (A->domainedByNum)<(B->domainedByNum);
     }
 

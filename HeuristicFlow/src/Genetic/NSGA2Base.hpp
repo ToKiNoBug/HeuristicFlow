@@ -18,11 +18,6 @@ namespace Heu
 namespace internal
 {
 
-enum CompareOption : int64_t {
-    CompareByCongestion=-1,
-    CompareByDominantedBy=-2
-};
-
 /**
  * @brief The NSGA2Base class implements most NSGA-II functions
  * and can be inherited inorder to boost with Eigen
@@ -76,49 +71,26 @@ public:
     };
 
 protected:
+    static bool compareByCongestion(const infoUnitBase_t * A,const infoUnitBase_t * B) {
+        if(A==B)
+            return false;
+        return static_cast<const infoUnit2*>(A)->congestion[0] > static_cast<const infoUnit2*>(B)->congestion[0];
+    }
+
     template<int64_t objIdx>
-    static bool universialCompareFun(const infoUnit2 * A,const infoUnit2 * B) {
+    static bool compareByFitness(const infoUnitBase_t * A,const infoUnitBase_t * B) {
 #ifndef Heu_NO_STATICASSERT
-    static_assert(std::integral_constant<bool,
-        ((objIdx>=0)
-        ||(objIdx==CompareOption::CompareByCongestion)
-        ||(objIdx==CompareOption::CompareByDominantedBy))>::value,
-    "Heu : Invalid compare flag");
+    static_assert(objIdx>=0,"Heu : Invalid comparison flag");
 #endif
-        if(A==B) return false;
-
-#if __cplusplus >= 201703L
-        ///compare by congestion
-        if constexpr (objIdx==CompareByCongestion) {
-            return A->congestion[0]>B->congestion[0];
-        }
-        ///compare by this->pfLayers
-        if constexpr(objIdx==CompareByDominantedBy) {
-            return A->domainedByNum<B->domainedByNum;
-        }
-#else   //  these if constexpr will be done by compiler's optimization
-        ///compare by congestion
-        if (objIdx==CompareByCongestion) {
-            return A->congestion[0]>B->congestion[0];
-        }
-        ///compare by this->pfLayers
-        if (objIdx==CompareByDominantedBy) {
-            return A->domainedByNum<B->domainedByNum;
-        }
-#endif  //  #if __cplusplus >= 201703L
-
+        if(A==B) 
+            return false;
         ///compare by fitness on single objective
         return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
     }
 
-    inline static double composeCongestion(const Fitness_t & f) 
-    {
-        return f.sum();
-    };
-
     ///fast nondominated sorting
     virtual void select() {
-        using cmpFun_t = bool(*)(const infoUnit2 * ,const infoUnit2 * );
+        using cmpFun_t = bool(*)(const infoUnitBase_t * ,const infoUnitBase_t * );
         static const size_t objCapacity=
                 (ObjNum==0)?(Heu_MOGA_MaxRunTimeObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
@@ -127,6 +99,8 @@ protected:
         const size_t popSizeBefore=this->_population.size();
         std::vector<infoUnit2> pop;
         pop.clear();pop.reserve(popSizeBefore);
+        this->sortSpace.reserve(2*this->_option.populationSize);
+        this->sortSpace.resize(popSizeBefore);
 
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
@@ -134,7 +108,6 @@ protected:
             pop.back().congestion.resize(this->objectiveNum(),1);
         }
 
-        this->sortSpace.resize(popSizeBefore);
         //make sortspace
         for(size_t i=0;i<popSizeBefore;i++) {
             this->sortSpace[i]=pop.data()+i;
@@ -166,7 +139,7 @@ protected:
             }
             //emplace every element of this layer into selected
             for(const auto i : this->pfLayers.front()) {
-                selected.emplace((infoUnit2 *)i);
+                selected.emplace(static_cast<infoUnit2 *>(i));
             }
             this->pfLayers.pop_front();
         }
@@ -181,7 +154,7 @@ protected:
 
                 const double scale=std::abs(this->sortSpace.front()->iterator->_Fitness[objIdx]
                         -this->sortSpace.back()->iterator->_Fitness[objIdx])
-                    +1e-100;
+                    +1e-10;
 
                 static_cast<infoUnit2 *>(this->sortSpace.front())->congestion[objIdx]=pinfD;
                 static_cast<infoUnit2 *>(this->sortSpace.back())->congestion[objIdx]=pinfD;
@@ -199,12 +172,12 @@ protected:
 
             for(infoUnit2 & i : pop) {
                 //store final congestion at the first congestion
-                i.congestion[0]=composeCongestion(i.congestion);
+                i.congestion[0]=i.congestion.sum();
             }
 
             std::sort((infoUnit2 **)(this->sortSpace.data()),
                       (infoUnit2 **)(this->sortSpace.data()+this->sortSpace.size()),
-                      universialCompareFun<CompareByCongestion>);
+                      compareByCongestion);
             size_t idx=0;
             while(selected.size()<this->_option.populationSize) {
                 selected.emplace(static_cast<infoUnit2 *>(this->pfLayers.front()[idx]));
@@ -212,6 +185,7 @@ protected:
             }
 
         } // end applying congestion
+
 
         
         //erase unselected
@@ -229,18 +203,22 @@ protected:
             }
             this->updatePF(PF.data(),PF.size());
         }
+
+        this->pfLayers.clear();
+        this->sortSpace.clear();
     }
 
 
 private:
     //some template metaprogramming to make a function pointer array as below:
     //universialCompareFun<0>,universialCompareFun<1>,...,universialCompareFun<ObjNum-1>
-    using fun_t = bool(*)(const infoUnit2 * ,const infoUnit2 * );
+    using fun_t = bool(*)(const infoUnitBase_t * ,const infoUnitBase_t * );
+    
     template<int64_t cur,int64_t max>
     struct expandStruct
     {
         static void expand(fun_t * dst) {
-            *dst=universialCompareFun<cur>;
+            *dst=compareByFitness<cur>;
             expandStruct<cur+1,max>::expand(dst+1);
         }
     };
@@ -249,7 +227,7 @@ private:
     struct expandStruct<max,max>
     {
         static void expand(fun_t * dst) {
-            *dst=universialCompareFun<max>;
+            *dst=compareByFitness<max>;
         }
     };
 

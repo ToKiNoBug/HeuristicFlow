@@ -80,8 +80,6 @@ public:
 
         bool _isCalculated;
         Fitness_t _Fitness;
-
-
     };
     ///list iterator to Gene
     using GeneIt_t = typename std::list<Gene>::iterator;

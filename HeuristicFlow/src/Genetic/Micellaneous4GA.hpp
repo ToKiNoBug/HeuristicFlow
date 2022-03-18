@@ -116,6 +116,7 @@ private:
     template<BoxShape BS,typename unused=void>
     struct RealBoxOp
     {
+        static_assert(Args_t::Shape==BoxShape::RECTANGLE_BOX,"Wrong specialization");
         //non-square box
         inline static void imp_doiFunNd(Var_t * v,const Args_t * box) {
             for(size_t idx=0;idx<v->size();idx++) {

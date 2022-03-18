@@ -9,71 +9,9 @@
 
 #include "def_TestingGenetic.h"
 #include <iostream>
-#include <Eigen/Dense>
 #include <ctime>
 using namespace Heu;
 using namespace std;
-
-void testAckley_withRecord() {
-
-    using args_t = Heu::BoxNdS<2,Std>;
-
-    using solver_t = 
-    SOGA<array<double,2>,
-            Heu::FITNESS_LESS_BETTER,
-            Heu::RECORD_FITNESS,
-            args_t,
-    Heu::GADefaults<array<double,2>,Std,args_t>::iFunNd<>,
-    nullptr,
-    Heu::GADefaults<array<double,2>,Std,args_t>::cFunNd,
-    Heu::GADefaults<array<double,2>,Std,args_t>::mFun_d<>>;
-    solver_t algo;
-    
-    GAOption opt;
-    opt.populationSize=50;
-    opt.maxFailTimes=-1;
-    opt.maxGenerations=100;
-    
-    algo.setOption(opt);
-
-    {
-        args_t args;
-        args.setMin(-5);
-        args.setMax(5);
-        args.setLearnRate(0.05);
-        algo.setArgs(args);
-    }
-
-    algo.setfFun(
-    //Ackely function
-    [](const array<double,2>* _x,const solver_t::ArgsType *,double * f) {
-        double x=_x->operator[](0),y=_x->operator[](1);
-        *f= -20*exp(-0.2*sqrt(0.5*(x*x+y*y)))
-                -exp(0.5*(cos(M_2_PI*x)+cos(M_2_PI*y)))
-                +20+M_E;}
-    );
-
-    algo.initializePop();
-
-    std::clock_t t=std::clock();
-    algo.run();
-    t=std::clock()-t;
-    cout<<algo.bestFitness();
-/*
-    cout<<"Solving spend "<<algo.generation()<<" generations in "
-       <<double(t)/CLOCKS_PER_SEC<<" sec\n";
-    cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
-*/
-    /*
-    cout<<"Fitness history :\n";
-
-    for(auto i : algo.record()) {
-        cout<<i<<'\n';
-    }
-    cout<<endl;
-    */
-}
-
 
 void testTSP(const uint32_t PointNum) {
     static const uint8_t DIM=2;
@@ -350,90 +288,6 @@ void testNSGA2_Kursawe() {
         cout<<i[0]<<" , "<<i[1]<<";\n";
     }
     cout<<"];"<<endl;
-    /*
-    cout<<"\n\n\n population=[";
-    for(const auto & i : algo.population()) {
-        cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
-    }
-    cout<<"];"<<endl;
-    */
-}
-
-void testNSGA2_Binh_and_Korn() {
-    //0<=x_0<=5,  0<=x_1<=3
-
-    using args_t = Heu::BoxNdN<2,Heu::DoubleVectorOption::Std>;
-
-    using solver_t = 
-    NSGA2<std::array<double,2>,
-            2,
-            FITNESS_LESS_BETTER,
-            RecordOption::DONT_RECORD_FITNESS,args_t,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::iFunNd,
-            nullptr,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::cFunNd<>,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::mFun_d            
-            >;
-
-    solver_t algo;
-
-    using Fitness_t = typename solver_t::Fitness_t;
-
-    auto fFun=[](const std::array<double,2> * _x,const args_t *,Fitness_t *f) {
-        double f1;
-        double f2;
-        const double x=_x->operator[](0),y=_x->operator[](1);
-        f1=4*(x*x+y*y);
-        f2=square(x-5)+square(y-5);
-
-        double constraint_g1=square(x-5)+y*y-25;
-        double constraint_g2=7.7-(square(x-8)+square(y+3));
-
-        if(constraint_g1>0) {
-            f1=1e4+constraint_g1;
-        }
-        if(constraint_g2>0) {
-            f2=1e4+constraint_g2;
-        }
-
-        *f={f1,f2};
-    };
-
-    {
-        GAOption opt;
-        opt.maxGenerations=400;
-        opt.populationSize=200;
-        opt.maxFailTimes=-1;
-        opt.crossoverProb=0.8;
-        opt.mutateProb=0.1;
-        algo.setOption(opt);
-    }
-    {
-        args_t box;
-        box.setMin({0,0});
-        box.setMax({5,3});
-        box.setLearnRate({0.05,0.03});
-        algo.setArgs(box);
-    }
-
-    algo.setfFun(fFun);
-    algo.initializePop();
-
-    cout<<"Start"<<endl;
-    std::clock_t t=std::clock();
-    algo.run();
-    t=std::clock()-t;
-    cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
-       <<" seconds and "<<algo.generation()<<"generations"<<endl;
-
-    
-    cout<<"paretoFront=[";
-    for(const auto & i : algo.pfGenes()) {
-        cout<<i->_Fitness[0]<<" , "<<i->_Fitness[1]<<";\n";
-    }
-    cout<<"];"<<endl;
-    
-
     /*
     cout<<"\n\n\n population=[";
     for(const auto & i : algo.population()) {

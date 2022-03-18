@@ -56,7 +56,8 @@ public:
 
     ///get pareto front in vec
     inline void paretoFront(std::vector<Fitness_t> & front) const {
-        front.clear();  front.reserve(_pfGenes.size());
+        front.clear();  
+        front.reserve(_pfGenes.size());
         for(const Gene* i : _pfGenes) {
             front.emplace_back(i->_Fitness);
         }
@@ -101,6 +102,7 @@ protected:
         size_t checkSum=hashFun(pfvec.front());
         for(size_t i=1;i<pfvec.size();i++) {
             checkSum^=hashFun(pfvec[i]);
+            checkSum^=size_t(pfvec[i]->_isCalculated);
         }
         return checkSum;
     }

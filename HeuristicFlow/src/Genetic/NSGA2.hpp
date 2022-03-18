@@ -38,34 +38,9 @@ template<typename Var_t,
          typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
          typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
          typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
-class NSGA2
-    : public internal::NSGA2Base<Var_t,
-                    ObjNum,
-                    isGreaterBetter,
-                    Record,
-                    Args_t,
-            _iFun_,_fFun_,_cFun_,_mFun_>
-{
-public:
-    using Base_t = internal::NSGA2Base<Var_t,
-                    ObjNum,
-                    isGreaterBetter,
-                    Record,
-                    Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
-    Heu_MAKE_NSGABASE_TYPES
+using NSGA2 = internal::NSGA2Base<Var_t,ObjNum,isGreaterBetter,Record,Args_t,
+            _iFun_,_fFun_,_cFun_,_mFun_>;
 
-    using infoUnit2 = typename Base_t::infoUnit2;
-
-    NSGA2() {}
-
-    virtual ~NSGA2() {}
-    
-protected:
-
-private:
-
-};
 
 }   //  Heu
 
