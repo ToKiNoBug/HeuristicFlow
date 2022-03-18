@@ -27,6 +27,14 @@ Implemented :
 3. NSGA-III
 4. PSO
 
+TODO:
+1. Distinguish singular matrix better in NSGA3
+2. Simplify constructure if possible (espically for Genetic).
+3. Replace `Heu::Runtime` with `Eigen::Dynamic`
+4. Imporve threading implementation with OMP (learn from libEigen)
+5. Change namespace.
+6. Rewrite documents
+
 Waiting to be implemented :
 1. GravitySearchAlgorithm
 2. BigFloodAlgorithm
