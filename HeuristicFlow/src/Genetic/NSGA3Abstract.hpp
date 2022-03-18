@@ -23,29 +23,26 @@ namespace internal
 
 template<typename Var_t,
         size_t ObjNum,
-        DoubleVectorOption DVO,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA3Abstract
-    : public NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
+    : public NSGABase<Var_t,ObjNum,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA3Abstract() {};
     virtual ~NSGA3Abstract() {};
-    using Base_t = NSGABase<Var_t,ObjNum,DVO,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
+    using Base_t = NSGABase<Var_t,ObjNum,FITNESS_LESS_BETTER,rOpt,pfOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
     using RefPointIdx_t = size_t;
 
-    using RefMat_t= typename std::conditional<DVO==Std,
-        MatrixDynamicSize<double>,
-        Eigen::Array<double,(ObjNum==Runtime?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
+    using RefMat_t=Eigen::Array<double,(ObjNum==Runtime?Eigen::Dynamic:ObjNum),Eigen::Dynamic>;
 
     inline const RefMat_t & referencePoints() const {
         return referencePoses;
@@ -466,10 +463,6 @@ private:
         }
         
     }
-#ifndef Heu_NO_STATICASSERT
-    static_assert(DVO!=DoubleVectorOption::Custom,
-        "Using custom double container as fitness isn't supported");
-#endif  //  Heu_NO_STATICASSERT
 };
 
 #define Heu_MAKE_NSGA3ABSTRACT_TYPES \

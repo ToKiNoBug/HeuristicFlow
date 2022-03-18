@@ -13,25 +13,24 @@
 #include "NSGA3Base.hpp"
 
 namespace Heu {
-
+/*
 template<typename Var_t,
         size_t ObjNum,
-        DoubleVectorOption DVO,
         RecordOption rOpt=DONT_RECORD_FITNESS,
         PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
         ReferencePointOption rpOpt=ReferencePointOption::SINGLE_LAYER,
         class Args_t=void,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
-class NSGA3 : public internal::NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
+class NSGA3 : public internal::NSGA3Base<Var_t,ObjNum,rOpt,pfOpt,rpOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA3() {};
     virtual ~NSGA3() {};
-    using Base_t = internal::NSGA3Base<Var_t,ObjNum,DVO,rOpt,pfOpt,rpOpt,Args_t,
+    using Base_t = internal::NSGA3Base<Var_t,ObjNum,rOpt,pfOpt,rpOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 
@@ -52,27 +51,27 @@ public:
     }
 };  //  NSGA3
 
+*/
 
 /**
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
  */
 template<typename Var_t,
-    size_t ObjNum,
-    RecordOption rOpt,
-    PFOption pfOpt,
-    ReferencePointOption rpOpt,
-    class Args_t,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::initializeFun _iFun_,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::mutateFun _mFun_>
-class NSGA3<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
-            _iFun_,_fFun_,_cFun_,_mFun_>
-        : public internal::NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
+        size_t ObjNum,
+        RecordOption rOpt=DONT_RECORD_FITNESS,
+        PFOption pfOpt=PARETO_FRONT_CAN_MUTATE,
+        ReferencePointOption rpOpt=ReferencePointOption::SINGLE_LAYER,
+        class Args_t=void,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
+class NSGA3
+        : public internal::NSGA3Base<Var_t,ObjNum,rOpt,pfOpt,rpOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t = internal::NSGA3Base<Var_t,ObjNum,DoubleVectorOption::Eigen,rOpt,pfOpt,rpOpt,Args_t,
+    using Base_t = internal::NSGA3Base<Var_t,ObjNum,rOpt,pfOpt,rpOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 

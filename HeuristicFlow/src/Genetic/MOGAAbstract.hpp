@@ -40,27 +40,26 @@ namespace internal
   */
 template<typename Var_t,
         size_t ObjNum,
-        DoubleVectorOption DVO,
         FitnessOption fOpt,
         RecordOption rOpt,
         PFOption pfOpt,
         class Args_t,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
 class MOGAAbstract
-    : public GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t,
+    : public GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
 
-    using Base_t = GABase<Var_t,FitnessVec_t<DVO,ObjNum>,rOpt,Args_t,
+    using Base_t = GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
-    using Fitness_t = FitnessVec_t<DVO,ObjNum>;
+    using Fitness_t = EigenVecD_t<ObjNum>;
 
     ///get pareto front in vec
     inline void paretoFront(std::vector<Fitness_t> & front) const {

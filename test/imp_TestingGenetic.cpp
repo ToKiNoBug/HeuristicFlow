@@ -271,7 +271,6 @@ void testNSGA2_ZDT3() {
 
     Heu::NSGA2<std::array<double,XNum>,
             2,
-            Std,
             FITNESS_LESS_BETTER,
             RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
@@ -284,8 +283,8 @@ void testNSGA2_ZDT3() {
     };
 
     void (*fFun)
-            (const std::array<double,XNum>* x, std::array<double,2> *f)
-            =[](const std::array<double,XNum>* x, std::array<double,2> *f) {
+            (const std::array<double,XNum>* x, Eigen::Array<double,2,1> *f)
+            =[](const std::array<double,XNum>* x, Eigen::Array<double,2,1> *f) {
       f->operator[](0)=x->operator[](0);
       const double && f1=std::move(f->operator[](0));
       double g=0;
@@ -330,7 +329,7 @@ void testNSGA2_ZDT3() {
     t=std::clock()-t;
     cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
        <<"seconds and "<<algo.generation()<<"generations"<<endl;
-    std::vector<std::array<double,2>> paretoFront;
+    std::vector<Eigen::Array<double,2,1>> paretoFront;
     algo.paretoFront(paretoFront);
     cout<<"paretoFront=[";
     for(const auto & i : paretoFront) {
@@ -350,7 +349,6 @@ void testNSGA2_Kursawe() {
     //1<=i<=3,  -5<=x_i<=5
     NSGA2<std::array<double,3>,
             2,
-            Std,
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE> algo;
@@ -359,7 +357,7 @@ void testNSGA2_Kursawe() {
             i=randD(-5,5);
         }
     };
-    auto fFun=[](const std::array<double,3> * x,std::array<double,2> *f) {
+    auto fFun=[](const std::array<double,3> * x,Eigen::Array<double,2,1> *f) {
         double f1=0,f2=0;
         for(int i=0;i<2;i++) {
             f1+=-10*exp(-0.2*sqrt(square(x->operator[](i))+square(x->operator[](i+1))));
@@ -407,7 +405,7 @@ void testNSGA2_Kursawe() {
     t=std::clock()-t;
     cout<<"Solving finished in "<<double(t)/CLOCKS_PER_SEC
        <<" seconds and "<<algo.generation()<<" generations"<<endl;
-    std::vector<std::array<double,2>> paretoFront;
+    std::vector<Eigen::Array<double,2,1>> paretoFront;
     algo.paretoFront(paretoFront);
     cout<<"paretoFront=[";
     for(const auto & i : paretoFront) {
@@ -428,7 +426,6 @@ void testNSGA2_Binh_and_Korn() {
     using solver_t = 
     NSGA2<std::array<double,2>,
             2,
-            DoubleVectorOption::Eigen,
             FITNESS_LESS_BETTER,
             DONT_RECORD_FITNESS,
             PARETO_FRONT_DONT_MUTATE>;
@@ -517,7 +514,6 @@ static const size_t Dim=2;
 using Point_t = Eigen::Array<double,Dim,1>;
 using solver_t = NSGA2<Point_t,
     Runtime,
-    DoubleVectorOption::Eigen,
     FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_DONT_MUTATE,
@@ -624,7 +620,6 @@ static const size_t N=20;
 static const size_t M=6;
 using solver_t = NSGA3<Eigen::Array<double,N,1>,
     M,
-    DoubleVectorOption::Eigen,
     //FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
     PARETO_FRONT_CAN_MUTATE,
@@ -756,7 +751,7 @@ void searchPF() {
             pop[idx].second=0;
             for(size_t er=0;er<pop.size();er++) {
                 pop[idx].second
-                    +=internal::Pareto<M,DoubleVectorOption::Eigen,FITNESS_LESS_BETTER>::
+                    +=internal::Pareto<M,FITNESS_LESS_BETTER>::
                     isStrongDominate(&pop[er].first,&pop[idx].first);
             }
         }

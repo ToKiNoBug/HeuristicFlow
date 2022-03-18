@@ -71,7 +71,7 @@ public:
     }
 
 protected:
-    static bool isBetterThan(double a,double b) {
+    inline static bool isBetterThan(double a,double b) {
         if(FitnessOpt==FitnessOption::FITNESS_GREATER_BETTER) {
             return a>b;
         } else {

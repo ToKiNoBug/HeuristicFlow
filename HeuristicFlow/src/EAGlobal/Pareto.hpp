@@ -18,36 +18,9 @@ namespace Heu
 {
 namespace internal
 {
-template<size_t ObjNum,DoubleVectorOption dvo,FitnessOption fOpt>
-struct Pareto
-{
-    using Fitness_t = FitnessVec_t<dvo,ObjNum>;
-    static bool isStrongDominate(const Fitness_t * A,const Fitness_t * B) {
-        if(A==B) return false;
-        uint32_t notWorseNum=0,betterNum=0;
-        for(size_t objIdx=0;objIdx<A->size();objIdx++) {
-            if
-        #if __cplusplus >=201703L
-                constexpr
-        #endif
-        (fOpt==FITNESS_GREATER_BETTER) {
-                notWorseNum+=((*A)[objIdx]>=(*B)[objIdx]);
-                betterNum+=((*A)[objIdx]>(*B)[objIdx]);
-            }
-            else {
-                notWorseNum+=((*A)[objIdx]<=(*B)[objIdx]);
-                betterNum+=((*A)[objIdx]<(*B)[objIdx]);
-            }
-        }
-        if(notWorseNum<A->size())
-            return false;
-        return betterNum>0;
-    }
-
-};
 
 template<size_t ObjNum,FitnessOption fOpt>
-struct Pareto<ObjNum,DoubleVectorOption::Eigen,fOpt>
+struct Pareto
 {
     using Fitness_t = EigenVecD_t<ObjNum>;
     static bool isStrongDominate(const Fitness_t * A,const Fitness_t * B) {
