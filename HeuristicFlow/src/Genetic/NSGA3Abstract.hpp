@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "NSGABase.hpp"
-#include "../../SimpleMatrix"
 
 namespace Heu
 {
@@ -54,9 +53,17 @@ public:
         size_t closestRefPoint;
         double distance;
     };
+private:
+    template<size_t HeuSize>
+    struct HeuSize2EigenSize
+    {
+        static const constexpr int64_t value=(HeuSize==Runtime)?(Eigen::Dynamic):(HeuSize);
+    };
 
 protected:
     RefMat_t referencePoses;
+
+    static const int64_t eigSizeFlag=HeuSize2EigenSize<ObjNum>::value;
 
     void computeReferencePointPoses(const size_t dimN,
         const size_t precision,
@@ -157,26 +164,18 @@ protected:
         const size_t M=this->objectiveNum();
         stdContainer<const infoUnit3*,ObjNum> extremePtrs;
         initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs,M);
-
-        SquareMat_t<double,ObjNum> extremePoints;
+        
+        Eigen::Array<double,eigSizeFlag,eigSizeFlag> extremePoints;
         
         Fitness_t ideal,intercepts;
-#if __cplusplus >= 201703L
-        if constexpr (ObjNum==Runtime) {
-            extremePoints.resize(M,M);
-            ideal.resize(M);
-            intercepts.resize(M);
-        }
-#else
-        if (ObjNum==Runtime) {
-            extremePoints.resize(M,M);
-            ideal.resize(M);
-            intercepts.resize(M);
-        }
-#endif  //  #if __cplusplus >= 201703L
+        
+        extremePoints.resize(M,M);
+        ideal.resize(M);
+        intercepts.resize(M);
+        
+        ideal.setConstant(pinfD);
 
         for(size_t c=0;c<M;c++) {
-            ideal[c]=pinfD;
             extremePtrs[c]=*(Fl.begin());
             for(size_t r=0;r<M;r++) {
                 extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r];
@@ -184,8 +183,8 @@ protected:
         }
 
         for(auto i : selected) {
+            ideal=ideal.min(i->iterator->_Fitness);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                ideal[objIdx]=std::min(ideal[objIdx],i->iterator->_Fitness[objIdx]);
                 if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
@@ -193,8 +192,8 @@ protected:
         }
 
         for(auto i : Fl) {
+            ideal=ideal.min(i->iterator->_Fitness);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                ideal[objIdx]=std::min(ideal[objIdx],i->iterator->_Fitness[objIdx]);
                 if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
@@ -202,9 +201,7 @@ protected:
         }
 
         for(size_t c=0;c<M;c++) {
-            for(size_t r=0;r<M;r++) {
-                extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r]-ideal[r];
-            }
+            extremePoints.col(c)=extremePtrs[c]->iterator->_Fitness-ideal;
         }
 
         bool isSingular;
@@ -229,70 +226,26 @@ protected:
         }
 
         for(auto i : selected) {
-            i->translatedFitness=i->iterator->_Fitness;
-            for(size_t objIdx=0;objIdx<M;objIdx++) {
-                i->translatedFitness[objIdx]-=ideal[objIdx];
-                i->translatedFitness[objIdx]/=intercepts[objIdx];
-            }
+            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercepts;
         }
 
         for(auto i : Fl) {
-            i->translatedFitness=i->iterator->_Fitness;
-            for(size_t objIdx=0;objIdx<M;objIdx++) {
-                i->translatedFitness[objIdx]-=ideal[objIdx];
-                i->translatedFitness[objIdx]/=intercepts[objIdx];
-            }
+            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercepts;
         }
     }
 
     size_t findNearest(const Fitness_t & s,double * dist) const {
-        std::vector<double> eachDistance(referencePoses.cols());
-#ifndef Heu_NSGA_USE_THREADS
-        for(size_t c=0;c<referencePoses.cols();c++) {
-            double normW=0,w_T_s=0;
-            for(size_t r=0;r<referencePoses.rows();r++) {
-                normW+=square(referencePoses(r,c));
-                w_T_s+=s[r]*referencePoses(r,c);
-            }
+        
+        const auto & w=this->referencePoses;
+        auto wT_s=w.matrix().transpose()*s.matrix();
+        auto wT_s_w=w.rowwise()*(wT_s.array().transpose());
+        Eigen::Array<double,eigSizeFlag,Eigen::Dynamic> norm_wTsw
+            =wT_s_w.rowwise()/(w.colwise().squaredNorm());
+        auto s_sub_norm_wTsw=norm_wTsw.colwise()-s;
+        auto distance=s_sub_norm_wTsw.colwise().squaredNorm();
 
-            const double w_T_s_div_normW=w_T_s/normW;
-
-            double distance=0;
-            for(size_t r=0;r<referencePoses.rows();r++) {
-                distance+=square(s[r]-w_T_s_div_normW*referencePoses(r,c));
-            }
-            eachDistance[c]=distance;
-        }
-#else
-        static const int64_t thN=HfGlobal::threadNum();
-#pragma omp parallel for
-        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
-            
-            for(int64_t c=begIdx;c<referencePoses.cols();c+=thN) {
-            double normW=0,w_T_s=0;
-            for(int64_t r=0;r<referencePoses.rows();r++) {
-                normW+=square(referencePoses(r,c));
-                w_T_s+=s[r]*referencePoses(r,c);
-            }
-
-            const double w_T_s_div_normW=w_T_s/normW;
-
-            double distance=0;
-            for(int64_t r=0;r<referencePoses.rows();r++) {
-                distance+=square(s[r]-w_T_s_div_normW*referencePoses(r,c));
-            }
-            eachDistance[c]=distance;
-        }
-        }
-#endif
-        size_t minIdx=0;
-        for(size_t i=1;i<eachDistance.size();i++) {
-            if(eachDistance[i]<eachDistance[minIdx]) {
-                minIdx=i;
-            }
-        }
-
-        *dist=eachDistance[minIdx];
+        int minIdx;
+        *dist=distance.minCoeff(&minIdx);
         return minIdx;
     }
 
@@ -426,43 +379,15 @@ private:
         pri_makeRP(dimN,precision,0,0,0,&rec,dst);
     }
     
-    inline static void extremePoints2Intercept(const SquareMat_t<double,ObjNum> & P_T,
+
+    inline static void extremePoints2Intercept(const Eigen::Array<double,eigSizeFlag,eigSizeFlag> & P,
         Fitness_t * intercept) {
-        
-        SquareMat_t<double,ObjNum> inv;
-
-        InverseMatrix_LU<double,ObjNum>(P_T,&inv);
-
-        for(size_t r=0;r<P_T.rows();r++) {
-            for(size_t c=0;c<r;c++) {
-                std::swap(inv(r,c),inv(c,r));
-            }
-        }
-
-        Matrix_t<double,ObjNum,1> Ones,one_div_intercept;
-
-#if __cplusplus >=201703L
-        if constexpr (ObjNum==Runtime) {
-            Ones.resize(P_T.rows(),1);
-            intercept->resize(P_T.rows());
-        }
-#else
-        if (ObjNum==Runtime) {
-            Ones.resize(P_T.rows(),1);
-            intercept->resize(P_T.rows());
-        }
-#endif
-        for(size_t i=0;i<P_T.rows();i++) {
-            Ones[i]=1;
-        }
-
-        MatrixProduct<double,ObjNum,ObjNum,1>(inv,Ones,&one_div_intercept);
-
-        for(size_t i=0;i<P_T.rows();i++) {
-            intercept->operator[](i)=1.0/one_div_intercept[i];
-        }
-        
+        auto P_transpose_inv=P.transpose().matrix().inverse();
+        auto ONE=Eigen::Matrix<double,eigSizeFlag,1>::Ones(P.cols(),1);
+        auto one_div_intercept=(P_transpose_inv*ONE).array();
+        *intercept=1.0/one_div_intercept;
     }
+
 };
 
 #define Heu_MAKE_NSGA3ABSTRACT_TYPES \

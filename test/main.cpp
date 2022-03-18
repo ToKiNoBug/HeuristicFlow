@@ -11,16 +11,15 @@
 #include <ctime>
 #include "def_TestingGenetic.h"
 #include "def_TestingPSO.h"
-#include "def_TestingMatrix.h"
 #include "def_TestingBoxes.h"
 
 using namespace std;
 
 int main() {
     //test_Box_double();
-    testAckley_withRecord();
+    //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    //testNSGA3_DTLZ7();
+    testNSGA3_DTLZ7();
     //searchPF();
 
     system("pause");

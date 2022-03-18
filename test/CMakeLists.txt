@@ -16,8 +16,6 @@ include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
 add_executable(HeuristicFlow_Test
-    def_TestingMatrix.h
-    imp_TestingMatrix.cpp   #Test simple matrix
     def_TestingGenetic.h
     imp_TestingGenetic.cpp  #Test SOGA and NSGA2
     def_TestingPSO.h
