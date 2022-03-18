@@ -56,14 +56,10 @@ public:
     virtual Fitness_t bestFitness() const {
         Fitness_t best=this->_population.front()._Fitness;
         for(const Gene & i : this->_population) {
-            if(fOpt) {
-                for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                    best[objIdx]=std::max(best[objIdx],i._Fitness[objIdx]);
-                }
+            if(fOpt==FitnessOption::FITNESS_GREATER_BETTER) {
+                best=best.max(i._Fitness);
             } else {
-                for(size_t objIdx=0;objIdx<this->objectiveNum();objIdx++) {
-                    best[objIdx]=std::min(best[objIdx],i._Fitness[objIdx]);
-                }
+                best=best.min(i._Fitness);
             }
         }
         return best;
@@ -187,16 +183,17 @@ protected:
                         -this->sortSpace.back()->iterator->_Fitness[objIdx])
                     +1e-100;
 
-                ((infoUnit2 *)this->sortSpace.front())->congestion[objIdx]=Heu::pinfD;
-                ((infoUnit2 *)this->sortSpace.back())->congestion[objIdx]=Heu::pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.front())->congestion[objIdx]=pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.back())->congestion[objIdx]=pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
 
-                    ((infoUnit2 *)this->sortSpace[idx])->congestion[objIdx]=std::abs(
-                                this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
-                               -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
-                                )/scale;
+                    static_cast<infoUnit2 *>(this->sortSpace[idx])->congestion[objIdx]
+                        	=std::abs(
+                            this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
+                            -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
+                            )/scale;
                 }
             } // end sort on objIdx
 
@@ -210,7 +207,7 @@ protected:
                       universialCompareFun<CompareByCongestion>);
             size_t idx=0;
             while(selected.size()<this->_option.populationSize) {
-                selected.emplace((infoUnit2 *)this->pfLayers.front()[idx]);
+                selected.emplace(static_cast<infoUnit2 *>(this->pfLayers.front()[idx]));
                 idx++;
             }
 

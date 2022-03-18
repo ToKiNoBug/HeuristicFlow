@@ -61,18 +61,6 @@ public:
 
     virtual ~NSGA2() {}
     
-    virtual Fitness_t bestFitness() const {
-        Fitness_t best=Base_t::_population.front()._Fitness;
-        for(const Gene & i : Base_t::_population) {
-            if(isGreaterBetter) {
-                best=best.max(i._Fitness);
-            } else {
-                best=best.min(i._Fitness);
-            }
-        }
-        return best;
-    }
-
 protected:
 
 private:

@@ -361,22 +361,25 @@ void testNSGA2_Kursawe() {
 
 void testNSGA2_Binh_and_Korn() {
     //0<=x_0<=5,  0<=x_1<=3
+
+    using args_t = Heu::BoxNdN<2,Heu::DoubleVectorOption::Std>;
+
     using solver_t = 
     NSGA2<std::array<double,2>,
             2,
             FITNESS_LESS_BETTER,
-            RecordOption::DONT_RECORD_FITNESS>;
+            RecordOption::DONT_RECORD_FITNESS,args_t,
+            Heu::GADefaults<std::array<double,2>,Std,args_t>::iFunNd,
+            nullptr,
+            Heu::GADefaults<std::array<double,2>,Std,args_t>::cFunNd<>,
+            Heu::GADefaults<std::array<double,2>,Std,args_t>::mFun_d            
+            >;
 
     solver_t algo;
 
     using Fitness_t = typename solver_t::Fitness_t;
 
-    auto iFun=[](std::array<double,2> * x) {
-        for(auto & i : *x) {
-            i=randD(-5,5);
-        }
-    };
-    auto fFun=[](const std::array<double,2> * _x,Fitness_t *f) {
+    auto fFun=[](const std::array<double,2> * _x,const args_t *,Fitness_t *f) {
         double & f1=f->operator[](0);
         double & f2=f->operator[](1);
         const double x=_x->operator[](0),y=_x->operator[](1);
@@ -393,30 +396,22 @@ void testNSGA2_Binh_and_Korn() {
         }
     };
 
-    solver_t::crossoverFun cFun =
-    Heu::GADefaults<std::array<double,2>,DoubleVectorOption::Std>::
-            cFunNd<Heu::encode<1,5>::code>;
+    {
+        GAOption opt;
+        opt.maxGenerations=400;
+        opt.populationSize=200;
+        opt.maxFailTimes=-1;
+        algo.setOption(opt);
+    }
+    {
+        args_t box;
+        box.setMin({0,0});
+        box.setMax({5,3});
+        box.setLearnRate({0.05,0.03});
+        algo.setArgs(box);
+    }
 
-    auto mFun=[](const std::array<double,2> * src,std::array<double,2> * x) {
-        *x=*src;
-        const size_t idx=randIdx(2);
-        x->operator[](idx)+=0.1*randD(-1,1);
-        x->operator[](0)=std::min(x->operator[](0),5.0);
-        x->operator[](0)=std::max(x->operator[](0),0.0);
-        x->operator[](1)=std::min(x->operator[](1),3.0);
-        x->operator[](1)=std::max(x->operator[](1),0.0);
-    };
-
-    GAOption opt;
-    opt.maxGenerations=10000;
-    opt.populationSize=200;
-    opt.maxFailTimes=-1;
-
-    algo.setiFun(iFun);
-    algo.setmFun(mFun);
     algo.setfFun(fFun);
-    algo.setcFun(cFun);
-    algo.setOption(opt);
     algo.initializePop();
 
     cout<<"Start"<<endl;

@@ -50,3 +50,12 @@ void test_Box_bool() {
     cout<<"sizeof BXb="<<sizeof(BXb)<<endl;
 
 }
+
+
+void test_random() 
+{
+    size_t N=20;
+    for(size_t i=0;i<N;i++) {
+        cout<<randD(-1,1)<<endl;
+    }
+}

@@ -20,4 +20,6 @@ void test_Box_double();
 
 void test_Box_bool();
 
+void test_random();
+
 #endif // DEF_TESTINGBOXES_H
