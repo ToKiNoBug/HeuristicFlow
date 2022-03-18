@@ -132,7 +132,6 @@ template<size_t DIM,
 using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
 
 
-#ifdef EIGEN_CORE_H
 
 template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void,
          typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
@@ -228,8 +227,6 @@ protected:
     }
 
 };
-#endif // EIGEN_CORE_H
-
 }
 
 #endif // PSO_HPP

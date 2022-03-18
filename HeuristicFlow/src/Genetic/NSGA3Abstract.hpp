@@ -43,13 +43,9 @@ public:
     Heu_MAKE_NSGABASE_TYPES
     using RefPointIdx_t = size_t;
 
-#ifdef EIGEN_CORE_H
     using RefMat_t= typename std::conditional<DVO==Std,
         MatrixDynamicSize<double>,
         Eigen::Array<double,(ObjNum==Runtime?Eigen::Dynamic:ObjNum),Eigen::Dynamic>>::type;
-#else
-    using RefMat_t = MatrixRuntimeSize<double>;
-#endif
 
     inline const RefMat_t & referencePoints() const {
         return referencePoses;

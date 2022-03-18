@@ -26,37 +26,26 @@ using stdContainer =
         std::vector<scalar_t>,
         std::array<scalar_t,Dim>>::type;
 
-#ifdef EIGEN_CORE_H
 template<typename scalar_t,size_t Dim>
 using EigenContainer =
     typename std::conditional<Dim==Runtime,
         Eigen::Array<scalar_t,Eigen::Dynamic,1>,
         Eigen::Array<scalar_t,Dim,1>>::type;
-#endif
 
 
 template<size_t Size>
 using stdVecD_t = stdContainer<double,Size>;
 
 
-#ifdef EIGEN_CORE_H
 template<typename scalar_t,size_t Size,DoubleVectorOption DVO>
 using Container = typename std::conditional<
     (DVO!=DoubleVectorOption::Eigen),
     stdContainer<scalar_t,Size>,
     EigenContainer<scalar_t,Size>>::type;
-#else
-template<typename scalar_t,size_t Size,DoubleVectorOption DVO>
-using Container = typename std::enable_if
-    <(DVO!=DoubleVectorOption::Eigen),
-    stdContainer<scalar_t,Size>>::type;
-#endif
 
-#ifdef EIGEN_CORE_H
 ///Array type when using Eigen array(s)
 template<size_t Size>
 using EigenVecD_t = EigenContainer<double,Size>;
-#endif
 
 template<DoubleVectorOption dvo,size_t Dim>
 using FitnessVec_t= Container<double,Dim,dvo>;

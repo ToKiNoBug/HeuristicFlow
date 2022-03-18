@@ -10,6 +10,8 @@
 #ifndef Heu_GLOBAL_INCLUDE
 #define Heu_GLOBAL_INCLUDE
 
+#include <Eigen/Dense>
+
 #include "src/Global/FunBody.hpp"
 #include "src/Global/Enumerations.hpp"
 #include "src/Global/Types.hpp"

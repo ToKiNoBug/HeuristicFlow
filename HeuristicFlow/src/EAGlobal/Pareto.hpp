@@ -46,8 +46,6 @@ struct Pareto
 
 };
 
-#ifdef EIGEN_CORE_H
-
 template<size_t ObjNum,FitnessOption fOpt>
 struct Pareto<ObjNum,DoubleVectorOption::Eigen,fOpt>
 {
@@ -70,7 +68,6 @@ struct Pareto<ObjNum,DoubleVectorOption::Eigen,fOpt>
     }
 };
 
-#endif  //  EIGEN_CORE_H
 }   //  namespace internal
 }   //  namespace Heu
 

@@ -133,16 +133,9 @@ protected:
     }
 
 private:
-#ifndef Heu_NO_STATICASSERT
     static_assert(std::integral_constant<bool,(ObjNum!=1)>::value,
     "HeuristicFlow : You assigned single objective in MOGA");
 
-#ifndef EIGEN_CORE_H
-    static_assert(DVO!=DoubleVectorOption::Eigen,
-        "Include Eigen before using Eigen arrays as Fitness types");
-#endif  //  EIGEN_CORE_H
-
-#endif
 
 };  // MOGAAbstract
 

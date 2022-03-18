@@ -12,7 +12,6 @@
 #define Heu_LOGISTICCHAOS_HPP
 
 #include <cstdint>
-#include "Macros.hpp"
 
 namespace Heu {
 

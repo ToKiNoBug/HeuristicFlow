@@ -53,7 +53,6 @@ public:
 };  //  NSGA3
 
 
-#ifdef EIGEN_CORE_H
 /**
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
  */
@@ -213,8 +212,6 @@ protected:
         *intercept=1.0/one_div_intercept;
     }
 };
-
-#endif  //  EIGEN_CORE_H
 
 }   //  namespace Heu
 
