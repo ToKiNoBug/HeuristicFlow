@@ -281,10 +281,9 @@ protected:
 
         inline static void doMutation(GABase * s,const Var_t * src,Var_t * dst) {
             s->runmFun(src,dst,&s->_args);
-
-            static_assert (HasParameters==GABase::HasParameters,
-                    "struct GAExecutor actived with wrong template parameter.");
         }
+        static_assert (HasParameters==GABase::HasParameters,
+                "struct GAExecutor actived with wrong template parameter.");
     };
 
     template<class unused>

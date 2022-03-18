@@ -18,12 +18,13 @@ using namespace std;
 int main() {
     //test_Box_double();
     //testAckley_withRecord();
-    //testNSGA2_Binh_and_Korn();
-    testNSGA2_Kursawe();
+    testNSGA2_Binh_and_Korn();
+    //testNSGA2_Kursawe();
     //testNSGA3_DTLZ7();
     //searchPF();
 
     //test_random();
+    //test_inf();
 
     system("pause");
     return 0;

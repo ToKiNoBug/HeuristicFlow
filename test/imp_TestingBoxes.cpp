@@ -59,3 +59,12 @@ void test_random()
         cout<<randD(-1,1)<<endl;
     }
 }
+
+void test_inf()
+{
+    Eigen::Array2d vec;
+    vec[0]=pinfD;
+    vec[1]=pinfD;
+
+    cout<<vec.sum()<<endl;
+}

@@ -380,20 +380,23 @@ void testNSGA2_Binh_and_Korn() {
     using Fitness_t = typename solver_t::Fitness_t;
 
     auto fFun=[](const std::array<double,2> * _x,const args_t *,Fitness_t *f) {
-        double & f1=f->operator[](0);
-        double & f2=f->operator[](1);
+        double f1;
+        double f2;
         const double x=_x->operator[](0),y=_x->operator[](1);
         f1=4*(x*x+y*y);
         f2=square(x-5)+square(y-5);
 
         double constraint_g1=square(x-5)+y*y-25;
         double constraint_g2=7.7-(square(x-8)+square(y+3));
+
         if(constraint_g1>0) {
-            f1+=1e4+constraint_g1;
+            f1=1e4+constraint_g1;
         }
         if(constraint_g2>0) {
-            f2+=1e4+constraint_g2;
+            f2=1e4+constraint_g2;
         }
+
+        *f={f1,f2};
     };
 
     {
@@ -401,6 +404,8 @@ void testNSGA2_Binh_and_Korn() {
         opt.maxGenerations=400;
         opt.populationSize=200;
         opt.maxFailTimes=-1;
+        opt.crossoverProb=0.8;
+        opt.mutateProb=0.1;
         algo.setOption(opt);
     }
     {

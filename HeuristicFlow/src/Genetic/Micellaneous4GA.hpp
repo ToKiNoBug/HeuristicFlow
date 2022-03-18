@@ -64,8 +64,8 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
         static_assert(r>0,"r shouldn't be less than 0");
         static_assert(r<1,"r shouldn't be greater than 1");
 
-        *c1=r**p1+(1-r)**p2;
-        *c2=r**p2+(1-r)**p1;
+        *c1=r*(*p1)+(1-r)*(*p2);
+        *c2=r*(*p2)+(1-r)*(*p1);
     }
 
     inline static void imp_cFunSwapNs(const Var_t * p1,const Var_t * p2,
