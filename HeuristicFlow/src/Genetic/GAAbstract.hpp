@@ -43,7 +43,7 @@ public:
    ///Function to apply crossover for Var
    using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t*);
    ///Function to apply mutate for Var
-   using mutateFun = initializeFun;
+   using mutateFun = void(*)(const Var_t *,Var_t * ,const Args_t *);
 
    using ArgsType = Args_t;
 
@@ -57,7 +57,7 @@ public:
    using cFunBody = typename cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t *>::template funBody<c>;
 
    template<mutateFun m>
-   using mFunBody= typename mFunArea_GA<void,Var_t *,const Args_t *>::template funBody<m>;
+   using mFunBody= typename mFunArea_GA<void,const Var_t *,Var_t *,const Args_t *>::template funBody<m>;
 
     const Args_t & args() const {
         return _args;
@@ -88,7 +88,7 @@ public:
     ///Function to apply crossover for Var
     using crossoverFun = void(*)(const Var_t*,const Var_t*,Var_t*,Var_t*);
     ///Function to apply mutate for Var
-    using mutateFun = initializeFun;
+    using mutateFun = void(*)(const Var_t * ,Var_t*);
 
     using ArgsType = void;
 
@@ -102,7 +102,7 @@ public:
     using cFunBody = typename cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*>::template funBody<c>;
 
     template<mutateFun m>
-    using mFunBody= typename mFunArea_GA<void,Var_t *>::template funBody<m>;
+    using mFunBody= typename mFunArea_GA<void,const Var_t *,Var_t *>::template funBody<m>;
 
     static const bool HasParameters=false;
 };

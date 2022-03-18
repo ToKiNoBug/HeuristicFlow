@@ -101,19 +101,6 @@ protected:
 
     }
 
-    virtual void mutate() {
-        for(auto it=this->_population.begin();it!=this->_population.end();++it) {
-            if(it==_eliteIt) {
-                continue;
-            }
-            if(randD()<=this->_option.mutateProb) {
-                Base_t::template GAExecutor<Base_t::HasParameters>
-                        ::doMutation(this,&it->self);
-
-                it->setUncalculated();
-            }
-        }
-    }
 };
 }
 #endif // SOGA_H

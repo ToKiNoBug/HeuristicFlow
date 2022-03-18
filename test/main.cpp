@@ -17,9 +17,9 @@ using namespace std;
 
 int main() {
     //test_Box_double();
-    //testAckley_withRecord();
+    testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    testNSGA3_DTLZ7();
+    //testNSGA3_DTLZ7();
     //searchPF();
 
     system("pause");

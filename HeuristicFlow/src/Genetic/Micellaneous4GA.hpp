@@ -123,7 +123,8 @@ private:
             }
         }
 
-        inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
+        inline static void imp_domFund_single(const Var_t * src,Var_t * v,const Args_t * box) {
+            *v=*src;
             size_t idx=randIdx(v->size());
             v->operator[](idx)+=randD(-1,1)*box->learnRate()[idx];
             v->operator[](idx)=std::max(v->operator[](idx),box->min()[idx]);
@@ -143,7 +144,8 @@ private:
             }
         }
 
-        inline static void imp_domFund_single(Var_t * v,const Args_t * box) {
+        inline static void imp_domFund_single(const Var_t * src,Var_t * v,const Args_t * box) {
+            *v=*src;
             size_t idx=randIdx(v->size());
             v->operator[](idx)+=randD(-1,1)*box->learnRate();
             v->operator[](idx)=std::max(v->operator[](idx),box->min());
@@ -161,7 +163,8 @@ private:
             }
         }
 
-        inline static void imp_domFunNs(Var_t * v,const Args_t * box) {
+        inline static void imp_domFunNs(const Var_t * src,Var_t * v,const Args_t * box) {
+            *v=*src;
             const size_t idx=randIdx(v->size());
             const auto val=v->operator[](idx);
             const size_t numLess=val-box->min()[idx];
@@ -183,7 +186,8 @@ private:
             }
         }
 
-        inline static void imp_domFunNs(Var_t * v,const Args_t * box) {
+        inline static void imp_domFunNs(const Var_t * src,Var_t * v,const Args_t * box) {
+            *v=*src;
             const size_t idx=randIdx(v->size());
             const auto val=v->operator[](idx);
             const size_t numLess=val-box->min();
@@ -344,40 +348,40 @@ public:
      * @brief Default mutate function for real vectors (fixed and runtime size)
      */
     template<typename unused=void>
-    inline static void mFun_d(Var_t * v,const Args_t * box) {
+    inline static void mFun_d(const Var_t * src,Var_t * v,const Args_t * box) {
         static_assert (Args_t::isBox,
                 "Default mFun requires Args_t to be a box constriant");
         static_assert(Args_t::Encoding==EncodeType::Real,"mFun_d requires real box");
         static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
                 "Box and Var_t types must be same");
 
-        RealBoxOp<Args_t::Shape>::imp_domFund_single(v,box);
+        RealBoxOp<Args_t::Shape>::imp_domFund_single(src,v,box);
     }
 
     /**
      * @brief Default mutate function for binary vectors (fixed and runtime size)
      */
     template<typename unused=void>
-    inline static void mFun_b(Var_t * v,const Args_t * box) {
+    inline static void mFun_b(const Var_t * src,Var_t * v,const Args_t * box) {
         static_assert (Args_t::isBox,
                 "Default mFun requires Args_t to be a box constriant");
         static_assert (Args_t::Encoding==EncodeType::Binary,"mFun_b requires binary box");
         static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
                 "Box and Var_t types must be same");
-
+        *v=*src;
         size_t idx=randIdx(v->size());
         v->operator[](idx)=!v->operator[](idx);
     }
 
     template<typename unused=void>
-    inline static void mFun_s(Var_t * v,const Args_t * box) {
+    inline static void mFun_s(const Var_t * src,Var_t * v,const Args_t * box) {
         static_assert (Args_t::isBox,
                 "Default mFun requires Args_t to be a box constriant");
         static_assert (Args_t::Encoding==EncodeType::Symbolic,"mFun_s requires symbolic box");
         static_assert (std::is_same<typename Args_t::Var_t,Var_t>::value,
                 "Box and Var_t types must be same");
 
-        SymBoxOp<Args_t::Shape>::imp_domFunNs(v,box);
+        SymBoxOp<Args_t::Shape>::imp_domFunNs(src,v,box);
     }
 };
 

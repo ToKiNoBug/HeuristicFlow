@@ -249,7 +249,20 @@ protected:
 
 
     ///mutate
-    virtual void mutate()=0;
+    virtual void mutate() {
+        std::vector<GeneIt_t> mutateList;
+        mutateList.reserve(size_t(this->_population.size()*this->_option.mutateProb*2));
+        for(auto it=this->_population.begin();it!=this->_population.end();++it) {
+            if(randD()<=this->_option.mutateProb) {
+                mutateList.emplace_back(it);
+            }
+        }
+        for(auto src : mutateList) {
+            this->_population.emplace_back();
+            GAExecutor<Base_t::HasParameters>::doMutation(this,&src->self,&this->_population.back().self);
+            this->_population.back().setUncalculated();
+        }
+    }
 
 protected:
     template<bool HasParameters,class unused=void>
@@ -268,8 +281,8 @@ protected:
             s->runcFun(p1,p2,c1,c2,&s->_args);
         }
 
-        inline static void doMutation(GABase * s,Var_t * v) {
-            s->runmFun(v,&s->_args);
+        inline static void doMutation(GABase * s,const Var_t * src,Var_t * dst) {
+            s->runmFun(src,dst,&s->_args);
 
             static_assert (HasParameters==GABase::HasParameters,
                     "struct GAExecutor actived with wrong template parameter.");
@@ -292,8 +305,8 @@ protected:
             s->runcFun(p1,p2,c1,c2);
         }
 
-        inline static void doMutation(GABase * s,Var_t * v) {
-            s->runmFun(v);
+        inline static void doMutation(GABase * s,const Var_t * src,Var_t * dst) {
+            s->runmFun(src,dst);
         }
 
         static_assert(GABase::HasParameters==false,

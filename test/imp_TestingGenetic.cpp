@@ -114,7 +114,8 @@ void testWithEigenLib() {
                              (rand()%2)?
                                  x->operator()(i):y->operator()(i);
                  }});
-    algo.setmFun(    [](Eigen::Array4d*x,const arg_t * arg) {
+    algo.setmFun(    [](const Eigen::Array4d * src,Eigen::Array4d*x,const arg_t * arg) {
+        *x=*src;
         uint32_t idx=rand()%4;
         x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
 
@@ -222,7 +223,8 @@ void testTSP(const uint32_t PointNum) {
             =Heu::GADefaults<vector<double>,DoubleVectorOption::Std,Args_t>::
                 cFunXd<Heu::DivCode::Half>;
 
-    auto mutateFun=[](vector<double>*x,const Args_t*) {
+    auto mutateFun=[](const vector<double>*src,vector<double>*x,const Args_t*) {
+        *x=*src;
         const uint32_t permL=x->size();
         if(randD()<0.5) {//modify one element's value
             double & v=x->operator[](std::rand()%permL);
@@ -301,8 +303,9 @@ void testNSGA2_ZDT3() {
             Heu::GADefaults<std::array<double,XNum>>::
                 cFunNd<(Heu::encode<1,2>::code)>;
 
-    void (*mFun)(std::array<double,XNum>*)=
-            [](std::array<double,XNum>*x){
+    void (*mFun)(const std::array<double,XNum>*src,std::array<double,XNum>*)=
+            [](const std::array<double,XNum>*src,std::array<double,XNum>*x){
+        *x=*src;
         const size_t mutateIdx=Heu::randIdx(XNum);
 
         x->operator[](mutateIdx)+=0.005*Heu::randD(-1,1);
@@ -378,7 +381,8 @@ void testNSGA2_Kursawe() {
         }
     };
 
-    auto mFun=[](std::array<double,3> * x) {
+    auto mFun=[](const std::array<double,3> * src,std::array<double,3> * x) {
+        *x=*src;
         const size_t idx=randIdx(3);
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](idx)=std::min(x->operator[](idx),5.0);
@@ -460,7 +464,8 @@ void testNSGA2_Binh_and_Korn() {
     Heu::GADefaults<std::array<double,2>,DoubleVectorOption::Std>::
             cFunNd<Heu::encode<1,5>::code>;
 
-    auto mFun=[](std::array<double,2> * x) {
+    auto mFun=[](const std::array<double,2> * src,std::array<double,2> * x) {
+        *x=*src;
         const size_t idx=randIdx(2);
         x->operator[](idx)+=0.1*randD(-1,1);
         x->operator[](0)=std::min(x->operator[](0),5.0);
@@ -544,8 +549,9 @@ crossoverFun cFun=[](const Point_t * p1,const Point_t * p2,
     *c2=r*(*p2)+(1-r)*(*p1);
 };
 
-mutateFun mFun=[](Point_t * p,const ArgsType *) {
-*p+=Point_t::Random()*0.05;
+mutateFun mFun=[](const Point_t *src,Point_t * p,const ArgsType *) {
+    *p=*src;
+    *p+=Point_t::Random()*0.05;
 };
 
 solver_t solver;
@@ -656,7 +662,8 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
 auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code>;
 
 
-auto mFun=[](Var_t * v) {
+auto mFun=[](const Var_t * src,Var_t * v) {
+    *v=*src;
     const size_t idx=randIdx(v->size());
     double & p=v->operator[](idx);
     p+=0.5*randD(-1,1);

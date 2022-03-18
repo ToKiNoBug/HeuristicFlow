@@ -112,25 +112,6 @@ protected:
         return checkSum;
     }
     
-
-    ///mutate operation
-    virtual void mutate() {
-        for(auto it=this->_population.begin();it!=this->_population.end();++it) {
-            if(randD()<=this->_option.mutateProb) {
-                if(pfOpt){
-                    if(_pfGenes.find(&*it)!=_pfGenes.end()) {
-                        continue;
-                    }
-                }
-
-                Base_t::template GAExecutor<Base_t::HasParameters>
-                        ::doMutation(this,&it->self);
-
-                it->setUncalculated();
-            }
-        }
-    }
-
 private:
     static_assert(std::integral_constant<bool,(ObjNum!=1)>::value,
     "HeuristicFlow : You assigned single objective in MOGA");
