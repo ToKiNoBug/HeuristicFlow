@@ -29,21 +29,20 @@ template<typename Var_t,
         size_t ObjNum,
         FitnessOption fOpt,
         RecordOption rOpt,
-        PFOption pfOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGABase
-    : public MOGABase<Var_t,ObjNum,fOpt,rOpt,pfOpt,Args_t,
+    : public MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
-    using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,pfOpt,Args_t,
+    using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
     

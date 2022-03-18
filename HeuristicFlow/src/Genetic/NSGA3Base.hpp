@@ -29,7 +29,6 @@ namespace internal
 template<typename Var_t,
         size_t ObjNum,
         RecordOption rOpt,
-        PFOption pfOpt,
         ReferencePointOption rpOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
@@ -37,13 +36,13 @@ template<typename Var_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA3Base
-    : public NSGA3Abstract<Var_t,ObjNum,rOpt,pfOpt,Args_t,
+    : public NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     NSGA3Base() {};
     virtual ~NSGA3Base() {};
-    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,pfOpt,Args_t,
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 
@@ -80,15 +79,14 @@ protected:
 template<typename Var_t,
         size_t ObjNum,
         RecordOption rOpt,
-        PFOption pfOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
-class NSGA3Base<Var_t,ObjNum,rOpt,pfOpt,DOUBLE_LAYER,Args_t,
+class NSGA3Base<Var_t,ObjNum,rOpt,DOUBLE_LAYER,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
-    : public NSGA3Abstract<Var_t,ObjNum,rOpt,pfOpt,Args_t,
+    : public NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
@@ -97,7 +95,7 @@ public:
         _outerPrecision=4;
     };
     virtual ~NSGA3Base() {};
-    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,pfOpt,Args_t,
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 

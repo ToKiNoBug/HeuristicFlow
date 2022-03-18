@@ -274,8 +274,7 @@ void testNSGA2_ZDT3() {
     Heu::NSGA2<std::array<double,XNum>,
             2,
             FITNESS_LESS_BETTER,
-            RECORD_FITNESS,
-            PARETO_FRONT_DONT_MUTATE> algo;
+            RECORD_FITNESS> algo;
 
     void (*iFun)(std::array<double,XNum>*) =
     [] (std::array<double,XNum> * x) {
@@ -353,8 +352,7 @@ void testNSGA2_Kursawe() {
     NSGA2<std::array<double,3>,
             2,
             FITNESS_LESS_BETTER,
-            DONT_RECORD_FITNESS,
-            PARETO_FRONT_DONT_MUTATE> algo;
+            DONT_RECORD_FITNESS> algo;
     auto iFun=[](std::array<double,3> * x) {
         for(auto & i : *x) {
             i=randD(-5,5);
@@ -431,8 +429,7 @@ void testNSGA2_Binh_and_Korn() {
     NSGA2<std::array<double,2>,
             2,
             FITNESS_LESS_BETTER,
-            DONT_RECORD_FITNESS,
-            PARETO_FRONT_DONT_MUTATE>;
+            RecordOption::DONT_RECORD_FITNESS>;
 
     solver_t algo;
 
@@ -521,7 +518,6 @@ using solver_t = NSGA2<Point_t,
     Runtime,
     FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
-    PARETO_FRONT_DONT_MUTATE,
     std::tuple<Eigen::Array<double,Dim,Eigen::Dynamic>>>;
 
 using Base_t = solver_t;
@@ -628,7 +624,6 @@ using solver_t = NSGA3<Eigen::Array<double,N,1>,
     M,
     //FITNESS_LESS_BETTER,
     DONT_RECORD_FITNESS,
-    PARETO_FRONT_CAN_MUTATE,
     DOUBLE_LAYER,
     void>;
 

@@ -15,74 +15,24 @@
 namespace Heu
 {
 
+
 /**
-   *  @brief NSGA2 MOGA solver. Suitable for not too many objectives.
-   *
-   *  @tparam Var_t  Type of decisition variable.
-   *  @tparam ObjNum Numbers of objectives.
-   *  @tparam fOpt Whether greater fitness value means better.
-   *  @tparam rOpt Whether the solver records fitness changelog.
-   *  @tparam pfOpt Whether to protect the Pareto front from mutation.
-   *  @tparam Args_t Type of other parameters.
-  */
-
- /*
-template<typename Var_t,
-         size_t ObjNum,
-         FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
-         RecordOption Record=DONT_RECORD_FITNESS,
-         PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
-         class Args_t=void,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
-class NSGA2
-    : public internal::NSGA2Base<Var_t,
-                    ObjNum,
-                    isGreaterBetter,
-                    Record,
-                    ProtectPF,
-                    Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>
-{
-public:
-    using Base_t = internal::NSGA2Base<Var_t,
-                    ObjNum,
-                    isGreaterBetter,
-                    Record,
-                    ProtectPF,
-                    Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
-    using infoUnit2 = typename Base_t::infoUnit2;
-    Heu_MAKE_NSGABASE_TYPES
-
-    NSGA2() {
-    };
-
-    virtual ~NSGA2() {};
-
-protected:
-
-private:
-};
-
-*/
-/**
- * @brief Partial specialization for NSGA2 using Eigen's array
+ * @brief NSGA2 MOGA solver. Suitable for not too many objectives.
  * 
- * @tparam Var_t 
- * @tparam ObjNum 
- * @tparam isGreaterBetter 
- * @tparam Record 
- * @tparam ProtectPF 
- * @tparam Args 
+ * @tparam Var_t Type of decisition variable.
+ * @tparam ObjNum Numbers of objectives.
+ * @tparam isGreaterBetter Whether greater fitness value means better.
+ * @tparam Record Whether the solver records fitness changelog.
+ * @tparam Args_t Type of other parameters.
+ * @tparam _iFun_ Compile-time iFun, use nullptr for runtime
+ * @tparam _fFun_ Compile-time fFun, use nullptr for runtime
+ * @tparam _cFun_ Compile-time cFun, use nullptr for runtime
+ * @tparam _mFun_ Compile-time mFun, use nullptr for runtime
  */
 template<typename Var_t,
          size_t ObjNum,
          FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
          RecordOption Record=DONT_RECORD_FITNESS,
-         PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
          class Args_t=void,
          typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
          typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
@@ -93,7 +43,6 @@ class NSGA2
                     ObjNum,
                     isGreaterBetter,
                     Record,
-                    ProtectPF,
                     Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
@@ -102,7 +51,6 @@ public:
                     ObjNum,
                     isGreaterBetter,
                     Record,
-                    ProtectPF,
                     Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES

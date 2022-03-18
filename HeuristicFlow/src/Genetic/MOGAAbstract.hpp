@@ -18,12 +18,6 @@
 namespace Heu
 {
 
-///whether to protect pareto front when mutation or not
-enum PFOption : unsigned char {
-    PARETO_FRONT_DONT_MUTATE=true,
-    PARETO_FRONT_CAN_MUTATE=false
-};
-
 namespace internal
 {
 
@@ -42,7 +36,6 @@ template<typename Var_t,
         size_t ObjNum,
         FitnessOption fOpt,
         RecordOption rOpt,
-        PFOption pfOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
