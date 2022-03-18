@@ -16,9 +16,6 @@
 #include <HeuristicFlow/Genetic>
 
 
-///Using libEigen with HeuristicFlow
-void testWithEigenLib();
-
 ///Ackely function
 void testAckley_withRecord();
 

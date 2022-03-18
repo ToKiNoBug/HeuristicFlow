@@ -17,9 +17,7 @@
 #include <random>
 #include <algorithm>
 #include "GAAbstract.hpp"
-#ifndef Heu_NO_STATICASSERT
 #include <type_traits>
-#endif
 
 #ifdef Heu_DO_OUTPUT
 #include <iostream>

@@ -41,67 +41,12 @@ class NSGA2Base
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    NSGA2Base() {
-        _ccFun=default_ccFun_liner;
-    };
+    NSGA2Base() {};
     virtual ~NSGA2Base() {};
 
     using Base_t = NSGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
-
-    using congestComposeFun = double(*)(const Fitness_t *);
-
-    inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
-            _ccFun=__ccFun;
-    }
-
-    static double default_ccFun_liner(const Fitness_t * f) {
-        double result=f->operator[](0);
-        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
-            result+=f->operator[](objIdx);
-        }
-        return result;
-    };
-
-    static double default_ccFun_sphere(const Fitness_t * f) {
-        double result=OT_square(f->operator[](0));
-        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
-            result+=OT_square(f->operator[](objIdx));
-        }
-        return std::sqrt(result);
-    }
-
-    static double default_ccFun_max(const Fitness_t * f) {
-        double result=f->operator[](0);
-        for(size_t objIdx=1;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
-            result=std::max(f->operator[](objIdx),result);
-        }
-        return result;
-    }
-
-    /**
-     * @brief compose congestion using p-th minkowski distance
-     * 
-     * @tparam p power
-     * @param f parital congestion value
-     * @return double congestion value
-     */
-    template<int64_t p>
-    static double default_ccFun_powered(const Fitness_t * f) {
-        double result=0;
-        for(size_t objIdx=0;objIdx<((ObjNum==Runtime)?f->size():ObjNum);objIdx++) {
-            result+=power<p>(f->operator[](objIdx));
-        }
-        return std::pow(result,1.0/p);
-    }
-
-    inline void initializePop() {
-        if(_ccFun==nullptr) {
-            setCongestComposeFun();
-        }
-        Base_t::initializePop();
-    }
 
     /**
      * @brief calculate ideal point
@@ -135,8 +80,6 @@ public:
     };
 
 protected:
-    congestComposeFun _ccFun;
-
     template<int64_t objIdx>
     static bool universialCompareFun(const infoUnit2 * A,const infoUnit2 * B) {
 #ifndef Heu_NO_STATICASSERT
@@ -172,6 +115,11 @@ protected:
         return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
     }
 
+    inline static double composeCongestion(const Fitness_t & f) 
+    {
+        return f.sum();
+    };
+
     ///fast nondominated sorting
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnit2 * ,const infoUnit2 * );
@@ -187,17 +135,15 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
-
-            initializeSize<ObjNum>::
-                    template resize<Fitness_t>(&pop.back().congestion,this->objectiveNum());
-
+            pop.back().congestion.resize(this->objectiveNum(),1);
         }
 
+        this->sortSpace.resize(popSizeBefore);
         //make sortspace
         for(size_t i=0;i<popSizeBefore;i++) {
             this->sortSpace[i]=pop.data()+i;
         }
-
+        
         this->calculateDominatedNum();
 
         this->divideLayers();
@@ -256,7 +202,7 @@ protected:
 
             for(infoUnit2 & i : pop) {
                 //store final congestion at the first congestion
-                i.congestion[0]=_ccFun(&i.congestion);
+                i.congestion[0]=composeCongestion(i.congestion);
             }
 
             std::sort((infoUnit2 **)(this->sortSpace.data()),

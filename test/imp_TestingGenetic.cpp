@@ -75,68 +75,6 @@ void testAckley_withRecord() {
 }
 
 
-void testWithEigenLib() {
-    Eigen::Array4d target(1,2,3,4);
-    target/=target.sum();
-    cout<<"Target="<<target.transpose()<<endl;
-    GAOption opt;
-    opt.populationSize=100;
-    opt.maxGenerations=3000;
-    opt.maxFailTimes=50;
-    opt.crossoverProb=0.8;
-    opt.mutateProb=0.05;
-
-    SOGA<Eigen::Array4d,
-            FITNESS_GREATER_BETTER,
-            RECORD_FITNESS,
-            std::tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double>> algo;
-    //val min max learning_rate
-    using arg_t = tuple<Eigen::Array4d,Eigen::Array4d,Eigen::Array4d,double> ;
-    arg_t Arg;
-    static const uint8_t TargetOffset=0,MinOffset=1,MaxOffset=2,LROffset=3;
-    get<TargetOffset>(Arg)=target;
-    get<MinOffset>(Arg).setConstant(-1);
-    get<MaxOffset>(Arg).setConstant(2);
-    get<LROffset>(Arg)=0.01;
-
-    algo.setiFun([](Eigen::Array4d* x,const arg_t*){x->setRandom();});
-    algo.setfFun(    [](const Eigen::Array4d* x,const arg_t * arg,double *f){
-        *f = -(*x-get<TargetOffset>(*arg)).square().maxCoeff();
-    });
-    algo.setcFun(    [](const Eigen::Array4d*x,const Eigen::Array4d*y,
-                     Eigen::Array4d*X,Eigen::Array4d*Y,
-                     const arg_t *) {
-                 for(uint32_t i=0;i<4;i++) {
-                     X->operator()(i)=
-                             (rand()%2)?
-                                 x->operator()(i):y->operator()(i);
-                     Y->operator()(i)=
-                             (rand()%2)?
-                                 x->operator()(i):y->operator()(i);
-                 }});
-    algo.setmFun(    [](const Eigen::Array4d * src,Eigen::Array4d*x,const arg_t * arg) {
-        *x=*src;
-        uint32_t idx=rand()%4;
-        x->operator()(idx)+=randD(-1,1)*get<LROffset>(*arg);
-
-        if(x->operator()(idx)>get<MaxOffset>(*arg)(idx)) {
-            x->operator()(idx)=get<MaxOffset>(*arg)(idx);
-        }
-        if(x->operator()(idx)<get<MinOffset>(*arg)(idx)) {
-            x->operator()(idx)=get<MinOffset>(*arg)(idx);
-        }});
-    algo.setArgs(Arg);
-    algo.setOption(opt);
-    algo.initializePop();
-
-    algo.run();
-    cout<<"Solving spend "<<algo.generation()<<" generations\n";
-    cout<<"Result = "<<algo.result().transpose()<<endl;
-}
-
-
-
-
 void testTSP(const uint32_t PointNum) {
     static const uint8_t DIM=2;
     //static const double LengthBase=100;
@@ -399,8 +337,6 @@ void testNSGA2_Kursawe() {
     algo.setOption(opt);
     algo.initializePop();
 
-    algo.setCongestComposeFun(algo.default_ccFun_powered<3>);
-
     cout<<"Start"<<endl;
     std::clock_t t=std::clock();
     algo.run();
@@ -482,9 +418,6 @@ void testNSGA2_Binh_and_Korn() {
     algo.setcFun(cFun);
     algo.setOption(opt);
     algo.initializePop();
-
-    ///custom ccfun is not compulsory. Default value is nullptr
-    //algo.setCongestComposeFun();
 
     cout<<"Start"<<endl;
     std::clock_t t=std::clock();

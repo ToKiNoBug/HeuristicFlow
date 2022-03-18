@@ -47,8 +47,8 @@ using Container = typename std::conditional<
 template<size_t Size>
 using EigenVecD_t = EigenContainer<double,Size>;
 
-template<DoubleVectorOption dvo,size_t Dim>
-using FitnessVec_t= Container<double,Dim,dvo>;
+//template<DoubleVectorOption dvo,size_t Dim>
+//using FitnessVec_t= Container<double,Dim,dvo>;
 
 template<size_t _ObjNum>
 struct initializeSize

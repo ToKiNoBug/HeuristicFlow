@@ -55,30 +55,12 @@ public:
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGABASE_TYPES
 
-    using congestComposeFun = typename Base_t::congestComposeFun;
     using infoUnit2 = typename Base_t::infoUnit2;
 
-    NSGA2() {
-        setCongestComposeFun();
-    };
+    NSGA2() {}
 
-    virtual ~NSGA2() {};
-
-    inline void setCongestComposeFun(congestComposeFun __ccFun=default_ccFun_liner) {
-            this->_ccFun=__ccFun;
-    }
-
-    static double default_ccFun_liner(const Fitness_t * f) {
-        return f->sum();
-    };
-
-    inline void initializePop() {
-        if(this->_ccFun==nullptr) {
-            setCongestComposeFun();
-        }
-        Base_t::initializePop();
-    }
-
+    virtual ~NSGA2() {}
+    
     virtual Fitness_t bestFitness() const {
         Fitness_t best=Base_t::_population.front()._Fitness;
         for(const Gene & i : Base_t::_population) {

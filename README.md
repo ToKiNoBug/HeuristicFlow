@@ -28,12 +28,13 @@ Implemented :
 4. PSO
 
 TODO:
-1. Distinguish singular matrix better in NSGA3
-2. Simplify constructure if possible (espically for Genetic).
-3. Replace `Heu::Runtime` with `Eigen::Dynamic`
-4. Imporve threading implementation with OMP (learn from libEigen)
-5. Change namespace.
-6. Rewrite documents
+1. Improve methods to process PF.
+2. Distinguish singular matrix better in NSGA3.
+3. Simplify constructure if possible (espically for Genetic).
+4. Replace `Heu::Runtime` with `Eigen::Dynamic`
+5. Imporve threading implementation with OMP (learn from libEigen)
+6. Change namespace.
+7. Rewrite documents
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm
