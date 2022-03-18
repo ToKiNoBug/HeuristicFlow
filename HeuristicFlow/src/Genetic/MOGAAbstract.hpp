@@ -15,13 +15,17 @@
 #include <queue>
 #include <unordered_set>
 
-namespace Heu {
-    
+namespace Heu
+{
+
 ///whether to protect pareto front when mutation or not
 enum PFOption : unsigned char {
     PARETO_FRONT_DONT_MUTATE=true,
     PARETO_FRONT_CAN_MUTATE=false
 };
+
+namespace internal
+{
 
 /**
    *  @brief Base class for multi-objective genetic algorithm solver.
@@ -141,6 +145,8 @@ private:
 #endif
 
 };  // MOGAAbstract
+
+}   //  internal
 
 }   //  Heu
 

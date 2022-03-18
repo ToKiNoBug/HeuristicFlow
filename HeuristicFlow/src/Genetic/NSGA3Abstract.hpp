@@ -15,8 +15,11 @@
 #include "NSGABase.hpp"
 #include "../../SimpleMatrix"
 
-namespace Heu {
+namespace Heu
+{
 
+namespace internal
+{
 
 template<typename Var_t,
         size_t ObjNum,
@@ -478,6 +481,9 @@ Heu_MAKE_NSGABASE_TYPES \
 using RefMat_t = typename Base_t::RefMat_t; \
 using infoUnit3 = typename Base_t::infoUnit3; \
 using RefPointIdx_t = typename Base_t::RefPointIdx_t;
-}
+
+}   //  internal
+
+}   //  Heu
 
 #endif  //  Heu_NSGA3ABSTRACT_HPP

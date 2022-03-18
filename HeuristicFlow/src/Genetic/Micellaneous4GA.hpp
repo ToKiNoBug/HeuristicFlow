@@ -16,7 +16,8 @@
 
 namespace Heu {
 
-namespace HeuPrivate {
+namespace internal
+{
 
 template<typename Var_t,DoubleVectorOption dvo>
 struct imp_GADefaults_DVO
@@ -411,7 +412,7 @@ struct GADefaults<Var_t,dvo,void>
     template<DivCode _r=encode<1,5>::code>
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        HeuPrivate::template imp_GADefaults_DVO<Var_t,dvo>::
+        internal::template imp_GADefaults_DVO<Var_t,dvo>::
                 template imp_cFunNd<_r>(p1,p2,c1,c2);
     }
 
@@ -441,7 +442,7 @@ struct GADefaults<Var_t,dvo,void>
 
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
-        HeuPrivate::template imp_GADefaults_DVO<Var_t,dvo>::
+        internal::template imp_GADefaults_DVO<Var_t,dvo>::
                 imp_cFunSwapNs(p1,p2,c1,c2);
     }
 

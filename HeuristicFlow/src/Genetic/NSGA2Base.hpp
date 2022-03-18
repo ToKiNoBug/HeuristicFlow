@@ -12,7 +12,11 @@
 
 #include "NSGABase.hpp"
 
-namespace Heu {
+namespace Heu
+{
+
+namespace internal
+{
 
 enum CompareOption : int64_t {
     CompareByCongestion=-1,
@@ -318,6 +322,8 @@ private:
 
 };
 
-}
+}   //  internal
+
+}   // Heu
 
 #endif //   NSGA2BASE_HPP

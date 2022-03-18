@@ -756,7 +756,7 @@ void searchPF() {
             pop[idx].second=0;
             for(size_t er=0;er<pop.size();er++) {
                 pop[idx].second
-                    +=Pareto<M,DoubleVectorOption::Eigen,FITNESS_LESS_BETTER>::
+                    +=internal::Pareto<M,DoubleVectorOption::Eigen,FITNESS_LESS_BETTER>::
                     isStrongDominate(&pop[er].first,&pop[idx].first);
             }
         }

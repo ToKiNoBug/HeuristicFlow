@@ -37,12 +37,12 @@ template<typename Var_t,
          RecordOption Record=DONT_RECORD_FITNESS,
          PFOption ProtectPF=PARETO_FRONT_CAN_MUTATE,
          class Args_t=void,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
-         typename GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DVO,ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
 class NSGA2
-    : public NSGA2Base<Var_t,
+    : public internal::NSGA2Base<Var_t,
                     ObjNum,
                     DVO,
                     isGreaterBetter,
@@ -52,7 +52,7 @@ class NSGA2
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t = NSGA2Base<Var_t,
+    using Base_t = internal::NSGA2Base<Var_t,
                     ObjNum,
                     DVO,
                     isGreaterBetter,
@@ -91,10 +91,10 @@ template<typename Var_t,
          RecordOption Record,
          PFOption ProtectPF,
          class Args_t,
-         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::mutateFun _mFun_>
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::initializeFun _iFun_,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::fitnessFun _fFun_,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::crossoverFun _cFun_,
+         typename internal::GAAbstract<Var_t,FitnessVec_t<DoubleVectorOption::Eigen,ObjNum>,Args_t>::mutateFun _mFun_>
 class NSGA2<Var_t,
             ObjNum,
             DoubleVectorOption::Eigen,
@@ -103,7 +103,7 @@ class NSGA2<Var_t,
             ProtectPF,
             Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
-    : public NSGA2Base<Var_t,
+    : public internal::NSGA2Base<Var_t,
                     ObjNum,
                     DoubleVectorOption::Eigen,
                     isGreaterBetter,
@@ -113,7 +113,7 @@ class NSGA2<Var_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
-    using Base_t =NSGA2Base<Var_t,
+    using Base_t = internal::NSGA2Base<Var_t,
                     ObjNum,
                     DoubleVectorOption::Eigen,
                     isGreaterBetter,
@@ -179,6 +179,6 @@ private:
 };
 
 #endif  // Heu_GENETIC_USE_EIGEN
-}
+}   //  Heu
 
 #endif // NSGA2_HPP

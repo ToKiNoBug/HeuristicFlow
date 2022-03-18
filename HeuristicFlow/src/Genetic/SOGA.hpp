@@ -28,17 +28,17 @@ template<typename Var_t,
     FitnessOption isGreaterBetter=FITNESS_LESS_BETTER,
     RecordOption Record=DONT_RECORD_FITNESS,
     class Args_t=void,
-         typename GAAbstract<Var_t,double,Args_t>::initializeFun _iFun_=nullptr,
-         typename GAAbstract<Var_t,double,Args_t>::fitnessFun _fFun_=nullptr,
-         typename GAAbstract<Var_t,double,Args_t>::crossoverFun _cFun_=nullptr,
-         typename GAAbstract<Var_t,double,Args_t>::mutateFun _mFun_=nullptr>
-class SOGA : public GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>
+         typename internal::GAAbstract<Var_t,double,Args_t>::initializeFun _iFun_=nullptr,
+         typename internal::GAAbstract<Var_t,double,Args_t>::fitnessFun _fFun_=nullptr,
+         typename internal::GAAbstract<Var_t,double,Args_t>::crossoverFun _cFun_=nullptr,
+         typename internal::GAAbstract<Var_t,double,Args_t>::mutateFun _mFun_=nullptr>
+class SOGA : public internal::GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
     SOGA() {
 
     };
-    using Base_t = GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>;
+    using Base_t = internal::GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
     virtual double bestFitness() const {

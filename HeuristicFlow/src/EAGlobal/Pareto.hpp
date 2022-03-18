@@ -14,8 +14,10 @@
 #include "../Global/Types.hpp"
 #include "../Global/Constants.hpp"
 
-namespace Heu {
-    
+namespace Heu
+{
+namespace internal
+{
 template<size_t ObjNum,DoubleVectorOption dvo,FitnessOption fOpt>
 struct Pareto
 {
@@ -69,7 +71,7 @@ struct Pareto<ObjNum,DoubleVectorOption::Eigen,fOpt>
 };
 
 #endif  //  EIGEN_CORE_H
-
+}   //  namespace internal
 }   //  namespace Heu
 
 

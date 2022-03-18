@@ -23,6 +23,9 @@ enum ReferencePointOption {
     DOUBLE_LAYER
 };
 
+namespace internal
+{
+
 template<typename Var_t,
         size_t ObjNum,
         DoubleVectorOption DVO,
@@ -147,8 +150,10 @@ protected:
 
 };
 
-}
 
+}   //  internal
+
+}   //  Heu
 
 
 #endif  //  Heu_NSGA3BASE_HPP

@@ -213,8 +213,8 @@ protected:
     virtual void updatePopulation() {
         for(Particle_t & i : this->_population) {
             i.velocity=this->_option.inertiaFactor*i.velocity
-                        +this->_option.learnFactorP*internal::randD()*(i.pBest.position-i.position)
-                        +this->_option.learnFactorG*internal::randD()*(this->gBest.position-i.position);
+                        +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
+                        +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
 
             i.velocity=i.velocity.min(this->_velocityMax);
             i.velocity=i.velocity.max(-this->_velocityMax);

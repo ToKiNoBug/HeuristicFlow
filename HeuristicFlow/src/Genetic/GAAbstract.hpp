@@ -14,16 +14,17 @@
 
 #include "../../Global"
 
-namespace Heu {
+namespace Heu
+{
 
-namespace HeuPrivate {
+namespace internal
+{
 
 Heu_MAKE_FUNAREA(iFun,iFun,GA)
 Heu_MAKE_FUNAREA(fFun,fFun,GA)
 Heu_MAKE_FUNAREA(cFun,cFun,GA)
 Heu_MAKE_FUNAREA(mFun,mFun,GA)
 
-}
 
 /**
  * @brief The GAAbstract class declares 4 operator functions and related reloaded functions.
@@ -47,16 +48,16 @@ public:
    using ArgsType = Args_t;
 
    template<initializeFun i>
-   using iFunBody = typename HeuPrivate::iFunArea_GA<void,Var_t*,const Args_t *>::template funBody<i>;
+   using iFunBody = typename iFunArea_GA<void,Var_t*,const Args_t *>::template funBody<i>;
 
    template<fitnessFun f>
-   using fFunBody = typename HeuPrivate::fFunArea_GA<void,const Var_t*,const Args_t *,Fitness_t*>::template funBody<f>;
+   using fFunBody = typename fFunArea_GA<void,const Var_t*,const Args_t *,Fitness_t*>::template funBody<f>;
 
    template<crossoverFun c>
-   using cFunBody = typename HeuPrivate::cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t *>::template funBody<c>;
+   using cFunBody = typename cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*,const Args_t *>::template funBody<c>;
 
    template<mutateFun m>
-   using mFunBody= typename HeuPrivate::mFunArea_GA<void,Var_t *,const Args_t *>::template funBody<m>;
+   using mFunBody= typename mFunArea_GA<void,Var_t *,const Args_t *>::template funBody<m>;
 
     const Args_t & args() const {
         return _args;
@@ -92,16 +93,16 @@ public:
     using ArgsType = void;
 
     template<initializeFun i>
-    using iFunBody = typename HeuPrivate::iFunArea_GA<void,Var_t*>::template funBody<i>;
+    using iFunBody = typename iFunArea_GA<void,Var_t*>::template funBody<i>;
 
     template<fitnessFun f>
-    using fFunBody = typename HeuPrivate::fFunArea_GA<void,const Var_t*,Fitness_t*>::template funBody<f>;
+    using fFunBody = typename fFunArea_GA<void,const Var_t*,Fitness_t*>::template funBody<f>;
 
     template<crossoverFun c>
-    using cFunBody = typename HeuPrivate::cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*>::template funBody<c>;
+    using cFunBody = typename cFunArea_GA<void,const Var_t*,const Var_t*,Var_t*,Var_t*>::template funBody<c>;
 
     template<mutateFun m>
-    using mFunBody= typename HeuPrivate::mFunArea_GA<void,Var_t *>::template funBody<m>;
+    using mFunBody= typename mFunArea_GA<void,Var_t *>::template funBody<m>;
 
     static const bool HasParameters=false;
 };
@@ -113,6 +114,7 @@ using crossoverFun = typename Base_t::crossoverFun; \
 using mutateFun = typename Base_t::mutateFun; \
 using ArgsType = typename Base_t::ArgsType;
 
+}   //  internal
 
 }   //  Heu
 

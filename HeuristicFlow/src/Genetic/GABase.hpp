@@ -27,9 +27,11 @@
 
 #include "../../Global"
 
-namespace Heu {
+namespace Heu
+{
 
-
+namespace internal
+{
     /**
    *  @brief Genetic algorithm base class. 
    *  It's an abstrcat base class for all genetic algorithm solvers.
@@ -385,7 +387,7 @@ protected:
     std::vector<Fitness_t> _record;
 
 };
-
-}
+}   //  internal
+}   //  Heu
 
 #endif // GABASE_H

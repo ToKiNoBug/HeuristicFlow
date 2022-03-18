@@ -46,10 +46,12 @@ inline std::mt19937 & global_mt19937() {
     return mt;
 }
 
+}   //  internal
+
 ///uniform random number in range [0,1)
 inline double randD() {
     static std::uniform_real_distribution<double> rnd(0,1);
-    return rnd(global_mt19937());
+    return rnd(internal::global_mt19937());
 }
 
 ///uniform random number in range [min,max)
@@ -59,7 +61,7 @@ inline double randD(const double min,const double max) {
 
 inline float randF() {
     static std::uniform_real_distribution<float> rnd(0,1);
-    return rnd(global_mt19937());
+    return rnd(internal::global_mt19937());
 }
 
 template<typename int_t>
@@ -74,7 +76,6 @@ inline int_t randIdx(int_t min,int_t max_plus_1) {
     return int_t((max_plus_1-min)*randF()+min);
 }
 
-}
 
 }   // Heu
 

@@ -19,7 +19,11 @@
 #endif
 #endif
 
-namespace Heu {
+namespace Heu
+{
+
+namespace internal
+{
 
 template<typename Var_t,
         size_t ObjNum,
@@ -153,6 +157,8 @@ protected:
 Heu_MAKE_GABASE_TYPES \
 using infoUnitBase_t = typename Base_t::infoUnitBase; \
 using Fitness_t = typename Base_t::Fitness_t;
+
+}   //  internal
 
 }   // Heu
 

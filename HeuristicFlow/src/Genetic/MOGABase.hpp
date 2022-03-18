@@ -20,8 +20,10 @@
 #define Heu_MOGA_MaxRunTimeObjNum 32
 #endif
 
-namespace Heu {
-
+namespace Heu
+{
+namespace internal
+{
 /**
  * @brief MOGA solver base class with compile-time objective count
  * 
@@ -112,8 +114,9 @@ protected:
     size_t _objectiveNum;
 };
 
+}   //  internal
 
-}
+}   //  Heu
 
 
 #endif // MOGABASE_HPP
