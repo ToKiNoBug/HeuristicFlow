@@ -39,8 +39,8 @@ template<class Var_t,
          typename internal::PSOParameterPack<Var_t,double,Arg_t>::fFun_t _fFun_=nullptr>
 class PSO : public internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
-public:
     using Base_t = internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
+public:
     Heu_MAKE_PSOABSTRACT_TYPES
 
     static const DoubleVectorOption Flag =
@@ -151,8 +151,8 @@ class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
 ///Partial specilization for PSO using Eigen's fix-sized Array
     : public internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
-public:
     using Base_t = internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
+public:
     Heu_MAKE_PSOABSTRACT_TYPES
     using Var_t = EigenVecD_t<DIM>;
 

@@ -44,8 +44,8 @@ class PSOAbstract :
         public PSOParameterPack<Var_t,Fitness_t,Arg_t>::template iFunBody<_iFun_>,
         public PSOParameterPack<Var_t,Fitness_t,Arg_t>::template fFunBody<_fFun_>
 {
-public:
     using Base_t = PSOParameterPack<Var_t,Fitness_t,Arg_t>;
+public:
     Heu_MAKE_PSOPARAMETERPACK_TYPES
     
     class Point
@@ -130,14 +130,19 @@ public:
         _failTimes=0;
     }
 
-    virtual void run() {
+    template<class this_t=PSOAbstract>
+    void run() {
         _generation=0;
         _failTimes=0;
+
+        static_cast<this_t*>(this)->__impl_clearRecord();
 
         while(true) {
             _generation++;
             calculateAll();
             updatePGBest();
+
+            static_cast<this_t*>(this)->__impl_recordFitness();
             if(_generation>_option.maxGeneration) {
 #ifdef Heu_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
@@ -176,6 +181,10 @@ protected:
     std::vector<Particle> _population;
 
     Point gBest;
+
+    inline void __impl_clearRecord() {}
+
+    inline void __impl_recordFitness() {}
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
@@ -253,8 +262,9 @@ template<class Var_t,class Fitness_t,class Arg_t,
 class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t,_iFun_,_fFun_>
         : public PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t,_iFun_,_fFun_>
 {
-public:
     using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t,_iFun_,_fFun_>;
+    friend Base_t;
+public:
     Heu_MAKE_PSOABSTRACT_TYPES
 
     const std::vector<Fitness_t> & record() const {
@@ -263,42 +273,22 @@ public:
 
     virtual Fitness_t bestFitness() const=0;
 
-    virtual void run() {
-        this->_generation=0;
-        this->_failTimes=0;
-        _record.clear();
-        _record.reserve(this->_option.maxGeneration+1);
-        while(true) {
-            this->_generation++;
-            this->calculateAll();
-            this->updatePGBest();
-            _record.emplace_back(bestFitness());
-            if(this->_generation>this->_option.maxGeneration) {
-#ifdef Heu_DO_OUTPUT
-                    std::cout<<"Terminated by max generation limit"<<std::endl;
-#endif
-                    break;
-                }
-                if(this->_option.maxFailTimes>0
-                        &&this->_failTimes>this->_option.maxFailTimes) {
-#ifdef Heu_DO_OUTPUT
-                    std::cout<<"Terminated by max failTime limit"<<std::endl;
-#endif
-                    break;
-                }
-#ifdef Heu_DO_OUTPUT
-                std::cout<<"Generation "<<this->_generation
-                        //<<" , elite fitness="<<_eliteIt->fitness()
-                       <<std::endl;
-#endif
-                this->updatePopulation();
-                this->customOptAfterEachGeneration();
-        }
-        this->_generation--;
-
+    template<class this_t=PSOAbstract>
+    void run() {
+        Base_t::template run<this_t>();
     }
+
 protected:
     std::vector<Fitness_t> _record;
+
+    inline void __impl_clearRecord() {
+        _record.clear();
+        _record.reserve(this->_option.maxGeneration+1);
+    }
+
+    inline void __impl_recordFitness() {
+        _record.emplace_back(bestFitness());
+    }
 
 };
 

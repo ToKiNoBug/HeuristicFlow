@@ -27,8 +27,8 @@ template<class Var_t,size_t DIM,class Fitness_t,RecordOption Record,class Arg_t,
          typename PSOParameterPack<Var_t,Fitness_t,Arg_t>::fFun_t _fFun_>
 class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
-public:
     using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
+public:
     Heu_MAKE_PSOABSTRACT_TYPES
 
 public:
@@ -51,8 +51,8 @@ template<class Var_t,class Fitness_t,RecordOption Record,class Arg_t,
 class PSOBase<Var_t,Runtime,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
         : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
-public:
     using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
+public:
     Heu_MAKE_PSOABSTRACT_TYPES
 
     inline size_t dimensions() const {
