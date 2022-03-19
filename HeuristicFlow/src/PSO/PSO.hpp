@@ -103,8 +103,9 @@ protected:
 
     virtual void updatePopulation() {
         static const int32_t thN=Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic,_population.size()/thN)
-        for(Particle_t & i : this->_population) {
+#pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+        for(int idx=0;idx<this->_population.size();idx++) {
+            Particle_t & i =this->_population[idx];
             for(size_t idx=0;idx<Base_t::dimensions();idx++) {
                 i.velocity[idx]=
                         this->_option.inertiaFactor*i.velocity[idx]
@@ -214,10 +215,11 @@ protected:
     }
 
     virtual void updatePopulation() {
-        
+
         static const int32_t thN=Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic,_population.size()/thN)
-        for(Particle_t & i : this->_population) {
+#pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+        for(int idx=0;idx<this->_population.size();idx++) {
+            Particle_t & i = this->_population[idx];
             i.velocity=this->_option.inertiaFactor*i.velocity
                         +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
                         +this->_option.learnFactorG*randD()*(this->gBest.position-i.position);
