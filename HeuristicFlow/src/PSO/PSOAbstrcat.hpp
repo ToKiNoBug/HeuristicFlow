@@ -179,7 +179,7 @@ protected:
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
-        static const int32_t thN=HfGlobal::threadNum();
+        static const int32_t thN=Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic,_population.size()/thN)
         for(int i=0;i<_population.size();i++) {
                 Particle * ptr=&_population[i];

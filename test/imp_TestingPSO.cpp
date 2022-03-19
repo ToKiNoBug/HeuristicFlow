@@ -42,14 +42,15 @@ void testPSOBase() {
 }
 
 void testRastriginFun() {
-    static const size_t N=10;
+    static const size_t N=20;
     using solver_t = PSO_Eigen<N,
     FITNESS_LESS_BETTER,
     RECORD_FITNESS>;
     
-    using Var_t = EigenVecD_t<N>;;
+    using Var_t = EigenVecD_t<N>;
 
     PSOOption opt;
+    opt.populationSize=400;
     opt.maxGeneration=50*N;
     opt.maxFailTimes=
             -1;
