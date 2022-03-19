@@ -126,7 +126,7 @@ void testRastriginFun() {
 
 #include <algorithm>
 
-void testTSP(const size_t N) {
+void testTSP_PSO(const size_t N) {
 static const size_t SpaceDim=2;
 
     using Var_t = Eigen::ArrayXd;

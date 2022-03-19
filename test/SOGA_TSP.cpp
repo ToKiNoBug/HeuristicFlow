@@ -14,7 +14,7 @@ using namespace Heu;
 using namespace std;
 
 
-void testTSP(const uint32_t PointNum) {
+void testTSP_SOGA(const uint32_t PointNum) {
     static const uint8_t DIM=2;
     //static const double LengthBase=100;
     typedef array<double,DIM> Point_t;

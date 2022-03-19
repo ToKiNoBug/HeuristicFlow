@@ -19,6 +19,6 @@ void testPSOBase();
 
 void testRastriginFun();
 
-void testTSP(const size_t N);
+void testTSP_PSO(const size_t N);
 
 #endif // DEF_TESTINGPSO_H

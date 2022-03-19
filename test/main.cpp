@@ -17,13 +17,14 @@ using namespace std;
 
 int main() {
     //test_Box_double();
+    testTSP_SOGA(100);
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA2_Kursawe();
     //testNSGA3_DTLZ7();
     //searchPF();
 
-    testRastriginFun();
+    //testRastriginFun();
 
     system("pause");
     return 0;
