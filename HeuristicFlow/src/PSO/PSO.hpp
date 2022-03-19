@@ -102,6 +102,8 @@ protected:
     }
 
     virtual void updatePopulation() {
+        static const int32_t thN=Eigen::nbThreads();
+#pragma omp parallel for schedule(dynamic,_population.size()/thN)
         for(Particle_t & i : this->_population) {
             for(size_t idx=0;idx<Base_t::dimensions();idx++) {
                 i.velocity[idx]=
@@ -212,6 +214,9 @@ protected:
     }
 
     virtual void updatePopulation() {
+        
+        static const int32_t thN=Eigen::nbThreads();
+#pragma omp parallel for schedule(dynamic,_population.size()/thN)
         for(Particle_t & i : this->_population) {
             i.velocity=this->_option.inertiaFactor*i.velocity
                         +this->_option.learnFactorP*randD()*(i.pBest.position-i.position)
