@@ -12,6 +12,7 @@
 #ifndef Heu_TYPES_HPP
 #define Heu_TYPES_HPP
 
+#include <Eigen/Core>
 #include <type_traits>
 #include <array>
 #include <vector>
@@ -20,37 +21,33 @@
 
 namespace Heu {
 
-template<typename scalar_t,size_t Dim>
+template<typename scalar_t,int Dim>
 using stdContainer =
-    typename std::conditional<Dim==Runtime,
+    typename std::conditional<Dim==Eigen::Dynamic,
         std::vector<scalar_t>,
         std::array<scalar_t,Dim>>::type;
 
-template<typename scalar_t,size_t Dim>
-using EigenContainer =
-    typename std::conditional<Dim==Runtime,
-        Eigen::Array<scalar_t,Eigen::Dynamic,1>,
-        Eigen::Array<scalar_t,Dim,1>>::type;
-
+template<typename scalar_t,int Dim>
+using EigenContainer = Eigen::Array<scalar_t,Dim,1>;
 
 template<size_t Size>
 using stdVecD_t = stdContainer<double,Size>;
 
 
-template<typename scalar_t,size_t Size,DoubleVectorOption DVO>
+template<typename scalar_t,int Size,DoubleVectorOption DVO>
 using Container = typename std::conditional<
     (DVO!=DoubleVectorOption::Eigen),
     stdContainer<scalar_t,Size>,
     EigenContainer<scalar_t,Size>>::type;
 
 ///Array type when using Eigen array(s)
-template<size_t Size>
+template<int Size>
 using EigenVecD_t = EigenContainer<double,Size>;
 
 //template<DoubleVectorOption dvo,size_t Dim>
 //using FitnessVec_t= Container<double,Dim,dvo>;
 
-template<size_t _ObjNum>
+template<int _ObjNum>
 struct initializeSize
 {
     template<typename A>
@@ -60,7 +57,7 @@ struct initializeSize
 };
 
 template<>
-struct initializeSize<Runtime>
+struct initializeSize<Eigen::Dynamic>
 {
     template<typename A>
     inline static void resize(A * v,size_t sz) {

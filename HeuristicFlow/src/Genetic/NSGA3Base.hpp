@@ -27,7 +27,7 @@ namespace internal
 {
 
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         RecordOption rOpt,
         ReferencePointOption rpOpt,
         class Args_t,
@@ -77,7 +77,7 @@ protected:
 
 
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         RecordOption rOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,

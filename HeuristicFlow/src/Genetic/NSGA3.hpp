@@ -18,7 +18,7 @@ namespace Heu {
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
  */
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         RecordOption rOpt=DONT_RECORD_FITNESS,
         ReferencePointOption rpOpt=ReferencePointOption::SINGLE_LAYER,
         class Args_t=void,

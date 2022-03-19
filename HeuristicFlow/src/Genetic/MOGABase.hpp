@@ -35,7 +35,7 @@ namespace internal
  * @tparam Args 
  */
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
@@ -62,7 +62,7 @@ public:
 
 
 /**
- * @brief MOGA solver base class with runtime objective count
+ * @brief MOGA solver base class with Eigen::Dynamic objective count
  * 
  * @tparam Var_t 
  * @tparam Fitness_t 
@@ -74,13 +74,13 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
-         typename GAAbstract<Var_t,EigenVecD_t<Runtime>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Runtime>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Runtime>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Runtime>,Args_t>::mutateFun _mFun_>
-class MOGABase<Var_t,Runtime,fOpt,rOpt,Args_t,
+         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::mutateFun _mFun_>
+class MOGABase<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
-        : public MOGAAbstract<Var_t,Runtime,fOpt,rOpt,Args_t,
+        : public MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
 public:
@@ -88,15 +88,15 @@ public:
     MOGABase() {};
     virtual ~MOGABase() {};
 
-    using Base_t = MOGAAbstract<Var_t,Runtime,fOpt,rOpt,Args_t,
+    using Base_t = MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
-    inline size_t objectiveNum() const {
+    inline int objectiveNum() const {
         return _objectiveNum;
     }
 
-    inline void setObjectiveNum(size_t _objNum) {
+    inline void setObjectiveNum(int _objNum) {
 #ifndef Heu_NO_RTASSERT
         assert(_objNum>1);
         assert(_objNum<=Heu_MOGA_MaxRunTimeObjNum);
@@ -105,7 +105,7 @@ public:
     }
 
 protected:
-    size_t _objectiveNum;
+    int _objectiveNum;
 };
 
 }   //  internal

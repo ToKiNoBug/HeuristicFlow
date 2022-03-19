@@ -21,19 +21,19 @@ namespace internal
 /**
  * @brief Square box with fixed dims
  */
-template<typename Scalar_t,size_t Dim,
+template<typename Scalar_t,int Dim,
          DoubleVectorOption DVO,BoxShape BS,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class BoxCTDim : public SquareBox<Scalar_t,Dim,DVO,RangeType,MinCT,MaxCT>
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+class BoxCTDim : public SquareBox<Scalar_t,Dim,DVO,isFixedRange,MinCT,MaxCT>
 {
 private:
-    static_assert(Dim!=Runtime,"BoxFixedSize used for runtime sized box");
+    static_assert(Dim!=Eigen::Dynamic,"BoxFixedSize used for runtime sized box");
     static_assert(BS==BoxShape::SQUARE_BOX,"NonSquarebox used for squarebox");
-    using Base_t = SquareBox<Scalar_t,Dim,DVO,RangeType,MinCT,MaxCT>;
+    using Base_t = SquareBox<Scalar_t,Dim,DVO,isFixedRange,MinCT,MaxCT>;
 public:
     using Var_t = typename Base_t::Var_t;
 
-    inline constexpr size_t dimensions() const {
+    inline constexpr int dimensions() const {
         return Dim;
     }
 };
@@ -41,22 +41,22 @@ public:
 /**
  * @brief NonSquarebox with fixed dims
  */
-template<typename Scalar_t,size_t Dim,
+template<typename Scalar_t,int Dim,
          DoubleVectorOption DVO,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
 class BoxCTDim<Scalar_t,Dim,DVO,BoxShape::RECTANGLE_BOX,
-        RangeType,MinCT,MaxCT> :
+        isFixedRange,MinCT,MaxCT> :
         public NonsquareBox<Scalar_t,Dim,DVO>
 {
 private:
-    static_assert(RangeType==Runtime,
+    static_assert(isFixedRange==false,
         "Compile-time box range for non-square box is not supported");
-    static_assert(Dim!=Runtime,"BoxFixedSize used for runtime sized box");
+    static_assert(Dim!=Eigen::Dynamic,"BoxFixedSize used for runtime sized box");
     using Base_t = NonsquareBox<Scalar_t,Dim,DVO>;
 public:
     using Var_t = typename Base_t::Var_t;
 
-    inline constexpr size_t dimensions() const {
+    inline constexpr int dimensions() const {
         return Dim;
     }
 };
@@ -67,14 +67,14 @@ public:
  */
 template<typename Scalar_t,
          DoubleVectorOption DVO,BoxShape BS,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class BoxRTDim : public SquareBox<Scalar_t,Runtime,DVO,RangeType,MinCT,MaxCT>
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+class BoxRTDim : public SquareBox<Scalar_t,Eigen::Dynamic,DVO,isFixedRange,MinCT,MaxCT>
 {
 private:
     static_assert(BS==BoxShape::SQUARE_BOX,"NonSquarebox used for squarebox");
-    using Base_t = SquareBox<Scalar_t,Runtime,DVO,RangeType,MinCT,MaxCT>;
+    using Base_t = SquareBox<Scalar_t,Eigen::Dynamic,DVO,isFixedRange,MinCT,MaxCT>;
 protected:
-    size_t _dims;
+    int _dims;
 public:
     BoxRTDim() {
         _dims=0;
@@ -88,12 +88,12 @@ public:
         Base_t::setMax(s);
     }
 
-    inline void setDimensions(size_t d) {
-        assert(d!=Runtime);
+    inline void setDimensions(int d) {
+        assert(d!=Eigen::Dynamic);
         _dims=d;
     }
 
-    inline size_t dimensions() const {
+    inline int dimensions() const {
         return _dims;
     }
 
@@ -104,14 +104,14 @@ public:
  */
 template<typename Scalar_t,
          DoubleVectorOption DVO,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class BoxRTDim<Scalar_t,DVO,BoxShape::RECTANGLE_BOX,RangeType,MinCT,MaxCT>
-        : public NonsquareBox<Scalar_t,Runtime,DVO>
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+class BoxRTDim<Scalar_t,DVO,BoxShape::RECTANGLE_BOX,isFixedRange,MinCT,MaxCT>
+        : public NonsquareBox<Scalar_t,Eigen::Dynamic,DVO>
 {
 private:
-    static_assert(RangeType==Runtime,
+    static_assert(isFixedRange==false,
         "Compile-time box range for non-square box is not supported");
-    using Base_t = NonsquareBox<Scalar_t,Runtime,DVO>;
+    using Base_t = NonsquareBox<Scalar_t,Eigen::Dynamic,DVO>;
 public:
     using Var_t = typename Base_t ::Var_t;
 
@@ -123,7 +123,7 @@ public:
         Base_t::setMax(v);
     }
 
-    inline size_t dimensions() const {
+    inline int dimensions() const {
         assert(this->_minV.size()==this->_maxV.size());
         return this->_minV.size();
     }
@@ -131,12 +131,12 @@ public:
 
 
 
-template<typename Scalar_t,size_t Dim,
+template<typename Scalar_t,int Dim,
          DoubleVectorOption DVO,BoxShape BS,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-using BoxDims = typename std::conditional<Dim==Runtime,
-    BoxRTDim<Scalar_t,DVO,BS,RangeType,MinCT,MaxCT>,
-    BoxCTDim<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>>::type;
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+using BoxDims = typename std::conditional<Dim==Eigen::Dynamic,
+    BoxRTDim<Scalar_t,DVO,BS,isFixedRange,MinCT,MaxCT>,
+    BoxCTDim<Scalar_t,Dim,DVO,BS,isFixedRange,MinCT,MaxCT>>::type;
 
 }   //  internal
 

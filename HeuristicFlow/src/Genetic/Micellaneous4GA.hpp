@@ -283,7 +283,7 @@ public:
     }
 
     /**
-     * @brief Default crossover function for Runtime-size float/double array/vector
+     * @brief Default crossover function for runtime-size float/double array/vector
      *        (Genetic with args)
      *
      * @tparam _r crossover ratio, 0<r<1
@@ -308,7 +308,7 @@ public:
     }
 
     /**
-     * @brief Default crossover function for Runtime-size array/vector
+     * @brief Default crossover function for runtime-size array/vector
      *        (Genetic with args)
      *
      */
@@ -333,7 +333,7 @@ public:
     }
 
     /**
-     * @brief Discrete random selection crossover by probability for Runtime-size array/vector
+     * @brief Discrete random selection crossover by probability for runtime-size array/vector
      *             (with args)
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
@@ -422,7 +422,7 @@ struct GADefaults<Var_t,void,dvo>
     }
 
     /**
-     * @brief Defaults crossover function for Runtime-size float/double array/vector
+     * @brief Defaults crossover function for runtime-size float/double array/vector
      *        (Genetic without args)
      *
      * @tparam _r crossover ratio, 0<r<1
@@ -453,7 +453,7 @@ struct GADefaults<Var_t,void,dvo>
 
 
     /**
-     * @brief Default crossover function for Runtime-size array/vector
+     * @brief Default crossover function for runtime-size array/vector
      *        (Genetic without args)
      *
      */
@@ -486,7 +486,7 @@ struct GADefaults<Var_t,void,dvo>
     }
 
     /**
-     * @brief Discrete random selection crossover by probability for Runtime-size array/vector
+     * @brief Discrete random selection crossover by probability for runtime-size array/vector
      *             (without args)
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5

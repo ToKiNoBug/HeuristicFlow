@@ -34,7 +34,7 @@ namespace internal
    *  @tparam Args_t Type of other parameters.
   */
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
@@ -46,8 +46,11 @@ class MOGAAbstract
     : public GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
+private:
     using Base_t = GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
+    static_assert(ObjNum>0||ObjNum==Eigen::Dynamic,"Invalid template parameter Dim");
+    static_assert(ObjNum!=1,"You assigend 1 objective in multi-objective problems");
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
@@ -122,11 +125,6 @@ protected:
         return checkSum;
     }
     
-private:
-    static_assert(std::integral_constant<bool,(ObjNum!=1)>::value,
-    "HeuristicFlow : You assigned single objective in MOGA");
-
-
 };  // MOGAAbstract
 
 }   //  internal

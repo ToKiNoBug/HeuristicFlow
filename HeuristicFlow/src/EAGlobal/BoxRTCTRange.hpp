@@ -26,7 +26,7 @@ namespace internal
 /**
  * @brief Non-square box with runtime range.
  */
-template<typename Scalar_t,size_t Size,BoxShape BS,DoubleVectorOption DVO>
+template<typename Scalar_t,int Size,BoxShape BS,DoubleVectorOption DVO>
 class BoxDynamicRange
 {
 public:
@@ -71,7 +71,7 @@ private:
 /**
  * @brief Square box with runtime range
  */
-template<typename Scalar_t,size_t Size,DoubleVectorOption DVO>
+template<typename Scalar_t,int Size,DoubleVectorOption DVO>
 class BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 {
 public:

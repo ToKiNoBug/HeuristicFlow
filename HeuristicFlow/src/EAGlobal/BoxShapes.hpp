@@ -10,6 +10,7 @@
 #ifndef BOXSHAPES_HPP
 #define BOXSHAPES_HPP
 
+#include <Eigen/Core>
 #include "BoxRTCTRange.hpp"
 
 namespace Heu
@@ -18,7 +19,7 @@ namespace Heu
 namespace internal
 {
 
-template<typename Scalar_t,size_t Size,
+template<typename Scalar_t,int Size,
          DoubleVectorOption DVO>
 using NonsquareBox =
     BoxDynamicRange<Scalar_t,Size,BoxShape::RECTANGLE_BOX,DVO>;
@@ -27,9 +28,9 @@ using NonsquareBox =
 /**
  * @brief Square box with runtime range
  */
-template<typename Scalar_t,size_t Size,
+template<typename Scalar_t,int Size,
          DoubleVectorOption DVO,
-         size_t RangeType,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
 class SquareBox : public BoxFixedRange<Scalar_t,MinCT,MaxCT>
 {
 private:
@@ -45,10 +46,10 @@ protected:
 /**
  * @brief Square box with runtime ranges
  */
-template<typename Scalar_t,size_t Size,
+template<typename Scalar_t,int Size,
          DoubleVectorOption DVO,
          TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class SquareBox<Scalar_t,Size,DVO,Runtime,MinCT,MaxCT>
+class SquareBox<Scalar_t,Size,DVO,false,MinCT,MaxCT>
         : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 {
 private:

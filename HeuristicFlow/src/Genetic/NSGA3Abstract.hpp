@@ -21,7 +21,7 @@ namespace internal
 {
 
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         RecordOption rOpt,
         class Args_t,
          typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
@@ -40,7 +40,7 @@ public:
     Heu_MAKE_NSGABASE_TYPES
     using RefPointIdx_t = size_t;
 
-    using RefMat_t=Eigen::Array<double,(ObjNum==Runtime?Eigen::Dynamic:ObjNum),Eigen::Dynamic>;
+    using RefMat_t=Eigen::Array<double,ObjNum,Eigen::Dynamic>;
 
     inline const RefMat_t & referencePoints() const {
         return referencePoses;
@@ -52,17 +52,9 @@ public:
         size_t closestRefPoint;
         double distance;
     };
-private:
-    template<size_t HeuSize>
-    struct HeuSize2EigenSize
-    {
-        static const constexpr int64_t value=(HeuSize==Runtime)?(Eigen::Dynamic):(HeuSize);
-    };
 
 protected:
     RefMat_t referencePoses;
-
-    static const int64_t eigSizeFlag=HeuSize2EigenSize<ObjNum>::value;
 
     void computeReferencePointPoses(const size_t dimN,
         const size_t precision,
@@ -164,7 +156,7 @@ protected:
         stdContainer<const infoUnit3*,ObjNum> extremePtrs;
         initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs,M);
         
-        Eigen::Array<double,eigSizeFlag,eigSizeFlag> extremePoints;
+        Eigen::Array<double,ObjNum,ObjNum> extremePoints;
         
         Fitness_t ideal,intercepts;
         
@@ -226,7 +218,7 @@ protected:
         const auto & w=this->referencePoses;
         auto wT_s=w.matrix().transpose()*s.matrix();
         auto wT_s_w=w.rowwise()*(wT_s.array().transpose());
-        Eigen::Array<double,eigSizeFlag,Eigen::Dynamic> norm_wTsw
+        Eigen::Array<double,ObjNum,Eigen::Dynamic> norm_wTsw
             =wT_s_w.rowwise()/(w.colwise().squaredNorm());
         auto s_sub_norm_wTsw=norm_wTsw.colwise()-s;
         auto distance=s_sub_norm_wTsw.colwise().squaredNorm();
@@ -358,7 +350,7 @@ private:
             rec.resize(this->objectiveNum());
         }
 #else
-        if (ObjNum==Runtime) {
+        if (ObjNum==Eigen::Dynamic) {
             rec.resize(this->objectiveNum());
         }
 #endif
@@ -367,14 +359,14 @@ private:
     }
     
 
-    inline static bool isSingular(const Eigen::Array<double,eigSizeFlag,eigSizeFlag> & mat) {
+    inline static bool isSingular(const Eigen::Array<double,ObjNum,ObjNum> & mat) {
         return std::abs(mat.matrix().determinant())<=1e-10;
     }
 
-    inline static void extremePoints2Intercept(const Eigen::Array<double,eigSizeFlag,eigSizeFlag> & P,
+    inline static void extremePoints2Intercept(const Eigen::Array<double,ObjNum,ObjNum> & P,
         Fitness_t * intercept) {
         auto P_transpose_inv=P.transpose().matrix().inverse();
-        auto ONE=Eigen::Matrix<double,eigSizeFlag,1>::Ones(P.cols(),1);
+        auto ONE=Eigen::Matrix<double,ObjNum,1>::Ones(P.cols(),1);
         auto one_div_intercept=(P_transpose_inv*ONE).array();
         *intercept=1.0/one_div_intercept;
     }

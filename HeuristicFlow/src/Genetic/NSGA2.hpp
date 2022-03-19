@@ -29,7 +29,7 @@ namespace Heu
  * @tparam _mFun_ Compile-time mFun, use nullptr for runtime
  */
 template<typename Var_t,
-         size_t ObjNum,
+         int ObjNum,
          FitnessOption fOpt=FITNESS_LESS_BETTER,
          RecordOption rOpt=DONT_RECORD_FITNESS,
          class Args_t=void,
@@ -81,7 +81,7 @@ protected:
     virtual void select() {
         using cmpFun_t = bool(*)(const infoUnitBase_t * ,const infoUnitBase_t * );
         static const size_t objCapacity=
-                (ObjNum==0)?(Heu_MOGA_MaxRunTimeObjNum):ObjNum;
+                (ObjNum==Eigen::Dynamic)?(Heu_MOGA_MaxRunTimeObjNum):ObjNum;
         static const std::array<cmpFun_t,objCapacity> fitnessCmpFuns
                 =expand<0,objCapacity-1>();
 

@@ -18,7 +18,7 @@
 namespace Heu {
 
 ///Size identifier for dynamic size (fitness or var)
-const size_t Runtime = 0;
+//const size_t Runtime = 0;
 
 ///inf value for float
 const float pinfF=std::numeric_limits<float>::infinity();

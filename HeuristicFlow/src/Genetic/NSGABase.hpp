@@ -26,7 +26,7 @@ namespace internal
 {
 
 template<typename Var_t,
-        size_t ObjNum,
+        int ObjNum,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,

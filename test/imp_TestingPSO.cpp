@@ -128,7 +128,7 @@ static const size_t SpaceDim=2;
 
     using DistanceMat_t = Eigen::ArrayXXd;
 
-    using Solver_t = PSO_Eigen<Runtime,
+    using Solver_t = PSO_Eigen<Eigen::Dynamic,
     FITNESS_LESS_BETTER,
     RECORD_FITNESS,
     DistanceMat_t>;

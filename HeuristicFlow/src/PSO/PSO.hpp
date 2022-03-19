@@ -31,7 +31,7 @@ namespace Heu {
  * @tparam Arg_t Any other parameters.
  */
 template<class Var_t,
-         size_t DIM,
+         int DIM,
          FitnessOption FitnessOpt=FITNESS_LESS_BETTER,
          RecordOption RecordOpt=DONT_RECORD_FITNESS,
          class Arg_t=void,
@@ -64,7 +64,7 @@ public:
     static void default_iFun(Var_t *x,Var_t *v,
     const Var_t * xMin,const Var_t * xMax,
     const Var_t *,const Args_t*) {
-        for(size_t idx=0;idx<xMin->size();idx++) {
+        for(int idx=0;idx<xMin->size();idx++) {
             x->operator[](idx)=randD(xMin->operator[](idx),xMax->operator[](idx));
             v->operator[](idx)=0;
         }
@@ -117,13 +117,15 @@ protected:
             }
         }
     }
-
+private:
     static_assert(!(std::is_scalar<Var_t>::value),"Var_t should be a non-scalar type");
+    static_assert(DIM!=0,"Template parameter DIM cannot be 0. For dynamic dims, use Eigen::Dynamic");
+    static_assert(DIM>0||DIM==Eigen::Dynamic,"Invalid template parameter DIM");
 
 };
 
 ///Convenient typedef for stdArray (fix-sized and Runtime sized)
-template<size_t DIM,
+template<int DIM,
         FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class Arg_t=void,
@@ -133,7 +135,7 @@ using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
 
 
 
-template<size_t DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void,
+template<int DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void,
          typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
          typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
 using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
@@ -141,7 +143,7 @@ using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fF
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
 template<
-        size_t DIM,
+        int DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class Arg_t,
@@ -170,8 +172,8 @@ public:
 
     ///Candidate function for initialization
     static void default_iFun(Var_t *x,Var_t *v,
-    const Var_t * xMin,const Var_t * xMax,
-    const Var_t *,const Args_t*) {
+        const Var_t * xMin,const Var_t * xMax,
+        const Var_t *,const Args_t*) {
         x->setRandom(xMin->size(),1);
         (*x)*=(*xMax-*xMin)/2;
         (*x)+=(*xMin+*xMax)/2;
@@ -225,6 +227,8 @@ protected:
 
         }
     }
+private:
+    static_assert(DIM>0||DIM==Eigen::Dynamic,"Invalid template parameter DIM");
 
 };
 }

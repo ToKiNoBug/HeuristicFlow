@@ -19,43 +19,45 @@ namespace Heu
 /**
  * Fixed(N) dim real(d) square(S) box
  */
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
+template<int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         bool isFixedRange=false,
          internal::TemplateVal_t<double> MinCT=encode<0,1>::code,
          internal::TemplateVal_t<double> MaxCT=encode<0,1>::code,
          internal::TemplateVal_t<double> LRCT=encode<0,1>::code>
 using BoxNdS = internal::RealBox<double,Dim,DVO,BoxShape::SQUARE_BOX,
-    RangeType,MinCT,MaxCT,LRCT>;
+    isFixedRange,MinCT,MaxCT,LRCT>;
 
 /**
- * Runtime(X) dim real(d) square(S) box
+ * runtime(X) dim real(d) square(S) box
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
+         bool isFixedRange=false,
          internal::TemplateVal_t<double> MinCT=encode<0,1>::code,
          internal::TemplateVal_t<double> MaxCT=encode<0,1>::code,
          internal::TemplateVal_t<double> LRCT=encode<0,1>::code>
-using BoxXdS = internal::RealBox<double,Runtime,DVO,BoxShape::SQUARE_BOX,
-    RangeType,MinCT,MaxCT,LRCT>;
+using BoxXdS = internal::RealBox<double,Eigen::Dynamic,DVO,BoxShape::SQUARE_BOX,
+    isFixedRange,MinCT,MaxCT,LRCT>;
 
 /**
  * Fixed(N) dim real(d) nonsquare(N) box
  */
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+template<int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxNdN = internal::RealBox<double,Dim,DVO,BoxShape::RECTANGLE_BOX>;
 
 /**
- * Runtime(X) dim real(d) nonsquare(N) box
+ * runtime(X) dim real(d) nonsquare(N) box
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxXdN = internal::RealBox<double,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
+using BoxXdN = internal::RealBox<double,Eigen::Dynamic,DVO,BoxShape::RECTANGLE_BOX>;
 
 /**
  * Binary box
  */
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
-class BooleanBox : public internal::BoxDims<bool,Dim,DVO,BoxShape::SQUARE_BOX,1,false,true>
+template<int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+class BooleanBox : public internal::BoxDims<bool,Dim,DVO,BoxShape::SQUARE_BOX,true,0,1>
 {
+private:
+    static_assert(Dim>0||Dim==Eigen::Dynamic,"Invalid template parameter Dim");
 public:
     static const constexpr EncodeType Encoding=EncodeType::Binary;
 };
@@ -63,14 +65,14 @@ public:
 /**
  * Binary box with fixed dim
  */
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxNb = typename std::enable_if<Dim!=Runtime,BooleanBox<Dim,DVO>>::type;
+template<int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxNb = typename std::enable_if<Dim!=Eigen::Dynamic,BooleanBox<Dim,DVO>>::type;
 
 /**
  * Binary box with dynamic dims
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxXb = BooleanBox<Runtime,DVO>;
+using BoxXb = BooleanBox<Eigen::Dynamic,DVO>;
 
 
 namespace internal
@@ -78,13 +80,14 @@ namespace internal
 /**
  * @brief Symbolic box constraint
  */
-template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         BoxShape BS=BoxShape::SQUARE_BOX,size_t RangeType=Runtime,
+template<typename Scalar_t,int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         BoxShape BS=BoxShape::SQUARE_BOX,bool isFixedRange=false,
          Scalar_t MinCT=0,Scalar_t MaxCT=1>
-class SymbolBox : public internal::BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
+class SymbolBox : public internal::BoxDims<Scalar_t,Dim,DVO,BS,isFixedRange,MinCT,MaxCT>
 {
 private:
     static_assert(std::is_integral<Scalar_t>::value,"Symbol box requires integer Scalar_t");
+    static_assert(Dim>0||Dim==Eigen::Dynamic,"Invalid template parameter Dim");
 public:
     static const constexpr EncodeType Encoding=EncodeType::Symbolic;
 };
@@ -94,29 +97,29 @@ public:
 /**
  * @brief Square symbolic box with fixed dim
  */
-template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
+template<typename Scalar_t,int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
+         bool isFixedRange=false,
          Scalar_t MinCT=0,Scalar_t MaxCT=1>
-using BoxNsS = typename std::enable_if<Dim!=Runtime,
+using BoxNsS = typename std::enable_if<Dim!=Eigen::Dynamic,
     internal::SymbolBox<Scalar_t,Dim,DVO,BoxShape::SQUARE_BOX,
-        RangeType,MinCT,MaxCT>>::type;
+        isFixedRange,MinCT,MaxCT>>::type;
 
 
 /**
  * @brief Square symbolic box with runtime dim
  */
 template<typename Scalar_t,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
+         bool isFixedRange=false,
          Scalar_t MinCT=0,Scalar_t MaxCT=1>
-using BoxXsS = internal::SymbolBox<Scalar_t,Runtime,DVO,
-    BoxShape::SQUARE_BOX,RangeType,MinCT,MaxCT>;
+using BoxXsS = internal::SymbolBox<Scalar_t,Eigen::Dynamic,DVO,
+    BoxShape::SQUARE_BOX,isFixedRange,MinCT,MaxCT>;
 
 
 /**
  * @brief Non-square symbolic box with fixed dim
  */
-template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxNsN = typename std::enable_if<Dim!=Runtime,
+template<typename Scalar_t,int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
+using BoxNsN = typename std::enable_if<Dim!=Eigen::Dynamic,
     internal::SymbolBox<Scalar_t,Dim,DVO,BoxShape::RECTANGLE_BOX>>::type;
 
 
@@ -124,44 +127,7 @@ using BoxNsN = typename std::enable_if<Dim!=Runtime,
  * @brief Non-square symbolic box with runtime dim
  */
 template<typename Scalar_t,DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxXsN = internal::SymbolBox<Scalar_t,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
-
-/*
-template<typename Scalar_t,size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         BoxShape BS=BoxShape::SQUARE_BOX,size_t RangeType=Runtime,
-         Scalar_t MinCT=0,Scalar_t MaxCT=1>
-class IntegerBox : public BoxDims<Scalar_t,Dim,DVO,BS,RangeType,MinCT,MaxCT>
-{
-private:
-    static_assert(std::is_integral<Scalar_t>::value,"Use integer as Scalar_t");
-public:
-    static const constexpr EncodeType Encoding=EncodeType::Integer;
-};
-
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
-         int MinCT=0,int MaxCT=1>
-using BoxNiS = typename std::enable_if<Dim!=Runtime,
-    IntegerBox<int,Dim,DVO,BoxShape::SQUARE_BOX,RangeType,MinCT,MaxCT>>::type;
-
-
-template<DoubleVectorOption DVO=DoubleVectorOption::Std,
-         size_t RangeType=Runtime,
-         int MinCT=0,int MaxCT=1>
-using BoxXiS = IntegerBox<int,Runtime,DVO,BoxShape::SQUARE_BOX,
-    RangeType,MinCT,MaxCT>;
-
-
-template<size_t Dim,DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxNiN = typename std::enable_if<Dim!=Runtime,
-    IntegerBox<int,Dim,DVO,BoxShape::RECTANGLE_BOX>>::type;
-
-
-
-template<DoubleVectorOption DVO=DoubleVectorOption::Std>
-using BoxXiN = IntegerBox<int,Runtime,DVO,BoxShape::RECTANGLE_BOX>;
-
-*/
+using BoxXsN = internal::SymbolBox<Scalar_t,Eigen::Dynamic,DVO,BoxShape::RECTANGLE_BOX>;
 
 
 }   //  Heu
