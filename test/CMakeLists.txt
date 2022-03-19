@@ -17,9 +17,12 @@ include_directories(D:/CppLibs/eigen-3.4.0)
 
 add_executable(HeuristicFlow_Test
     def_TestingGenetic.h
-    imp_TestingGenetic.cpp  #Test SOGA and NSGA2
+    NSGA2_Binh_And_Korn.cpp
+    NSGA2_ZDT3.cpp
     SOGA_Ackley.cpp
     NSGA2_Binh_And_Korn.cpp
+    NSGA3_DTLZ7.cpp
+    SOGA_TSP.cpp
     def_TestingPSO.h
     imp_TestingPSO.cpp  #Test PSO
     def_TestingBoxes.h

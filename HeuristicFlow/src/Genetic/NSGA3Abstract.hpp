@@ -203,19 +203,7 @@ protected:
             extremePoints.col(c)=extremePtrs[c]->iterator->_Fitness-ideal;
         }
 
-        bool isSingular;
-
-        {
-            std::unordered_set<const void *> set;
-            set.reserve(M);
-            for(auto i : extremePtrs) {
-                set.emplace(i);
-            }
-
-            isSingular=(set.size()<M);
-        }
-
-        if(isSingular) {
+        if(isSingular(extremePoints)) {
             for(size_t r=0;r<M;r++) {
                 intercepts[r]=extremePoints(r,r);
             }
@@ -378,6 +366,10 @@ private:
         pri_makeRP(dimN,precision,0,0,0,&rec,dst);
     }
     
+
+    inline static bool isSingular(const Eigen::Array<double,eigSizeFlag,eigSizeFlag> & mat) {
+        return std::abs(mat.matrix().determinant())<=1e-10;
+    }
 
     inline static void extremePoints2Intercept(const Eigen::Array<double,eigSizeFlag,eigSizeFlag> & P,
         Fitness_t * intercept) {

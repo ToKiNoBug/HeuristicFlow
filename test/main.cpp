@@ -19,8 +19,8 @@ int main() {
     //test_Box_double();
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    testNSGA2_Kursawe();
-    //testNSGA3_DTLZ7();
+    //testNSGA2_Kursawe();
+    testNSGA3_DTLZ7();
     //searchPF();
 
     //test_random();
