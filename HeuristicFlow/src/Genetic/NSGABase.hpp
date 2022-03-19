@@ -81,11 +81,9 @@ protected:
     virtual void calculateDominatedNum() {
         const size_t popSizeBefore=sortSpace.size();
 #ifdef Heu_NSGA_USE_THREADS
-        static const int64_t thN=HfGlobal::threadNum();
-#pragma omp parallel for
-        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
-
-            for(size_t  ed=begIdx;ed<popSizeBefore;ed+=thN) {
+        static const int32_t thN=Eigen::nbThreads();
+#pragma omp parallel for schedule(dynamic,popSizeBefore/thN)
+        for(int ed=0;ed<popSizeBefore;ed++) {
                 sortSpace[ed]->domainedByNum=0;
                 for(size_t er=0;er<popSizeBefore;er++) {
                     if(er==ed)
@@ -94,7 +92,6 @@ protected:
                             Pareto<ObjNum,fOpt>::isStrongDominate(&(sortSpace[er]->iterator->_Fitness),
                                            &(sortSpace[ed]->iterator->_Fitness));
                 }
-            }
         }
 
 #else

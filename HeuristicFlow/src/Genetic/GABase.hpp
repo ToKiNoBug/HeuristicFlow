@@ -184,16 +184,14 @@ protected:
             }
             tasks.emplace_back(&i);
         }
-        static const int64_t  thN=HfGlobal::threadNum();
-#pragma omp parallel for
-        for(int64_t begIdx=0;begIdx<thN;begIdx++) {
-            for(size_t i=begIdx;i<tasks.size();i+=thN) {
+        static const int32_t thN=Eigen::nbThreads();
+#pragma omp parallel for schedule(dynamic,tasks.size()/thN)
+        for(int i=0;i<tasks.size();i++)
                 Gene * ptr=tasks[i];
 
                 GAExecutor<Base_t::HasParameters>::doFitness(this,&ptr->self,&ptr->_Fitness);
 
                 ptr->_isCalculated=true;
-            }
         }
 #else
         for(Gene & i : _population) {
