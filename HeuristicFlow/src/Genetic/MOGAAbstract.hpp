@@ -13,6 +13,7 @@
 #include "./GABase.hpp"
 #include "../EAGlobal/Pareto.hpp"
 #include <queue>
+#include <functional>
 #include <unordered_set>
 
 namespace Heu
@@ -98,11 +99,10 @@ protected:
         }
         std::sort(pfvec.begin(),pfvec.end());
 
-        static const auto hashFun=_pfGenes.hash_function();
-        size_t checkSum=hashFun(pfvec.front());
+        
+        size_t checkSum=std::hash<const void*>()(pfvec[0]);
         for(size_t i=1;i<pfvec.size();i++) {
-            checkSum^=hashFun(pfvec[i]);
-            checkSum^=size_t(pfvec[i]->_isCalculated);
+            checkSum^=std::hash<const void*>()(pfvec[i]);
         }
         return checkSum;
     }

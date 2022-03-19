@@ -57,18 +57,18 @@ void testAckley_withRecord() {
     std::clock_t t=std::clock();
     algo.run();
     t=std::clock()-t;
-    cout<<algo.bestFitness();
-/*
+    //cout<<algo.bestFitness();
+
     cout<<"Solving spend "<<algo.generation()<<" generations in "
        <<double(t)/CLOCKS_PER_SEC<<" sec\n";
     cout<<"Result = ["<<algo.result()[0]<<" , "<<algo.result()[1]<<"]\n";
-*/
-    /*
+
+    
     cout<<"Fitness history :\n";
 
     for(auto i : algo.record()) {
         cout<<i<<'\n';
     }
     cout<<endl;
-    */
+    
 }

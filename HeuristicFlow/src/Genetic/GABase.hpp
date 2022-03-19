@@ -56,10 +56,9 @@ class GABase :
     public GAAbstract<Var_t,Fitness_t,Args_t>::template cFunBody<_cFun_>,
     public GAAbstract<Var_t,Fitness_t,Args_t>::template mFunBody<_mFun_>
 {
-public:
-
+private:
     using Base_t = GAAbstract<Var_t,Fitness_t,Args_t>;
-
+public:
     Heu_MAKE_GAABSTRACT_TYPES
 
     ///Gene type for Var
@@ -111,13 +110,18 @@ public:
     }
     
     ///start to solve
-    virtual void run() {
+    template<class this_t=GABase>
+    void run() {
         _generation=0;
         _failTimes=0;
+        static_cast<this_t*>(this)->__impl_clearRecord();
         while(true) {
             _generation++;
             calculateAll();
+
             select();
+
+            static_cast<this_t*>(this)->__impl_recordFitness();
 
             if(_generation>_option.maxGenerations) {
 #ifdef Heu_DO_OUTPUT
@@ -165,6 +169,9 @@ protected:
 
     virtual void customOptAfterInitialization() {}
     virtual void customOptAfterEachGeneration() {}
+
+    inline void __impl_clearRecord() {}
+    inline void __impl_recordFitness() {}
 
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
@@ -335,52 +342,20 @@ class GABase<Var_t,Fitness_t,RECORD_FITNESS,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>
     : public GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
-public:
+private:
     using Base_t = GABase<Var_t,Fitness_t,DONT_RECORD_FITNESS,Args_t,
                                             _iFun_,_fFun_,_cFun_,_mFun_>;
-    Heu_MAKE_GABASE_TYPES
-
+    friend Base_t;
 public:
+    Heu_MAKE_GABASE_TYPES
     GABase() {};
 
     virtual ~GABase() {};
 
     ///start to solve
-    virtual void run() {
-        this->_generation=0;
-        this->_failTimes=0;
-
-
-        _record.clear();
-        _record.reserve(this->_option.maxGenerations+1);
-
-        while(true) {
-            this->_generation++;
-            this->calculateAll();
-            this->select();
-            _record.emplace_back(bestFitness());
-            if(this->_generation>this->_option.maxGenerations) {
-#ifdef Heu_DO_OUTPUT
-                std::cout<<"Terminated by max generation limit"<<std::endl;
-#endif
-                break;
-            }
-            if(this->_option.maxFailTimes>0&&this->_failTimes>this->_option.maxFailTimes) {
-#ifdef Heu_DO_OUTPUT
-                std::cout<<"Terminated by max failTime limit"<<std::endl;
-#endif
-                break;
-            }
-#ifdef Heu_DO_OUTPUT
-            std::cout<<"Generation "<<this->_generation
-                    //<<" , elite fitness="<<_eliteIt->fitness()
-                   <<std::endl;
-#endif      
-            this->customOptAfterEachGeneration();
-            this->crossover();
-            this->mutate();
-        }
-        this->_generation--;
+    template<class this_t=GABase>
+    inline void run() {
+        Base_t::template run<this_t>();
     }
 
     ///best fitness
@@ -391,8 +366,18 @@ public:
         return _record;
     }
 
+
 protected:
     std::vector<Fitness_t> _record;
+
+    inline void __impl_clearRecord() {
+        _record.clear();
+        _record.reserve(this->_option.maxGenerations+1);
+    }
+
+    inline void __impl_recordFitness() {
+        _record.emplace_back(bestFitness());
+    }
 
 };
 }   //  internal
