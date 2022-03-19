@@ -28,9 +28,8 @@ Implemented :
 4. PSO
 
 TODO:
-1. Imporve threading implementation with OMP (learn from libEigen)
-2. Change namespace.
-3. Rewrite documents
+1. Change namespace.
+2. Rewrite documents
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm

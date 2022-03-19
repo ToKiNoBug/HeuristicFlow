@@ -24,7 +24,9 @@ add_executable(HeuristicFlow_Test
     NSGA3_DTLZ7.cpp
     SOGA_TSP.cpp
     def_TestingPSO.h
-    imp_TestingPSO.cpp  #Test PSO
+    PSO_RastriginFun.cpp
+    PSO_testPSOBase.cpp
+    PSO_TSP.cpp
     def_TestingBoxes.h
     imp_TestingBoxes.cpp
     
