@@ -51,7 +51,9 @@ void testRastriginFun() {
 
     PSOOption opt;
     opt.maxGeneration=50*N;
-    opt.maxFailTimes=opt.maxGeneration/10;
+    opt.maxFailTimes=
+            -1;
+            //opt.maxGeneration/10;
     opt.inertiaFactor=0.8;
     opt.learnFactorG=2;
     opt.learnFactorP=2;
@@ -95,7 +97,7 @@ void testRastriginFun() {
     cout<<"result fitness = "<<solver.bestFitness()<<endl;
 
     const Var_t & result=solver.globalBest().position;
-
+    /*
     cout<<"result = [";
     for(auto i : result) {
         cout<<i<<" , ";
@@ -108,6 +110,8 @@ void testRastriginFun() {
         cout<<i<<" , ";
     }
     cout<<"];"<<endl;
+
+    */
 
     /*
     cout<<"Population condition:"<<endl;

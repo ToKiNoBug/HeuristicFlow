@@ -180,13 +180,11 @@ protected:
     virtual void calculateAll() {
 #ifdef Heu_USE_THREADS
         static const int32_t thN=HfGlobal::threadNum();
-#pragma omp parallel for
-        for(int32_t begIdx=0;begIdx<thN;begIdx++) {
-            for(int32_t i=begIdx;i<_population.size();i+=thN) {
+#pragma omp parallel for schedule(dynamic,_population.size()/thN)
+        for(int i=0;i<_population.size();i++) {
                 Particle * ptr=&_population[i];
                 PSOExecutor<Base_t::HasParameters>::
                         doFitness(this,&ptr->position,&ptr->fitness);
-            }
         }
 #else
         for(Particle & i : _population) {

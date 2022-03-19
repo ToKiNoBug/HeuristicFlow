@@ -20,11 +20,10 @@ int main() {
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA2_Kursawe();
-    testNSGA3_DTLZ7();
+    //testNSGA3_DTLZ7();
     //searchPF();
 
-    //test_random();
-    //test_inf();
+    testRastriginFun();
 
     system("pause");
     return 0;
