@@ -186,7 +186,7 @@ protected:
         }
         static const int32_t thN=Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic,tasks.size()/thN)
-        for(int i=0;i<tasks.size();i++)
+        for(int i=0;i<tasks.size();i++) {
                 Gene * ptr=tasks[i];
 
                 GAExecutor<Base_t::HasParameters>::doFitness(this,&ptr->self,&ptr->_Fitness);
