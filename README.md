@@ -30,6 +30,8 @@ Implemented :
 TODO:
 1. Change namespace.
 2. Rewrite documents
+3. Refine code syntax.
+4. Final checks
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm
