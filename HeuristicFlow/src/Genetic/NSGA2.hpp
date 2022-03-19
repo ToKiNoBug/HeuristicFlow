@@ -73,14 +73,14 @@ public:
     public:
         /** @brief whether this gene is selected
         */
-        Fitness_t congestion;
+        double congestion;
     };
 
 protected:
     static bool compareByCongestion(const infoUnitBase_t * A,const infoUnitBase_t * B) {
         if(A==B)
             return false;
-        return (static_cast<const infoUnit2*>(A)->congestion[0]) > (static_cast<const infoUnit2*>(B)->congestion[0]);
+        return (static_cast<const infoUnit2*>(A)->congestion) > (static_cast<const infoUnit2*>(B)->congestion);
     }
 
     template<int64_t objIdx>
@@ -111,7 +111,7 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
-            pop.back().congestion.resize(this->objectiveNum(),1);
+            pop.back().congestion=0;
         }
 
         //make sortspace
@@ -161,30 +161,20 @@ protected:
                         -this->sortSpace.back()->iterator->_Fitness[objIdx])
                     +1e-10;
 
-                static_cast<infoUnit2 *>(this->sortSpace.front())->congestion[objIdx]=pinfD;
-                static_cast<infoUnit2 *>(this->sortSpace.back())->congestion[objIdx]=pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.front())->congestion=pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.back())->congestion=pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {
 
-                    static_cast<infoUnit2 *>(this->sortSpace[idx])->congestion[objIdx]
-                        	=std::abs(
+                    static_cast<infoUnit2 *>(this->sortSpace[idx])->congestion
+                            +=std::abs(
                             this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
                             -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
                             )/scale;
                 }
             } // end sort on objIdx
-
             
-        /*std::cout<<"congP=[\n";
-        for(auto i : this->sortSpace) {
-            std::cout<<static_cast<infoUnit2*>(i)->congestion.transpose()<<";\n";
-        }
-        std::cout<<"];\n\n\n";*/
-            for(infoUnit2 & i : pop) {
-                //compute and store final congestion at the first congestion
-                i.congestion[0]=i.congestion.sum();
-            }
             //sort by congestion in the undetermined set
             std::sort((infoUnit2 **)(this->pfLayers.front().data()),
                       (infoUnit2 **)(this->pfLayers.front().data()+this->pfLayers.front().size()),

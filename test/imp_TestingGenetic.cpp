@@ -264,8 +264,8 @@ void testNSGA2_Kursawe() {
     };
 
     GAOption opt;
-    opt.maxGenerations=2000;
-    opt.populationSize=1000;
+    opt.maxGenerations=200;
+    opt.populationSize=100;
     opt.maxFailTimes=-1;
 
     algo.setiFun(iFun);
