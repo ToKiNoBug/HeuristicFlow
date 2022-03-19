@@ -47,6 +47,7 @@ void testNSGA2_Binh_and_Korn() {
         if(constraint_g1>0) {
             f1=1e4+constraint_g1;
         }
+
         if(constraint_g2>0) {
             f2=1e4+constraint_g2;
         }
@@ -56,7 +57,7 @@ void testNSGA2_Binh_and_Korn() {
 
     {
         GAOption opt;
-        opt.maxGenerations=400;
+        opt.maxGenerations=100;
         opt.populationSize=200;
         opt.maxFailTimes=-1;
         opt.crossoverProb=0.8;
@@ -88,12 +89,13 @@ void testNSGA2_Binh_and_Korn() {
     }
     cout<<"];"<<endl;
     
-
     /*
     cout<<"\n\n\n population=[";
     for(const auto & i : algo.population()) {
         cout<<i.fitness()[0]<<" , "<<i.fitness()[1]<<";\n";
     }
     cout<<"];"<<endl;
+
     */
+    
 }

@@ -17,7 +17,6 @@
 #include "src/Genetic/SOGA.hpp"
 #include "src/Genetic/MOGAAbstract.hpp"
 #include "src/Genetic/MOGABase.hpp"
-#include "src/Genetic/NSGA2Base.hpp"
 #include "src/Genetic/NSGA2.hpp"
 #include "src/Genetic/Micellaneous4GA.hpp"
 #include "src/Genetic/NSGA3.hpp"
