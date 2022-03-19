@@ -96,7 +96,7 @@ void testTSP(const uint32_t PointNum) {
     }
 
     auto crossoverFun
-            =Heu::GADefaults<vector<double>,DoubleVectorOption::Std,Args_t>::
+            =Heu::GADefaults<vector<double>,Args_t,DoubleVectorOption::Std>::
                 cFunXd<Heu::DivCode::Half>;
 
     auto mutateFun=[](const vector<double>*src,vector<double>*x,const Args_t*) {
@@ -417,7 +417,7 @@ using solver_t = NSGA3<Eigen::Array<double,N,1>,
 using Var_t = Eigen::Array<double,N,1>;
 using Fitness_t = solver_t::Fitness_t;
 
-auto iFun=GADefaults<Var_t,DoubleVectorOption::Eigen,void>::iFunNd<>;
+auto iFun=GADefaults<Var_t,void,DoubleVectorOption::Eigen>::iFunNd<>;
 
 auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
     f->resize(M,1);
@@ -441,7 +441,7 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
 };
 
 
-auto cFun=GADefaults<Var_t,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code>;
+auto cFun=GADefaults<Var_t,void,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code>;
 
 
 auto mFun=[](const Var_t * src,Var_t * v) {

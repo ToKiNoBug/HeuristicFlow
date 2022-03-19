@@ -24,10 +24,10 @@ void testNSGA2_Binh_and_Korn() {
             2,
             FITNESS_LESS_BETTER,
             RecordOption::DONT_RECORD_FITNESS,args_t,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::iFunNd,
+            Heu::GADefaults<std::array<double,2>,args_t,Std>::iFunNd,
             nullptr,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::cFunNd<>,
-            Heu::GADefaults<std::array<double,2>,Std,args_t>::mFun_d            
+            Heu::GADefaults<std::array<double,2>,args_t,Std>::cFunNd<>,
+            Heu::GADefaults<std::array<double,2>,args_t,Std>::mFun_d            
             >;
 
     solver_t algo;

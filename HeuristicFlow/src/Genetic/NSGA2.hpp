@@ -41,30 +41,13 @@ class NSGA2
     :public internal::NSGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
-private:
     using Base_t = internal::NSGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
+private:
 public:
     NSGA2() {};
     virtual ~NSGA2() {};
     Heu_MAKE_NSGABASE_TYPES
-
-    /**
-     * @brief calculate ideal point
-     * 
-     * @return Fitness_t ideal point
-     */
-    virtual Fitness_t bestFitness() const {
-        Fitness_t best=this->_population.front()._Fitness;
-        for(const Gene & i : this->_population) {
-            if(fOpt==FitnessOption::FITNESS_GREATER_BETTER) {
-                best=best.max(i._Fitness);
-            } else {
-                best=best.min(i._Fitness);
-            }
-        }
-        return best;
-    }
 
     /** @brief temporary struct to store infos when selection
      */

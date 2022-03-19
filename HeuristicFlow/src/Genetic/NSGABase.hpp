@@ -38,9 +38,9 @@ class NSGABase
     : public MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
-private:
     using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
+private:
 public:
     NSGABase() {};
     virtual ~NSGABase() {};

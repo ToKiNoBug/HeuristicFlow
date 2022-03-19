@@ -22,10 +22,10 @@ void testAckley_withRecord() {
             Heu::FITNESS_LESS_BETTER,
             Heu::RECORD_FITNESS,
             args_t,
-    Heu::GADefaults<array<double,2>,Std,args_t>::iFunNd<>,
+    Heu::GADefaults<array<double,2>,args_t,Std>::iFunNd<>,
     nullptr,
-    Heu::GADefaults<array<double,2>,Std,args_t>::cFunNd,
-    Heu::GADefaults<array<double,2>,Std,args_t>::mFun_d<>>;
+    Heu::GADefaults<array<double,2>,args_t,Std>::cFunNd,
+    Heu::GADefaults<array<double,2>,args_t,Std>::mFun_d<>>;
     solver_t algo;
     
     GAOption opt;

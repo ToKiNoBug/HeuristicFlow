@@ -47,9 +47,9 @@ class MOGABase
         : public MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
-public:
     using Base_t = MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
+public:
     Heu_MAKE_GABASE_TYPES
 
     MOGABase() {};

@@ -39,11 +39,11 @@ class NSGA3Base
     : public NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
     NSGA3Base() {};
     virtual ~NSGA3Base() {};
-    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t referencePointPrecision() const {

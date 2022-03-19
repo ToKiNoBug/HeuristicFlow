@@ -105,8 +105,8 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
  * @tparam Args_t type of other parameters in genetic solver
  */
 template<typename Var_t,
-         DoubleVectorOption dvo=DoubleVectorOption::Std,
-         class Args_t=void>
+         class Args_t=void,
+         DoubleVectorOption dvo=DoubleVectorOption::Std>
 struct GADefaults
 {
 private:
@@ -278,7 +278,7 @@ public:
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        GADefaults<Var_t,dvo,void>::
+        GADefaults<Var_t,void,dvo>::
                 template cFunNd<_r>(p1,p2,c1,c2);
     }
 
@@ -293,7 +293,7 @@ public:
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        GADefaults<Var_t,dvo,void>::template cFunXd<_r>(p1,p2,c1,c2);
+        GADefaults<Var_t,void,dvo>::template cFunXd<_r>(p1,p2,c1,c2);
     }
 
     /**
@@ -304,7 +304,7 @@ public:
     inline static void cFunSwapNs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
-        GADefaults<Var_t,dvo,void>::template cFunSwapNs(p1,p2,c1,c2);
+        GADefaults<Var_t,void,dvo>::template cFunSwapNs(p1,p2,c1,c2);
     }
 
     /**
@@ -315,7 +315,7 @@ public:
     inline static void cFunSwapXs(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
-        GADefaults<Var_t,dvo,void>::template cFunSwapXs(p1,p2,c1,c2);
+        GADefaults<Var_t,void,dvo>::template cFunSwapXs(p1,p2,c1,c2);
     }
 
 
@@ -329,7 +329,7 @@ public:
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t *) {
-        GADefaults<Var_t,dvo,void>::template cFunRandNs<p>(p1,p2,c1,c2);
+        GADefaults<Var_t,void,dvo>::template cFunRandNs<p>(p1,p2,c1,c2);
     }
 
     /**
@@ -342,7 +342,7 @@ public:
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t * a) {
-        GADefaults<Var_t,dvo,void>::template cFunRandXs<posCode>(p1,p2,c1,c2);
+        GADefaults<Var_t,void,dvo>::template cFunRandXs<posCode>(p1,p2,c1,c2);
     }
 
     /**
@@ -388,7 +388,7 @@ public:
 
 template<typename Var_t,
          DoubleVectorOption dvo>
-struct GADefaults<Var_t,dvo,void>
+struct GADefaults<Var_t,void,dvo>
 {
 
     template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>

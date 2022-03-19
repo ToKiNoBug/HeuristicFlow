@@ -34,11 +34,12 @@ template<typename Var_t,
          typename internal::GAAbstract<Var_t,double,Args_t>::mutateFun _mFun_=nullptr>
 class SOGA : public internal::GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>
 {
+private:
+    using Base_t = internal::GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>;
 public:
     SOGA() {
 
     };
-    using Base_t = internal::GABase<Var_t,double,Record,Args_t,_iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
 
     virtual double bestFitness() const {

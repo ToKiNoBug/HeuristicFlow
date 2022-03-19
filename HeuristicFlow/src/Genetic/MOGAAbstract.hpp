@@ -46,12 +46,11 @@ class MOGAAbstract
     : public GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
+    using Base_t = GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
-
-    using Base_t = GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
     Heu_MAKE_GABASE_TYPES
     using Fitness_t = EigenVecD_t<ObjNum>;
 
@@ -82,6 +81,22 @@ public:
         this->_pfGenes.clear();
         this->_pfGenes.reserve(this->_option.populationSize*2);
         Base_t::initializePop();
+    }
+    /**
+     * @brief calculate ideal point
+     * 
+     * @return Fitness_t ideal point
+     */
+    virtual Fitness_t bestFitness() const {
+        Fitness_t best=this->_population.front()._Fitness;
+        for(const Gene & i : this->_population) {
+            if(fOpt==FitnessOption::FITNESS_GREATER_BETTER) {
+                best=best.max(i._Fitness);
+            } else {
+                best=best.min(i._Fitness);
+            }
+        }
+        return best;
     }
 
 protected:
