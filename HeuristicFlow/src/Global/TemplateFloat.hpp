@@ -74,33 +74,33 @@ namespace internal
 {
 
 template<uint64_t val,uint64_t threshold=10000000000000000ULL>
-struct amplifier
+struct PowEncode_amplifier
 {
 private:
 static const constexpr bool need2amp=(val<threshold);
 public:
-static const constexpr uint64_t result=need2amp?(amplifier<10*val,threshold>::result):val;
+static const constexpr uint64_t result=need2amp?(PowEncode_amplifier<10*val,threshold>::result):val;
 };
 
 template<uint64_t threshold>
-struct amplifier<0,threshold>
+struct PowEncode_amplifier<0,threshold>
 {
 static const constexpr uint64_t result=0;
 };
 
 template<int16_t pow>
-struct OneE
+struct PowEncode_OneE
 {
 private:
 static const constexpr int16_t direction=(pow>0)?-1:+1;
 public:
 static const constexpr double result=
         ((pow>0)?10.0:0.1)
-            *OneE<pow+direction>::result;
+            *PowEncode_OneE<pow+direction>::result;
 };
 
 template<>
-struct OneE<0>
+struct PowEncode_OneE<0>
 {
 static const constexpr double result=1;
 };
@@ -122,7 +122,7 @@ static_assert(isSigValid,"Unsupported 16+ decimal digits for precision");
 
 
 static const constexpr uint64_t recordedSignificant=
-        internal::amplifier<absVal,threshold>::result;
+        internal::PowEncode_amplifier<absVal,threshold>::result;
 
 static const constexpr bool isPowNegative=power<0;
 static_assert (power<=255,"Power shouldn't exceeds 255");
@@ -158,7 +158,7 @@ private:
     static const constexpr int16_t absPow=lowerPowMask&code;
     static const constexpr int16_t pow=(isPowNegative?(-absPow):absPow);
     static const constexpr double digital=(sig)/(1e16);
-    static const constexpr double powPart=internal::OneE<pow>::result;
+    static const constexpr double powPart=internal::PowEncode_OneE<pow>::result;
 public:
     static const constexpr double real=digital*powPart;
 };

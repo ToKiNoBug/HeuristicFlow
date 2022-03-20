@@ -27,11 +27,14 @@ using stdContainer =
         std::vector<scalar_t>,
         std::array<scalar_t,Dim>>::type;
 
+template<int Size>
+using stdVecD_t = stdContainer<double,Size>;
+
+
+
 template<typename scalar_t,int Dim>
 using EigenContainer = Eigen::Array<scalar_t,Dim,1>;
 
-template<size_t Size>
-using stdVecD_t = stdContainer<double,Size>;
 
 
 template<typename scalar_t,int Size,DoubleVectorOption DVO>
@@ -47,8 +50,11 @@ using EigenVecD_t = EigenContainer<double,Size>;
 //template<DoubleVectorOption dvo,size_t Dim>
 //using FitnessVec_t= Container<double,Dim,dvo>;
 
+namespace internal 
+{
+
 template<int _ObjNum>
-struct initializeSize
+struct heu_initializeSize
 {
     template<typename A>
     inline static void resize(A * v,size_t sz) {
@@ -57,7 +63,7 @@ struct initializeSize
 };
 
 template<>
-struct initializeSize<Eigen::Dynamic>
+struct heu_initializeSize<Eigen::Dynamic>
 {
     template<typename A>
     inline static void resize(A * v,size_t sz) {
@@ -65,6 +71,8 @@ struct initializeSize<Eigen::Dynamic>
     }
 };
 
-};
+}   //  internal
+
+}   //  Heu
 
 #endif // Heu_TYPES_HPP

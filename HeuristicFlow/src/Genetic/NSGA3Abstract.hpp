@@ -154,7 +154,7 @@ protected:
 
         const size_t M=this->objectiveNum();
         stdContainer<const infoUnit3*,ObjNum> extremePtrs;
-        initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs,M);
+        heu_initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs,M);
         
         Eigen::Array<double,ObjNum,ObjNum> extremePoints;
         
