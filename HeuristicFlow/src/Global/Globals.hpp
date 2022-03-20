@@ -16,9 +16,9 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
-#include "./Constants.hpp"
-#include "./Randoms.hpp"
-#include "./HeuMaths.hpp"
+#include "Constants.hpp"
+#include "Randoms.hpp"
+#include "HeuMaths.hpp"
 
 #include <array>
 
@@ -33,21 +33,5 @@
 #include <thread>
 #endif
 
-namespace Heu
-{
-///Empty class to put global variable and functions, instances of it is meanningless
-class HfGlobal
-{
-public:
-    inline static uint32_t threadNum() {
-        return 4*std::thread::hardware_concurrency();
-    }
-private:
-    HfGlobal() {};
-    ~HfGlobal() {};
-
-};
-
-}
 
 #endif // GLOBALS_HPP

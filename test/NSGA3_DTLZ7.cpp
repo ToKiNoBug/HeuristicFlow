@@ -160,17 +160,16 @@ void searchPF() {
 
     cout<<"Nondominated sorting"<<endl;
     c=clock();
-    static const int32_t thN=HfGlobal::threadNum();
-#pragma omp parallel for
-    for(int32_t begIdx=0;begIdx<thN;begIdx++) {
-        for(int32_t idx=begIdx;idx<pop.size();idx+=thN) {
+    static const int32_t thN=Eigen::nbThreads();
+#pragma omp parallel for schedule (dynamic,pop.size()/thN)
+    for(int idx=0;idx<pop.size();idx++) {
             pop[idx].second=0;
             for(size_t er=0;er<pop.size();er++) {
                 pop[idx].second
                     +=internal::Pareto<M,FITNESS_LESS_BETTER>::
                     isStrongDominate(&pop[er].first,&pop[idx].first);
             }
-        }
+
     }
     c=clock()-c;
     cout<<"NS cost "<<c<<" ms"<<endl;

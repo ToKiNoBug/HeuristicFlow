@@ -109,7 +109,8 @@ void testNSGA2_Kursawe() {
     auto fFun=[](const std::array<double,3> * x,Eigen::Array<double,2,1> *f) {
         double f1=0,f2=0;
         for(int i=0;i<2;i++) {
-            f1+=-10*exp(-0.2*sqrt(square(x->operator[](i))+square(x->operator[](i+1))));
+            f1+=-10*exp(-0.2*sqrt((x->operator[](i))*(x->operator[](i))
+                    +(x->operator[](i+1))*(x->operator[](i+1))));
         }
         for(int i=0;i<3;i++) {
             f2+=pow(abs(x->operator[](i)),0.8)+5*sin(x->operator[](i)*x->operator[](i)*x->operator[](i));

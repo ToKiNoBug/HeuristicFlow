@@ -144,8 +144,8 @@ protected:
                         -this->sortSpace.back()->iterator->_Fitness[objIdx])
                     +1e-10;
 
-                static_cast<infoUnit2 *>(this->sortSpace.front())->congestion=pinfD;
-                static_cast<infoUnit2 *>(this->sortSpace.back())->congestion=pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.front())->congestion=internal::pinfD;
+                static_cast<infoUnit2 *>(this->sortSpace.back())->congestion=internal::pinfD;
 
                 //calculate congestion on single object
                 for(size_t idx=1;idx<popSizeBefore-1;idx++) {

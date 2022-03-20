@@ -50,22 +50,6 @@ inline const char * Enum2String(FitnessOption f) {
     }
 }
 
-///whether it's constrainted
-enum ConstraintOption : uint8_t {
-    NONCONSTRAINT,
-    IS_CONSTRAINT
-};
-///convert enumeration to string
-inline const char * Enum2String(ConstraintOption c) {
-    switch (c)
-    {
-        case NONCONSTRAINT:
-        return "NONCONSTRAINT";
-        case IS_CONSTRAINT:
-        return "IS_CONSTRAINT";
-    }
-}
-
 ///which type of vector to use
 enum DoubleVectorOption {
     Std='S',
@@ -90,12 +74,36 @@ enum BoxShape {
     SQUARE_BOX
 };
 
+inline const char * Enum2String(BoxShape b)
+{
+    switch (b)
+    {
+        case RECTANGLE_BOX:
+        return "Non-square box";
+        case SQUARE_BOX:
+        return "Square box";
+    }
+}
+
 enum EncodeType {
     Real,
     Binary,
     //Integer,
     Symbolic
 };
+
+inline const char * Enum2String(EncodeType e)
+{
+    switch (e)
+    {
+        case Real:
+        return "Real encoding";
+        case Binary:
+        return "Binary encoding";
+        case Symbolic:
+        return "Symbolic encoding";
+    }
+}
 
 }
 

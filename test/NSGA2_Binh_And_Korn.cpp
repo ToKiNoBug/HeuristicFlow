@@ -39,10 +39,10 @@ void testNSGA2_Binh_and_Korn() {
         double f2;
         const double x=_x->operator[](0),y=_x->operator[](1);
         f1=4*(x*x+y*y);
-        f2=square(x-5)+square(y-5);
+        f2=(x-5)*(x-5)+(y-5)*(y-5);
 
-        double constraint_g1=square(x-5)+y*y-25;
-        double constraint_g2=7.7-(square(x-8)+square(y+3));
+        double constraint_g1=(x-5)*(x-5)+y*y-25;
+        double constraint_g2=7.7-((x-8)*(x-8)+(y+3)*(y+3));
 
         if(constraint_g1>0) {
             f1=1e4+constraint_g1;

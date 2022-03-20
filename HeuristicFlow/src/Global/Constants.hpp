@@ -15,23 +15,27 @@
 #include <stdint.h>
 #include <limits>
 
-namespace Heu {
+namespace Heu
+{
 
-///Size identifier for dynamic size (fitness or var)
-//const size_t Runtime = 0;
-
-///inf value for float
+namespace internal
+{
+/**
+ * @brief Positive infinty float
+ * 
+ */
 const float pinfF=std::numeric_limits<float>::infinity();
 
 ///inf value for double
 const double pinfD=std::numeric_limits<double>::infinity();
 
 ///negative inf value for float
-const float nInfF=-pinfF;
+const float ninfF=-pinfF;
 
 ///negative inf value for double
 const double ninfD=-pinfD;
+}   //  internal
 
-}
+}   //  Heu
 
 #endif // Heu_CONSTANTS_HPP

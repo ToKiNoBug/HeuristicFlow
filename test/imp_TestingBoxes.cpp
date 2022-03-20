@@ -50,21 +50,3 @@ void test_Box_bool() {
     cout<<"sizeof BXb="<<sizeof(BXb)<<endl;
 
 }
-
-
-void test_random() 
-{
-    size_t N=20;
-    for(size_t i=0;i<N;i++) {
-        cout<<randD(-1,1)<<endl;
-    }
-}
-
-void test_inf()
-{
-    Eigen::Array2d vec;
-    vec[0]=pinfD;
-    vec[1]=pinfD;
-
-    cout<<vec.sum()<<endl;
-}

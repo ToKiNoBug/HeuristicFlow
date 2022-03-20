@@ -20,8 +20,5 @@ void test_Box_double();
 
 void test_Box_bool();
 
-void test_random();
-
-void test_inf();
 
 #endif // DEF_TESTINGBOXES_H
