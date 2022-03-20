@@ -30,8 +30,9 @@ namespace Heu {
  * @tparam RecordOpt Record trainning curve or not.
  * @tparam Arg_t Any other parameters.
  */
-template<class Var_t,
+template<typename Var_t,
          int DIM,
+         bool isEigenTypes=true,
          FitnessOption FitnessOpt=FITNESS_LESS_BETTER,
          RecordOption RecordOpt=DONT_RECORD_FITNESS,
          class Arg_t=void,
@@ -124,6 +125,7 @@ private:
     static_assert(!(std::is_scalar<Var_t>::value),"Var_t should be a non-scalar type");
     static_assert(DIM!=0,"Template parameter DIM cannot be 0. For dynamic dims, use Eigen::Dynamic");
     static_assert(DIM>0||DIM==Eigen::Dynamic,"Invalid template parameter DIM");
+    static_assert(isEigenTypes==false,"Wrong specialization of PSO");
 
 };
 
@@ -134,34 +136,31 @@ template<int DIM,
          class Arg_t=void,
          typename internal::PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
          typename internal::PSOParameterPack<stdVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
-using PSO_std = PSO<stdVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
+using PSO_std = PSO<stdVecD_t<DIM>,DIM,false,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
 
 
 
 template<int DIM,FitnessOption FitnessOpt,RecordOption RecordOpt,class Arg_t=void,
-         typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_=nullptr,
-         typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_=nullptr>
-using PSO_Eigen = PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
+         typename internal::PSOParameterPack<Eigen::Array<double,DIM,1>,double,Arg_t>::iFun_t _iFun_=nullptr,
+         typename internal::PSOParameterPack<Eigen::Array<double,DIM,1>,double,Arg_t>::fFun_t _fFun_=nullptr>
+using PSO_Eigen = PSO<Eigen::Array<double,DIM,1>,DIM,true,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>;
 
 
 ///Partial specilization for PSO using Eigen's fix-sized Array
-template<
+template<typename Var_t,
         int DIM,
          FitnessOption FitnessOpt,
          RecordOption RecordOpt,
          class Arg_t,
-        typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::iFun_t _iFun_,
-        typename internal::PSOParameterPack<EigenVecD_t<DIM>,double,Arg_t>::fFun_t _fFun_>
-class PSO<EigenVecD_t<DIM>,DIM,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
+        typename internal::PSOParameterPack<Var_t,double,Arg_t>::iFun_t _iFun_,
+        typename internal::PSOParameterPack<Var_t,double,Arg_t>::fFun_t _fFun_>
+class PSO<Var_t,DIM,true,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
 ///Partial specilization for PSO using Eigen's fix-sized Array
-    : public internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
+    : public internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
-    using Base_t = internal::PSOBase<EigenVecD_t<DIM>,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
+    using Base_t = internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
 public:
     Heu_MAKE_PSOABSTRACT_TYPES
-    using Var_t = EigenVecD_t<DIM>;
-
-    static const DoubleVectorOption Flag = DoubleVectorOption::Eigen;
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(this->dimensions(),1,pMin);

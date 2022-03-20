@@ -28,9 +28,6 @@ static const size_t SpaceDim=2;
     RECORD_FITNESS,
     DistanceMat_t>;
 
-
-    cout<<Enum2String(Solver_t::Flag)<<endl;
-
     using Args_t = Solver_t::Args_t;
 
     Solver_t solver;

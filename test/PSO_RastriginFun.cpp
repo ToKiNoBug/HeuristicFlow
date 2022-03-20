@@ -20,7 +20,7 @@ void testRastriginFun() {
     FITNESS_LESS_BETTER,
     RECORD_FITNESS>;
     
-    using Var_t = EigenVecD_t<N>;
+    using Var_t = Eigen::Array<double,N,1>;
 
     PSOOption opt;
     opt.populationSize=400;
