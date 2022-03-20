@@ -70,7 +70,7 @@ class RealBox :
 {
 private:
     static_assert(isFixedRange,"Wrong specialization of RealBox");
-    static const constexpr Scalar_t learnRateCT=decode<LearnRateCT>::real;
+    static const constexpr Scalar_t learnRateCT=DivDecode<LearnRateCT>::real;
 public:
     inline constexpr Scalar_t learnRate() const {
         return learnRateCT;

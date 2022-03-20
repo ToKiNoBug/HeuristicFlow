@@ -14,7 +14,7 @@ using namespace std;
 
 void test_Box_double() {
     BoxNdS<50,DoubleVectorOption::Eigen,
-            true,encode<0,1>::code,encode<1,1>::code,encode<1,50>::code> box0;
+            true,DivEncode<0,1>::code,DivEncode<1,1>::code,DivEncode<1,50>::code> box0;
     //50 dim square box in [0,1]
     BoxXdN<DoubleVectorOption::Eigen> box;
 

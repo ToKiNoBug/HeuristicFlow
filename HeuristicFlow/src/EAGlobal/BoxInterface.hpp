@@ -21,9 +21,9 @@ namespace Heu
  */
 template<int Dim,DoubleVectorOption DVO=DoubleVectorOption::Std,
          bool isFixedRange=false,
-         internal::TemplateVal_t<double> MinCT=encode<0,1>::code,
-         internal::TemplateVal_t<double> MaxCT=encode<0,1>::code,
-         internal::TemplateVal_t<double> LRCT=encode<0,1>::code>
+         internal::TemplateVal_t<double> MinCT=DivEncode<0,1>::code,
+         internal::TemplateVal_t<double> MaxCT=DivEncode<0,1>::code,
+         internal::TemplateVal_t<double> LRCT=DivEncode<0,1>::code>
 using BoxNdS = internal::RealBox<double,Dim,DVO,BoxShape::SQUARE_BOX,
     isFixedRange,MinCT,MaxCT,LRCT>;
 
@@ -32,9 +32,9 @@ using BoxNdS = internal::RealBox<double,Dim,DVO,BoxShape::SQUARE_BOX,
  */
 template<DoubleVectorOption DVO=DoubleVectorOption::Std,
          bool isFixedRange=false,
-         internal::TemplateVal_t<double> MinCT=encode<0,1>::code,
-         internal::TemplateVal_t<double> MaxCT=encode<0,1>::code,
-         internal::TemplateVal_t<double> LRCT=encode<0,1>::code>
+         internal::TemplateVal_t<double> MinCT=DivEncode<0,1>::code,
+         internal::TemplateVal_t<double> MaxCT=DivEncode<0,1>::code,
+         internal::TemplateVal_t<double> LRCT=DivEncode<0,1>::code>
 using BoxXdS = internal::RealBox<double,Eigen::Dynamic,DVO,BoxShape::SQUARE_BOX,
     isFixedRange,MinCT,MaxCT,LRCT>;
 

@@ -149,8 +149,8 @@ private:
     template<typename unused>
     struct Decoder<true,unused>
     {
-        static const constexpr Scalar_t minCT=decode<MinCT>::real;
-        static const constexpr Scalar_t maxCT=decode<MaxCT>::real;
+        static const constexpr Scalar_t minCT=DivDecode<MinCT>::real;
+        static const constexpr Scalar_t maxCT=DivDecode<MaxCT>::real;
         static_assert(isFloatPoint,"Wrong specialization");
     };
 };

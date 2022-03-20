@@ -27,7 +27,7 @@ struct imp_GADefaults_DVO
     inline static void imp_cFunNd(const Var_t * p1,const Var_t * p2,
                               Var_t * c1, Var_t * c2) {
 
-        static const double constexpr r=decode<_r>::real;
+        static const double constexpr r=DivDecode<_r>::real;
         static_assert(r>0,"r shouldn't be less than 0");
         static_assert(r<1,"r shouldn't be greater than 1");
 
@@ -60,7 +60,7 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
     inline static void imp_cFunNd(const Var_t * p1,const Var_t * p2,
                               Var_t * c1, Var_t * c2) {
 
-        static const double constexpr r=decode<_r>::real;
+        static const double constexpr r=DivDecode<_r>::real;
         static_assert(r>0,"r shouldn't be less than 0");
         static_assert(r<1,"r shouldn't be greater than 1");
 
@@ -274,7 +274,7 @@ public:
      * @tparam _r crossover ratio, 0<r<1
      * @tparam Args_t Type of other parameter in Genetic solver
      */
-    template<DivCode _r=encode<1,5>::code>
+    template<DivCode _r=DivEncode<1,5>::code>
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t *) {
@@ -289,7 +289,7 @@ public:
      * @tparam _r crossover ratio, 0<r<1
      * @tparam Args_t Type of other parameter in Genetic solver
      */
-    template<DivCode _r=encode<1,5>::code>
+    template<DivCode _r=DivEncode<1,5>::code>
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2,
                                 const Args_t * a) {
@@ -325,7 +325,7 @@ public:
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=DivCode::Half>
+    template<DivCode p=DivCode::DivCode_Half>
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t *) {
@@ -338,7 +338,7 @@ public:
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode posCode=DivCode::Half>
+    template<DivCode posCode=DivCode::DivCode_Half>
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2,
                                   const Args_t * a) {
@@ -391,10 +391,10 @@ template<typename Var_t,
 struct GADefaults<Var_t,void,dvo>
 {
 
-    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    template<DivCode _min=DivEncode<0,1>::code,DivCode _max=DivEncode<1,1>::code>
     inline static void iFunNd(Var_t * p) {
-        static const double min=decode<_min>::real;
-        static const double max=decode<_max>::real;
+        static const double min=DivDecode<_min>::real;
+        static const double max=DivDecode<_max>::real;
         //static const constexpr bool isValid=(max>min);
         //static_assert(isValid,"Max should be greater than min");
 
@@ -403,7 +403,7 @@ struct GADefaults<Var_t,void,dvo>
         }
     }
 
-    template<DivCode _min=encode<0,1>::code,DivCode _max=encode<1,1>::code>
+    template<DivCode _min=DivEncode<0,1>::code,DivCode _max=DivEncode<1,1>::code>
     inline static void iFunNf(Var_t * p) {
         iFunNd<_min,_max>(p);
     }
@@ -414,7 +414,7 @@ struct GADefaults<Var_t,void,dvo>
      *
      * @tparam _r crossover ratio, 0<r<1
      */
-    template<DivCode _r=encode<1,5>::code>
+    template<DivCode _r=DivEncode<1,5>::code>
     inline static void cFunNd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
         internal::template imp_GADefaults_DVO<Var_t,dvo>::
@@ -427,7 +427,7 @@ struct GADefaults<Var_t,void,dvo>
      *
      * @tparam _r crossover ratio, 0<r<1
      */
-    template<DivCode _r=encode<1,5>::code>
+    template<DivCode _r=DivEncode<1,5>::code>
     inline static void cFunXd(const Var_t * p1,const Var_t * p2,
                                 Var_t * c1, Var_t * c2) {
 #define Heu_PRIVATE_IMP_cFunX \
@@ -471,10 +471,10 @@ struct GADefaults<Var_t,void,dvo>
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=DivCode::Half>
+    template<DivCode p=DivCode::DivCode_Half>
     inline static void cFunRandNs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
-        static const double constexpr r=decode<p>::real;
+        static const double constexpr r=DivDecode<p>::real;
         static_assert(r>0,"A probability shoule be greater than 0");
         static_assert(r<1,"A probability shoule be less than 1");
         const size_t N=p1->size();
@@ -491,7 +491,7 @@ struct GADefaults<Var_t,void,dvo>
      *
      * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
      */
-    template<DivCode p=DivCode::Half>
+    template<DivCode p=DivCode::DivCode_Half>
     inline static void cFunRandXs(const Var_t * p1,const Var_t * p2,
                                   Var_t * c1, Var_t * c2) {
         Heu_PRIVATE_IMP_cFunX

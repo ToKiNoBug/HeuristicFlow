@@ -21,19 +21,19 @@ namespace Heu {
  * 
  */
 enum DivCode : uint64_t {
-    Half=4294967298,
-    Pi=2088567404207137453,
-    Pi_mul_2=993512999210214248,
-    Pi_mul_3=2111843339415065010,
-    Pi_mul_4=4223686678804044427,
-    Pi_mul_6=2111843339388979417,
-    Pi_div_2=1744352159520604142,
-    Pi_div_3=458953659822443224,
-    Pi_div_4=1055921669994474028,
-    Pi_div_6=114738414981121388,
-    Sqrt2=1464156825348615605,
-    one_div_Sqrt2=566232695896337324,
-    E=1518759938472606051,
+    DivCode_Half=4294967298,
+    DivCode_Pi=2088567404207137453,
+    DivCode_Pi_mul_2=993512999210214248,
+    DivCode_Pi_mul_3=2111843339415065010,
+    DivCode_Pi_mul_4=4223686678804044427,
+    DivCode_Pi_mul_6=2111843339388979417,
+    DivCode_Pi_div_2=1744352159520604142,
+    DivCode_Pi_div_3=458953659822443224,
+    DivCode_Pi_div_4=1055921669994474028,
+    DivCode_Pi_div_6=114738414981121388,
+    DivCode_Sqrt2=1464156825348615605,
+    DivCode_one_div_Sqrt2=566232695896337324,
+    DivCode_E=1518759938472606051,
 };
 
 /**
@@ -43,7 +43,7 @@ enum DivCode : uint64_t {
  * @tparam b denominator
  */
 template<int32_t a,uint32_t b>
-struct encode
+struct DivEncode
 {
 private:   
     constexpr static const uint64_t value=(uint64_t(a)<<32)|b;
@@ -57,7 +57,7 @@ public:
  * @tparam dc DivCode waiting to be unpacked.
  */
 template<DivCode dc>
-struct decode
+struct DivDecode
 {
 public:
     constexpr static const int32_t numerator=int32_t(dc>>32);
@@ -70,7 +70,8 @@ enum PowCode : uint64_t {
 
 };
 
-
+namespace internal
+{
 
 template<uint64_t val,uint64_t threshold=10000000000000000ULL>
 struct amplifier
@@ -104,10 +105,12 @@ struct OneE<0>
 static const constexpr double result=1;
 };
 
+}   //  internal
+
 //stores 16 diget(dec) of precision
 //1 bit for sign,54 bits for significant ,1+8 bits for power,
 template<int64_t significant,int16_t power>
-struct powEncode
+struct PowEncode
 {
 private:
 static const constexpr uint64_t threshold=1e16;
@@ -119,7 +122,7 @@ static_assert(isSigValid,"Unsupported 16+ decimal digits for precision");
 
 
 static const constexpr uint64_t recordedSignificant=
-        amplifier<absVal,threshold>::result;
+        internal::amplifier<absVal,threshold>::result;
 
 static const constexpr bool isPowNegative=power<0;
 static_assert (power<=255,"Power shouldn't exceeds 255");
@@ -138,7 +141,7 @@ static const constexpr PowCode code=PowCode(upperPart|lowerPart);
 
 
 template<PowCode pc>
-struct powDecode
+struct PowDecode
 {
 private:
     static const uint64_t code=pc;
@@ -155,7 +158,7 @@ private:
     static const constexpr int16_t absPow=lowerPowMask&code;
     static const constexpr int16_t pow=(isPowNegative?(-absPow):absPow);
     static const constexpr double digital=(sig)/(1e16);
-    static const constexpr double powPart=OneE<pow>::result;
+    static const constexpr double powPart=internal::OneE<pow>::result;
 public:
     static const constexpr double real=digital*powPart;
 };

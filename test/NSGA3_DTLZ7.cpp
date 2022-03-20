@@ -68,7 +68,7 @@ auto DTLZ1=[](const Var_t * x,Fitness_t * f) {
 };
 
 
-auto cFun=GADefaults<Var_t,void,DoubleVectorOption::Eigen>::cFunNd<encode<1,10>::code>;
+auto cFun=GADefaults<Var_t,void,DoubleVectorOption::Eigen>::cFunNd<DivEncode<1,10>::code>;
 
 
 auto mFun=[](const Var_t * src,Var_t * v) {

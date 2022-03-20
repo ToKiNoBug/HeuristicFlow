@@ -48,7 +48,7 @@ void testNSGA2_ZDT3() {
 
     auto cFun=
             Heu::GADefaults<std::array<double,XNum>>::
-                cFunNd<(Heu::encode<1,2>::code)>;
+                cFunNd<(Heu::DivEncode<1,2>::code)>;
 
     void (*mFun)(const std::array<double,XNum>*src,std::array<double,XNum>*)=
             [](const std::array<double,XNum>*src,std::array<double,XNum>*x){
