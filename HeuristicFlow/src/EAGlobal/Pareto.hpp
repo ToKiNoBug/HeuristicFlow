@@ -25,7 +25,7 @@ struct Pareto
     static_assert(ObjNum>0||ObjNum==Eigen::Dynamic,"ObjNum should be positive or dynamic(-1)");
     static_assert(ObjNum!=1,"You assigned 1 objective for multi-objective problem");
     
-    using Fitness_t = EigenVecD_t<ObjNum>;
+    using Fitness_t = Eigen::Array<double,ObjNum,1>;
     static bool isStrongDominate(const Fitness_t * A,const Fitness_t * B) {
         bool isNotWorse,isBetter;
         if

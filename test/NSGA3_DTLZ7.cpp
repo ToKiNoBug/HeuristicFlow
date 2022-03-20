@@ -15,7 +15,7 @@ using namespace std;
 
 
 template<size_t M,size_t N,size_t realM=M>
-void DTLZ7(const Eigen::Array<double,N,1> * x,EigenVecD_t<M> * f) {
+void DTLZ7(const Eigen::Array<double,N,1> * x,Eigen::Array<double,M,1> * f) {
     static_assert(realM>=2,"actural objective amount mustn't be less than 2");
     f->resize(realM,1);
     auto xm=x->template bottomRows<N-realM+1>();

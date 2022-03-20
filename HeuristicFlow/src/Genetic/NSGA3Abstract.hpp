@@ -24,10 +24,10 @@ template<typename Var_t,
         int ObjNum,
         RecordOption rOpt,
         class Args_t,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::mutateFun _mFun_>
 class NSGA3Abstract
     : public NSGABase<Var_t,ObjNum,FITNESS_LESS_BETTER,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>

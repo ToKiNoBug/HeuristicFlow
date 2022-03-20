@@ -38,16 +38,16 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::mutateFun _mFun_>
 class MOGAAbstract
-    : public GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
+    : public GABase<Var_t,Eigen::Array<double,ObjNum,1>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>
 {
 private:
-    using Base_t = GABase<Var_t,EigenVecD_t<ObjNum>,rOpt,Args_t,
+    using Base_t = GABase<Var_t,Eigen::Array<double,ObjNum,1>,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
     static_assert(ObjNum>0||ObjNum==Eigen::Dynamic,"Invalid template parameter Dim");
     static_assert(ObjNum!=1,"You assigend 1 objective in multi-objective problems");
@@ -55,7 +55,7 @@ public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
     Heu_MAKE_GABASE_TYPES
-    using Fitness_t = EigenVecD_t<ObjNum>;
+    using Fitness_t = Eigen::Array<double,ObjNum,1>;
 
     ///get pareto front in vec
     inline void paretoFront(std::vector<Fitness_t> & front) const {

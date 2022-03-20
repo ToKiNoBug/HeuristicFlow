@@ -33,10 +33,10 @@ template<typename Var_t,
          FitnessOption fOpt=FITNESS_LESS_BETTER,
          RecordOption rOpt=DONT_RECORD_FITNESS,
          class Args_t=void,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_=nullptr,
-         typename internal::GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_=nullptr>
+         typename internal::GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::initializeFun _iFun_=nullptr,
+         typename internal::GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::fitnessFun _fFun_=nullptr,
+         typename internal::GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::crossoverFun _cFun_=nullptr,
+         typename internal::GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::mutateFun _mFun_=nullptr>
 class NSGA2
     :public internal::NSGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>

@@ -39,10 +39,10 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<ObjNum>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::mutateFun _mFun_>
 class MOGABase
         : public MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
@@ -74,10 +74,10 @@ template<typename Var_t,
         FitnessOption fOpt,
         RecordOption rOpt,
         class Args_t,
-         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,EigenVecD_t<Eigen::Dynamic>,Args_t>::mutateFun _mFun_>
+         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::initializeFun _iFun_,
+         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::fitnessFun _fFun_,
+         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::crossoverFun _cFun_,
+         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::mutateFun _mFun_>
 class MOGABase<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
         : public MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,

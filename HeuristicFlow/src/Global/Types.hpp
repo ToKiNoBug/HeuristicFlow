@@ -31,21 +31,11 @@ template<int Size>
 using stdVecD_t = stdContainer<double,Size>;
 
 
-
-template<typename scalar_t,int Dim>
-using EigenContainer = Eigen::Array<scalar_t,Dim,1>;
-
-
-
 template<typename scalar_t,int Size,DoubleVectorOption DVO>
 using Container = typename std::conditional<
     (DVO!=DoubleVectorOption::Eigen),
     stdContainer<scalar_t,Size>,
-    EigenContainer<scalar_t,Size>>::type;
-
-///Array type when using Eigen array(s)
-template<int Size>
-using EigenVecD_t = EigenContainer<double,Size>;
+    Eigen::Array<double,Size,1>>::type;
 
 //template<DoubleVectorOption dvo,size_t Dim>
 //using FitnessVec_t= Container<double,Dim,dvo>;

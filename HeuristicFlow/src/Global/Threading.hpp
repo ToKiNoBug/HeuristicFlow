@@ -11,23 +11,6 @@
 #ifndef Heu_GLOBALS_HPP
 #define Heu_GLOBALS_HPP
 
-#include <random>
-#include <ctime>
-#include <thread>
-#include <type_traits>
-#include <vector>
-#include "Constants.hpp"
-#include "Randoms.hpp"
-#include "HeuMaths.hpp"
-
-#include <array>
-
-#ifndef EIGEN_CORE_H    //Detects whether libEigen is included
-#ifdef Heu_GENETIC_USE_EIGEN     //If user hopes to use Eigen without including it, report an error
-#error You must include Eigen before you define Heu_GENETIC_USE_EIGEN! Include Eigen before Heu.
-#endif
-#endif
-
 #ifdef Heu_USE_THREADS
 #include <omp.h>
 #include <thread>
