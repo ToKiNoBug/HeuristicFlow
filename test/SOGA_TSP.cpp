@@ -7,7 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "def_TestingGenetic.h"
+#include <Eigen/Dense>
+#include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
 using namespace Heu;
@@ -140,4 +141,15 @@ void testTSP_SOGA(const uint32_t PointNum) {
     cout<<"finished with "<<algo.generation()<<" generations and "
        <<double(c)/CLOCKS_PER_SEC<<" s\n";
     cout<<"result fitness = "<<algo.bestFitness()<<endl;
+}
+
+
+int main()
+{
+    size_t NodeNum=100;
+    cout<<"Input node number : ";
+    cin>>NodeNum;
+    testTSP_SOGA(NodeNum);
+    system("pause");
+    return 0;
 }

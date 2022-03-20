@@ -7,12 +7,14 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "def_TestingBoxes.h"
+#include <Eigen/Dense>
+#include <HeuristicFlow/EAGlobal>
+
 #include <iostream>
 using namespace Heu;
 using namespace std;
 
-void test_Box_double() {
+void test_Box() {
     BoxNdS<50,DoubleVectorOption::Eigen,
             true,DivEncode<0,1>::code,DivEncode<1,1>::code,DivEncode<1,50>::code> box0;
     //50 dim square box in [0,1]
@@ -29,9 +31,7 @@ void test_Box_double() {
     cout<<box0.learnRate()<<endl;
     cout<<"sizeof(box0) = "<<sizeof(box0)<<endl;
 
-}
-
-void test_Box_bool() {
+    
     BoxNb<10> BNb;
     BoxXb<> BXb;
 
@@ -49,4 +49,12 @@ void test_Box_bool() {
     cout<<"sizeof BNb="<<sizeof(BNb)<<endl;
     cout<<"sizeof BXb="<<sizeof(BXb)<<endl;
 
+}
+
+
+int main()
+{
+    test_Box();
+    system("pause");
+    return 0;
 }

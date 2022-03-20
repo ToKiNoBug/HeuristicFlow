@@ -7,7 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "def_TestingPSO.h"
+#include <Eigen/Dense>
+#include <HeuristicFlow/PSO>
 #include <cmath>
 #include <iostream>
 using namespace Heu;
@@ -39,4 +40,12 @@ void testPSOBase() {
     abstractNoRec=baseNoRec;
     abstractDoRec=baseDoRec;
 
+}
+
+
+int main()
+{
+    testPSOBase();
+    system("pause");
+    return 0;
 }

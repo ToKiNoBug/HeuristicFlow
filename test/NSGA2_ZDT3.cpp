@@ -7,7 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "def_TestingGenetic.h"
+#include <Eigen/Dense>
+#include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
 using namespace Heu;
@@ -62,7 +63,7 @@ void testNSGA2_ZDT3() {
     };
 
     GAOption opt;
-    opt.populationSize=2000;
+    opt.populationSize=200;
     opt.maxFailTimes=500;
     opt.maxGenerations=2000;
 
@@ -93,4 +94,12 @@ void testNSGA2_ZDT3() {
     }
     cout<<"];"<<endl;
     */
+}
+
+
+int main()
+{
+    testNSGA2_ZDT3();
+    system("pause");
+    return 0;
 }

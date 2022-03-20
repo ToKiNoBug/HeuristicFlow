@@ -15,26 +15,28 @@ add_definitions("-D _USE_MATH_DEFINES")
 include_directories(../)
 include_directories(D:/CppLibs/eigen-3.4.0)
 
-add_executable(HeuristicFlow_Test
-    def_TestingGenetic.h
-    NSGA2_Binh_And_Korn.cpp
-    NSGA2_ZDT3.cpp
-    SOGA_Ackley.cpp
-    NSGA2_Binh_And_Korn.cpp
-    NSGA2_Kursawe.cpp
-    NSGA3_DTLZ7.cpp
-    SOGA_TSP.cpp
-    def_TestingPSO.h
-    PSO_RastriginFun.cpp
-    PSO_testPSOBase.cpp
-    PSO_TSP.cpp
-    def_TestingBoxes.h
-    imp_TestingBoxes.cpp
-    
-    main.cpp)
+add_executable(NSGA2_Binh_And_Korn NSGA2_Binh_And_Korn.cpp)
+add_executable(NSGA2_Kursawe NSGA2_Kursawe.cpp)
+add_executable(NSGA2_ZDT3 NSGA2_ZDT3.cpp)
+add_executable(NSGA3_DTLZ7 NSGA3_DTLZ7.cpp)
+add_executable(PSO_RastriginFun PSO_RastriginFun.cpp)
+add_executable(PSO_testPSOBase PSO_testPSOBase.cpp)
+add_executable(PSO_TSP PSO_TSP.cpp)
+add_executable(SOGA_Ackley SOGA_Ackley.cpp)
+add_executable(SOGA_TSP SOGA_TSP.cpp)
+add_executable(Boxes test_Boxes.cpp)
 
 find_package(OpenMP)
 
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(HeuristicFlow_Test PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(NSGA2_Binh_And_Korn PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(NSGA2_Kursawe PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(NSGA2_ZDT3 PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(NSGA3_DTLZ7 PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(PSO_RastriginFun PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(PSO_testPSOBase PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(PSO_TSP PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(SOGA_Ackley PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(SOGA_TSP PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(Boxes PUBLIC OpenMP::OpenMP_CXX)
 endif()
