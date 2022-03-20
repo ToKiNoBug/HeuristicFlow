@@ -40,7 +40,7 @@ public:
     SOGA() {
 
     };
-    Heu_MAKE_GABASE_TYPES
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
     virtual double bestFitness() const {
         return _eliteIt->_Fitness;

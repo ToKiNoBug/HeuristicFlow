@@ -43,7 +43,7 @@ class PSO : public internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fF
 {
     using Base_t = internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
 public:
-    Heu_MAKE_PSOABSTRACT_TYPES
+    EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
     static const DoubleVectorOption Flag =
         (std::is_same<Var_t,stdVecD_t<DIM>>::value)?
@@ -154,7 +154,7 @@ class PSO<Var_t,DIM,true,FitnessOpt,RecordOpt,Arg_t,_iFun_,_fFun_>
 {
     using Base_t = internal::PSOBase<Var_t,DIM,double,RecordOpt,Arg_t,_iFun_,_fFun_>;
 public:
-    Heu_MAKE_PSOABSTRACT_TYPES
+    EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
     virtual void setPVRange(double pMin,double pMax,double vMax) {
         this->_posMin.setConstant(this->dimensions(),1,pMin);

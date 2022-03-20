@@ -16,7 +16,7 @@
 
 namespace Eigen
 {
-#define Heu_MAKE_FUNAREA(funFlag,FunFlag,Suffix) \
+#define EIGEN_HEU_MAKE_FUNAREA(funFlag,FunFlag,Suffix) \
 template<typename return_t=void,typename ... a> \
 class funFlag##Area_##Suffix \
 { \

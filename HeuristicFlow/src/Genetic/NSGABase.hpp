@@ -38,7 +38,7 @@ public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
-    Heu_MAKE_GABASE_TYPES
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
     using Fitness_t = typename Base_t::Fitness_t;
     
     /**
@@ -144,8 +144,8 @@ protected:
 };  //NSGABase
 
 
-#define Heu_MAKE_NSGABASE_TYPES \
-Heu_MAKE_GABASE_TYPES \
+#define EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t) \
+EIGEN_HEU_MAKE_GABASE_TYPES(Base_t) \
 using infoUnitBase_t = typename Base_t::infoUnitBase; \
 using Fitness_t = typename Base_t::Fitness_t;
 

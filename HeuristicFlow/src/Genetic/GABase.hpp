@@ -59,7 +59,7 @@ class GABase :
 private:
     using Base_t = GAAbstract<Var_t,Fitness_t,Args_t>;
 public:
-    Heu_MAKE_GAABSTRACT_TYPES
+    EIGEN_HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
     ///Gene type for Var
     class Gene {
@@ -317,10 +317,10 @@ protected:
 
 };
 
-#define Heu_MAKE_GABASE_TYPES \
+#define EIGEN_HEU_MAKE_GABASE_TYPES \
 using Gene = typename Base_t::Gene; \
 using GeneIt_t = typename Base_t::GeneIt_t; \
-Heu_MAKE_GAABSTRACT_TYPES
+EIGEN_HEU_MAKE_GAABSTRACT_TYPES
 
 /**
    *  @brief partial specialization for GABase with record.
@@ -345,10 +345,7 @@ private:
                                             _iFun_,_fFun_,_cFun_,_mFun_>;
     friend Base_t;
 public:
-    Heu_MAKE_GABASE_TYPES
-    GABase() {};
-
-    virtual ~GABase() {};
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
     ///start to solve
     template<class this_t=GABase>

@@ -54,7 +54,7 @@ private:
 public:
     MOGAAbstract()  {};
     virtual ~MOGAAbstract() {};
-    Heu_MAKE_GABASE_TYPES
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
     using Fitness_t = Eigen::Array<double,ObjNum,1>;
 
     ///get pareto front in vec

@@ -29,7 +29,7 @@ class PSOBase : public PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
     using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
 public:
-    Heu_MAKE_PSOABSTRACT_TYPES
+    EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
 public:
     PSOBase() {};
@@ -53,7 +53,7 @@ class PSOBase<Var_t,Eigen::Dynamic,Fitness_t,Record,Arg_t,_iFun_,_fFun_>
 {
     using Base_t = PSOAbstract<Var_t,Fitness_t,Record,Arg_t,_iFun_,_fFun_>;
 public:
-    Heu_MAKE_PSOABSTRACT_TYPES
+    EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
     inline int dimensions() const {
         return dims;

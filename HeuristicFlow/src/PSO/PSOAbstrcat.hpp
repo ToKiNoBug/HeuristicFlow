@@ -46,7 +46,7 @@ class PSOAbstract :
 {
     using Base_t = PSOParameterPack<Var_t,Fitness_t,Arg_t>;
 public:
-    Heu_MAKE_PSOPARAMETERPACK_TYPES
+    EIGEN_HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)
     
     class Point
     {
@@ -244,8 +244,8 @@ protected:
     };
 };
 
-#define Heu_MAKE_PSOABSTRACT_TYPES \
-Heu_MAKE_PSOPARAMETERPACK_TYPES \
+#define EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t) \
+EIGEN_HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t) \
 using Point_t = typename Base_t::Point; \
 using Particle_t = typename Base_t::Particle;
 
@@ -263,7 +263,7 @@ class PSOAbstract<Var_t,Fitness_t,RECORD_FITNESS,Arg_t,_iFun_,_fFun_>
     using Base_t = PSOAbstract<Var_t,Fitness_t,DONT_RECORD_FITNESS,Arg_t,_iFun_,_fFun_>;
     friend Base_t;
 public:
-    Heu_MAKE_PSOABSTRACT_TYPES
+    EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
     const std::vector<Fitness_t> & record() const {
         return _record;

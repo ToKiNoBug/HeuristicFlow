@@ -47,7 +47,7 @@ private:
 public:
     NSGA2() {};
     virtual ~NSGA2() {};
-    Heu_MAKE_NSGABASE_TYPES
+    EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
 
     /** @brief temporary struct to store infos when selection
      */

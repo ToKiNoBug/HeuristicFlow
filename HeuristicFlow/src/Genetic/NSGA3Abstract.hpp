@@ -35,9 +35,7 @@ class NSGA3Abstract
     using Base_t = NSGABase<Var_t,ObjNum,FITNESS_LESS_BETTER,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
-    NSGA3Abstract() {};
-    virtual ~NSGA3Abstract() {};
-    Heu_MAKE_NSGABASE_TYPES
+    EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
     using RefPointIdx_t = size_t;
 
     using RefMat_t=Eigen::Array<double,ObjNum,Eigen::Dynamic>;
@@ -372,8 +370,8 @@ private:
 
 };
 
-#define Heu_MAKE_NSGA3ABSTRACT_TYPES \
-Heu_MAKE_NSGABASE_TYPES \
+#define EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t) \
+EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t) \
 using RefMat_t = typename Base_t::RefMat_t; \
 using infoUnit3 = typename Base_t::infoUnit3; \
 using RefPointIdx_t = typename Base_t::RefPointIdx_t;

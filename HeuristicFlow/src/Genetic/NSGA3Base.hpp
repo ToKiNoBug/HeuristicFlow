@@ -42,9 +42,7 @@ class NSGA3Base
     using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
-    NSGA3Base() {};
-    virtual ~NSGA3Base() {};
-    Heu_MAKE_NSGA3ABSTRACT_TYPES
+    EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
     size_t referencePointPrecision() const {
         return _precision;
@@ -89,15 +87,17 @@ class NSGA3Base<Var_t,ObjNum,rOpt,DOUBLE_LAYER,Args_t,
     : public NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
+private:
+    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
+        _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
+
+    EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
+
     NSGA3Base() {
         _innerPrecision=3;
         _outerPrecision=4;
     };
-    virtual ~NSGA3Base() {};
-    using Base_t = NSGA3Abstract<Var_t,ObjNum,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
-    Heu_MAKE_NSGA3ABSTRACT_TYPES
 
     size_t innerPrecision() const {
         return _innerPrecision;

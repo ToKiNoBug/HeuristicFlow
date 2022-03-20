@@ -21,8 +21,8 @@ namespace Eigen
 namespace internal
 {
 
-Heu_MAKE_FUNAREA(iFun,iFun,PSO)
-Heu_MAKE_FUNAREA(fFun,fFun,PSO)
+EIGEN_HEU_MAKE_FUNAREA(iFun,iFun,PSO)
+EIGEN_HEU_MAKE_FUNAREA(fFun,fFun,PSO)
 
 
 template<class Var_t,class Fitness_t,class Arg_t=void>
@@ -91,7 +91,7 @@ public:
     static const bool HasParameters=false;
 };
 
-#define Heu_MAKE_PSOPARAMETERPACK_TYPES \
+#define EIGEN_HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t) \
 using Args_t = typename Base_t::Args_t; \
 using iFun_t = typename Base_t::iFun_t; \
 using fFun_t = typename Base_t::fFun_t;

@@ -33,7 +33,7 @@ class NSGA3
     using Base_t = internal::NSGA3Base<Var_t,ObjNum,rOpt,rpOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
-    Heu_MAKE_NSGA3ABSTRACT_TYPES
+    EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
     
     void initializePop() {
         this->makeReferencePoses();

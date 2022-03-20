@@ -50,7 +50,7 @@ class MOGABase
     using Base_t = MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
 public:
-    Heu_MAKE_GABASE_TYPES
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
     MOGABase() {};
     virtual ~MOGABase() {};
@@ -90,7 +90,7 @@ public:
 
     using Base_t = MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
-    Heu_MAKE_GABASE_TYPES
+    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
     inline int objectiveNum() const {
         return _objectiveNum;

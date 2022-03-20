@@ -20,10 +20,10 @@ namespace Eigen
 namespace internal
 {
 
-Heu_MAKE_FUNAREA(iFun,iFun,GA)
-Heu_MAKE_FUNAREA(fFun,fFun,GA)
-Heu_MAKE_FUNAREA(cFun,cFun,GA)
-Heu_MAKE_FUNAREA(mFun,mFun,GA)
+EIGEN_HEU_MAKE_FUNAREA(iFun,iFun,GA)
+EIGEN_HEU_MAKE_FUNAREA(fFun,fFun,GA)
+EIGEN_HEU_MAKE_FUNAREA(cFun,cFun,GA)
+EIGEN_HEU_MAKE_FUNAREA(mFun,mFun,GA)
 
 
 /**
@@ -107,7 +107,7 @@ public:
     static const bool HasParameters=false;
 };
 
-#define Heu_MAKE_GAABSTRACT_TYPES \
+#define EIGEN_HEU_MAKE_GAABSTRACT_TYPES(Base_t) \
 using initializeFun = typename Base_t::initializeFun; \
 using fitnessFun = typename Base_t::fitnessFun; \
 using crossoverFun = typename Base_t::crossoverFun; \
