@@ -12,8 +12,8 @@
 #define EIGEN_HEU_GLOBALS_HPP
 
 #ifdef EIGEN_HAS_OPENMP
-#include <omp.h>
-#include <thread>
+  #include <omp.h>
+  #include <thread>
 #endif  //  EIGEN_HAS_OPENMP
 
 
