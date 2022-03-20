@@ -7,6 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <Eigen/Eigen>
+
 #include <iostream>
 #include <ctime>
 #include "def_TestingGenetic.h"
@@ -21,7 +23,7 @@ int main() {
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA2_Kursawe();
-    testNSGA3_DTLZ7();
+    //testNSGA3_DTLZ7();
     //searchPF();
 
     //testRastriginFun();

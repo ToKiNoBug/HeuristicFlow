@@ -11,8 +11,6 @@
 #define DEF_TESTINGGENETIC_H
 
 #include <Eigen/Dense>
-#define Heu_USE_THREADS
-#define Heu_NSGA_USE_THREADS
 #include <HeuristicFlow/Genetic>
 
 
