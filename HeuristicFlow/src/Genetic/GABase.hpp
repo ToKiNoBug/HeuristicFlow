@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_GABASE_H
-#define Heu_GABASE_H
+#ifndef EIGEN_HEU_GABASE_H
+#define EIGEN_HEU_GABASE_H
 #include "./GAOption.hpp"
 #include <tuple>
 #include <vector>
@@ -19,7 +19,7 @@
 #include "GAAbstract.hpp"
 #include <type_traits>
 
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
 #include <iostream>
 #endif
 
@@ -124,18 +124,18 @@ public:
             static_cast<this_t*>(this)->__impl_recordFitness();
 
             if(_generation>_option.maxGenerations) {
-#ifdef Heu_DO_OUTPUT
-                std::cout<<"Terminated by max generation limit"<<std::endl;
+#ifdef EIGEN_HEU_DO_OUTPUT
+                std::cout<<"Terminated by max generation limitation"<<std::endl;
 #endif
                 break;
             }
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef Heu_DO_OUTPUT
-                std::cout<<"Terminated by max failTime limit"<<std::endl;
+#ifdef EIGEN_HEU_DO_OUTPUT
+                std::cout<<"Terminated by max failTime limitation"<<std::endl;
 #endif
                 break;
             }
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                     //<<" , elite fitness="<<_eliteIt->fitness()
                    <<std::endl;
@@ -381,4 +381,4 @@ protected:
 }   //  internal
 }   //  namespace Eigen
 
-#endif // GABASE_H
+#endif // EIGEN_HEU_GABASE_H

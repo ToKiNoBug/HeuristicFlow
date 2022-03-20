@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_PSOBASE_HPP
-#define Heu_PSOBASE_HPP
+#ifndef EIGEN_HEU_PSOBASE_HPP
+#define EIGEN_HEU_PSOBASE_HPP
 
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
@@ -71,4 +71,4 @@ protected:
 }   //  internal
 
 }   //  namespace Eigen
-#endif // PSOBASE_HPP
+#endif // EIGEN_HEU_PSOBASE_HPP

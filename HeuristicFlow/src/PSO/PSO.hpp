@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_PSO_HPP
-#define Heu_PSO_HPP
+#ifndef EIGEN_HEU_PSO_HPP
+#define EIGEN_HEU_PSO_HPP
 #include "PSOOption.hpp"
 #include "PSOBase.hpp"
 #include <array>
@@ -225,4 +225,4 @@ private:
 
 }   //  namespace Eigen
 
-#endif // PSO_HPP
+#endif // EIGEN_HEU_PSO_HPP

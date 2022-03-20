@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_Genetic_INCLUDE
-#define Heu_Genetic_INCLUDE
+#ifndef EIGEN_HEU_GENETIC_
+#define EIGEN_HEU_GENETIC_
 
 #include "Global"
 #include "EAGlobal"
@@ -21,4 +21,4 @@
 #include "src/Genetic/Micellaneous4GA.hpp"
 #include "src/Genetic/NSGA3.hpp"
 
-#endif
+#endif  //  EIGEN_HEU_GENETIC_

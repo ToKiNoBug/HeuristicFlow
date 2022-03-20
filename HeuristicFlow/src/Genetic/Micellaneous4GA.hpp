@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_MICELLANEOUS4GA_HPP
-#define Heu_MICELLANEOUS4GA_HPP
+#ifndef EIGEN_HEU_MICELLANEOUS4GA_HPP
+#define EIGEN_HEU_MICELLANEOUS4GA_HPP
 
 #include "GAAbstract.hpp"
 #include "../../Global"
@@ -511,4 +511,4 @@ using GADefaults =
 
 }   //  namespace Eigen
 
-#endif  //  Heu_MICELLANEOUS4GA_HPP
+#endif  //  EIGEN_HEU_MICELLANEOUS4GA_HPP

@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_TYPES_HPP
-#define Heu_TYPES_HPP
+#ifndef EIGEN_HEU_TYPES_HPP
+#define EIGEN_HEU_TYPES_HPP
 
 #include <Eigen/Core>
 #include <type_traits>
@@ -66,4 +66,4 @@ struct heu_initializeSize<Eigen::Dynamic>
 
 }   //  namespace Eigen
 
-#endif // Heu_TYPES_HPP
+#endif // EIGEN_HEU_TYPES_HPP

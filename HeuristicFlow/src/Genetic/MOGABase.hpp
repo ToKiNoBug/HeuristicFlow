@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_MOGABASE_HPP
-#define Heu_MOGABASE_HPP
+#ifndef EIGEN_HEU_MOGABASE_HPP
+#define EIGEN_HEU_MOGABASE_HPP
 
 #include "./MOGAAbstract.hpp"
 
@@ -113,4 +113,4 @@ protected:
 }   //  namespace Eigen
 
 
-#endif // MOGABASE_HPP
+#endif //EIGEN_HEU_ MOGABASE_HPP

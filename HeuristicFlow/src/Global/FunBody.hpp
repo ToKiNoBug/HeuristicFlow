@@ -9,8 +9,8 @@
 
 
 
-#ifndef FUNBODY_HPP
-#define FUNBODY_HPP
+#ifndef EIGEN_HEU_FUNBODY_HPP
+#define EIGEN_HEU_FUNBODY_HPP
 
 #include <type_traits>
 
@@ -63,4 +63,4 @@ public: \
 
 }   //  namespace Eigen
 
-#endif // FUNBODY_HPP
+#endif // EIGEN_HEU_FUNBODY_HPP

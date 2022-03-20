@@ -8,8 +8,8 @@
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#ifndef Heu_LOGISTICCHAOS_HPP
-#define Heu_LOGISTICCHAOS_HPP
+#ifndef EIGEN_HEU_LOGISTICCHAOS_HPP
+#define EIGEN_HEU_LOGISTICCHAOS_HPP
 
 #include <cstdint>
 
@@ -56,4 +56,4 @@ private:
 };
 
 }
-#endif // LOGISTICCHAOS_H
+#endif // EIGEN_HEU_LOGISTICCHAOS_H

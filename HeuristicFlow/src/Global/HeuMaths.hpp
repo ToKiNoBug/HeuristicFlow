@@ -8,8 +8,8 @@
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#ifndef Heu_HeuMaths_HPP
-#define Heu_HeuMaths_HPP
+#ifndef EIGEN_HEU_HeuMaths_HPP
+#define EIGEN_HEU_HeuMaths_HPP
 
 #include <stdint.h>
 #include <type_traits>
@@ -155,4 +155,4 @@ inline T max(T a,Args_t ... args) {
 
 }
 
-#endif  //  HeuMaths_HPP
+#endif  //  EIGEN_HEU_Maths_HPP

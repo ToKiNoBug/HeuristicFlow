@@ -7,13 +7,14 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_PSO_INCLUDE
-#define Heu_PSO_INCLUDE
+#ifndef EIGEN_HEU_PSO_
+#define EIGEN_HEU_PSO_
 
+#include "Global"
 #include "src/PSO/PSOParameterPack.hpp"
 #include "src/PSO/PSOOption.hpp"
 #include "src/PSO/PSOBase.hpp"
 #include "src/PSO/PSO.hpp"
 #include "src/PSO/PSODefaults.hpp"
 
-#endif // Heu_PSO_INCLUDE
+#endif // EIGEN_HEU_PSO_

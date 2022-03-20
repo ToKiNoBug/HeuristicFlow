@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_TEMPLATEFLOAT_HPP
-#define Heu_TEMPLATEFLOAT_HPP
+#ifndef EIGEN_HEU_TEMPLATEFLOAT_HPP
+#define EIGEN_HEU_TEMPLATEFLOAT_HPP
 
 #include <stdint.h>
 
@@ -166,4 +166,4 @@ public:
 
 }   //  namespace Eigen
 
-#endif  //  Heu_TEMPLATEFLOAT_HPP
+#endif  //  EIGEN_HEU_TEMPLATEFLOAT_HPP

@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_RANDOMS_HPP
-#define Heu_RANDOMS_HPP
+#ifndef EIGEN_HEU_RANDOMS_HPP
+#define EIGEN_HEU_RANDOMS_HPP
 
 #include <stdint.h>
 #include <random>
@@ -79,4 +79,4 @@ inline int_t randIdx(int_t min,int_t max_plus_1) {
 
 }   //  namespace Eigen
 
-#endif // RANDOMS_HPP
+#endif // EIGEN_HEU_RANDOMS_HPP

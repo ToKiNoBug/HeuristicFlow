@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_GAABSTRACT_HPP
-#define Heu_GAABSTRACT_HPP
+#ifndef EIGEN_HEU_GAABSTRACT_HPP
+#define EIGEN_HEU_GAABSTRACT_HPP
 
 #include <type_traits>
 
@@ -118,4 +118,4 @@ using ArgsType = typename Base_t::ArgsType;
 
 }   //  namespace Eigen
 
-#endif  //  Heu_GAABSTRACT_HPP
+#endif  //  EIGEN_HEU_GAABSTRACT_HPP

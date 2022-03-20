@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_PSOPARAMETERPACK_HPP
-#define Heu_PSOPARAMETERPACK_HPP
+#ifndef EIGEN_HEU_PSOPARAMETERPACK_HPP
+#define EIGEN_HEU_PSOPARAMETERPACK_HPP
 
 #include "../../Global"
 
@@ -101,4 +101,4 @@ using fFun_t = typename Base_t::fFun_t;
 } // namespace Eigen
 
 
-#endif  //  Heu_PSOPARAMETERPACK_HPP
+#endif  //  EIGEN_HEU_PSOPARAMETERPACK_HPP

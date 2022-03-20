@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_CONSTANTS_HPP
-#define Heu_CONSTANTS_HPP
+#ifndef EIGEN_HEU_CONSTANTS_HPP
+#define EIGEN_HEU_CONSTANTS_HPP
 
 #include <stdint.h>
 #include <limits>
@@ -38,4 +38,4 @@ const double ninfD=-pinfD;
 
 }   //  namespace Eigen
 
-#endif // Heu_CONSTANTS_HPP
+#endif // EIGEN_HEU_CONSTANTS_HPP

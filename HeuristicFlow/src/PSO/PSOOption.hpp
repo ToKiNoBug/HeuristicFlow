@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_PSOOPTION_HPP
-#define Heu_PSOOPTION_HPP
+#ifndef EIGEN_HEU_PSOOPTION_HPP
+#define EIGEN_HEU_PSOOPTION_HPP
 
 #include "../../Global"
 
@@ -46,4 +46,4 @@ public:
 
 }   //  namespace Eigen
 
-#endif // PSOOPTION_HPP
+#endif // EIGEN_HEU_PSOOPTION_HPP

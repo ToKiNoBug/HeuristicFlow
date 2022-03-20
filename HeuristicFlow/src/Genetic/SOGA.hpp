@@ -8,8 +8,8 @@
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#ifndef Heu_SOGA_H
-#define Heu_SOGA_H
+#ifndef EIGEN_HEU_SOGA_H
+#define EIGEN_HEU_SOGA_H
 #include "./GABase.hpp"
 
 
@@ -104,4 +104,4 @@ protected:
 
 };
 }
-#endif // SOGA_H
+#endif // EIGEN_HEU_SOGA_H

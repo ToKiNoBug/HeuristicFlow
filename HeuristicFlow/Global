@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef Heu_GLOBAL_INCLUDE
-#define Heu_GLOBAL_INCLUDE
+#ifndef EIGEN_HEU_GLOBAL_
+#define EIGEN_HEU_GLOBAL_
 
 #include <Eigen/Dense>
 
@@ -21,4 +21,4 @@
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 
-#endif // GLOBAL_H
+#endif // EIGEN_HEU_GLOBAL_

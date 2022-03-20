@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef BOX_RTCTRange_HPP
-#define BOX_RTCTRange_HPP
+#ifndef EIGEN_HEU_BOX_RTCTRange_HPP
+#define EIGEN_HEU_BOX_RTCTRange_HPP
 #include <stdint.h>
 #include <assert.h>
 #include "../../Global"
@@ -159,4 +159,4 @@ private:
 
 }   //  namespace Eigen
 
-#endif // BOX_RTCTRange_HPP
+#endif // EIGEN_HEU_BOX_RTCTRange_HPP

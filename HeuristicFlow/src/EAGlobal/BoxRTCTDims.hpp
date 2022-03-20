@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef BOXRTCTDIMS_HPP
-#define BOXRTCTDIMS_HPP
+#ifndef EIGEN_HEU_BOXRTCTDIMS_HPP
+#define EIGEN_HEU_BOXRTCTDIMS_HPP
 
 #include "BoxShapes.hpp"
 
@@ -142,4 +142,4 @@ using BoxDims = typename std::conditional<Dim==Eigen::Dynamic,
 
 }   //  namespace Eigen
 
-#endif // BOXRTCTDIMS_HPP
+#endif // EIGEN_HEU_BOXRTCTDIMS_HPP

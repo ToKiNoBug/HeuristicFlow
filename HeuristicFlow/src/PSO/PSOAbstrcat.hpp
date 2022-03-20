@@ -9,14 +9,14 @@
 
 
 
-#ifndef Heu_PSOABSTRCAT_HPP
-#define Heu_PSOABSTRCAT_HPP
+#ifndef EIGEN_HEU_PSOABSTRCAT_HPP
+#define EIGEN_HEU_PSOABSTRCAT_HPP
 
 #include "../../Global"
 #include "PSOOption.hpp"
 #include "PSOParameterPack.hpp"
 
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
 #include <iostream>
 #endif
 
@@ -144,19 +144,19 @@ public:
 
             static_cast<this_t*>(this)->__impl_recordFitness();
             if(_generation>_option.maxGeneration) {
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
                     std::cout<<"Terminated by max generation limit"<<std::endl;
 #endif
                     break;
             }
 
             if(_option.maxFailTimes>0&&_failTimes>_option.maxFailTimes) {
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
                     std::cout<<"Terminated by max failTime limit"<<std::endl;
 #endif
                     break;
             }
-#ifdef Heu_DO_OUTPUT
+#ifdef EIGEN_HEU_DO_OUTPUT
             std::cout<<"Generation "<<_generation
                         //<<" , elite fitness="<<_eliteIt->fitness()
                        <<std::endl;
@@ -295,4 +295,4 @@ protected:
 }   //  namespace Eigen
 
 
-#endif // PSOABSTRCAT_HPP
+#endif // EIGEN_HEU_PSOABSTRCAT_HPP

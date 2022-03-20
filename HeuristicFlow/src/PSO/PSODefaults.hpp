@@ -6,8 +6,10 @@
 // This Source Code Form is subject to the terms of the Mozilla
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef HEU_PSODEFAULTS_HPP
-#define HEU_PSODEFAULTS_HPP
+
+
+#ifndef EIGEN_HEU_PSODEFAULTS_HPP
+#define EIGEN_HEU_PSODEFAULTS_HPP
 #include "PSO.hpp"
 
 namespace Eigen
@@ -73,4 +75,4 @@ struct PSODefaults<Var_t,isVarEigenTypes,void>
 
 }   //  namespace Eigen
 
-#endif  //  HEU_PSODEFAULTS_HPP
+#endif  //  EIGEN_HEU_PSODEFAULTS_HPP

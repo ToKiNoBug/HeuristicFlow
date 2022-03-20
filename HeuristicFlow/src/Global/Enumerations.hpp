@@ -9,8 +9,8 @@
 
 
 
-#ifndef Heu_ENUMERATIONS_HPP
-#define Heu_ENUMERATIONS_HPP
+#ifndef EIGEN_HEU_ENUMERATIONS_HPP
+#define EIGEN_HEU_ENUMERATIONS_HPP
 
 #include <stdint.h>
 
@@ -108,4 +108,4 @@ inline const char * Enum2String(EncodeType e)
 
 }
 
-#endif // ENUMERATIONS_HPP
+#endif // EIGEN_HEU_ENUMERATIONS_HPP

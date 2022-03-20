@@ -8,8 +8,8 @@
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#ifndef Heu_GLOBALS_HPP
-#define Heu_GLOBALS_HPP
+#ifndef EIGEN_HEU_GLOBALS_HPP
+#define EIGEN_HEU_GLOBALS_HPP
 
 #ifdef EIGEN_HAS_OPENMP
 #include <omp.h>
@@ -17,4 +17,4 @@
 #endif  //  EIGEN_HAS_OPENMP
 
 
-#endif // GLOBALS_HPP
+#endif // EIGEN_HEU_GLOBALS_HPP

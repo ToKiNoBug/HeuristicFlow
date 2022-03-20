@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef BOXINTERFACE_HPP
-#define BOXINTERFACE_HPP
+#ifndef EIGEN_HEU_BOXINTERFACE_HPP
+#define EIGEN_HEU_BOXINTERFACE_HPP
 
 #include "BoxRTCTDims.hpp"
 #include "BoxReal.h"
@@ -132,4 +132,4 @@ using BoxXsN = internal::SymbolBox<Scalar_t,Eigen::Dynamic,DVO,BoxShape::RECTANG
 
 }   //  namespace Eigen
 
-#endif // BOXINTERFACE_HPP
+#endif // EIGEN_HEU_BOXINTERFACE_HPP

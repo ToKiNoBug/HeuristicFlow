@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef BOXREAL_H
-#define BOXREAL_H
+#ifndef EIGEN_HEU_BOXREAL_H
+#define EIGEN_HEU_BOXREAL_H
 
 #include "BoxRTCTDims.hpp"
 
@@ -98,4 +98,4 @@ class RealBox<Scalar_t,Dim,DVO,BS,false,MinCT,MaxCT,LearnRateCT>
 
 }   //  namespace Eigen
 
-#endif // BOXREAL_H
+#endif // EIGEN_HEU_BOXREAL_H
