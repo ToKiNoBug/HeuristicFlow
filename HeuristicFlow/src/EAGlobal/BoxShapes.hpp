@@ -19,47 +19,46 @@ namespace Eigen
 namespace internal
 {
 
-template<typename Scalar_t,int Size,
-         DoubleVectorOption DVO>
-using NonsquareBox =
-    BoxDynamicRange<Scalar_t,Size,BoxShape::RECTANGLE_BOX,DVO>;
+template<typename Scalar_t,int Size,DoubleVectorOption DVO>
+using NonsquareBox = BoxDynamicRange<Scalar_t,Size,BoxShape::RECTANGLE_BOX,DVO>;
 
 
 /**
  * @brief Square box with runtime range
  */
-template<typename Scalar_t,int Size,
-         DoubleVectorOption DVO,
-         bool isFixedRange,TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
+template<typename Scalar_t,
+  int Size,
+  DoubleVectorOption DVO,
+  bool isFixedRange,
+  TemplateVal_t<Scalar_t> MinCT,
+  TemplateVal_t<Scalar_t> MaxCT>
 class SquareBox : public BoxFixedRange<Scalar_t,MinCT,MaxCT>
 {
-private:
+  private:
     using Base_t = BoxFixedRange<Scalar_t,MinCT,MaxCT>;
-public:
+  public:
     using Var_t = Container<Scalar_t,Size,DVO>;
-    //using Var_t = typename Base_t::Var_t;
-
-protected:
 
 };
 
 /**
  * @brief Square box with runtime ranges
  */
-template<typename Scalar_t,int Size,
-         DoubleVectorOption DVO,
-         TemplateVal_t<Scalar_t> MinCT,TemplateVal_t<Scalar_t> MaxCT>
-class SquareBox<Scalar_t,Size,DVO,false,MinCT,MaxCT>
-        : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
+template<typename Scalar_t,
+  int Size,
+  DoubleVectorOption DVO,
+  TemplateVal_t<Scalar_t> MinCT,
+  TemplateVal_t<Scalar_t> MaxCT>
+class SquareBox<Scalar_t,Size,DVO,false,MinCT,MaxCT> : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
 {
-private:
+  private:
     using Base_t = BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>;
-public:
+  public:
     using Var_t = typename Base_t::Var_t;
 };
 
-}   //  internal
+} //internal
 
-}   //  namespace Eigen
+} //namespace Eigen
 
 #endif // EIGEN_HEU_BOXSHAPES_HPP
