@@ -20,11 +20,12 @@ int main() {
     //testTSP_SOGA(100);
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
-    testNSGA2_Kursawe();
+    //testNSGA2_Kursawe();
     //testNSGA3_DTLZ7();
     //searchPF();
 
     //testRastriginFun();
+    testTSP_PSO(100);
 
     system("pause");
     return 0;

@@ -26,7 +26,8 @@ static const size_t SpaceDim=2;
     using Solver_t = PSO_Eigen<Eigen::Dynamic,
     FITNESS_LESS_BETTER,
     RECORD_FITNESS,
-    DistanceMat_t>;
+    DistanceMat_t,
+    PSODefaults<Var_t,true,DistanceMat_t>::iFun>;
 
     using Args_t = Solver_t::Args_t;
 
@@ -87,7 +88,6 @@ static const size_t SpaceDim=2;
 
     solver.setPVRange(0,1,0.5);
 
-    solver.setiFun(Solver_t::default_iFun);
     solver.setfFun(fFun);
     solver.setOption(opt);
     solver.setArgs(dMat);

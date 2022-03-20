@@ -14,5 +14,6 @@
 #include "src/PSO/PSOOption.hpp"
 #include "src/PSO/PSOBase.hpp"
 #include "src/PSO/PSO.hpp"
+#include "src/PSO/PSODefaults.hpp"
 
 #endif // Heu_PSO_INCLUDE

@@ -61,15 +61,6 @@ public:
         return this->gBest.fitness;
     }
 
-    ///Candidate function for initialization
-    static void default_iFun(Var_t *x,Var_t *v,
-    const Var_t * xMin,const Var_t * xMax,
-    const Var_t *,const Args_t*) {
-        for(int idx=0;idx<xMin->size();idx++) {
-            x->operator[](idx)=randD(xMin->operator[](idx),xMax->operator[](idx));
-            v->operator[](idx)=0;
-        }
-    }
 
 protected:
     inline static bool isBetterThan(double a,double b) {
@@ -172,15 +163,6 @@ public:
         return this->gBest.fitness;
     }
 
-    ///Candidate function for initialization
-    static void default_iFun(Var_t *x,Var_t *v,
-        const Var_t * xMin,const Var_t * xMax,
-        const Var_t *,const Args_t*) {
-        x->setRandom(xMin->size(),1);
-        (*x)*=(*xMax-*xMin)/2;
-        (*x)+=(*xMin+*xMax)/2;
-        v->setZero(xMin->size(),1);
-    }
 
 protected:
     static bool isBetterThan(double a,double b) {
