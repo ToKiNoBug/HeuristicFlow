@@ -11,7 +11,7 @@
 #define Heu_NSGA2BASE_HPP
 #include "NSGABase.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 
@@ -69,7 +69,7 @@ protected:
     template<int64_t objIdx>
     static bool compareByFitness(const infoUnitBase_t * A,const infoUnitBase_t * B) {
 #ifndef Heu_NO_STATICASSERT
-    static_assert(objIdx>=0,"Heu : Invalid comparison flag");
+    static_assert(objIdx>=0,"Invalid comparison flag");
 #endif
         if(A==B) 
             return false;
@@ -232,6 +232,6 @@ private:
 };
 
 
-}   // Heu
+}   //  namespace Eigen
 
 #endif //   NSGA2BASE_HPP

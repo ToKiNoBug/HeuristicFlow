@@ -11,24 +11,24 @@
 #include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 
 void testNSGA2_Binh_and_Korn() {
     //0<=x_0<=5,  0<=x_1<=3
 
-    using args_t = Heu::BoxNdN<2,Heu::DoubleVectorOption::Std>;
+    using args_t = Eigen::BoxNdN<2,Eigen::DoubleVectorOption::Std>;
 
     using solver_t = 
     NSGA2<std::array<double,2>,
             2,
             FITNESS_LESS_BETTER,
             RecordOption::DONT_RECORD_FITNESS,args_t,
-            Heu::GADefaults<std::array<double,2>,args_t,Std>::iFunNd,
+            Eigen::GADefaults<std::array<double,2>,args_t,Std>::iFunNd,
             nullptr,
-            Heu::GADefaults<std::array<double,2>,args_t,Std>::cFunNd<>,
-            Heu::GADefaults<std::array<double,2>,args_t,Std>::mFun_d            
+            Eigen::GADefaults<std::array<double,2>,args_t,Std>::cFunNd<>,
+            Eigen::GADefaults<std::array<double,2>,args_t,Std>::mFun_d            
             >;
 
     solver_t algo;

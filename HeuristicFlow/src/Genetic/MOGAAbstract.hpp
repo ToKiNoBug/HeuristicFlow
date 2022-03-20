@@ -16,7 +16,7 @@
 #include <functional>
 #include <unordered_set>
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -129,6 +129,6 @@ protected:
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif //   MOGAABSTRACT_HPP

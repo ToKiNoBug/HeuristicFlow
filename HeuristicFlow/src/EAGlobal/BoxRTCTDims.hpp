@@ -12,7 +12,7 @@
 
 #include "BoxShapes.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -140,6 +140,6 @@ using BoxDims = typename std::conditional<Dim==Eigen::Dynamic,
 
 }   //  internal
 
-}   //  namespace
+}   //  namespace Eigen
 
 #endif // BOXRTCTDIMS_HPP

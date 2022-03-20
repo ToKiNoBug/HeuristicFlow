@@ -14,7 +14,7 @@
 #include "../Global/Types.hpp"
 #include "../Global/Constants.hpp"
 
-namespace Heu
+namespace Eigen
 {
 namespace internal
 {
@@ -45,7 +45,7 @@ struct Pareto
 };
 
 }   //  namespace internal
-}   //  namespace Heu
+}   //  namespace Eigen
 
 
 #endif // Heu_PARETO_HPP

@@ -11,7 +11,7 @@
 #include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 

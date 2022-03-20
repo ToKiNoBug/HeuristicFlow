@@ -13,7 +13,7 @@
 #include <Eigen/Core>
 #include "BoxRTCTRange.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -60,6 +60,6 @@ public:
 
 }   //  internal
 
-}   //  namespace
+}   //  namespace Eigen
 
 #endif // BOXSHAPES_HPP

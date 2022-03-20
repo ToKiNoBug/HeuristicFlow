@@ -20,7 +20,7 @@
 #include <iostream>
 #endif
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -292,7 +292,7 @@ protected:
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 
 #endif // PSOABSTRCAT_HPP

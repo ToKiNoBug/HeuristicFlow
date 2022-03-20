@@ -10,7 +10,7 @@
 #ifndef Heu_GAOPTION_HPP
 #define Heu_GAOPTION_HPP
 #include <stdint.h>
-namespace Heu {
+namespace Eigen {
 
 ///options about GA algorithm
 struct GAOption

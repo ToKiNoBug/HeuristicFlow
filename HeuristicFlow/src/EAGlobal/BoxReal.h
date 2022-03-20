@@ -12,7 +12,7 @@
 
 #include "BoxRTCTDims.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -96,6 +96,6 @@ class RealBox<Scalar_t,Dim,DVO,BS,false,MinCT,MaxCT,LearnRateCT>
 
 }   //  internal
 
-}   //  namespace
+}   //  namespace Eigen
 
 #endif // BOXREAL_H

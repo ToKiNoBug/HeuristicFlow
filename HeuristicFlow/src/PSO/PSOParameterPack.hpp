@@ -14,7 +14,7 @@
 
 #include "../../Global"
 
-namespace Heu
+namespace Eigen
 {
 
 
@@ -98,7 +98,7 @@ using fFun_t = typename Base_t::fFun_t;
 
 }   //  internal
 
-} // namespace Heu
+} // namespace Eigen
 
 
 #endif  //  Heu_PSOPARAMETERPACK_HPP

@@ -11,22 +11,22 @@
 #include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 void testAckley_withRecord() {
 
-    using args_t = Heu::BoxNdS<2,Std>;
+    using args_t = Eigen::BoxNdS<2,Std>;
 
     using solver_t = 
     SOGA<array<double,2>,
-            Heu::FITNESS_LESS_BETTER,
-            Heu::RECORD_FITNESS,
+            Eigen::FITNESS_LESS_BETTER,
+            Eigen::RECORD_FITNESS,
             args_t,
-    Heu::GADefaults<array<double,2>,args_t,Std>::iFunNd<>,
+    Eigen::GADefaults<array<double,2>,args_t,Std>::iFunNd<>,
     nullptr,
-    Heu::GADefaults<array<double,2>,args_t,Std>::cFunNd,
-    Heu::GADefaults<array<double,2>,args_t,Std>::mFun_d<>>;
+    Eigen::GADefaults<array<double,2>,args_t,Std>::cFunNd,
+    Eigen::GADefaults<array<double,2>,args_t,Std>::mFun_d<>>;
     solver_t algo;
     
     GAOption opt;

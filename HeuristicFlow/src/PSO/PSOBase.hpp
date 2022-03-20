@@ -15,7 +15,7 @@
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -70,5 +70,5 @@ protected:
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 #endif // PSOBASE_HPP

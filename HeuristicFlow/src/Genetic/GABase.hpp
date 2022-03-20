@@ -25,7 +25,7 @@
 
 #include "../../Global"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -379,6 +379,6 @@ protected:
 
 };
 }   //  internal
-}   //  Heu
+}   //  namespace Eigen
 
 #endif // GABASE_H

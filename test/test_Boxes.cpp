@@ -11,7 +11,7 @@
 #include <HeuristicFlow/EAGlobal>
 
 #include <iostream>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 void test_Box() {

@@ -14,7 +14,8 @@
 
 #include <stdint.h>
 
-namespace Heu {
+namespace Eigen
+{
 
 /**
  * @brief Encode double by division of int32 and uint32 stored in uint64
@@ -163,6 +164,6 @@ public:
     static const constexpr double real=digital*powPart;
 };
 
-}   //  namespace Heu
+}   //  namespace Eigen
 
 #endif  //  Heu_TEMPLATEFLOAT_HPP

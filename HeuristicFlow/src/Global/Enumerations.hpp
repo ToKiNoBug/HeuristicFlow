@@ -14,7 +14,8 @@
 
 #include <stdint.h>
 
-namespace Heu {
+namespace Eigen
+{
     
 ///whether to record trainning curve of not
 enum RecordOption : uint8_t {

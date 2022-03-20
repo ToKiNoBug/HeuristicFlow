@@ -11,7 +11,7 @@
 #include <HeuristicFlow/PSO>
 #include <cmath>
 #include <iostream>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 void testPSOBase() {

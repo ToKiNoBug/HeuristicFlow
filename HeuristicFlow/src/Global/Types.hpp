@@ -19,7 +19,8 @@
 #include "Enumerations.hpp"
 #include "Constants.hpp"
 
-namespace Heu {
+namespace Eigen
+{
 
 template<typename scalar_t,int Dim>
 using stdContainer =
@@ -63,6 +64,6 @@ struct heu_initializeSize<Eigen::Dynamic>
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif // Heu_TYPES_HPP

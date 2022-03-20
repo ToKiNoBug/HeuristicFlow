@@ -17,7 +17,8 @@
 #include <cmath>
 #include <ctime>
 
-namespace Heu {
+namespace Eigen
+{
 
 namespace internal
 {
@@ -76,6 +77,6 @@ inline int_t randIdx(int_t min,int_t max_plus_1) {
 }
 
 
-}   // Heu
+}   //  namespace Eigen
 
 #endif // RANDOMS_HPP

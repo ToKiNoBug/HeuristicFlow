@@ -13,7 +13,7 @@
 #include "BoxRTCTDims.hpp"
 #include "BoxReal.h"
 
-namespace Heu
+namespace Eigen
 {
 
 /**
@@ -130,6 +130,6 @@ template<typename Scalar_t,DoubleVectorOption DVO=DoubleVectorOption::Std>
 using BoxXsN = internal::SymbolBox<Scalar_t,Eigen::Dynamic,DVO,BoxShape::RECTANGLE_BOX>;
 
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif // BOXINTERFACE_HPP

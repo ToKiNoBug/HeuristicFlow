@@ -12,7 +12,7 @@
 
 #include "NSGA3Base.hpp"
 
-namespace Heu {
+namespace Eigen {
 
 /**
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
@@ -41,6 +41,6 @@ public:
     }
 };
 
-}   //  namespace Heu
+}   //  namespace Eigen
 
 #endif  //  Heu_NSGA3_HPP

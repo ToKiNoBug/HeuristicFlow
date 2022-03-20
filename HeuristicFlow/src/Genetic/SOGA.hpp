@@ -13,7 +13,7 @@
 #include "./GABase.hpp"
 
 
-namespace Heu
+namespace Eigen
 {
 
 /**

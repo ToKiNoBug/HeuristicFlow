@@ -18,7 +18,7 @@
  * and incomplete setMin() and setMax() implementation
  */
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -157,6 +157,6 @@ private:
 
 }   //  internal
 
-}   //  namespace
+}   //  namespace Eigen
 
 #endif // BOX_RTCTRange_HPP

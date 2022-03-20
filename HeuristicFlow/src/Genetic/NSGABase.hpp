@@ -12,7 +12,7 @@
 
 #include "MOGABase.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -151,6 +151,6 @@ using Fitness_t = typename Base_t::Fitness_t;
 
 }   //  internal
 
-}   // Heu
+}   //  namespace Eigen
 
 #endif  //  NSGABASE_HPP

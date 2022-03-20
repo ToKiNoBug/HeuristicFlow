@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <limits>
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -36,6 +36,6 @@ const float ninfF=-pinfF;
 const double ninfD=-pinfD;
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif // Heu_CONSTANTS_HPP

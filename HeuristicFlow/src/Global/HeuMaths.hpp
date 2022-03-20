@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <type_traits>
 #include <cmath>
-namespace Heu {
+namespace Eigen {
 /*
 #ifndef M_PI
 #define M_PI		3.14159265358979323846

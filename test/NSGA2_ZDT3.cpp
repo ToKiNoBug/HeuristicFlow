@@ -11,7 +11,7 @@
 #include <HeuristicFlow/Genetic>
 #include <iostream>
 #include <ctime>
-using namespace Heu;
+using namespace Eigen;
 using namespace std;
 
 ///Zitzler–Deb–Thiele's function N. 3
@@ -20,7 +20,7 @@ void testNSGA2_ZDT3() {
     static const size_t XNum=30;
     static const double r=0.2;
 
-    Heu::NSGA2<std::array<double,XNum>,
+    Eigen::NSGA2<std::array<double,XNum>,
             2,
             FITNESS_LESS_BETTER,
             RECORD_FITNESS> algo;
@@ -28,7 +28,7 @@ void testNSGA2_ZDT3() {
     void (*iFun)(std::array<double,XNum>*) =
     [] (std::array<double,XNum> * x) {
         for(size_t i=0;i<XNum;i++) {
-            x->operator[](i)=Heu::randD();
+            x->operator[](i)=Eigen::randD();
         }
     };
 
@@ -48,15 +48,15 @@ void testNSGA2_ZDT3() {
     };
 
     auto cFun=
-            Heu::GADefaults<std::array<double,XNum>>::
-                cFunNd<(Heu::DivEncode<1,2>::code)>;
+            Eigen::GADefaults<std::array<double,XNum>>::
+                cFunNd<(Eigen::DivEncode<1,2>::code)>;
 
     void (*mFun)(const std::array<double,XNum>*src,std::array<double,XNum>*)=
             [](const std::array<double,XNum>*src,std::array<double,XNum>*x){
         *x=*src;
-        const size_t mutateIdx=Heu::randIdx(XNum);
+        const size_t mutateIdx=Eigen::randIdx(XNum);
 
-        x->operator[](mutateIdx)+=0.005*Heu::randD(-1,1);
+        x->operator[](mutateIdx)+=0.005*Eigen::randD(-1,1);
 
         x->operator[](mutateIdx)=std::min(x->operator[](mutateIdx),1.0);
         x->operator[](mutateIdx)=std::max(x->operator[](mutateIdx),0.0);

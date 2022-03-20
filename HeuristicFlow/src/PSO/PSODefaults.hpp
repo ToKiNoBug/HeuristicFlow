@@ -10,7 +10,7 @@
 #define HEU_PSODEFAULTS_HPP
 #include "PSO.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -71,6 +71,6 @@ struct PSODefaults<Var_t,isVarEigenTypes,void>
 };
 
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif  //  HEU_PSODEFAULTS_HPP

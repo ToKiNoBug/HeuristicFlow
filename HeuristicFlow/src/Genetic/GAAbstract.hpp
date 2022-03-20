@@ -14,7 +14,7 @@
 
 #include "../../Global"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -116,6 +116,6 @@ using ArgsType = typename Base_t::ArgsType;
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif  //  Heu_GAABSTRACT_HPP

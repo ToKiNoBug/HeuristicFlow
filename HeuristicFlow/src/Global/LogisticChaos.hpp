@@ -13,7 +13,8 @@
 
 #include <cstdint>
 
-namespace Heu {
+namespace Eigen
+{
 
 class LogisticChaos
 {

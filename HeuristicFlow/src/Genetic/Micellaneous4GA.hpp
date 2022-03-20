@@ -14,7 +14,7 @@
 #include "../../Global"
 #include <assert.h>
 
-namespace Heu {
+namespace Eigen {
 
 namespace internal
 {
@@ -94,7 +94,7 @@ struct imp_GADefaults_DVO<Var_t,DoubleVectorOption::Eigen>
 
 
 
-}   //  namespace Heu_pri
+}   //  namespace Eigen_pri
 
 
 /**
@@ -509,6 +509,6 @@ using GADefaults =
 
 */
 
-}   //  namespace Heu
+}   //  namespace Eigen
 
 #endif  //  Heu_MICELLANEOUS4GA_HPP

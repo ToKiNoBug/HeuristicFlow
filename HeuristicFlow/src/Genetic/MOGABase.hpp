@@ -20,7 +20,7 @@
 #define Heu_MOGA_MaxRunTimeObjNum 32
 #endif
 
-namespace Heu
+namespace Eigen
 {
 namespace internal
 {
@@ -110,7 +110,7 @@ protected:
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 
 #endif // MOGABASE_HPP

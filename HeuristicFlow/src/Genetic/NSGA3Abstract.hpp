@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include "NSGABase.hpp"
 
-namespace Heu
+namespace Eigen
 {
 
 namespace internal
@@ -60,7 +60,7 @@ protected:
         const size_t precision,
         std::vector<Fitness_t> * dst) const {
         dst->clear();
-        dst->reserve(Heu::NchooseK(dimN+precision-1,precision));
+        dst->reserve(NchooseK(dimN+precision-1,precision));
 
         pri_startRP(dimN,precision,dst);
     }
@@ -380,6 +380,6 @@ using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 #endif  //  Heu_NSGA3ABSTRACT_HPP

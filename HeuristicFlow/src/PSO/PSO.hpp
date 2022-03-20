@@ -18,7 +18,8 @@
 #include <tuple>
 #include <type_traits>
 
-namespace Heu {
+namespace Eigen
+{
 
 ///Generalized PSO solver
 /**
@@ -221,6 +222,7 @@ private:
     static_assert(DIM>0||DIM==Eigen::Dynamic,"Invalid template parameter DIM");
 
 };
-}
+
+}   //  namespace Eigen
 
 #endif // PSO_HPP

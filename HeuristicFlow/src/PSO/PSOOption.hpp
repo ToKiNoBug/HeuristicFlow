@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 
-namespace Heu {
+namespace Eigen {
 
 ///Options to PSO
 struct PSOOption
@@ -44,6 +44,6 @@ public:
     double learnFactorG;
 };
 
-}
+}   //  namespace Eigen
 
 #endif // PSOOPTION_HPP

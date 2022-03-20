@@ -14,7 +14,7 @@
 
 #include <type_traits>
 
-namespace Heu
+namespace Eigen
 {
 #define Heu_MAKE_FUNAREA(funFlag,FunFlag,Suffix) \
 template<typename return_t=void,typename ... a> \
@@ -61,6 +61,6 @@ public: \
         typename std::conditional<_fun==nullptr,funBodyRT,funBodyCT<_fun>>::type; \
 };
 
-}   //  namespace Heu
+}   //  namespace Eigen
 
 #endif // FUNBODY_HPP

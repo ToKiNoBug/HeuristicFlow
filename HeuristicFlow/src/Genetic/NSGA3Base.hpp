@@ -12,7 +12,7 @@
 
 #include "NSGA3Abstract.hpp"
 
-namespace Heu {
+namespace Eigen {
 
 /**
  * @brief Layers of Reference points
@@ -149,7 +149,7 @@ protected:
 
 }   //  internal
 
-}   //  Heu
+}   //  namespace Eigen
 
 
 #endif  //  Heu_NSGA3BASE_HPP
