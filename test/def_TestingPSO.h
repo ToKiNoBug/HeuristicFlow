@@ -12,7 +12,6 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#define Heu_USE_THREADS
 #include <HeuristicFlow/PSO>
 
 void testPSOBase();

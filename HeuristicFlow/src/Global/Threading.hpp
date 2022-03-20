@@ -11,10 +11,10 @@
 #ifndef Heu_GLOBALS_HPP
 #define Heu_GLOBALS_HPP
 
-#ifdef Heu_USE_THREADS
+#ifdef EIGEN_HAS_OPENMP
 #include <omp.h>
 #include <thread>
-#endif
+#endif  //  EIGEN_HAS_OPENMP
 
 
 #endif // GLOBALS_HPP

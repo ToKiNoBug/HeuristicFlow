@@ -94,8 +94,10 @@ protected:
     }
 
     virtual void updatePopulation() {
+    #ifdef EIGEN_HAS_OPENMP
         static const int32_t thN=Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+        #pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+    #endif  //  EIGEN_HAS_OPENMP
         for(int idx=0;idx<this->_population.size();idx++) {
             Particle_t & i =this->_population[idx];
             for(size_t idx=0;idx<Base_t::dimensions();idx++) {
@@ -196,9 +198,10 @@ protected:
     }
 
     virtual void updatePopulation() {
-
+    #ifdef EIGEN_HAS_OPENMP
         static const int32_t thN=Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+        #pragma omp parallel for schedule(dynamic,this->_population.size()/thN)
+    #endif  //  EIGEN_HAS_OPENMP
         for(int idx=0;idx<this->_population.size();idx++) {
             Particle_t & i = this->_population[idx];
             i.velocity=this->_option.inertiaFactor*i.velocity
@@ -212,7 +215,6 @@ protected:
 
             i.position=i.position.min(this->_posMax);
             i.position=i.position.max(this->_posMin);
-
         }
     }
 private:

@@ -187,7 +187,7 @@ protected:
     inline void __impl_recordFitness() {}
 
     virtual void calculateAll() {
-#ifdef Heu_USE_THREADS
+#ifdef EIGEN_HAS_OPENMP
         static const int32_t thN=Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic,_population.size()/thN)
         for(int i=0;i<_population.size();i++) {

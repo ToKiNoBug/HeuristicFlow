@@ -148,8 +148,7 @@ protected:
 
     }   //  end selection
 
-    /// to be reloaded
-    virtual void normalize(const std::unordered_set<infoUnit3*> & selected,
+    void normalize(const std::unordered_set<infoUnit3*> & selected,
         const std::vector<infoUnit3*> & Fl) const {
 
         const size_t M=this->objectiveNum();
@@ -228,14 +227,13 @@ protected:
         return minIdx;
     }
 
-    /// to be reloaded
-    virtual void associate(const std::unordered_set<infoUnit3*> & selected) const {
+    void associate(const std::unordered_set<infoUnit3*> & selected) const {
         for(auto i : selected) {
             i->closestRefPoint=findNearest(i->translatedFitness,&i->distance);
         }
     }
 
-    virtual void associate(const std::vector<infoUnit3*> & Fl_src,
+    void associate(const std::vector<infoUnit3*> & Fl_src,
         std::unordered_multimap<RefPointIdx_t,infoUnit3*> * Fl_dst) const {
             for(auto i : Fl_src) {
                 RefPointIdx_t idx=findNearest(i->translatedFitness,&i->distance);
@@ -244,7 +242,7 @@ protected:
             }
     }
 
-    virtual void nichePreservation(std::unordered_set<infoUnit3*> * selected,
+    void nichePreservation(std::unordered_set<infoUnit3*> * selected,
         std::unordered_multimap<RefPointIdx_t,infoUnit3*> * Fl,
         std::unordered_map<RefPointIdx_t,size_t> * refPoints) const {
         

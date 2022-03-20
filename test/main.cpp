@@ -17,7 +17,7 @@ using namespace std;
 
 int main() {
     //test_Box_double();
-    //testTSP_SOGA(100);
+    testTSP_SOGA(200);
     //testAckley_withRecord();
     //testNSGA2_Binh_and_Korn();
     //testNSGA2_Kursawe();
@@ -25,7 +25,7 @@ int main() {
     //searchPF();
 
     //testRastriginFun();
-    testTSP_PSO(100);
+    //testTSP_PSO(100);
 
     system("pause");
     return 0;

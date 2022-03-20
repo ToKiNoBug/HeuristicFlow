@@ -12,13 +12,6 @@
 
 #include "MOGABase.hpp"
 
-#ifdef Heu_NSGA_USE_THREADS
-#ifndef Heu_USE_THREADS
-#error You allowed parallelize in NSGA2 but not in global.  \
-    Macro Heu_NSGA2_USE_THREADS can only be defined when Heu_USE_THREADS is defined.
-#endif
-#endif
-
 namespace Heu
 {
 
@@ -80,7 +73,7 @@ protected:
     //calculate domainedByNum
     virtual void calculateDominatedNum() {
         const size_t popSizeBefore=sortSpace.size();
-#ifdef Heu_NSGA_USE_THREADS
+#ifdef EIGEN_HAS_OPENMP
         static const int32_t thN=Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic,popSizeBefore/thN)
         for(int ed=0;ed<popSizeBefore;ed++) {

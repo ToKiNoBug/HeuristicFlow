@@ -174,7 +174,7 @@ protected:
     inline void __impl_recordFitness() {}
 
     virtual void calculateAll() {
-#ifdef Heu_USE_THREADS
+#ifdef EIGEN_HAS_OPENMP
         std::vector<Gene*> tasks;
         tasks.resize(0);
         tasks.reserve(_population.size());
@@ -185,7 +185,7 @@ protected:
             tasks.emplace_back(&i);
         }
         static const int32_t thN=Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic,tasks.size()/thN)
+        #pragma omp parallel for schedule(dynamic,tasks.size()/thN)
         for(int i=0;i<tasks.size();i++) {
                 Gene * ptr=tasks[i];
 
