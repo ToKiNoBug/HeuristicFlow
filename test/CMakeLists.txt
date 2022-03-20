@@ -21,6 +21,7 @@ add_executable(HeuristicFlow_Test
     NSGA2_ZDT3.cpp
     SOGA_Ackley.cpp
     NSGA2_Binh_And_Korn.cpp
+    NSGA2_Kursawe.cpp
     NSGA3_DTLZ7.cpp
     SOGA_TSP.cpp
     def_TestingPSO.h

@@ -72,6 +72,7 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
+            pop.back().fitnessCache=it->_Fitness;
             pop.back().closestRefPoint=-1;
         }
 
@@ -168,30 +169,30 @@ protected:
         for(size_t c=0;c<M;c++) {
             extremePtrs[c]=*(Fl.begin());
             for(size_t r=0;r<M;r++) {
-                extremePoints(r,c)=extremePtrs[c]->iterator->_Fitness[r];
+                extremePoints(r,c)=extremePtrs[c]->fitnessCache[r];
             }
         }
 
         for(auto i : selected) {
-            ideal=ideal.min(i->iterator->_Fitness);
+            ideal=ideal.min(i->fitnessCache);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
+                if(i->fitnessCache[objIdx]>extremePtrs[objIdx]->fitnessCache[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
             }
         }
 
         for(auto i : Fl) {
-            ideal=ideal.min(i->iterator->_Fitness);
+            ideal=ideal.min(i->fitnessCache);
             for(size_t objIdx=0;objIdx<M;objIdx++) {
-                if(i->iterator->_Fitness[objIdx]>extremePtrs[objIdx]->iterator->_Fitness[objIdx]) {
+                if(i->fitnessCache[objIdx]>extremePtrs[objIdx]->fitnessCache[objIdx]) {
                     extremePtrs[objIdx]=i;
                 }
             }
         }
 
         for(size_t c=0;c<M;c++) {
-            extremePoints.col(c)=extremePtrs[c]->iterator->_Fitness-ideal;
+            extremePoints.col(c)=extremePtrs[c]->fitnessCache-ideal;
         }
 
         if(isSingular(extremePoints)) {
@@ -204,11 +205,11 @@ protected:
         }
 
         for(auto i : selected) {
-            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercepts;
+            i->translatedFitness=(i->fitnessCache-ideal)/intercepts;
         }
 
         for(auto i : Fl) {
-            i->translatedFitness=(i->iterator->_Fitness-ideal)/intercepts;
+            i->translatedFitness=(i->fitnessCache-ideal)/intercepts;
         }
     }
 

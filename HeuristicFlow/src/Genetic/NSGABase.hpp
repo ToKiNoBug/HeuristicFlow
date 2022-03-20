@@ -31,14 +31,15 @@ class NSGABase
     : public MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
             _iFun_,_fFun_,_cFun_,_mFun_>
 {
+private:
     using Base_t = MOGABase<Var_t,ObjNum,fOpt,rOpt,Args_t,
         _iFun_,_fFun_,_cFun_,_mFun_>;
-private:
 public:
     NSGABase() {};
     virtual ~NSGABase() {};
 
     Heu_MAKE_GABASE_TYPES
+    using Fitness_t = typename Base_t::Fitness_t;
     
     /**
      * @brief basical unit for NS
@@ -47,6 +48,7 @@ public:
     struct infoUnitBase
     {
     public:
+        Fitness_t fitnessCache;
         /** @brief Genes in population that strong domain this gene
         */
         size_t domainedByNum;
@@ -82,8 +84,8 @@ protected:
                     if(er==ed)
                         continue;
                     sortSpace[ed]->domainedByNum+=
-                            Pareto<ObjNum,fOpt>::isStrongDominate(&(sortSpace[er]->iterator->_Fitness),
-                                           &(sortSpace[ed]->iterator->_Fitness));
+                            Pareto<ObjNum,fOpt>::isStrongDominate(&(sortSpace[er]->fitnessCache),
+                                           &(sortSpace[ed]->fitnessCache));
                 }
         }
 
@@ -94,8 +96,8 @@ protected:
                 if(er==ed)
                     continue;
                 sortSpace[ed]->domainedByNum+=
-                        Pareto<ObjNum,fOpt>::isStrongDominate(&(sortSpace[er]->iterator->_Fitness),
-                                       &(sortSpace[ed]->iterator->_Fitness));
+                        Pareto<ObjNum,fOpt>::isStrongDominate(&(sortSpace[er]->fitnessCache),
+                                       &(sortSpace[ed]->fitnessCache));
             }
         }
 #endif

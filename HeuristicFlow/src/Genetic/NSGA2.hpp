@@ -74,7 +74,7 @@ protected:
         if(A==B) 
             return false;
         ///compare by fitness on single objective
-        return A->iterator->_Fitness[objIdx]<B->iterator->_Fitness[objIdx];
+        return A->fitnessCache[objIdx]<B->fitnessCache[objIdx];
     }
 
     ///fast nondominated sorting
@@ -94,6 +94,7 @@ protected:
         for(auto it=this->_population.begin();it!=this->_population.end();++it) {
             pop.emplace_back();
             pop.back().iterator=it;
+            pop.back().fitnessCache=it->_Fitness;
             pop.back().congestion=0;
         }
 
@@ -140,8 +141,8 @@ protected:
                             (infoUnit2 **)(this->sortSpace.data()+this->sortSpace.size()),
                           fitnessCmpFuns[objIdx]);
 
-                const double scale=std::abs(this->sortSpace.front()->iterator->_Fitness[objIdx]
-                        -this->sortSpace.back()->iterator->_Fitness[objIdx])
+                const double scale=std::abs(this->sortSpace.front()->fitnessCache[objIdx]
+                        -this->sortSpace.back()->fitnessCache[objIdx])
                     +1e-10;
 
                 static_cast<infoUnit2 *>(this->sortSpace.front())->congestion=internal::pinfD;
@@ -152,8 +153,8 @@ protected:
 
                     static_cast<infoUnit2 *>(this->sortSpace[idx])->congestion
                             +=std::abs(
-                            this->sortSpace[idx-1]->iterator->_Fitness[objIdx]
-                            -this->sortSpace[idx+1]->iterator->_Fitness[objIdx]
+                            this->sortSpace[idx-1]->fitnessCache[objIdx]
+                            -this->sortSpace[idx+1]->fitnessCache[objIdx]
                             )/scale;
                 }
             } // end sort on objIdx
