@@ -28,10 +28,9 @@ Implemented :
 4. PSO
 
 TODO:
-1. Change namespace.
-2. Rewrite documents
-3. Refine code syntax.
-4. Final checks
+1. Rewrite documents
+2. Refine code syntax.
+3. Final checks
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm
