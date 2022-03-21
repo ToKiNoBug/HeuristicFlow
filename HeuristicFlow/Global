@@ -21,4 +21,4 @@
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 
-#endif // EIGEN_HEU_GLOBAL_
+#endif  // EIGEN_HEU_GLOBAL_

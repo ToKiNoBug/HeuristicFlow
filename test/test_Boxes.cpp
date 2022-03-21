@@ -15,46 +15,42 @@ using namespace Eigen;
 using namespace std;
 
 void test_Box() {
-    BoxNdS<50,DoubleVectorOption::Eigen,
-            true,DivEncode<0,1>::code,DivEncode<1,1>::code,DivEncode<1,50>::code> box0;
-    //50 dim square box in [0,1]
-    BoxXdN<DoubleVectorOption::Eigen> box;
+  BoxNdS<50, DoubleVectorOption::Eigen, true, DivEncode<0, 1>::code, DivEncode<1, 1>::code, DivEncode<1, 50>::code>
+      box0;
+  // 50 dim square box in [0,1]
+  BoxXdN<DoubleVectorOption::Eigen> box;
 
-    //cout<<box.Flag<<endl;
+  // cout<<box.Flag<<endl;
 
-    box.max().setConstant(50,1,1.0);
-    box.min().setConstant(50,1,0.0);
+  box.max().setConstant(50, 1, 1.0);
+  box.min().setConstant(50, 1, 0.0);
 
-    box0.min();
+  box0.min();
 
-    cout<<box0.dimensions()<<endl;
-    cout<<box0.learnRate()<<endl;
-    cout<<"sizeof(box0) = "<<sizeof(box0)<<endl;
+  cout << box0.dimensions() << endl;
+  cout << box0.learnRate() << endl;
+  cout << "sizeof(box0) = " << sizeof(box0) << endl;
 
-    
-    BoxNb<10> BNb;
-    BoxXb<> BXb;
+  BoxNb<10> BNb;
+  BoxXb<> BXb;
 
-    BXb.setDimensions(400);
+  BXb.setDimensions(400);
 
-    BNb.max();
-    BNb.min();
+  BNb.max();
+  BNb.min();
 
-    BXb.max();
-    BXb.min();
+  BXb.max();
+  BXb.min();
 
-    cout<<BNb.dimensions();
-    cout<<BXb.dimensions();
+  cout << BNb.dimensions();
+  cout << BXb.dimensions();
 
-    cout<<"sizeof BNb="<<sizeof(BNb)<<endl;
-    cout<<"sizeof BXb="<<sizeof(BXb)<<endl;
-
+  cout << "sizeof BNb=" << sizeof(BNb) << endl;
+  cout << "sizeof BXb=" << sizeof(BXb) << endl;
 }
 
-
-int main()
-{
-    test_Box();
-    system("pause");
-    return 0;
+int main() {
+  test_Box();
+  system("pause");
+  return 0;
 }

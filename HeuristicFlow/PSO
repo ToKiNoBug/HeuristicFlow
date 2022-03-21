@@ -17,4 +17,4 @@
 #include "src/PSO/PSO.hpp"
 #include "src/PSO/PSODefaults.hpp"
 
-#endif // EIGEN_HEU_PSO_
+#endif  // EIGEN_HEU_PSO_

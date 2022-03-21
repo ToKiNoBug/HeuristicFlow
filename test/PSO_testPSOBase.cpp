@@ -15,37 +15,26 @@ using namespace Eigen;
 using namespace std;
 
 void testPSOBase() {
-    using Var_t = std::vector<double>;
+  using Var_t = std::vector<double>;
 
-    internal::PSOAbstract<Var_t,
-            double,
-            DONT_RECORD_FITNESS,void,nullptr,nullptr> * abstractNoRec=nullptr;
+  internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, void, nullptr, nullptr>* abstractNoRec = nullptr;
 
-    internal::PSOAbstract<Var_t,
-            double,
-            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * abstractDoRec=nullptr;
+  internal::PSOAbstract<Var_t, double, RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* abstractDoRec = nullptr;
 
-    internal::PSOBase<Var_t,10,
-            double,
-            RecordOption::DONT_RECORD_FITNESS,void,nullptr,nullptr> * baseNoRec=nullptr;
+  internal::PSOBase<Var_t, 10, double, RecordOption::DONT_RECORD_FITNESS, void, nullptr, nullptr>* baseNoRec = nullptr;
 
-    internal::PSOBase<Var_t,0,
-            double,
-            RecordOption::RECORD_FITNESS,void,nullptr,nullptr> * baseDoRec=nullptr;
+  internal::PSOBase<Var_t, 0, double, RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* baseDoRec = nullptr;
 
-    //DoRec is derived from NoRec
-    abstractNoRec=abstractDoRec;
+  // DoRec is derived from NoRec
+  abstractNoRec = abstractDoRec;
 
-    //base is derived from abstract
-    abstractNoRec=baseNoRec;
-    abstractDoRec=baseDoRec;
-
+  // base is derived from abstract
+  abstractNoRec = baseNoRec;
+  abstractDoRec = baseDoRec;
 }
 
-
-int main()
-{
-    testPSOBase();
-    system("pause");
-    return 0;
+int main() {
+  testPSOBase();
+  system("pause");
+  return 0;
 }
