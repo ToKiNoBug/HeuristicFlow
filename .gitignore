@@ -78,3 +78,12 @@ CMakeLists.txt.user
 build/CMakeCache.txt
 build/.cmake/api/v1/query/client-vscode/query.json
 build/CMakeFiles/cmake.check_cache
+*.html
+*.dot
+*.js
+*.png
+*.hhp
+*.css
+*.svg
+*.hhc
+*.hhk
