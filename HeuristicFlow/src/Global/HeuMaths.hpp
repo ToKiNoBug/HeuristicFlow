@@ -42,6 +42,14 @@ return 0;
 }
 
 */
+
+/**
+ * \brief Compute fractorial.
+ *
+ * \tparam num_t Type of integer
+ * \param n An integer no less than 0
+ * \return num_t Value of n!
+ */
 template <typename num_t>
 inline num_t fractorial(num_t n) {
   if (n > num_t(1))
@@ -50,6 +58,15 @@ inline num_t fractorial(num_t n) {
     return 1;
 }
 
+/**
+ * \brief Computer combinatorial number C^K_N.
+ * This function is called by NSGA3 when making reference points.
+ *
+ * \tparam num_t Type of integer
+ * \param N To be choosed.
+ * \param K Choosed.
+ * \return num_t Value of C^K_N.
+ */
 template <typename num_t>
 inline num_t NchooseK(num_t N, num_t K) {
   return fractorial<num_t>(N) / (fractorial<num_t>(K) * fractorial<num_t>(N - K));
@@ -114,24 +131,28 @@ return res;
 
 namespace internal {
 
+// Function to implement minimum for multiple inputs
 template <typename T>
 inline T imp_min(T a, T b) {
   if (a >= b) return b;
   return a;
 }
 
+// Function to implement minimum for multiple inputs
 template <typename T, typename U, class... Args_t>
 inline T imp_min(T a, U b, Args_t... args) {
   static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
   return imp_min(imp_min(a, b), args...);
 }
 
+// Function to implement maximum for multiple inputs
 template <typename T>
 inline T imp_max(T a, T b) {
   if (a <= b) return b;
   return a;
 }
 
+// Function to implement maximum for multiple inputs
 template <typename T, typename U, class... Args_t>
 inline T imp_max(T a, U b, Args_t... args) {
   static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
@@ -141,7 +162,13 @@ inline T imp_max(T a, U b, Args_t... args) {
 }  // namespace internal
 
 /**
- * @brief minimum value for multiple parameters
+ * \brief Minimum value for multiple inputs
+ *
+ * \tparam T Type of input
+ * \tparam Args_t They should also be of same type with the first input
+ * \param a The first input
+ * \param args The rest inputs
+ * \return T The minimum value
  */
 template <typename T, class... Args_t>
 inline T min(T a, Args_t... args) {
@@ -149,7 +176,13 @@ inline T min(T a, Args_t... args) {
 }
 
 /**
- * @brief maximum value for multiple parameters
+ * \brief Maximum value for multiple inputs
+ *
+ * \tparam T Type of input
+ * \tparam Args_t They should also be of same type with the first input
+ * \param a The first input
+ * \param args The rest inputs
+ * \return T The maximum value
  */
 template <typename T, class... Args_t>
 inline T max(T a, Args_t... args) {

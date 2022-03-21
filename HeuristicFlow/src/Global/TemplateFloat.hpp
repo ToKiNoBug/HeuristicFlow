@@ -17,7 +17,7 @@
 namespace Eigen {
 
 /**
- * @brief Encode double by division of int32 and uint32 stored in uint64
+ * \brief This enumeration encode a floating-point number by a division of int32 and uint32 stored in uint64
  *
  */
 enum DivCode : uint64_t {
@@ -37,10 +37,14 @@ enum DivCode : uint64_t {
 };
 
 /**
- * @brief Metafunction to encode the numerator and denominator into uint64
+ * \struct Metafunction encoder
+ * \brief Metafunction to encode the numerator and denominator into uint64.
+ * In this way, floating-point values can be transfered through template parameters
+ * without C++20
  *
- * @tparam a numerator
- * @tparam b denominator
+ * \tparam a Numerator, it can be positive, negative or 0
+ * \tparam b Denominator, not less than 1.
+ * \return DivCode code the encoded
  */
 template <int32_t a, uint32_t b>
 struct DivEncode {
@@ -52,9 +56,12 @@ struct DivEncode {
 };
 
 /**
- * @brief Metafunction to decode a DivCode back to the numerator and denominator and corresponding floating-point number
+ * \struct Metafunction decoder
+ * \brief Metafunction to decode a DivCode back to the numerator and denominator
+ * and corresponding floating-point number.
  *
- * @tparam dc DivCode waiting to be unpacked.
+ * \tparam dc DivCode to be decoded.
+ * \return double real the decoded floating-point number at compile time.
  */
 template <DivCode dc>
 struct DivDecode {
@@ -64,12 +71,30 @@ struct DivDecode {
   constexpr static const double real = double(numerator) / denominator;
 };
 
+/**
+ * \struct Metafunction encoder
+ * \brief Metafunction to encode the numerator and denominator into uint64.
+ * In this way, floating-point values can be transfered through template
+ * parameters without C++20
+ *
+ * \tparam a Numerator, it can be positive, negative or 0
+ * \tparam b Denominator, not less than 1.
+ * \return DivCode code the encoded
+ */
+
+/**
+ * \brief This enumeration encode a floating-point number
+ * by storing its sign, its coefficient and exponent into a uint64.
+ * In this way, floating-point values in larger range can be ttransfered
+ * through template without c++20
+ *
+ */
 enum PowCode : uint64_t {
 
 };
 
 namespace internal {
-
+// Multiplie val for 10 times until it gets greater than the threshold
 template <uint64_t val, uint64_t threshold = 10000000000000000ULL>
 struct PowEncode_amplifier {
  private:
@@ -104,6 +129,15 @@ struct PowEncode_OneE<0> {
 
 // stores 16 diget(dec) of precision
 // 1 bit for sign,54 bits for significant ,1+8 bits for power,
+
+/**
+ * \brief Metafunction to encode a floating-point number like scientific notation
+ *
+ * \tparam significant The coefficient without the dot, for 1.919810^10^-20, its 1919810
+ * \tparam power The exponet power, for 1.919810^10^-20, its -20
+ *
+ * \return PowCode code The encoded powcode.
+ */
 template <int64_t significant, int16_t power>
 struct PowEncode {
  private:
@@ -128,6 +162,12 @@ struct PowEncode {
   static const constexpr PowCode code = PowCode(upperPart | lowerPart);
 };
 
+/**
+ * \brief Metafunction to decode a divcode back into its real numer.
+ *
+ * \tparam pc Powcode to be decoded.
+ * \return double real The decoded floating-point number.
+ */
 template <PowCode pc>
 struct PowDecode {
  private:

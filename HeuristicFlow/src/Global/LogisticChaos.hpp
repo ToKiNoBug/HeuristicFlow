@@ -16,6 +16,11 @@
 
 namespace Eigen {
 
+/**
+ * \class A chaos device to generate logistic chaotic sequence.
+ * \brief Chaos device
+ *
+ */
 class LogisticChaos {
  public:
   LogisticChaos() { _value = 0.1; }

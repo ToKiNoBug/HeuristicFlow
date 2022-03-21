@@ -15,6 +15,15 @@
 #include "InternalHeaderCheck.h"
 
 namespace Eigen {
+
+/**
+ * \brief This marco metafunction is used to generate a struct
+ * that adpatively mantain a function pointer. If a function name
+ * is provided at compile time, it can execute it, while if nullptr
+ * is assigned, it can store a function pointer and get its value
+ * at runtime.
+ *
+ */
 #define EIGEN_HEU_MAKE_FUNAREA(funFlag, FunFlag, Suffix)                                          \
   template <typename return_t = void, typename... a>                                              \
   class funFlag##Area_##Suffix {                                                                  \

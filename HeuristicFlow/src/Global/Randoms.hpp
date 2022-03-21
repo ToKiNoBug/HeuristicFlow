@@ -20,12 +20,10 @@
 namespace Eigen {
 
 namespace internal {
-/**
- * \brief MingW's implementation for std::random_device doesn't produce a real random number
- *
- */
+
 #ifdef __GNUC__
 #if (defined __WIN32) || (defined __WIN64)
+//  MingW's implementation for std::random_device doesn't produce a real random number
 #define EIGEN_HEU_std_random_device_NOT_RELIABLE
 #endif
 #endif  //#ifdef __CNUC__
