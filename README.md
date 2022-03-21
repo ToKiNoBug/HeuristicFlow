@@ -29,8 +29,7 @@ Implemented :
 
 TODO:
 1. Rewrite documents
-2. Refine code syntax.
-3. Final checks
+2. Final checks
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm
