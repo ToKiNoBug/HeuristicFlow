@@ -11,6 +11,7 @@
 #define EIGEN_HEU_BOXSHAPES_HPP
 
 #include <Eigen/Core>
+#include "InternalHeaderCheck.h"
 #include "BoxRTCTRange.hpp"
 
 namespace Eigen {

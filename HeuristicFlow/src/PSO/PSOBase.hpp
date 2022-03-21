@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_PSOBASE_HPP
 #define EIGEN_HEU_PSOBASE_HPP
 
+#include "InternalHeaderCheck.h"
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
 

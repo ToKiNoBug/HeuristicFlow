@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_NSGA3BASE_HPP
 #define EIGEN_HEU_NSGA3BASE_HPP
 
+#include "InternalHeaderCheck.h"
 #include "NSGA3Abstract.hpp"
 
 namespace Eigen {

@@ -13,6 +13,9 @@
 #include <stdint.h>
 #include <type_traits>
 #include <cmath>
+
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 /*
 #ifndef M_PI

@@ -15,6 +15,8 @@
 #include <cmath>
 #include <ctime>
 
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {

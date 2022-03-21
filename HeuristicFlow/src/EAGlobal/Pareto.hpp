@@ -10,9 +10,8 @@
 #ifndef EIGEN_HEU_PARETO_HPP
 #define EIGEN_HEU_PARETO_HPP
 
-#include "../Global/Enumerations.hpp"
-#include "../Global/Types.hpp"
-#include "../Global/Constants.hpp"
+#include "InternalHeaderCheck.h"
+#include "../../Global"
 
 namespace Eigen {
 

@@ -10,9 +10,10 @@
 #ifndef EIGEN_HEU_MICELLANEOUS4GA_HPP
 #define EIGEN_HEU_MICELLANEOUS4GA_HPP
 
-#include "GAAbstract.hpp"
-#include "../../Global"
 #include <assert.h>
+#include "../../Global"
+#include "InternalHeaderCheck.h"
+#include "GAAbstract.hpp"
 
 namespace Eigen {
 

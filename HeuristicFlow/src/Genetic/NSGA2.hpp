@@ -9,6 +9,8 @@
 
 #ifndef EIGEN_HEU_NSGA2BASE_HPP
 #define EIGEN_HEU_NSGA2BASE_HPP
+
+#include "InternalHeaderCheck.h"
 #include "NSGABase.hpp"
 
 namespace Eigen {

@@ -15,4 +15,6 @@
 #include <thread>
 #endif  //  EIGEN_HAS_OPENMP
 
+#include "InternalHeaderCheck.h"
+
 #endif  // EIGEN_HEU_GLOBALS_HPP

@@ -12,6 +12,8 @@
 
 #include <cstdint>
 
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 
 class LogisticChaos {

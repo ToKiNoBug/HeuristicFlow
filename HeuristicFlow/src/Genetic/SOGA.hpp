@@ -9,7 +9,9 @@
 
 #ifndef EIGEN_HEU_SOGA_H
 #define EIGEN_HEU_SOGA_H
-#include "./GABase.hpp"
+
+#include "InternalHeaderCheck.h"
+#include "GABase.hpp"
 
 namespace Eigen {
 

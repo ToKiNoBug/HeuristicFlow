@@ -12,6 +12,8 @@
 
 #include <unordered_map>
 #include <unordered_set>
+
+#include "InternalHeaderCheck.h"
 #include "NSGABase.hpp"
 
 namespace Eigen {

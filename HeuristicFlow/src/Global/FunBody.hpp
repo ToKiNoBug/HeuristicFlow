@@ -12,6 +12,8 @@
 
 #include <type_traits>
 
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 #define EIGEN_HEU_MAKE_FUNAREA(funFlag, FunFlag, Suffix)                                          \
   template <typename return_t = void, typename... a>                                              \

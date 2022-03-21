@@ -9,14 +9,13 @@
 
 #ifndef EIGEN_HEU_GABASE_H
 #define EIGEN_HEU_GABASE_H
-#include "./GAOption.hpp"
+
 #include <tuple>
 #include <vector>
 #include <list>
 #include <cmath>
 #include <random>
 #include <algorithm>
-#include "GAAbstract.hpp"
 #include <type_traits>
 
 #ifdef EIGEN_HEU_DO_OUTPUT
@@ -24,6 +23,9 @@
 #endif
 
 #include "../../Global"
+#include "InternalHeaderCheck.h"
+#include "GAOption.hpp"
+#include "GAAbstract.hpp"
 
 namespace Eigen {
 

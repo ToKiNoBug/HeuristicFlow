@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_BOXRTCTDIMS_HPP
 #define EIGEN_HEU_BOXRTCTDIMS_HPP
 
+#include "InternalHeaderCheck.h"
 #include "BoxShapes.hpp"
 
 namespace Eigen {

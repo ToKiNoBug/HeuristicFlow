@@ -10,11 +10,13 @@
 #ifndef EIGEN_HEU_MOGAABSTRACT_HPP
 #define EIGEN_HEU_MOGAABSTRACT_HPP
 
-#include "./GABase.hpp"
-#include "../EAGlobal/Pareto.hpp"
 #include <queue>
 #include <functional>
 #include <unordered_set>
+
+#include "../../EAGlobal"
+#include "InternalHeaderCheck.h"
+#include "GABase.hpp"
 
 namespace Eigen {
 

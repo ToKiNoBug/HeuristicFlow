@@ -9,12 +9,14 @@
 
 #ifndef EIGEN_HEU_PSO_HPP
 #define EIGEN_HEU_PSO_HPP
-#include "PSOOption.hpp"
-#include "PSOBase.hpp"
 #include <array>
 #include <vector>
 #include <tuple>
 #include <type_traits>
+
+#include "InternalHeaderCheck.h"
+#include "PSOOption.hpp"
+#include "PSOBase.hpp"
 
 namespace Eigen {
 

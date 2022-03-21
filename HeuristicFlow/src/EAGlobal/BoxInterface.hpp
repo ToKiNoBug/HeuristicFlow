@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_BOXINTERFACE_HPP
 #define EIGEN_HEU_BOXINTERFACE_HPP
 
+#include "InternalHeaderCheck.h"
 #include "BoxRTCTDims.hpp"
 #include "BoxReal.h"
 

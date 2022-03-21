@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_BOXREAL_H
 #define EIGEN_HEU_BOXREAL_H
 
+#include "InternalHeaderCheck.h"
 #include "BoxRTCTDims.hpp"
 
 namespace Eigen {

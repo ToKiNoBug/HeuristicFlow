@@ -9,8 +9,11 @@
 
 #ifndef EIGEN_HEU_BOX_RTCTRange_HPP
 #define EIGEN_HEU_BOX_RTCTRange_HPP
+
 #include <stdint.h>
 #include <assert.h>
+
+#include "InternalHeaderCheck.h"
 #include "../../Global"
 
 /**

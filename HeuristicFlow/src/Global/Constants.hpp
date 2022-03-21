@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include <limits>
 
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {

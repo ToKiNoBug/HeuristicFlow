@@ -12,6 +12,7 @@
 
 #include <type_traits>
 
+#include "InternalHeaderCheck.h"
 #include "../../Global"
 
 namespace Eigen {

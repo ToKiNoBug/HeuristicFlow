@@ -10,11 +10,10 @@
 #ifndef EIGEN_HEU_MOGABASE_HPP
 #define EIGEN_HEU_MOGABASE_HPP
 
-#include "./MOGAAbstract.hpp"
-
-#ifndef Heu_NO_RTASSERT
 #include <assert.h>
-#endif
+
+#include "InternalHeaderCheck.h"
+#include "MOGAAbstract.hpp"
 
 #ifndef Heu_MOGA_MaxRunTimeObjNum
 #define Heu_MOGA_MaxRunTimeObjNum 32

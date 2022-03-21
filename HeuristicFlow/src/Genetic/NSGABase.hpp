@@ -10,6 +10,7 @@
 #ifndef EIGEN_HEU_NSGABASE_HPP
 #define EIGEN_HEU_NSGABASE_HPP
 
+#include "InternalHeaderCheck.h"
 #include "MOGABase.hpp"
 
 namespace Eigen {

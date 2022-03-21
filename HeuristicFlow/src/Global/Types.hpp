@@ -14,6 +14,8 @@
 #include <type_traits>
 #include <array>
 #include <vector>
+
+#include "InternalHeaderCheck.h"
 #include "Enumerations.hpp"
 #include "Constants.hpp"
 

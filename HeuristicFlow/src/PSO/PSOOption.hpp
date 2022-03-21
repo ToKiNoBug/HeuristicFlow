@@ -10,9 +10,9 @@
 #ifndef EIGEN_HEU_PSOOPTION_HPP
 #define EIGEN_HEU_PSOOPTION_HPP
 
-#include "../../Global"
-
 #include <stdint.h>
+#include "InternalHeaderCheck.h"
+#include "../../Global"
 
 namespace Eigen {
 

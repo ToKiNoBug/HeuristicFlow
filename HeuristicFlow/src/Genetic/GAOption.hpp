@@ -9,7 +9,11 @@
 
 #ifndef EIGEN_HEU_GAOPTION_HPP
 #define EIGEN_HEU_GAOPTION_HPP
+
 #include <stdint.h>
+
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /// options about GA algorithm

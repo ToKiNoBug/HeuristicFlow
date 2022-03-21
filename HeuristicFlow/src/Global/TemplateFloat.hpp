@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+#include "InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /**

@@ -10,13 +10,14 @@
 #ifndef EIGEN_HEU_PSOABSTRCAT_HPP
 #define EIGEN_HEU_PSOABSTRCAT_HPP
 
-#include "../../Global"
-#include "PSOOption.hpp"
-#include "PSOParameterPack.hpp"
-
 #ifdef EIGEN_HEU_DO_OUTPUT
 #include <iostream>
 #endif
+
+#include "InternalHeaderCheck.h"
+#include "../../Global"
+#include "PSOOption.hpp"
+#include "PSOParameterPack.hpp"
 
 namespace Eigen {
 

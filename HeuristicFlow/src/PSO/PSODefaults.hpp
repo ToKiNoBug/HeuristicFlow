@@ -9,6 +9,8 @@
 
 #ifndef EIGEN_HEU_PSODEFAULTS_HPP
 #define EIGEN_HEU_PSODEFAULTS_HPP
+
+#include "InternalHeaderCheck.h"
 #include "PSO.hpp"
 
 namespace Eigen {

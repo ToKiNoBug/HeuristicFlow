@@ -11,6 +11,7 @@
 #define EIGEN_HEU_PSOPARAMETERPACK_HPP
 
 #include "../../Global"
+#include "InternalHeaderCheck.h"
 
 namespace Eigen {
 
