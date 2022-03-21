@@ -12,24 +12,23 @@
 #include <stdint.h>
 namespace Eigen {
 
-///options about GA algorithm
-struct GAOption
-{
-public:
-    GAOption() {
-        populationSize=100;
-        maxFailTimes=50;
-        maxGenerations=300;
-        crossoverProb=0.8;
-        mutateProb=0.05;
-    }
-    size_t populationSize;
-    size_t maxFailTimes;
-    size_t maxGenerations;
-    double crossoverProb;
-    double mutateProb;
+/// options about GA algorithm
+struct GAOption {
+ public:
+  GAOption() {
+    populationSize = 100;
+    maxFailTimes = 50;
+    maxGenerations = 300;
+    crossoverProb = 0.8;
+    mutateProb = 0.05;
+  }
+  size_t populationSize;
+  size_t maxFailTimes;
+  size_t maxGenerations;
+  double crossoverProb;
+  double mutateProb;
 };
 
-}
+}  //    namespace Eigen
 
-#endif // EIGEN_HEU_GAOPTION_HPP
+#endif  // EIGEN_HEU_GAOPTION_HPP

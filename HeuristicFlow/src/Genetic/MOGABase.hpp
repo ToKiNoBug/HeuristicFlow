@@ -20,97 +20,74 @@
 #define Heu_MOGA_MaxRunTimeObjNum 32
 #endif
 
-namespace Eigen
-{
-namespace internal
-{
+namespace Eigen {
+namespace internal {
 /**
  * @brief MOGA solver base class with compile-time objective count
- * 
- * @tparam Var_t 
- * @tparam ObjNum 
- * @tparam Fitness_t 
- * @tparam fOpt 
- * @tparam rOpt 
- * @tparam Args 
+ *
+ * @tparam Var_t
+ * @tparam ObjNum
+ * @tparam Fitness_t
+ * @tparam fOpt
+ * @tparam rOpt
+ * @tparam Args
  */
-template<typename Var_t,
-        int ObjNum,
-        FitnessOption fOpt,
-        RecordOption rOpt,
-        class Args_t,
-         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,Eigen::Array<double,ObjNum,1>,Args_t>::mutateFun _mFun_>
-class MOGABase
-        : public MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
-            _iFun_,_fFun_,_cFun_,_mFun_>
-{
-    using Base_t = MOGAAbstract<Var_t,ObjNum,fOpt,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
-public:
-    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Args_t,
+          typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
+          typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
+          typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
+          typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
+class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t = MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
-    MOGABase() {};
-    virtual ~MOGABase() {};
+ public:
+  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
-    inline constexpr size_t objectiveNum() const {
-        return ObjNum;
-    }
+  MOGABase(){};
+  virtual ~MOGABase(){};
+
+  inline constexpr size_t objectiveNum() const { return ObjNum; }
 };
-
 
 /**
  * @brief MOGA solver base class with Eigen::Dynamic objective count
- * 
- * @tparam Var_t 
- * @tparam Fitness_t 
- * @tparam fOpt 
- * @tparam rOpt 
- * @tparam Args 
+ *
+ * @tparam Var_t
+ * @tparam Fitness_t
+ * @tparam fOpt
+ * @tparam rOpt
+ * @tparam Args
  */
-template<typename Var_t,
-        FitnessOption fOpt,
-        RecordOption rOpt,
-        class Args_t,
-         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::initializeFun _iFun_,
-         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::fitnessFun _fFun_,
-         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::crossoverFun _cFun_,
-         typename GAAbstract<Var_t,Eigen::ArrayXd,Args_t>::mutateFun _mFun_>
-class MOGABase<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
-            _iFun_,_fFun_,_cFun_,_mFun_>
-        : public MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
-            _iFun_,_fFun_,_cFun_,_mFun_>
-{
-public:
+template <typename Var_t, FitnessOption fOpt, RecordOption rOpt, class Args_t,
+          typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::initializeFun _iFun_,
+          typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::fitnessFun _fFun_,
+          typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::crossoverFun _cFun_,
+          typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::mutateFun _mFun_>
+class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
+    : public MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+ public:
+  MOGABase(){};
+  virtual ~MOGABase(){};
 
-    MOGABase() {};
-    virtual ~MOGABase() {};
+  using Base_t = MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
-    using Base_t = MOGAAbstract<Var_t,Eigen::Dynamic,fOpt,rOpt,Args_t,
-        _iFun_,_fFun_,_cFun_,_mFun_>;
-    EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  inline int objectiveNum() const { return _objectiveNum; }
 
-    inline int objectiveNum() const {
-        return _objectiveNum;
-    }
-
-    inline void setObjectiveNum(int _objNum) {
+  inline void setObjectiveNum(int _objNum) {
 #ifndef Heu_NO_RTASSERT
-        assert(_objNum>1);
-        assert(_objNum<=Heu_MOGA_MaxRunTimeObjNum);
+    assert(_objNum > 1);
+    assert(_objNum <= Heu_MOGA_MaxRunTimeObjNum);
 #endif
-        _objectiveNum=_objNum;
-    }
+    _objectiveNum = _objNum;
+  }
 
-protected:
-    int _objectiveNum;
+ protected:
+  int _objectiveNum;
 };
 
-}   //  internal
+}  //  namespace internal
 
-}   //  namespace Eigen
+}  //  namespace Eigen
 
-
-#endif //EIGEN_HEU_ MOGABASE_HPP
+#endif  // EIGEN_HEU_ MOGABASE_HPP
