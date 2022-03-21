@@ -24,11 +24,11 @@ void testTSP_SOGA(const uint32_t PointNum) {
   for (uint32_t i = 0; i < PointNum; i++) {
     points.emplace_back();
     for (auto &i : points.back()) {
-      i = randD();
+      i = ei_randD();
     }
   }
   /*
-  cout<<"Generated random points :"<<endl;
+  cout<<"Generated ei_random points :"<<endl;
   for(const auto & i : points) {
       cout<<'(';
       for(auto j : i) {
@@ -52,7 +52,7 @@ void testTSP_SOGA(const uint32_t PointNum) {
     const uint32_t permL = get<dataIdx>(*args)->size();
     x->resize(permL);
     for (uint32_t i = 0; i < permL; i++) {
-      x->operator[](i) = randD();
+      x->operator[](i) = ei_randD();
     }
   };
 
@@ -98,9 +98,9 @@ void testTSP_SOGA(const uint32_t PointNum) {
   auto mutateFun = [](const vector<double> *src, vector<double> *x, const Args_t *) {
     *x = *src;
     const uint32_t permL = x->size();
-    if (randD() < 0.5) {  // modify one element's value
+    if (ei_randD() < 0.5) {  // modify one element's value
       double &v = x->operator[](std::rand() % permL);
-      v += randD(-0.01, 0.01);
+      v += ei_randD(-0.01, 0.01);
       v = std::min(v, 1.0);
       v = std::max(v, 0.0);
     } else {

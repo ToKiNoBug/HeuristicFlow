@@ -35,7 +35,7 @@ struct imp_GADefaults_DVO {
 
   inline static void imp_cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     const size_t N = p1->size();
-    const size_t idx = randIdx(N);
+    const size_t idx = ei_randIdx(N);
 
     c1->topRows(idx) = p1->topRows(idx);
     c2->topRows(idx) = p2->topRows(idx);
@@ -58,7 +58,7 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
 
   inline static void imp_cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     const size_t N = p1->size();
-    const size_t idx = randIdx(N);
+    const size_t idx = ei_randIdx(N);
 
     for (size_t i = 0; i < N; i++) {
       if (i < idx) {
@@ -97,14 +97,14 @@ struct GADefaults {
     // non-square box
     inline static void imp_doiFunNd(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randD(box->min()[idx], box->max()[idx]);
+        v->operator[](idx) = ei_randD(box->min()[idx], box->max()[idx]);
       }
     }
 
     inline static void imp_domFund_single(const Var_t *src, Var_t *v, const Args_t *box) {
       *v = *src;
-      size_t idx = randIdx(v->size());
-      v->operator[](idx) += randD(-1, 1) * box->learnRate()[idx];
+      size_t idx = ei_randIdx(v->size());
+      v->operator[](idx) += ei_randD(-1, 1) * box->learnRate()[idx];
       v->operator[](idx) = std::max(v->operator[](idx), box->min()[idx]);
       v->operator[](idx) = std::min(v->operator[](idx), box->max()[idx]);
     }
@@ -117,14 +117,14 @@ struct GADefaults {
     // square box
     inline static void imp_doiFunNd(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randD(box->min(), box->max());
+        v->operator[](idx) = ei_randD(box->min(), box->max());
       }
     }
 
     inline static void imp_domFund_single(const Var_t *src, Var_t *v, const Args_t *box) {
       *v = *src;
-      size_t idx = randIdx(v->size());
-      v->operator[](idx) += randD(-1, 1) * box->learnRate();
+      size_t idx = ei_randIdx(v->size());
+      v->operator[](idx) += ei_randD(-1, 1) * box->learnRate();
       v->operator[](idx) = std::max(v->operator[](idx), box->min());
       v->operator[](idx) = std::min(v->operator[](idx), box->max());
     }
@@ -135,21 +135,21 @@ struct GADefaults {
   {
     inline static void imp_doiFunNs(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min()[idx], box->max()[idx] + 1);
+        v->operator[](idx) = ei_randIdx(box->min()[idx], box->max()[idx] + 1);
       }
     }
 
     inline static void imp_domFunNs(const Var_t *src, Var_t *v, const Args_t *box) {
       *v = *src;
-      const size_t idx = randIdx(v->size());
+      const size_t idx = ei_randIdx(v->size());
       const auto val = v->operator[](idx);
       const size_t numLess = val - box->min()[idx];
       const size_t numGreater = box->max()[idx] - val;
 
-      if (randD() * (numLess + numGreater) <= numLess)
-        v->operator[](idx) = randIdx(box->min()[idx], val);
+      if (ei_randD() * (numLess + numGreater) <= numLess)
+        v->operator[](idx) = ei_randIdx(box->min()[idx], val);
       else
-        v->operator[](idx) = randIdx(val + 1, box->max()[idx] + 1);
+        v->operator[](idx) = ei_randIdx(val + 1, box->max()[idx] + 1);
     }
   };
 
@@ -157,21 +157,21 @@ struct GADefaults {
   struct SymBoxOp<BoxShape::SQUARE_BOX, unused> {
     inline static void imp_doiFunNs(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min(), box->max() + 1);
+        v->operator[](idx) = ei_randIdx(box->min(), box->max() + 1);
       }
     }
 
     inline static void imp_domFunNs(const Var_t *src, Var_t *v, const Args_t *box) {
       *v = *src;
-      const size_t idx = randIdx(v->size());
+      const size_t idx = ei_randIdx(v->size());
       const auto val = v->operator[](idx);
       const size_t numLess = val - box->min();
       const size_t numGreater = box->max() - val;
 
-      if (randD() * (numLess + numGreater) <= numLess)
-        v->operator[](idx) = randIdx(box->min(), val);
+      if (ei_randD() * (numLess + numGreater) <= numLess)
+        v->operator[](idx) = ei_randIdx(box->min(), val);
       else
-        v->operator[](idx) = randIdx(val + 1, box->max() + 1);
+        v->operator[](idx) = ei_randIdx(val + 1, box->max() + 1);
     }
   };
 
@@ -209,7 +209,7 @@ struct GADefaults {
     static_assert(Args_t::Encoding == EncodeType::Binary, "iFunNb requires binary box");
     static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value, "Box and Var_t types must be same");
     for (size_t idx = 0; idx < v->size(); idx++) {
-      v->operator[](idx) = bool(randD() >= 0.5);
+      v->operator[](idx) = bool(ei_randD() >= 0.5);
     }
   }
 
@@ -318,7 +318,7 @@ struct GADefaults {
     static_assert(Args_t::Encoding == EncodeType::Binary, "mFun_b requires binary box");
     static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value, "Box and Var_t types must be same");
     *v = *src;
-    size_t idx = randIdx(v->size());
+    size_t idx = ei_randIdx(v->size());
     v->operator[](idx) = !v->operator[](idx);
   }
 
@@ -342,7 +342,7 @@ struct GADefaults<Var_t, void, dvo> {
     // static_assert(isValid,"Max should be greater than min");
 
     for (int64_t idx = 0; idx < p->size(); idx++) {
-      p->operator[](idx) = randD(min, max);
+      p->operator[](idx) = ei_randD(min, max);
     }
   }
 
@@ -413,8 +413,8 @@ struct GADefaults<Var_t, void, dvo> {
     static_assert(r < 1, "A probability shoule be less than 1");
     const size_t N = p1->size();
     for (size_t i = 0; i < N; i++) {
-      c1->operator[](i) = ((randD() < r) ? p1 : p2)->operator[](i);
-      c2->operator[](i) = ((randD() < r) ? p2 : p1)->operator[](i);
+      c1->operator[](i) = ((ei_randD() < r) ? p1 : p2)->operator[](i);
+      c2->operator[](i) = ((ei_randD() < r) ? p2 : p1)->operator[](i);
     }
   }
 

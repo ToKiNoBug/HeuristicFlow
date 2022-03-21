@@ -193,7 +193,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     crossoverQueue.reserve(_population.size());
 
     for (GeneIt_t it = _population.begin(); it != _population.end(); it++) {
-      if (randD() <= _option.crossoverProb) {
+      if (ei_randD() <= _option.crossoverProb) {
         crossoverQueue.emplace_back(it);
       }
     }
@@ -227,7 +227,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     std::vector<GeneIt_t> mutateList;
     mutateList.reserve(size_t(this->_population.size() * this->_option.mutateProb * 2));
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
-      if (randD() <= this->_option.mutateProb) {
+      if (ei_randD() <= this->_option.mutateProb) {
         mutateList.emplace_back(it);
       }
     }

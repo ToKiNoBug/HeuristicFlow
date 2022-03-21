@@ -238,7 +238,7 @@ class NSGA3Abstract
 
     while (selected->size() < this->_option.populationSize) {
       findMinSet(*refPoints, &minNicheIterators);
-      auto curRefPoint = minNicheIterators[randIdx(minNicheIterators.size())];
+      auto curRefPoint = minNicheIterators[ei_randIdx(minNicheIterators.size())];
       size_t rhoJ = curRefPoint->second;
 
       associatedGenesInFl = Fl->equal_range(curRefPoint->first);
@@ -255,13 +255,13 @@ class NSGA3Abstract
           }
           pickedGene = minGene;
         } else {
-          // pick a random member in associatedGenesInFl
+          // pick a ei_random member in associatedGenesInFl
           size_t N = 0;
           for (auto it = associatedGenesInFl.first; it != associatedGenesInFl.second; ++it) {
             N++;
           }
           for (auto it = associatedGenesInFl.first; it != associatedGenesInFl.second; ++it) {
-            if (randD() * N <= 1) {
+            if (ei_randD() * N <= 1) {
               pickedGene = it;
               break;
             }

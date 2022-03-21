@@ -64,9 +64,9 @@ void testNSGA3_DTLZ7() {
 
   auto mFun = [](const Var_t* src, Var_t* v) {
     *v = *src;
-    const size_t idx = randIdx(v->size());
+    const size_t idx = ei_randIdx(v->size());
     double& p = v->operator[](idx);
-    p += 0.5 * randD(-1, 1);
+    p += 0.5 * ei_randD(-1, 1);
     p = std::min(p, 1.0);
     p = std::max(p, 0.0);
   };

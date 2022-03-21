@@ -45,29 +45,29 @@ inline std::mt19937& global_mt19937() {
 }  // namespace internal
 
 /// uniform random number in range [0,1)
-inline double randD() {
+inline double ei_randD() {
   static std::uniform_real_distribution<double> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
 
 /// uniform random number in range [min,max)
-inline double randD(const double min, const double max) { return (max - min) * randD() + min; }
+inline double ei_randD(const double min, const double max) { return (max - min) * ei_randD() + min; }
 
-inline float randF() {
+inline float ei_randF() {
   static std::uniform_real_distribution<float> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
 
 template <typename int_t>
-inline int_t randIdx(int_t size) {
+inline int_t ei_randIdx(int_t size) {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
-  return int_t(randF() * size);
+  return int_t(ei_randF() * size);
 }
 
 template <typename int_t>
-inline int_t randIdx(int_t min, int_t max_plus_1) {
+inline int_t ei_randIdx(int_t min, int_t max_plus_1) {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
-  return int_t((max_plus_1 - min) * randF() + min);
+  return int_t((max_plus_1 - min) * ei_randF() + min);
 }
 
 }  // namespace Eigen

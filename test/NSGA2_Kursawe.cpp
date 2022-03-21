@@ -19,7 +19,7 @@ void testNSGA2_Kursawe() {
   NSGA2<std::array<double, 3>, 2, FITNESS_LESS_BETTER, DONT_RECORD_FITNESS> algo;
   auto iFun = [](std::array<double, 3> *x) {
     for (auto &i : *x) {
-      i = randD(-5, 5);
+      i = ei_randD(-5, 5);
     }
   };
   auto fFun = [](const std::array<double, 3> *x, Eigen::Array<double, 2, 1> *f) {
@@ -46,8 +46,8 @@ void testNSGA2_Kursawe() {
 
   auto mFun = [](const std::array<double, 3> *src, std::array<double, 3> *x) {
     *x = *src;
-    const size_t idx = randIdx(3);
-    x->operator[](idx) += 0.1 * randD(-1, 1);
+    const size_t idx = ei_randIdx(3);
+    x->operator[](idx) += 0.1 * ei_randD(-1, 1);
     x->operator[](idx) = std::min(x->operator[](idx), 5.0);
     x->operator[](idx) = std::max(x->operator[](idx), -5.0);
   };

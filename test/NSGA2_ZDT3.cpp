@@ -24,7 +24,7 @@ void testNSGA2_ZDT3() {
 
   void (*iFun)(std::array<double, XNum>*) = [](std::array<double, XNum>* x) {
     for (size_t i = 0; i < XNum; i++) {
-      x->operator[](i) = Eigen::randD();
+      x->operator[](i) = Eigen::ei_randD();
     }
   };
 
@@ -47,9 +47,9 @@ void testNSGA2_ZDT3() {
   void (*mFun)(const std::array<double, XNum>* src, std::array<double, XNum>*) = [](const std::array<double, XNum>* src,
                                                                                     std::array<double, XNum>* x) {
     *x = *src;
-    const size_t mutateIdx = Eigen::randIdx(XNum);
+    const size_t mutateIdx = Eigen::ei_randIdx(XNum);
 
-    x->operator[](mutateIdx) += 0.005 * Eigen::randD(-1, 1);
+    x->operator[](mutateIdx) += 0.005 * Eigen::ei_randD(-1, 1);
 
     x->operator[](mutateIdx) = std::min(x->operator[](mutateIdx), 1.0);
     x->operator[](mutateIdx) = std::max(x->operator[](mutateIdx), 0.0);
