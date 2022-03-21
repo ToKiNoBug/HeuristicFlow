@@ -16,26 +16,18 @@
 
 namespace Eigen {
 
-/// whether to record trainning curve of not
-
 /**
+ * \ingroup HEU_Global
  * \brief Whether to record trainning curve of not
  *
  */
 enum RecordOption : uint8_t {
-  /**
-   * \brief The solver will record fitness values of every generation when running
-   *
-   */
-  RECORD_FITNESS = true,
-  /**
-   * \brief The solver won't record fitness value.
-   *
-   */
-  DONT_RECORD_FITNESS = false
+  RECORD_FITNESS = true,       ///< The solver will record fitness values of every generation when running
+  DONT_RECORD_FITNESS = false  ///< The solver won't record fitness value.
 };
 
 /**
+ * \ingroup HEU_Global
  * \brief Convert enumeration to string
  *
  * \param r The enum value
@@ -51,23 +43,17 @@ inline const char* Enum2String(RecordOption r) {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Optimization direction
  *
  */
 enum FitnessOption : uint8_t {
-  /**
-   * \brief Less fitness value is better
-   *
-   */
-  FITNESS_LESS_BETTER = false,
-  /**
-   * \brief Greater fitness value is better
-   *
-   */
-  FITNESS_GREATER_BETTER = true,
+  FITNESS_LESS_BETTER = false,    ///< Less fitness value is better
+  FITNESS_GREATER_BETTER = true,  ///< Greater fitness value is better
 };
 
 /**
+ * \ingroup HEU_Global
  * \brief Convert enumeration to string
  *
  * \param f The enum value
@@ -82,32 +68,28 @@ inline const char* Enum2String(FitnessOption f) {
   }
 }
 
-/// which type of vector to use
-
 /**
+ * \ingroup HEU_Global
+ *
  * \brief Which type of container to use.
  *
+ * \note Std uses std::vector for dynamic and std::array for fixed.\n\n
+ *  While Eigen refers to Eigen::Array<scalar_t,size,1>. If you hope
+ *  to use Eigen's matrices or even tensors, inherit it and reload
+ *  operator[] to avoid size-checking.\n\n
+ *  Custom types should at least be able to act like a vector.
+ *  It must has opeartor[](int) that provides random access and
+ *  member function size() const that returns the number of elements.
+ *  Also if it's dynamic-sized, it should have function resize(int) to change its size.
  */
 enum DoubleVectorOption {
-  /**
-   * \brief C++ standard containers (std::vector for dynamic and std::array for fixed)
-   *
-   */
-  Std = 'S',
-  /**
-   * \brief Eigen containers (Eigen::Array<scalar_t,size,1>)
-   *
-   */
-  Eigen = 'E',
-
-  /**
-   * \brief Use's custom types
-   *
-   */
-  Custom = 'C'
+  Std = 'S',    ///< C++ standard containers
+  Eigen = 'E',  ///< Eigen containers
+  Custom = 'C'  ///< User defined custom types.
 };
 
 /**
+ * \ingroup HEU_Global
  * \brief Convert enumeration to string
  *
  * \param e The enum value
@@ -125,23 +107,22 @@ inline const char* Enum2String(DoubleVectorOption e) {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief The type of a box-constraint
  *
+ * \note Box constraint is the most regular encoding types
+ * in evolutionary algoithms.\n
+ * Square box is a N-dim hyperbox that each dimension share
+ * a same range. And the rest are called Rectangle box or
+ * non-square box.
  */
 enum BoxShape {
-  /**
-   * \brief The box is a square box, which means it has the same range in every dimensions.
-   *
-   */
-  SQUARE_BOX,
-  /**
-   * \brief A non-square box don't a same range in every dimensions.
-   *
-   */
-  RECTANGLE_BOX
+  SQUARE_BOX,    ///< Each dimension has the same range.
+  RECTANGLE_BOX  ///< Some dimensions have different ranges with others.
 };
 
 /**
+ * \ingroup HEU_Global
  * \brief Convert enumeration to string
  *
  * \param b The enum value
@@ -157,30 +138,23 @@ inline const char* Enum2String(BoxShape b) {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Encoding type of a box constraint
+ *
+ * \note Various encoding types are used in evoluntionary
+ * algorithms. This enum is usually used together with BoxShape
  *
  */
 enum EncodeType {
-  /**
-   * \brief Encode in floating-point numbers.
-   *
-   */
-  Real,
-  /**
-   * \brief Encode in binaries, 0 or 1.
-   *
-   */
-  Binary,
+  Real,    ///< Encode in floating-point numbers.
+  Binary,  ///< Encode in binaries, 0 or 1.
   // Integer,
 
-  /**
-   * \brief Encode in symbolic integers.
-   *
-   */
-  Symbolic
+  Symbolic  ///< Encode in symbolic integers.Encode in symbolic integers.
 };
 
 /**
+ * \ingroup HEU_Global
  * \brief Convert enumeration to string
  *
  * \param e The enum value

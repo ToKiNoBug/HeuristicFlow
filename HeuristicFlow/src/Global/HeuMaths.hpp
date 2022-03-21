@@ -44,6 +44,7 @@ return 0;
 */
 
 /**
+ * \ingroup HEU_Global
  * \brief Compute fractorial.
  *
  * \tparam num_t Type of integer
@@ -59,6 +60,7 @@ inline num_t fractorial(num_t n) {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Computer combinatorial number C^K_N.
  * This function is called by NSGA3 when making reference points.
  *
@@ -162,7 +164,8 @@ inline T imp_max(T a, U b, Args_t... args) {
 }  // namespace internal
 
 /**
- * \brief Minimum value for multiple inputs
+ * \ingroup HEU_Global
+ * \brief Find Minimum value for multiple inputs
  *
  * \tparam T Type of input
  * \tparam Args_t They should also be of same type with the first input
@@ -176,7 +179,8 @@ inline T min(T a, Args_t... args) {
 }
 
 /**
- * \brief Maximum value for multiple inputs
+ * \ingroup HEU_Global
+ * \brief Find maximum value for multiple inputs
  *
  * \tparam T Type of input
  * \tparam Args_t They should also be of same type with the first input

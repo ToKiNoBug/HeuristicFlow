@@ -17,7 +17,9 @@
 namespace Eigen {
 
 /**
- * \brief This enumeration encode a floating-point number by a division of int32 and uint32 stored in uint64
+ * \ingroup HEU_Global
+ * \brief This enumeration encode a floating-point number
+ * by a division of int32 and uint32 stored in uint64
  *
  */
 enum DivCode : uint64_t {
@@ -37,10 +39,13 @@ enum DivCode : uint64_t {
 };
 
 /**
- * \struct Metafunction encoder
+ * \ingroup HEU_Global
+ * \struct DivEncode
  * \brief Metafunction to encode the numerator and denominator into uint64.
- * In this way, floating-point values can be transfered through template parameters
- * without C++20
+ *
+ *
+ * In this way, floating-point values can be passed through template parameters
+ * and knowen at compile time under C++20.
  *
  * \tparam a Numerator, it can be positive, negative or 0
  * \tparam b Denominator, not less than 1.
@@ -56,7 +61,8 @@ struct DivEncode {
 };
 
 /**
- * \struct Metafunction decoder
+ * \ingroup HEU_Global
+ * \struct DivDecode
  * \brief Metafunction to decode a DivCode back to the numerator and denominator
  * and corresponding floating-point number.
  *
@@ -72,26 +78,23 @@ struct DivDecode {
 };
 
 /**
- * \struct Metafunction encoder
- * \brief Metafunction to encode the numerator and denominator into uint64.
- * In this way, floating-point values can be transfered through template
- * parameters without C++20
- *
- * \tparam a Numerator, it can be positive, negative or 0
- * \tparam b Denominator, not less than 1.
- * \return DivCode code the encoded
- */
-
-/**
+ * \ingroup HEU_Global
  * \brief This enumeration encode a floating-point number
  * by storing its sign, its coefficient and exponent into a uint64.
- * In this way, floating-point values in larger range can be ttransfered
- * through template without c++20
  *
+ *
+ * It has the same fuction like DivCode but can represent a larger range.
+ *
+ * PowEncode has 16 diget(decimal) of precision.
+ *
+ * In all the 64 binary bits, 1 for sign, 54 for significant digits and 9 bits for power.
  */
 enum PowCode : uint64_t {
 
 };
+
+//
+// 1 bit for sign,54 bits for significant ,1+8 bits for power,
 
 namespace internal {
 // Multiplie val for 10 times until it gets greater than the threshold
@@ -127,16 +130,20 @@ struct PowEncode_OneE<0> {
 
 }  // namespace internal
 
-// stores 16 diget(dec) of precision
-// 1 bit for sign,54 bits for significant ,1+8 bits for power,
-
 /**
+ * \ingroup HEU_Global
+ * \struct PowEncode
  * \brief Metafunction to encode a floating-point number like scientific notation
  *
- * \tparam significant The coefficient without the dot, for 1.919810^10^-20, its 1919810
- * \tparam power The exponet power, for 1.919810^10^-20, its -20
+ * \tparam significant The coefficient without the dot.
+ * \tparam power The exponet power.
  *
  * \return PowCode code The encoded powcode.
+ *
+ * \code {.cpp}
+ * PowEncode<1919810,-20>::code==PowEncode<191981,-20>::code;  // 1.191981^-20.
+ * \endcode
+ *
  */
 template <int64_t significant, int16_t power>
 struct PowEncode {
@@ -163,10 +170,18 @@ struct PowEncode {
 };
 
 /**
+ * \ingroup HEU_Global
+ * \struct PowDecode
  * \brief Metafunction to decode a divcode back into its real numer.
  *
  * \tparam pc Powcode to be decoded.
  * \return double real The decoded floating-point number.
+ *
+ * \code {.cpp}
+ * constexpr PowCode pCode=PowEncode<-123456,16>::code;
+ * constexpr double real=PowDecode<pCode>::real;
+ * \endcode
+ *
  */
 template <PowCode pc>
 struct PowDecode {

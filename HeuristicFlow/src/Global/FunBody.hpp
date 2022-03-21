@@ -17,10 +17,13 @@
 namespace Eigen {
 
 /**
+ * \ingroup HEU_Global
  * \brief This marco metafunction is used to generate a struct
- * that adpatively mantain a function pointer. If a function name
- * is provided at compile time, it can execute it, while if nullptr
- * is assigned, it can store a function pointer and get its value
+ * that adpatively mantain a function pointer.
+ *
+ *
+ * If a function name is provided at compile time, it can execute the function,
+ * while if nullptr is assigned, it can store a function pointer and get its value
  * at runtime.
  *
  */

@@ -21,13 +21,39 @@
 
 namespace Eigen {
 
+/**
+ * \ingroup HEU_Global
+ * \brief C++ std container for fixed and dynamic sizes.
+ *
+ * Use std::vector for dynamic size and std::array as fixed size.
+ *
+ * \tparam scalar_t Type of element
+ * \tparam Dim Size at compile time. Use Eigen::Dynamic for dynamic size.
+ */
 template <typename scalar_t, int Dim>
 using stdContainer =
     typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>, std::array<scalar_t, Dim> >::type;
 
+/**
+ * \ingroup HEU_Global
+ * \brief C++ std container of double.
+ *
+ * \tparam Size Number of element. Use Eigen::Dynamic for dynamic size.
+ */
 template <int Size>
 using stdVecD_t = stdContainer<double, Size>;
 
+/**
+ * \ingroup HEU_Global
+ * \brief Container for different types, sizes and scalar types.
+ *
+ * \tparam scalar_t Type of elements.
+ * \tparam Size Size at compile time. Use Eigen::Dynamic for dynamic size.
+ * \tparam DVO Type of container.
+ * Use DoubleVectorOption::Eigen for Eigen::Array<scalar_t,Size,1> and
+ * other enum values for stdContainer<scalar_t,Size>.
+ *
+ */
 template <typename scalar_t, int Size, DoubleVectorOption DVO>
 using Container = typename std::conditional<(DVO != DoubleVectorOption::Eigen), stdContainer<scalar_t, Size>,
                                             Eigen::Array<double, Size, 1> >::type;

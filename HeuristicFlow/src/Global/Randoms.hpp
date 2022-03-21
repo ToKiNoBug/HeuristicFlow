@@ -29,6 +29,7 @@ namespace internal {
 #endif  //#ifdef __CNUC__
 
 /**
+ * \ingroup HEU_Global
  * \brief Internal global std::random device
  *
  * \return std::random_device& A reference to this static variable
@@ -38,9 +39,11 @@ inline std::random_device& global_random_device() {
   return rdv;
 }
 /**
- * \brief Internal global std::mt19937
+ * \ingroup HEU_Global
+ * \brief Internal global std::mt19937 used as a high-performance
+ * random number generater.
  *
- * \return std::mt19937& Used as a high-performance random number generater.
+ * \return std::mt19937& A reference to this instance.
  */
 inline std::mt19937& global_mt19937() {
 #ifdef EIGEN_HEU_std_random_device_NOT_RELIABLE
@@ -59,6 +62,7 @@ inline std::mt19937& global_mt19937() {
 }  // namespace internal
 
 /**
+ * \ingroup HEU_Global
  * \brief Uniform random number (double) in range [0,1)
  *
  * \return double random number
@@ -69,6 +73,7 @@ inline double ei_randD() {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Uniform random number (double) in range [min,max)
  *
  * \param min Minimum value
@@ -78,6 +83,7 @@ inline double ei_randD() {
 inline double ei_randD(const double min, const double max) { return (max - min) * ei_randD() + min; }
 
 /**
+ * \ingroup HEU_Global
  * \brief Uniform random number (float) in range [0,1)
  *
  * \return double random number
@@ -88,6 +94,7 @@ inline float ei_randF() {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Uniform random index in range [0,size)
  *
  * \tparam int_t Type of integer
@@ -101,6 +108,7 @@ inline int_t ei_randIdx(int_t size) {
 }
 
 /**
+ * \ingroup HEU_Global
  * \brief Uniform random index in range [min,max_plus_1)
  *
  * \tparam int_t Type of integer

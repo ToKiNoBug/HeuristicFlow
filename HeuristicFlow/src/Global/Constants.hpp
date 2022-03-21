@@ -15,29 +15,38 @@
 
 #include "InternalHeaderCheck.h"
 
+/**
+ * \defgroup HEU_Global Global micellaneous for metaheuristic
+ *
+ */
+
 namespace Eigen {
 
 namespace internal {
 
 /**
+ * \ingroup HEU_Global
  * \brief Positive infinity float
  *
  */
 const float pinfF = std::numeric_limits<float>::infinity();
 
 /**
+ * \ingroup HEU_Global
  * \brief Positive infinity double
  *
  */
 const double pinfD = std::numeric_limits<double>::infinity();
 
 /**
+ * \ingroup HEU_Global
  * \brief Negativev infinity float
  *
  */
 const float ninfF = -pinfF;
 
 /**
+ * \ingroup HEU_Global
  * \brief Negative infinity double
  *
  */
