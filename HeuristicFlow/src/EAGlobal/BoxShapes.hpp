@@ -13,52 +13,42 @@
 #include <Eigen/Core>
 #include "BoxRTCTRange.hpp"
 
-namespace Eigen
-{
+namespace Eigen {
 
-namespace internal
-{
+namespace internal {
 
-template<typename Scalar_t,int Size,DoubleVectorOption DVO>
-using NonsquareBox = BoxDynamicRange<Scalar_t,Size,BoxShape::RECTANGLE_BOX,DVO>;
-
+template <typename Scalar_t, int Size, DoubleVectorOption DVO>
+using NonsquareBox = BoxDynamicRange<Scalar_t, Size, BoxShape::RECTANGLE_BOX, DVO>;
 
 /**
  * @brief Square box with runtime range
  */
-template<typename Scalar_t,
-  int Size,
-  DoubleVectorOption DVO,
-  bool isFixedRange,
-  TemplateVal_t<Scalar_t> MinCT,
-  TemplateVal_t<Scalar_t> MaxCT>
-class SquareBox : public BoxFixedRange<Scalar_t,MinCT,MaxCT>
-{
-  private:
-    using Base_t = BoxFixedRange<Scalar_t,MinCT,MaxCT>;
-  public:
-    using Var_t = Container<Scalar_t,Size,DVO>;
+template <typename Scalar_t, int Size, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
+          TemplateVal_t<Scalar_t> MaxCT>
+class SquareBox : public BoxFixedRange<Scalar_t, MinCT, MaxCT> {
+ private:
+  using Base_t = BoxFixedRange<Scalar_t, MinCT, MaxCT>;
 
+ public:
+  using Var_t = Container<Scalar_t, Size, DVO>;
 };
 
 /**
  * @brief Square box with runtime ranges
  */
-template<typename Scalar_t,
-  int Size,
-  DoubleVectorOption DVO,
-  TemplateVal_t<Scalar_t> MinCT,
-  TemplateVal_t<Scalar_t> MaxCT>
-class SquareBox<Scalar_t,Size,DVO,false,MinCT,MaxCT> : public BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>
-{
-  private:
-    using Base_t = BoxDynamicRange<Scalar_t,Size,BoxShape::SQUARE_BOX,DVO>;
-  public:
-    using Var_t = typename Base_t::Var_t;
+template <typename Scalar_t, int Size, DoubleVectorOption DVO, TemplateVal_t<Scalar_t> MinCT,
+          TemplateVal_t<Scalar_t> MaxCT>
+class SquareBox<Scalar_t, Size, DVO, false, MinCT, MaxCT>
+    : public BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
+ private:
+  using Base_t = BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO>;
+
+ public:
+  using Var_t = typename Base_t::Var_t;
 };
 
-} //internal
+}  // namespace internal
 
-} //namespace Eigen
+}  // namespace Eigen
 
-#endif // EIGEN_HEU_BOXSHAPES_HPP
+#endif  // EIGEN_HEU_BOXSHAPES_HPP

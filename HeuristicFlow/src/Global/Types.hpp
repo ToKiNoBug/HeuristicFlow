@@ -7,8 +7,6 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-
 #ifndef EIGEN_HEU_TYPES_HPP
 #define EIGEN_HEU_TYPES_HPP
 
@@ -19,56 +17,44 @@
 #include "Enumerations.hpp"
 #include "Constants.hpp"
 
-namespace Eigen
-{
+namespace Eigen {
 
-template<typename scalar_t,int Dim>
+template <typename scalar_t, int Dim>
 using stdContainer =
-  typename std::conditional<Dim==Eigen::Dynamic,
-    std::vector<scalar_t>,
-    std::array<scalar_t,Dim>
-  >::type;
+    typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>, std::array<scalar_t, Dim> >::type;
 
-template<int Size>
-using stdVecD_t = stdContainer<double,Size>;
+template <int Size>
+using stdVecD_t = stdContainer<double, Size>;
 
+template <typename scalar_t, int Size, DoubleVectorOption DVO>
+using Container = typename std::conditional<(DVO != DoubleVectorOption::Eigen), stdContainer<scalar_t, Size>,
+                                            Eigen::Array<double, Size, 1> >::type;
 
-template<typename scalar_t,int Size,DoubleVectorOption DVO>
-using Container = typename std::conditional<(DVO!=DoubleVectorOption::Eigen),
-    stdContainer<scalar_t,Size>,
-    Eigen::Array<double,Size,1>
-  >::type;
+// template<DoubleVectorOption dvo,size_t Dim>
+// using FitnessVec_t= Container<double,Dim,dvo>;
 
-//template<DoubleVectorOption dvo,size_t Dim>
-//using FitnessVec_t= Container<double,Dim,dvo>;
+namespace internal {
 
-namespace internal 
-{
-
-template<int _ObjNum>
-struct heu_initializeSize
-{
-  public:
-    template<typename A>
-    inline static void resize(A * v,size_t sz)
-    {
-      assert(v->size()==sz);
-    }
+template <int _ObjNum>
+struct heu_initializeSize {
+ public:
+  template <typename A>
+  inline static void resize(A* v, size_t sz) {
+    assert(v->size() == sz);
+  }
 };
 
-template<>
-struct heu_initializeSize<Eigen::Dynamic>
-{
-  public:
-    template<typename A>
-    inline static void resize(A * v,size_t sz)
-    {
-      v->resize(sz);
-    }
+template <>
+struct heu_initializeSize<Eigen::Dynamic> {
+ public:
+  template <typename A>
+  inline static void resize(A* v, size_t sz) {
+    v->resize(sz);
+  }
 };
 
-} //internal
+}  //    namespace internal
 
-} //namespace Eigen
+}  //   namespace Eigen
 
-#endif // EIGEN_HEU_TYPES_HPP
+#endif  // EIGEN_HEU_TYPES_HPP

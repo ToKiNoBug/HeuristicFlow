@@ -7,15 +7,13 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 #ifndef EIGEN_HEU_HeuMaths_HPP
 #define EIGEN_HEU_HeuMaths_HPP
 
 #include <stdint.h>
 #include <type_traits>
 #include <cmath>
-namespace Eigen
-{
+namespace Eigen {
 /*
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
@@ -41,19 +39,17 @@ return 0;
 }
 
 */
-template<typename num_t>
-inline num_t fractorial(num_t n)
-{
-  if(n>num_t(1))
-    return n*fractorial(n-1);
+template <typename num_t>
+inline num_t fractorial(num_t n) {
+  if (n > num_t(1))
+    return n * fractorial(n - 1);
   else
     return 1;
 }
 
-template<typename num_t>
-inline num_t NchooseK(num_t N,num_t K)
-{
-  return fractorial<num_t>(N)/(fractorial<num_t>(K)*fractorial<num_t>(N-K));
+template <typename num_t>
+inline num_t NchooseK(num_t N, num_t K) {
+  return fractorial<num_t>(N) / (fractorial<num_t>(K) * fractorial<num_t>(N - K));
 }
 /*
 namespace internal
@@ -61,7 +57,7 @@ namespace internal
 
 template<typename val_t,int64_t N>
 struct Heu_expander
- 
+
 {
 static val_t expand(val_t v)
 {
@@ -74,7 +70,7 @@ std::integral_constant<int64_t,N-((N>0)?(1):(-1))>::value
 
 template<typename val_t>
 struct Heu_expander<val_t,0>
- 
+
 {
 static val_t expand(val_t v)
 {
@@ -113,61 +109,50 @@ return res;
 
 */
 
-namespace internal
-{
+namespace internal {
 
-template<typename T>
-inline T imp_min(T a,T b)
-{
-  if (a>=b)
-    return b;
+template <typename T>
+inline T imp_min(T a, T b) {
+  if (a >= b) return b;
   return a;
 }
 
-template<typename T,typename U,class ... Args_t>
-inline T imp_min(T a,U b,Args_t ... args)
-{
-  static_assert(std::is_same<T,U>::value,"All parameters must be of same types");
-  return imp_min(imp_min(a,b),args...);
+template <typename T, typename U, class... Args_t>
+inline T imp_min(T a, U b, Args_t... args) {
+  static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
+  return imp_min(imp_min(a, b), args...);
 }
 
-template<typename T>
-inline T imp_max(T a,T b)
-{
-  if (a<=b)
-    return b;
+template <typename T>
+inline T imp_max(T a, T b) {
+  if (a <= b) return b;
   return a;
 }
 
-template<typename T,typename U,class ... Args_t>
-inline T imp_max(T a,U b,Args_t ... args)
-{
-  static_assert(std::is_same<T,U>::value,"All parameters must be of same types");
-  return imp_max(imp_max(a,b),args...);
+template <typename T, typename U, class... Args_t>
+inline T imp_max(T a, U b, Args_t... args) {
+  static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
+  return imp_max(imp_max(a, b), args...);
 }
 
-} //namespace HeuPrivate 
-
+}  // namespace internal
 
 /**
  * @brief minimum value for multiple parameters
  */
-template<typename T,class ... Args_t>
-inline T min(T a,Args_t ... args)
-{
-  return internal::imp_min(a,args...);
+template <typename T, class... Args_t>
+inline T min(T a, Args_t... args) {
+  return internal::imp_min(a, args...);
 }
-
 
 /**
  * @brief maximum value for multiple parameters
  */
-template<typename T,class ... Args_t>
-inline T max(T a,Args_t ... args)
-{
-  return internal::imp_max(a,args...);
+template <typename T, class... Args_t>
+inline T max(T a, Args_t... args) {
+  return internal::imp_max(a, args...);
 }
 
-}
+}  //    namespace Eigen
 
-#endif//EIGEN_HEU_Maths_HPP
+#endif  // EIGEN_HEU_Maths_HPP

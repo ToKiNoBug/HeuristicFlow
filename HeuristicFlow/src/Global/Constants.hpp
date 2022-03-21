@@ -7,35 +7,31 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-
 #ifndef EIGEN_HEU_CONSTANTS_HPP
 #define EIGEN_HEU_CONSTANTS_HPP
 
 #include <stdint.h>
 #include <limits>
 
-namespace Eigen
-{
+namespace Eigen {
 
-namespace internal
-{
+namespace internal {
 /**
  * @brief Positive infinty float
- * 
+ *
  */
-const float pinfF=std::numeric_limits<float>::infinity();
+const float pinfF = std::numeric_limits<float>::infinity();
 
-///inf value for double
-const double pinfD=std::numeric_limits<double>::infinity();
+/// inf value for double
+const double pinfD = std::numeric_limits<double>::infinity();
 
-///negative inf value for float
-const float ninfF=-pinfF;
+/// negative inf value for float
+const float ninfF = -pinfF;
 
-///negative inf value for double
-const double ninfD=-pinfD;
-}   //  internal
+/// negative inf value for double
+const double ninfD = -pinfD;
+}  //  namespace internal
 
-}   //  namespace Eigen
+}  //  namespace Eigen
 
-#endif // EIGEN_HEU_CONSTANTS_HPP
+#endif  // EIGEN_HEU_CONSTANTS_HPP
