@@ -13,28 +13,41 @@
 #include <stdint.h>
 #include <random>
 #include <cmath>
-#include <ctime>
+#include <chrono>
 
 #include "InternalHeaderCheck.h"
 
 namespace Eigen {
 
 namespace internal {
-
+/**
+ * \brief MingW's implementation for std::random_device doesn't produce a real random number
+ *
+ */
 #ifdef __GNUC__
 #if (defined __WIN32) || (defined __WIN64)
-#define Heu_std_random_device_UNRELIABLE
+#define EIGEN_HEU_std_random_device_NOT_RELIABLE
 #endif
 #endif  //#ifdef __CNUC__
 
+/**
+ * \brief Internal global std::random device
+ *
+ * \return std::random_device& A reference to this static variable
+ */
 inline std::random_device& global_random_device() {
   static std::random_device rdv;
   return rdv;
 }
-
+/**
+ * \brief Internal global std::mt19937
+ *
+ * \return std::mt19937& Used as a high-performance random number generater.
+ */
 inline std::mt19937& global_mt19937() {
-#ifdef Heu_std_random_device_UNRELIABLE
-  static std::time_t time = std::time(nullptr);
+#ifdef EIGEN_HEU_std_random_device_NOT_RELIABLE
+  static auto now = std::chrono::system_clock::now();
+  static std::time_t time = std::chrono::system_clock::to_time_t(now);
   static uint32_t seed = std::hash<std::time_t>()(time);
   static std::mt19937 mt(seed);
 #else

@@ -18,20 +18,31 @@
 namespace Eigen {
 
 namespace internal {
+
 /**
- * @brief Positive infinty float
+ * \brief Positive infinity float
  *
  */
 const float pinfF = std::numeric_limits<float>::infinity();
 
-/// inf value for double
+/**
+ * \brief Positive infinity double
+ *
+ */
 const double pinfD = std::numeric_limits<double>::infinity();
 
-/// negative inf value for float
+/**
+ * \brief Negativev infinity float
+ *
+ */
 const float ninfF = -pinfF;
 
-/// negative inf value for double
+/**
+ * \brief Negative infinity double
+ *
+ */
 const double ninfD = -pinfD;
+
 }  //  namespace internal
 
 }  //  namespace Eigen
