@@ -18,11 +18,33 @@ namespace Eigen {
 
 namespace internal {
 
+/**
+ * \ingroup HEU_EAGlobal
+ * \class NonsquareBox
+ * \brief Internal typedef of base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam Size Box dimensions
+ * \tparam DVO Type of container
+ *
+ * \note Non-square box types.
+ */
 template <typename Scalar_t, int Size, DoubleVectorOption DVO>
-using NonsquareBox = BoxDynamicRange<Scalar_t, Size, BoxShape::RECTANGLE_BOX, DVO>;
+class NonsquareBox : public BoxDynamicRange<Scalar_t, Size, BoxShape::RECTANGLE_BOX, DVO> {};
 
 /**
- * @brief Square box with runtime range
+ * \ingroup HEU_EAGlobal
+ * \class SquareBox
+ * \brief Internal base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam Size Box dimensions
+ * \tparam DVO Type of container
+ * \tparam isFixedRange Whether the range is fixed at compile time
+ * \tparam MinCT Minimum value at compile time
+ * \tparam MaxCT Maximum value at compile time
+ *
+ * \note Square box with compile time range
  */
 template <typename Scalar_t, int Size, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
@@ -31,11 +53,25 @@ class SquareBox : public BoxFixedRange<Scalar_t, MinCT, MaxCT> {
   using Base_t = BoxFixedRange<Scalar_t, MinCT, MaxCT>;
 
  public:
-  using Var_t = Container<Scalar_t, Size, DVO>;
+  using Var_t = Container<Scalar_t, Size, DVO>;  ///< Type of decision variable
 };
 
 /**
- * @brief Square box with runtime ranges
+ * @brief
+ */
+
+/**
+ * \ingroup HEU_EAGlobal
+ * \class SquareBox
+ * \brief Internal base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam Size Box dimensions
+ * \tparam DVO Type of container
+ * \tparam MinCT Minimum value at compile time, meanningless for this specialization
+ * \tparam MaxCT Maximum value at compile time, meanningless for this specialization
+ *
+ * \note Square box with runtime ranges
  */
 template <typename Scalar_t, int Size, DoubleVectorOption DVO, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>

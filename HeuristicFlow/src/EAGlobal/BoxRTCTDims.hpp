@@ -18,7 +18,19 @@ namespace Eigen {
 namespace internal {
 
 /**
- * @brief Square box with fixed dims
+ * \ingroup HEU_EAGlobal
+ * \class BoxCTDim
+ * \brief Internal base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalars
+ * \tparam Dim Box dimensions
+ * \tparam DVO Type of container.
+ * \tparam BS Boxshape
+ * \tparam isFixedRange Whether the range is fixed at compile time
+ * \tparam MinCT Minimum value at compile time
+ * \tparam MaxCT Maximum value at compile time
+ *
+ * \note Square box with fixed dims
  */
 template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
@@ -54,7 +66,18 @@ class BoxCTDim<Scalar_t, Dim, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT,
 };
 
 /**
- * @brief Square box with runtime dims
+ * \ingroup HEU_EAGlobal
+ * \class BoxRTDim
+ * \brief Internal base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam DVO Type of container
+ * \tparam BS Boxshape
+ * \tparam isFixedRange Whether the range is fixed at compile time
+ * \tparam MinCT Minimum value at compile time
+ * \tparam MaxCT Maximum value at compile time
+ *
+ * \note Square box with runtime dims
  */
 template <typename Scalar_t, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
@@ -64,25 +87,41 @@ class BoxRTDim : public SquareBox<Scalar_t, Eigen::Dynamic, DVO, isFixedRange, M
   using Base_t = SquareBox<Scalar_t, Eigen::Dynamic, DVO, isFixedRange, MinCT, MaxCT>;
 
  protected:
-  int _dims;
+  int _dims;  ///< Exisits when it's a square box with dynamic dims
 
  public:
-  BoxRTDim() { _dims = 0; }
+  BoxRTDim() { _dims = 0; }  ///< Set initial dimensions to be 0.
 
-  inline void setMin(Scalar_t s) { Base_t::setMin(s); }
-
-  inline void setMax(Scalar_t s) { Base_t::setMax(s); }
-
+  /**
+   * \brief Set the Dimensions object
+   *
+   * \param d Must be positive.
+   */
   inline void setDimensions(int d) {
-    assert(d != Eigen::Dynamic);
+    assert(d > 0);
     _dims = d;
   }
 
+  /**
+   * \brief Get dimensions
+   *
+   * \return int The value of protected member _dims
+   */
   inline int dimensions() const { return _dims; }
 };
 
 /**
- * @brief Non-square box with dynamic dims
+ * \ingroup HEU_EAGlobal
+ * \class BoxRTDim
+ * \brief Internal base class for various types of boxes.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam DVO Type of container
+ * \tparam isFixedRange  Whether the range is fixed at compile time
+ * \tparam MinCT Minimum value at compile time, meanningless for this specialization
+ * \tparam MaxCT Maximum value at compile time, meanningless for this specialization
+ *
+ * \note Non-square box with dynamic dims
  */
 template <typename Scalar_t, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
@@ -95,16 +134,31 @@ class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxC
  public:
   using Var_t = typename Base_t ::Var_t;
 
-  inline void setMin(const Var_t& v) { Base_t::setMin(v); }
-
-  inline void setMax(const Var_t& v) { Base_t::setMax(v); }
-
+  /**
+   * \brief Get dimensions
+   *
+   * \return int The size of _minV.
+   * Runtime assertion will fail if size of _minV and _maxV differs.
+   */
   inline int dimensions() const {
     assert(this->_minV.size() == this->_maxV.size());
     return this->_minV.size();
   }
 };
 
+/**
+ * \ingroup HEU_EAGlobal
+ * \brief Internal composed typedef for boolean box and symbolic box.
+ * It's also a base class of real box.
+ *
+ * \tparam Scalar_t Type of scalar
+ * \tparam Dim Box dimensions
+ * \tparam DVO Type of container
+ * \tparam BS Boxshape
+ * \tparam isFixedRange Whether the range is fixed at compile time
+ * \tparam MinCT Minimum value at compile time
+ * \tparam MaxCT Maximum value at compile time
+ */
 template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
 using BoxDims =
