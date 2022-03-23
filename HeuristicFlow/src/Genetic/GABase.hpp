@@ -30,17 +30,27 @@
 namespace Eigen {
 
 namespace internal {
+
 /**
- *  @brief Genetic algorithm base class.
+ * \ingroup HEU_Genetic
+ * \class GABase
+ * \brief Genetic algorithm base class.
  *  It's an abstrcat base class for all genetic algorithm solvers.
  *
- *  @author TokiNoBug
+ * This class maintance its GAOption as a member.It also implements
  *
- *  @tparam Var_t  Type of decisition variable
- *  @tparam Fitness_t  Type of fitness value(objective value)
- *  @tparam Record  Whether the solver records fitness changelog
- *  @tparam ...Args  Type of other parameters.
- *
+ * \tparam Var_t Encoded solution type. For instance, when solving TSP problems, what we really want to solve is a
+ * permulation to arrange order between nodes, but the permulation is encoded into a double array and decoded via
+ * sorting. So in this instance, Var_t is assigned to std::vector<double> instead of an permulation type. You should
+ * decode when calculating fitness value.
+ * \tparam Fitness_t Type of fitness
+ * \tparam Record Whether the solver records the changes of fitness value or not.
+ * \tparam Args_t Extra custom parameters.
+ * \tparam _iFun_ Function to initialize an individual in population. This function will be called only
+ * when initializing. Use nullptr if you hope to determine it at runtime
+ * \tparam _fFun_ Funtion to compute fitness for any individual. Use nullptr if you hope to determine it at runtime
+ * \tparam _cFun_ Function to apply crossover. Use nullptr if you hope to determine it at runtime
+ * \tparam _mFun_ Function to apply mutation. Use nullptr if you hope to determine it at runtime
  */
 template <typename Var_t, typename Fitness_t, RecordOption Record, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
@@ -58,33 +68,51 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  public:
   EIGEN_HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
-  /// Gene type for Var
+  /**
+   * \class Gene
+   * \brief Type of a individual
+   *
+   */
   class Gene {
    public:
+    /**
+     * \brief Type that are light to be returned.
+     *
+     * Use Fitness_t if it's size is not greater that 8, and const Fitness_t & otherwise.
+     */
     using fastFitness_t =
         typename std::conditional<(sizeof(Fitness_t) > sizeof(double)), const Fitness_t &, Fitness_t>::type;
-    Var_t self;
-    bool isCalculated() const { return _isCalculated; }
-    void setUncalculated() { _isCalculated = false; }
-    fastFitness_t fitness() const { return _Fitness; }
 
-    bool _isCalculated;
-    Fitness_t _Fitness;
+    Var_t self;          ///< Value of decision variable
+    Fitness_t _Fitness;  ///< Value of fitness
+    bool _isCalculated;  ///< Whether the fitness is computed
+
+    bool isCalculated() const { return _isCalculated; }  ///< If the fitness is computed
+    void setUncalculated() { _isCalculated = false; }    ///< Set the fitness to be uncomputed
+    fastFitness_t fitness() const { return _Fitness; }   ///< Get fitness
   };
   /// list iterator to Gene
   using GeneIt_t = typename std::list<Gene>::iterator;
 
  public:
-  GABase(){};
-  virtual ~GABase(){};
-
-  /// initialize with options, initializeFun, fitnessFun, crossoverFun, mutateFun and Args
-
+  /**
+   * \brief Set the option object
+   *
+   * \param o GAOption
+   */
   inline void setOption(const GAOption &o) { _option = o; }
 
-  /// get option
+  /**
+   * \brief Get the option object
+   *
+   * \return const GAOption& Const reference to _option
+   */
   inline const GAOption &option() const { return _option; }
 
+  /**
+   * \brief Initialize the whole population
+   *
+   */
   void initializePop() {
     _population.resize(_option.populationSize);
     for (auto &i : _population) {
@@ -96,6 +124,12 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   }
 
   /// start to solve
+
+  /**
+   * \brief Run the solver
+   *
+   * \tparam this_t Type of a solver. This type is added to record fitness through some template tricks like CRTP.
+   */
   template <class this_t = GABase>
   void run() {
     _generation = 0;
@@ -134,26 +168,59 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     _generation--;
   }
 
-  /// the whole population
+  /**
+   * \brief Get the whole population
+   *
+   * \return const std::list<Gene>& Const reference the the population
+   */
   inline const std::list<Gene> &population() const { return _population; }
-  /// generations used
+
+  /**
+   * \brief Get the population that has been used.
+   *
+   * \return size_t generation
+   */
   inline size_t generation() const { return _generation; }
-  /// fail times
+
+  /**
+   * \brief Get the current fail times
+   *
+   * \return size_t fail times
+   */
   inline size_t failTimes() const { return _failTimes; }
 
  protected:
-  std::list<Gene> _population;
-  GAOption _option;
+  std::list<Gene> _population;  ///< Population stored in list
+  GAOption _option;             ///< Option of GA solver
 
-  size_t _generation;
-  size_t _failTimes;
+  size_t _generation;  ///< Current generation
+  size_t _failTimes;   ///< Current failtimes
 
+  /**
+   * \brief This virtual function is added for flexibility. If you hope to do something after the initialization and
+   * before running, inherit and reimplement this function.
+   *
+   * This function won't be used by ANY solvers written by me.
+   */
   virtual void customOptAfterInitialization() {}
+
+  /**
+   * \brief This virtual function is added for flexibility. If you hope to do something after selection in each
+   * generation, inherit and reimplement this function.
+   *
+   * This function won't be used by ANY solvers written by me.
+   */
   virtual void customOptAfterEachGeneration() {}
 
-  inline void __impl_clearRecord() {}
-  inline void __impl_recordFitness() {}
+  inline void __impl_clearRecord() {}    ///< Nothing is need to do if the solver doesn't record fitnesses.
+  inline void __impl_recordFitness() {}  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
+  /**
+   * \brief Compute fitness for the whole population
+   *
+   * If OpenMP is used, this process will be parallelized.
+   *
+   */
   virtual void calculateAll() {
 #ifdef EIGEN_HAS_OPENMP
     std::vector<Gene *> tasks;
@@ -187,8 +254,21 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 #endif
   }
 
+  /**
+   * \brief Virtual function to apply selection.
+   *
+   * Since selection differes a lot, this function can only be implemented by derived classes.
+   *
+   * Usually the population will exceeds the population size, so this procedure erases relatively worse genes to ensure
+   * the size of population can be restored.
+   */
   virtual void select() = 0;
 
+  /**
+   * \brief Apply crossover.
+   *
+   * Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to population.
+   */
   virtual void crossover() {
     std::vector<GeneIt_t> crossoverQueue;
     crossoverQueue.clear();
@@ -224,7 +304,9 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     }
   }
 
-  /// mutate
+  /**
+   * \brief Apply mutation operation which slightly modify gene. The modified gene will add to the population.
+   */
   virtual void mutate() {
     std::vector<GeneIt_t> mutateList;
     mutateList.reserve(size_t(this->_population.size() * this->_option.mutateProb * 2));
@@ -241,6 +323,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   }
 
  protected:
+  // Internal class to apply the four operation
   template <bool HasParameters, class unused = void>
   struct GAExecutor {
     inline static void doInitialization(GABase *s, Var_t *v) { s->runiFun(v, &s->_args); }
@@ -255,6 +338,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     static_assert(HasParameters == GABase::HasParameters, "struct GAExecutor actived with wrong template parameter.");
   };
 
+  // Internal class to apply the four operation
   template <class unused>
   struct GAExecutor<false, unused> {
     inline static void doInitialization(GABase *s, Var_t *v) { s->runiFun(v); }
@@ -277,13 +361,19 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   EIGEN_HEU_MAKE_GAABSTRACT_TYPES
 
 /**
- *  @brief partial specialization for GABase with record.
- *  It's an abstrcat base class for all genetic algorithm solvers that records fitness.
+ * \ingroup HEU_Genetic
+ * \class GABase
+ * \brief partial specialization for GABase with record.
  *
- *  @tparam Var_t  Type of decisition variable
- *  @tparam Fitness_t  Type of fitness value(objective value)
- *  @tparam RecordOption  Whether the solver records fitness changelog
- *  @tparam Args_t  Type of other parameters.
+ * GABase with fitness maintains a record of fitness.
+ * It's an abstrcat base class for all genetic algorithm solvers that records fitness.
+ *
+ * \tparam Var_t  Type of decisition variable
+ * \tparam Fitness_t  Type of fitness value(objective value)
+ * \tparam RecordOption  Whether the solver records fitness changelog
+ * \tparam Args_t  Type of other parameters.
+ *
+ * \note GABase with record is derived from GABase without record to avoid duplicated implementation.
  */
 template <typename Var_t, typename Fitness_t, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
@@ -299,19 +389,40 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _
  public:
   EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
-  /// start to solve
+  /**
+   * \brief Reimplement the run function so that recording related functions can be called.
+   *
+   * \tparam this_t Type of derived classs
+   */
   template <class this_t = GABase>
   inline void run() {
     Base_t::template run<this_t>();
   }
 
   /// best fitness
+
+  /**
+   * \brief Get the fitness value of best gene
+   *
+   * \return Fitness_t Best fitness
+   */
   virtual Fitness_t bestFitness() const = 0;
 
   /// result
-  const std::vector<Fitness_t> record() const { return _record; }
+
+  /**
+   * \brief Get the record.
+   *
+   * \return const std::vector<Fitness_t> & Const reference to the record.
+   */
+  const std::vector<Fitness_t> &record() const { return _record; }
 
  protected:
+  /**
+   * \brief Record the best fitness of each generation.
+   *
+   * \note This member only exists when RecordOption is RECORD_FITNESS
+   */
   std::vector<Fitness_t> _record;
 
   inline void __impl_clearRecord() {

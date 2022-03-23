@@ -15,6 +15,11 @@
 #include "InternalHeaderCheck.h"
 #include "../../Global"
 
+/**
+ * \defgroup HEU_Genetic GeneticAlgorithms
+ *
+ */
+
 namespace Eigen {
 
 namespace internal {
@@ -27,12 +32,22 @@ EIGEN_HEU_MAKE_FUNAREA(mFun, mFun, GA)
 /**
  * @brief The GAAbstract class declares 4 operator functions and related reloaded functions.
  */
+
+/**
+ * \ingroup HEU_Genetic
+ * \class GAAbstract
+ * \brief Internal base class.
+ *
+ * This class defines function pointer types of the four operator(initialization, computing fitness, crossover and
+ * mutation)
+ *
+ * \tparam Var_t Type of decision variable
+ * \tparam Fitness_t Type of fitness
+ * \tparam Args_t Type of global parameters
+ */
 template <typename Var_t, typename Fitness_t, class Args_t>
 class GAAbstract {
  public:
-  GAAbstract(){};
-  virtual ~GAAbstract(){};
-
   /// Function to initialize Var
   using initializeFun = void (*)(Var_t *, const Args_t *);
   /// Function to calculate fitness for Var
@@ -41,32 +56,57 @@ class GAAbstract {
   using crossoverFun = void (*)(const Var_t *, const Var_t *, Var_t *, Var_t *, const Args_t *);
   /// Function to apply mutate for Var
   using mutateFun = void (*)(const Var_t *, Var_t *, const Args_t *);
-
+  /// Type alias of other parameters
   using ArgsType = Args_t;
 
+  /**
+   * \class iFunBody
+   * \brief Base class that maintains the initialization function ptr
+   *
+   * \tparam i Initialization function ptr.
+   */
   template <initializeFun i>
   using iFunBody = typename iFunArea_GA<void, Var_t *, const Args_t *>::template funBody<i>;
 
+  /**
+   * \class fFunBody
+   * \brief Base class that maintains the fitness function ptr
+   *
+   * \tparam f Fitness function ptr.
+   */
   template <fitnessFun f>
   using fFunBody = typename fFunArea_GA<void, const Var_t *, const Args_t *, Fitness_t *>::template funBody<f>;
 
+  /**
+   * \class cFunBody
+   * \brief Base class that maintains the crossover function ptr
+   *
+   * \tparam c Crossover function ptr.
+   */
   template <crossoverFun c>
   using cFunBody =
       typename cFunArea_GA<void, const Var_t *, const Var_t *, Var_t *, Var_t *, const Args_t *>::template funBody<c>;
 
+  /**
+   * \class mFunBody
+   * \brief Base class that maintains the mutation function ptr
+   *
+   * \tparam m Mutation function ptr.
+   */
   template <mutateFun m>
   using mFunBody = typename mFunArea_GA<void, const Var_t *, Var_t *, const Args_t *>::template funBody<m>;
 
-  const Args_t &args() const { return _args; }
+  const Args_t &args() const { return _args; }  ///< Const reference to the other parameters
 
-  void setArgs(const Args_t &a) { _args = a; }
+  void setArgs(const Args_t &a) { _args = a; }  ///< Set the value of other parameters
 
-  static const bool HasParameters = true;
+  static const bool HasParameters = true;  ///< This member denotes that this Args_t is not void
 
  protected:
-  Args_t _args;
+  Args_t _args;  ///< Pesudo global variable that stored inside the solver
 };
 
+// Partial specialization when Args_t is void
 template <typename Var_t, typename Fitness_t>
 class GAAbstract<Var_t, Fitness_t, void> {
  public:
