@@ -55,6 +55,11 @@ class MOGAAbstract
   MOGAAbstract(){};
   virtual ~MOGAAbstract(){};
   EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+
+  /**
+   * \brief Type of fitness is stored in an Eigen vector of double.
+   *
+   */
   using Fitness_t = Eigen::Array<double, ObjNum, 1>;
 
   /// get pareto front in vec
