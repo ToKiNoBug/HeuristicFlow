@@ -23,15 +23,21 @@ namespace Eigen {
 namespace internal {
 
 /**
- *  @brief Base class for multi-objective genetic algorithm solver.
+ * \ingroup HEU_Genetic
+ * \class MOGAAbstract
+ * \brief Base class for multi-objective genetic algorithm solver.
  *
- *  @tparam Var_t  Type of decisition variable.
- *  @tparam ObjNum Numbers of objectives.
- *  @tparam Fitness_t Type of fitness value.
- *  @tparam fOpt Whether greater fitness value means better.
- *  @tparam rOpt Whether the solver records fitness changelog.
- *  @tparam pfOpt Whether to protect the Pareto front from mutation.
- *  @tparam Args_t Type of other parameters.
+ * This class maintains a pareto frontier.
+ *
+ * \tparam Var_t
+ * \tparam ObjNum Number of objectives. Use Eigen::Dynamic for runtime determined objective numbers.
+ * \tparam fOpt
+ * \tparam rOpt
+ * \tparam Args_t
+ * \tparam _iFun_
+ * \tparam _fFun_
+ * \tparam _cFun_
+ * \tparam _mFun_
  */
 template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
@@ -52,6 +58,12 @@ class MOGAAbstract
   using Fitness_t = Eigen::Array<double, ObjNum, 1>;
 
   /// get pareto front in vec
+
+  /**
+   * \brief Get Pareto front consisted of a vector of Fitness_t.
+   *
+   * \param front vector of fitness.
+   */
   inline void paretoFront(std::vector<Fitness_t>& front) const {
     front.clear();
     front.reserve(_pfGenes.size());
@@ -61,6 +73,12 @@ class MOGAAbstract
     return;
   }
 
+  /**
+   * \brief Get Pareto front consists of a vector of std::pair<const Var_t*,const Fitness_t*>. It provides both
+   * solution(Var_t) and objective value(Fitness_t).
+   *
+   * \param front vector of Var and fitness.
+   */
   inline void paretoFront(std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const {
     front.clear();
     front.reserve(_pfGenes.size());
@@ -69,18 +87,32 @@ class MOGAAbstract
     }
   }
 
+  /**
+   * \brief Returns a const reference to member _pfGenes.
+   *
+   * \return const std::unordered_set<const Gene*>& A const reference to PF.
+   */
   inline const std::unordered_set<const Gene*>& pfGenes() const { return _pfGenes; }
 
+  /**
+   * \brief This function is reimplemented to resize the PF.
+   *
+   */
   inline void initializePop() {
     this->prevFrontSize = -1;
     this->_pfGenes.clear();
     this->_pfGenes.reserve(this->_option.populationSize * 2);
     Base_t::initializePop();
   }
+
   /**
-   * @brief calculate ideal point
+   * \brief Compute ideal point
    *
-   * @return Fitness_t ideal point
+   * An ideal point is a fitness whose componment of each objecvite is the minimium value of the whole population.
+   *
+   * \note The corresponding decision variable of the ideal point usually doesn't exist.
+   *
+   * \return Fitness_t ideal point
    */
   virtual Fitness_t bestFitness() const {
     Fitness_t best = this->_population.front()._Fitness;
@@ -95,10 +127,23 @@ class MOGAAbstract
   }
 
  protected:
-  size_t prevFrontSize;
-  size_t prevPFCheckSum;
-  std::unordered_set<const Gene*> _pfGenes;
+  size_t prevFrontSize;                      ///< Size of PF in the previous generation
+  size_t prevPFCheckSum;                     ///< The hash checksum of PF in the previous generation
+  std::unordered_set<const Gene*> _pfGenes;  ///< A hash set to store the whole PF
 
+  /**
+   * \brief Compute the hash checksum of current PF
+   *
+   * PF checksum is computed with the hash of addresses of every Gene that consist of PF.
+   *
+   * Genes are sorted by their address, and each hash of address are sumed up by xor.
+   *
+   * This method works because elitisim strategy is applied. Actually the value of a gene won't change once it's
+   * initialized(created during initialization, crossover or mutation). And a gene will never be simply copied. Thus
+   * hashing the address is fast and it works.
+   *
+   * \return size_t The checksum of PF
+   */
   virtual size_t makePFCheckSum() const {
     std::vector<const Gene*> pfvec;
     pfvec.reserve(_pfGenes.size());
