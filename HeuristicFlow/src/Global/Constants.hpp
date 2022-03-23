@@ -16,7 +16,7 @@
 #include "InternalHeaderCheck.h"
 
 /**
- * \defgroup HEU_Global Global micellaneous for metaheuristic
+ * \defgroup HEU_Global Global (global micellaneous for metaheuristic)
  *
  */
 

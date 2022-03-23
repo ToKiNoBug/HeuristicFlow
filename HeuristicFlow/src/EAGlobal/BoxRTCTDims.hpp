@@ -148,7 +148,8 @@ class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxC
 
 /**
  * \ingroup HEU_EAGlobal
- * \brief Internal composed typedef for boolean box and symbolic box.
+ * \class BoxDims
+ * \brief Internal conditional base class for boolean box and symbolic box.
  * It's also a base class of real box.
  *
  * \tparam Scalar_t Type of scalar
@@ -161,9 +162,8 @@ class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxC
  */
 template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
-using BoxDims =
-    typename std::conditional<Dim == Eigen::Dynamic, BoxRTDim<Scalar_t, DVO, BS, isFixedRange, MinCT, MaxCT>,
-                              BoxCTDim<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, MaxCT>>::type;
+class BoxDims : public std::conditional<Dim == Eigen::Dynamic, BoxRTDim<Scalar_t, DVO, BS, isFixedRange, MinCT, MaxCT>,
+                                        BoxCTDim<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, MaxCT>>::type {};
 
 }  // namespace internal
 

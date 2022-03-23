@@ -14,7 +14,7 @@
 #include "../../Global"
 
 /**
- * \defgroup HEU_EAGlobal EAGlobal
+ * \defgroup HEU_EAGlobal EAGlobal (Micellaneous for evoluntionary algorithms)
  *
  */
 
