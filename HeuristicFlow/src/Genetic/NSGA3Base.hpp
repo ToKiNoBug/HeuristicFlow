@@ -40,7 +40,7 @@ namespace internal {
 /**
  * \ingroup HEU_Genetic
  * \class NSGA3Base
- * \brief Internal base class for NSGA3.
+ * \brief Internal base class for NSGA3(single layer).
  *
  * This class implements different methods to make reference points.
  *
@@ -111,6 +111,22 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
   }
 };
 
+/**
+ * \ingroup HEU_Genetic
+ * \class NSGA3Base
+ * \brief Internal base class for NSGA3(double layers).
+ *
+ * This class implements different methods to make reference points.
+ *
+ * \tparam Var_t
+ * \tparam ObjNum
+ * \tparam rOpt
+ * \tparam Args_t
+ * \tparam _iFun_
+ * \tparam _fFun_
+ * \tparam _cFun_
+ * \tparam _mFun_
+ */
 template <typename Var_t, int ObjNum, RecordOption rOpt, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
