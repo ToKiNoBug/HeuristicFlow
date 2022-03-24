@@ -76,11 +76,11 @@ class NSGA3Abstract
   RefMat_t referencePoses;
 
   /**
-   * \brief
+   * \brief Generate a series of reference points using Das and Dennis’s method.
    *
-   * \param dimN
-   * \param precision
-   * \param dst
+   * \param dimN Number of objectives
+   * \param precision Count of points, usually 3 to 5. Greater precision means much more RPs
+   * \param dst Where to put the PF points temporarly.
    */
   void computeReferencePointPoses(const size_t dimN, const size_t precision, std::vector<Fitness_t>* dst) const {
     dst->clear();
@@ -89,7 +89,28 @@ class NSGA3Abstract
     pri_startRP(dimN, precision, dst);
   }
 
+  /**
+   * \brief The core procedure of NSGA3.
+   *
+   * Simply put, NSGA3 uses reference points to maintain a diverse PF. It's simliar with NSGA2 but how to select
+   * elements from the undetermined layer. The undetermined layer is the first non-dominated layer that can't be
+   * selected entirely. In document of NSGA2, the undetermined layer is named *K*.
+   *
+   *
+   * Detailed steps: (Steps same in NSGA2 won't be introduced again)
+   * 1. Make a vector of `infoUnit3` and fill `this->sortSpace` (same as NSGA2)
+   * 2. Compute dominated number of the population. (same as NSGA2)
+   * 3. Divide the population into several layers. (same as NSGA2)
+   * 4. Insert each layer into `selected` (`std::unordered_set<infoUnit3*>`) until a layer can't be inserted entirely.
+   * (same as NSGA2).This undetermined layer is named `Fl`.
+   * 5. Normalize procedure
+   * 6. Associate procedure
+   * 7. Niche preservation procedure.
+   * 8. Erase all unselected genes.
+   *
+   */
   void select() {
+    // population size before selection.
     const size_t popSizeBef = this->_population.size();
     std::vector<infoUnit3> pop;
     pop.reserve(popSizeBef);
