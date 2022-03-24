@@ -87,7 +87,7 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_
   using Base_t = MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
   EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
 
-  MOGABase() { _objNum = 0; }
+  MOGABase() { _objectiveNum = 0; }
 
   /**
    * \brief Return the value of objecvites

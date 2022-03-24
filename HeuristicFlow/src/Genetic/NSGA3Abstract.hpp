@@ -20,6 +20,21 @@ namespace Eigen {
 
 namespace internal {
 
+/**
+ * \ingroup HEU_Genetic
+ * \brief Internal base class for NSGA3.
+ *
+ * This class implements most part of NSGA3' selection precedure. Also it maintains reference points in a matrix.
+ *
+ * \tparam Var_t
+ * \tparam ObjNum
+ * \tparam rOpt
+ * \tparam Args_t
+ * \tparam _iFun_
+ * \tparam _fFun_
+ * \tparam _cFun_
+ * \tparam _mFun_
+ */
 template <typename Var_t, int ObjNum, RecordOption rOpt, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
@@ -33,19 +48,40 @@ class NSGA3Abstract
   EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
   using RefPointIdx_t = size_t;
 
+  /// Type of reference point(called RP in brief) matrix. Each coloumn is the coordinate of a RP.
   using RefMat_t = Eigen::Array<double, ObjNum, Eigen::Dynamic>;
 
+  /**
+   * \brief Get RPs
+   *
+   * \return const RefMat_t& Const reference to RPs
+   */
   inline const RefMat_t& referencePoints() const { return referencePoses; }
 
+  /**
+   * \brief The struct to store all information about a gene used in NSGA3's selection.
+   *
+   */
   struct infoUnit3 : public infoUnitBase_t {
+    /// The translated fitness. Normalized fitness is also stored in this.
     Fitness_t translatedFitness;
+    /// The index of its closet RP
     size_t closestRefPoint;
+    /// Distance to the closet RP
     double distance;
   };
 
  protected:
+  /// RP matrix. Each coloumn is the coordinate of a RP.
   RefMat_t referencePoses;
 
+  /**
+   * \brief
+   *
+   * \param dimN
+   * \param precision
+   * \param dst
+   */
   void computeReferencePointPoses(const size_t dimN, const size_t precision, std::vector<Fitness_t>* dst) const {
     dst->clear();
     dst->reserve(NchooseK(dimN + precision - 1, precision));

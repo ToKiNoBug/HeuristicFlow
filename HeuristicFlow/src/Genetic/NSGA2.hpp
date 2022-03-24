@@ -16,6 +16,8 @@
 namespace Eigen {
 
 /**
+ * \ingroup HEU_Genetic
+ * \class NSGA2
  * \brief NSGA2 MOGA solver. Suitable for not too many objectives.
  *
  * This class implemented the NSGA-II algorithm.\n
