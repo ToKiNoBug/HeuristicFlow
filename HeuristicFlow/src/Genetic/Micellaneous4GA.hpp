@@ -102,7 +102,7 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
  * parameter to stop unnecessary template instatiation. For example, when using `iFunNd`, use `iFunNd<>`. Don't miss the
  * template braces if this static member function is a templated one.
  *
- * \sa GABase GAAbstract
+ * \sa internal::GABase internal::GAAbstract
  *
  */
 template <typename Var_t, class Args_t = void, DoubleVectorOption dvo = DoubleVectorOption::Std>
