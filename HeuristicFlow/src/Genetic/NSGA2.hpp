@@ -16,12 +16,16 @@
 namespace Eigen {
 
 /**
- * @brief NSGA2 MOGA solver. Suitable for not too many objectives.
+ * \brief NSGA2 MOGA solver. Suitable for not too many objectives.
+ *
+ * This class implemented the NSGA-II algorithm.\n
+ * NSGA-II is a template for multi-objective genetic algorithm based on
+ * Pareto optimality. It selects by nondomainance sorting
  *
  * @tparam Var_t Type of decisition variable.
  * @tparam ObjNum Numbers of objectives.
- * @tparam isGreaterBetter Whether greater fitness value means better.
- * @tparam Record Whether the solver records fitness changelog.
+ * @tparam fOpt Whether greater fitness value means better.
+ * @tparam rOPt Whether the solver records fitness changelog.
  * @tparam Args_t Type of other parameters.
  * @tparam _iFun_ Compile-time iFun, use nullptr for runtime
  * @tparam _fFun_ Compile-time fFun, use nullptr for runtime
@@ -43,21 +47,50 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
   virtual ~NSGA2(){};
   EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
 
-  /** @brief temporary struct to store infos when selection
+  /**
+   * \brief This struct is used to store nondomainance sorting-related informations in select operation. A pointer to
+   * this struct, infoUnit2*, has access to every information to a gene.
+   *
+   * There's several sorting by according to different attribute, thus a vector of infoUnit2* is widely used when
+   * sorting.
+   *
    */
   struct infoUnit2 : public infoUnitBase_t {
    public:
-    /** @brief whether this gene is selected
+    /**
+     * \brief Congestion value of this gene.
+     *
      */
     double congestion;
   };
 
  protected:
+  /**
+   * \brief Sort according to infoUnitBase::domainedByNum in an acsending order. This sorting step will seperate the
+   * whole population into several pareto layers.
+   *
+   * \param A
+   * \param B
+   * \return true A's congestion is greater than B
+   * \return false A's congestion is not greater than B
+   */
   static bool compareByCongestion(const infoUnitBase_t *A, const infoUnitBase_t *B) {
     if (A == B) return false;
     return (static_cast<const infoUnit2 *>(A)->congestion) > (static_cast<const infoUnit2 *>(B)->congestion);
   }
 
+  /**
+   * \brief Template parameter objIdx is used to indicate how to compare 2 const infoUnit *.
+   *
+   * \tparam objIdx Indicate which objective is compared when sorting.
+   * \param A
+   * \param B
+   * \return true objIdx's fitness of A is greater than B.
+   * \return false objIdx's fitness of A is not greater than B.
+   *
+   * \note This procedure actually has no relationship with template parameter fOpt, because sorting as fitness is
+   * simply used to compute congestion.
+   */
   template <int64_t objIdx>
   static bool compareByFitness(const infoUnitBase_t *A, const infoUnitBase_t *B) {
 #ifndef Heu_NO_STATICASSERT
@@ -68,7 +101,43 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
     return A->fitnessCache[objIdx] < B->fitnessCache[objIdx];
   }
 
-  /// fast nondominated sorting
+  /**
+   * \brief Non-dominated sorting
+   *
+   * This is the core of NSGA2.
+   *
+   * Simply put, the whole population is divided into several non-dominated layers, relatively front layers will be
+   * selected. Usually there will be a layer that can't be selected entirely, we must select some and eliminate the
+   * rest. To achieve this, we compute congestion so that genes will greater congestion are more likely to be selected.
+   * That's how NSGA2 maintain variety in the PF.
+   *
+   * Besides, as the algorithm running, it's common to see that the whole population after selection are all members in
+   * PF. Don't worry, NSGA2 works well with that condition.
+   *
+   * In detail, this function applies non-dominated sorting in following steps:
+   * 1. Make a `std::vector` of `infoUnit2` named `pop` that each element corresponds to an element in
+   * population(`std::list<Gene>`).
+   * 2. Fill `this->sortSpace` (std::list<infoUnitBase*) with pointer to each member in `pop`.
+   * 3. Compute `infoUnit::domainedByNum` for `pop`.
+   * 4. Sort elements in `this->sortSpace` according to `infoUnitBase::domainedByNum`.
+   * 5. Divide the whole population into several nondominated layers. This function is implemented in `NSGABase`, and
+   * the result is stored in `this->pfLayers`. For better performance, each `std::vector<infoUnit *>` will reserve space
+   * for the whole population. Here we use vector since sorting might happen in a single layer.
+   * 6. Make a `std::unordered_set` of `infoUnit2 *` named `selected` to store all selected genes. Insert the Pareto
+   * frontier and each layers into `selected` until a layer can't be completedly inserted(I name this layer *K*).
+   * Congestion are used to select several genes in *K*. Besides, there is a possible that a layer is completed inserted
+   * and size of `selected` equals to user assigned population size. In that condition, jump directly to step 10.
+   * 7. Sort the whole population according to every objective values to compute the congestion.
+   * 8. Sort elements in *K* by its congestion in descend order. Elements with greater congestion have less index.
+   * 9. Inserts each element in *K* into `selected` (by index order) until size of `selected` equals to user assigned
+   * population size(`GABase::_option.populationSize`).
+   * 10. Go through the whole population and erase if a gene doesn't exist in `selected`.
+
+
+   * Every sorting steps use `std::sort` and different comparision function are used to sort according to different
+   * attributes of a gene.
+   *
+   */
   virtual void select() {
     using cmpFun_t = bool (*)(const infoUnitBase_t *, const infoUnitBase_t *);
     static const size_t objCapacity = (ObjNum == Eigen::Dynamic) ? (Heu_MOGA_MaxRunTimeObjNum) : ObjNum;
