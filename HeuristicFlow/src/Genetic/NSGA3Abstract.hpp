@@ -108,6 +108,7 @@ class NSGA3Abstract
    * 7. Niche preservation procedure.
    * 8. Erase all unselected genes.
    *
+   * \sa NSGA2
    */
   void select() {
     // population size before selection.
@@ -134,43 +135,55 @@ class NSGA3Abstract
     if (PFSize <= this->_option.populationSize)
       this->updatePF((const infoUnitBase_t**)this->pfLayers.front().data(), this->pfLayers.front().size());
 
+    // hash set to store genes that will be selected
     std::unordered_set<infoUnit3*> selected;
     selected.reserve(this->_option.populationSize);
+
+    // pointer to undertermined layer Fl
     std::vector<infoUnit3*>* FlPtr = nullptr;
+
+    // if need to use RP in this selection
     bool needRefPoint;
 
     while (true) {
+      // Luckily we don't need to select part of some genes in Fl.
       if (selected.size() == this->_option.populationSize) {
         needRefPoint = false;
         break;
       }
+
+      // We need to select part of members in Fl and eliminate the rest
       if (selected.size() + this->pfLayers.front().size() > this->_option.populationSize) {
         needRefPoint = true;
         FlPtr = (decltype(FlPtr))&this->pfLayers.front();
         break;
       }
 
+      // emplace the whole layer into selected
       for (infoUnitBase_t* i : this->pfLayers.front()) {
-        selected.emplace((infoUnit3*)i);
+        selected.emplace(static_cast<infoUnit3*>(i));
       }
       this->pfLayers.pop_front();
     }
 
     if (needRefPoint) {
-      /// Normalize procedure
-      std::unordered_multimap<RefPointIdx_t, infoUnit3*> Fl;
+      // Normalize procedure
+      std::unordered_multimap<RefPointIdx_t, infoUnit3*>
+          Fl;  // Fl is stored in a multihash sothat we can find a gene by its related RP
       Fl.reserve(FlPtr->size());
       normalize(selected, *FlPtr);
+      // use reference points' index(col idx) as key and genes related to this point as value.
       std::unordered_map<RefPointIdx_t, size_t> refPoints;
       refPoints.reserve(referencePoses.cols());
       for (int i = 0; i < referencePoses.cols(); i++) {
         refPoints.emplace(i, 0);
       }
 
-      /// Associate procedure
+      // Associate procedure
       associate(selected);
       associate(*FlPtr, &Fl);
 
+      // niche preservation procedure.
       nichePreservation(&selected, &Fl, &refPoints);
     }
 
@@ -181,6 +194,8 @@ class NSGA3Abstract
       }
     }
 
+    // update PF after selection if the next population is filled with PF(We don't hope the size of PF exceeds size of
+    // population)
     if (PFSize > this->_option.populationSize) {
       std::vector<const infoUnitBase_t*> PF;
       PF.reserve(selected.size());
@@ -192,6 +207,24 @@ class NSGA3Abstract
 
   }  //  end selection
 
+  /**
+   * \brief Normalize procedure automatically normalize all objectives, since different objectives may have different
+   * orders of magnitude.
+   *
+   * \param selected Genes that are already selected.
+   * \param Fl Genes to be partly selected
+   *
+   * This procedure has following steps:
+   * 1. Find a ideal point of (selected∪Fl)
+   * 2. Find ObjNums extreme points in a square matrix. Go through selected and Fl, find the fitness value that has the
+   * maximum value on the c-th objectives, and fill the c-th coloumn of this matrix with its fitness value. In most
+   * cases this matrix is not singular.
+   * 3. Compute translated for genes : gene.translatedFitness=gene.fitness-idealPoint
+   * 4. Compute translated extreme points : extremePoints.colwise()-=idealPoint
+   * 5. The translated extreme points consistis a hyperplane, compute the inverse matrix of extremePoints and find the
+   * intercept of this hyperplane. If the matrix is singular, use the diagonal line as intercept.
+   * 6. Update the translateFitness : gene.translatedFitness/=intercept.
+   */
   void normalize(const std::unordered_set<infoUnit3*>& selected, const std::vector<infoUnit3*>& Fl) const {
     const size_t M = this->objectiveNum();
     stdContainer<const infoUnit3*, ObjNum> extremePtrs;
@@ -209,9 +242,7 @@ class NSGA3Abstract
 
     for (size_t c = 0; c < M; c++) {
       extremePtrs[c] = *(Fl.begin());
-      for (size_t r = 0; r < M; r++) {
-        extremePoints(r, c) = extremePtrs[c]->fitnessCache[r];
-      }
+      extremePoints.col(c) = extremePtrs[c]->fitnessCache;
     }
 
     for (auto i : selected) {
@@ -251,12 +282,26 @@ class NSGA3Abstract
     for (auto i : Fl) {
       i->translatedFitness = (i->fitnessCache - ideal) / intercepts;
     }
-  }
+  }  //  normalize
 
+  /**
+   * \brief Find the nearest RP of a gene.
+   *
+   * This word distance doesn't refer to euclidean distance but projection distance from the origin.
+   *
+   * This step is relatively slow because of great amount of matrix computation.
+   *
+   * \param s Gene's fitness value
+   * \param dist Pass distance through a double pointer.
+   * \return size_t The col-index of the nearest RP
+   */
   size_t findNearest(const Fitness_t& s, double* dist) const {
     const auto& w = this->referencePoses;
+    // w.transpose times s
     auto wT_s = w.matrix().transpose() * s.matrix();
+    // w.transpose times s times w
     auto wT_s_w = w.rowwise() * (wT_s.array().transpose());
+    // w.transpose times s times w (colwise normalized)
     Eigen::Array<double, ObjNum, Eigen::Dynamic> norm_wTsw = wT_s_w.rowwise() / (w.colwise().squaredNorm());
     auto s_sub_norm_wTsw = norm_wTsw.colwise() - s;
     auto distance = s_sub_norm_wTsw.colwise().squaredNorm();
@@ -266,12 +311,29 @@ class NSGA3Abstract
     return minIdx;
   }
 
+  /**
+   * \brief Associate a selected ene with a reference point.
+   *
+   * \param selected hash set of selected genes
+   */
   void associate(const std::unordered_set<infoUnit3*>& selected) const {
     for (auto i : selected) {
       i->closestRefPoint = findNearest(i->translatedFitness, &i->distance);
     }
   }
 
+  /**
+   * \brief Associate an unselected gene with a reference point.
+   *
+   * \note Fl_src is a vector of infoUnit3*, while Fl_dst uses index of reference point as its key while gene as
+   * value.\n A unordered_multimap is employed cause a RP may be associated by more than one genes, but further
+   * procedure requires to find genes by their RP.
+   *
+   * In this function Fl's associated RP will be found and stored in a unordered_multimap.
+   *
+   * \param Fl_src Source of Fl
+   * \param Fl_dst Destination of Fl
+   */
   void associate(const std::vector<infoUnit3*>& Fl_src,
                  std::unordered_multimap<RefPointIdx_t, infoUnit3*>* Fl_dst) const {
     for (auto i : Fl_src) {
@@ -279,8 +341,25 @@ class NSGA3Abstract
       i->closestRefPoint = idx;
       Fl_dst->emplace(idx, i);
     }
-  }
+  }  // associate
 
+  /**
+   * \brief This niche reservation procedure tends to select genes that are less crowded.
+   *
+   * In NSGA3, a gene is relatively less crowded means that its RP is associated by fewer genes.
+   * 1. The algorithm goes through all reference points, firstly trying to find a RP with least nicheCount (if multiple
+   * RPs has the same nicheCount, choose one stochastically).
+   * 2. After chooseing a RP, NSGA3 then tries to find its associated genes in Fl(Always remember we need to select part
+   * of Fl). If multiple genes are found, choose the closest gene. If no gene is found, erase this RP and find a new
+   * one.
+   * 3. The gene chosen in previous step is emplaced to selected, and its RP's nicheCount adds by one.
+   *
+   * Run the previous steps until selected's size is equal to assigend population size.
+   *
+   * \param selected Selected genes (refers to S_t/F_l in the paper)
+   * \param Fl (F_l in the paper)
+   * \param refPoints hash map (RP as key and niche count as value)
+   */
   void nichePreservation(std::unordered_set<infoUnit3*>* selected,
                          std::unordered_multimap<RefPointIdx_t, infoUnit3*>* Fl,
                          std::unordered_map<RefPointIdx_t, size_t>* refPoints) const {
@@ -337,6 +416,12 @@ class NSGA3Abstract
     }  //  end while
   }
 
+  /**
+   * \brief Find a subset of Refpoints that has least nicheCount.
+   *
+   * \param refPoints Refpoints with their nicheCount
+   * \param minNicheIterators Destination vector to put the result.
+   */
   inline static void findMinSet(std::unordered_map<RefPointIdx_t, size_t>& refPoints,
                                 std::vector<std::unordered_map<RefPointIdx_t, size_t>::iterator>* minNicheIterators) {
     minNicheIterators->clear();
@@ -352,6 +437,7 @@ class NSGA3Abstract
   }
 
  private:
+  // make reference points with Das and Dennis’s method recrusively.
   void pri_makeRP(const size_t dimN, const size_t precision, const size_t curDim, const size_t curP, const size_t accum,
                   Fitness_t* rec, std::vector<Fitness_t>* dst) const {
     if (curDim + 1 >= dimN) {
