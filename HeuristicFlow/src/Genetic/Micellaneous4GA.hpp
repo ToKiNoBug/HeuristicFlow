@@ -73,18 +73,37 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
   }
 };
 
-/**
- * @brief Partial specialization for GADefault struct without args
- */
-
 }  // namespace internal
 
 /**
- * @brief The GADefaults struct defines several candidate operations for GA
+ * \ingroup HEU_Genetic
+ * \struct GADefaults
+ * \brief The GADefaults struct defines several candidate operations for GA.
  *
- * @tparam Var_t type of determinate vector
- * @tparam dvo double vector option of Var_t
- * @tparam Args_t type of other parameters in genetic solver
+ * \tparam Var_t type of determinate vector
+ * \tparam Args_t type of other parameters in genetic solver (void as default)
+ * \tparam dvo double vector option of Var_t (cpp std as default)
+ *
+ * The format of function starts with (i/c/m)Fun(N/X/_)(d/b/s).
+ * - In the first brace, i means initialization, while c for crossver and m for mutation.
+ * - In the second brace, N means fix-sized vectors and X for dynamic sized vectors. While _ means both are supported.
+ * - In the last brace, d means `double`(real encoding), wile b for `bool` (binaray encoding) and s for symbolic
+ * encoding.
+ *
+ * There isn't function for fFun because that it right the problem you will solve.
+ *
+ * \note `cFunNd` and `cFunXd` are only avaliable for real encoding, while the rest crossover function supports all
+ * encodings.
+ *
+ * \note All iFun and mFun requires `Args_t` to be (or inherit from) a box-constraint type. Otherwise static assertion
+ * will fail.
+ *
+ * \note To avoid static assertion failuer with non-box constraint types of `Args_t`, all iFun and mFun have a unused
+ * parameter to stop unnecessary template instatiation. For example, when using `iFunNd`, use `iFunNd<>`. Don't miss the
+ * template braces if this static member function is a templated one.
+ *
+ * \sa GABase GAAbstract
+ *
  */
 template <typename Var_t, class Args_t = void, DoubleVectorOption dvo = DoubleVectorOption::Std>
 struct GADefaults {
@@ -178,10 +197,16 @@ struct GADefaults {
 
  public:
   /**
-   * @brief Default initialize function for fixed-sized real vectors
+   * \brief Default initialize function for fixed-sized real vectors
    *
-   * @tparam unused template parameter is introduced to avoid
-   * assertion failuer when non-box Args_t is used.
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note Since initialization knows the range, this function requires `Args_t` to be (or derived from) a real
+   * box-constraint.
+   *
+   * \param v pointer of Var_t
+   * \param box Pointer to the real box constraint
    */
   template <typename unused = void>
   inline static void iFunNd(Var_t *v, const Args_t *box) {
@@ -193,7 +218,18 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default initialize function for runtime-sized real vectors
+   * \brief Default initialize function for runtime-sized real vectors
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note Since initialization knows the range, this function requires `Args_t` to be (or derived from) a real
+   * box-constraint.
+   *
+   * \param v pointer of Var_t
+   * \param box Pointer to the real box constraint
+   *
+   * \sa iFunNd
    */
   template <typename unused = void>
   inline static void iFunXd(Var_t *v, const Args_t *box) {
@@ -202,7 +238,17 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default initialize function for fixed-sized boolean vectors
+   * \brief
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
+   *
+   * \param v pointer of Var_t
+   * \param box Pointer to the boolean box constraint
+   *
+   * \sa iFunXb For dynamic-sized initialization
    */
   template <typename unused = void>
   inline static void iFunNb(Var_t *v, const Args_t *box) {
@@ -214,6 +260,19 @@ struct GADefaults {
     }
   }
 
+  /**
+   * \brief Default initialize function for dynamic-sized boolean vectors
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
+   *
+   * \param v pointer of Var_t
+   * \param box Pointer to the boolean box constraint
+   *
+   * \sa iFunNb For fixed-sized initialization
+   */
   template <typename unused = void>
   inline static void iFunXb(Var_t *v, const Args_t *box) {
     v->resize(box->dimensions());
@@ -235,11 +294,17 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default crossover function for fixed-size float/double array/vector
-   *        (Genetic with args)
+   * \brief Default crossover function for fixed-size float/double array/vector
    *
-   * @tparam _r crossover ratio, 0<r<1
-   * @tparam Args_t Type of other parameter in Genetic solver
+   * Real encoding enables arithmatical crossver like this:\n
+   * c1=r*p1+(1-r)*p2 and c2=r*p2+(1-r)*p1.\n
+   * Where r is a ratio in range [0,1]. The less r is, the more similarity c1 and p1 are.
+   *
+   * \tparam _r Crossover ratio r, encoded as DivCode. Default value is 0.2.
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
@@ -247,11 +312,17 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default crossover function for runtime-size float/double array/vector
-   *        (Genetic with args)
+   * \brief Default crossover function for dynamic-size float/double array/vector
    *
-   * @tparam _r crossover ratio, 0<r<1
-   * @tparam Args_t Type of other parameter in Genetic solver
+   * Real encoding enables arithmatical crossver like this:\n
+   * c1=r*p1+(1-r)*p2 and c2=r*p2+(1-r)*p1.\n
+   * Where r is a ratio in range [0,1]. The less r is, the more similarity c1 and p1 are.
+   *
+   * \tparam _r Crossover ratio r, encoded as DivCode. Default value is 0.2.
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *a) {
@@ -259,28 +330,46 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default crossover function for fixed-size array/vector
-   *        (Genetic with args)
+   * \brief Default crossover function for fixed-size array/vector (Genetic with args)
    *
+   * This is the original crossover method suitable for binary, symbolic and real vectors. It acts like chromosomes.
+   *
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
     GADefaults<Var_t, void, dvo>::template cFunSwapNs(p1, p2, c1, c2);
   }
 
   /**
-   * @brief Default crossover function for runtime-size array/vector
-   *        (Genetic with args)
+   * \brief Default crossover function for runtime-size array/vector (Genetic with args)
    *
+   * This is the original crossover method suitable for binary, symbolic and real vectors. It acts like chromosomes.
+   *
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
-  inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *a) {
+  inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
     GADefaults<Var_t, void, dvo>::template cFunSwapXs(p1, p2, c1, c2);
   }
 
   /**
-   * @brief Discrete random selection crossover by probability for fixed-size array/vector
-   *             (with args)
+   * \brief Discrete random selection crossover by probability for fixed-size array/vector (with args)
    *
-   * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+   * Child's value of each element is chosen from their parents stochastically by probability p.
+   * Where p is the probability that c1 choose its value from p1 and c2 from p2.
+   *
+   * This crossover method is suitable for all encoding types.
+   *
+   * \tparam p Encoded in DivCode. Default value 0.5
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
@@ -288,18 +377,36 @@ struct GADefaults {
   }
 
   /**
-   * @brief Discrete random selection crossover by probability for runtime-size array/vector
-   *             (with args)
+   * \brief Discrete random selection crossover by probability for fixed-size array/vector (with args)
    *
-   * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
+   * Child's value of each element is chosen from their parents stochastically by probability p.
+   * Where p is the probability that c1 choose its value from p1 and c2 from p2.
+   *
+   * This crossover method is suitable for all encoding types.
+   *
+   * \tparam posCode Encoded in DivCode. Default value 0.5
+   * \param p1 The first parent
+   * \param p2 The second parnet
+   * \param c1 The first child
+   * \param c2 The second child
    */
   template <DivCode posCode = DivCode::DivCode_Half>
-  inline static void cFunRandXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *a) {
+  inline static void cFunRandXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
     GADefaults<Var_t, void, dvo>::template cFunRandXs<posCode>(p1, p2, c1, c2);
   }
 
   /**
-   * @brief Default mutate function for real vectors (fixed and runtime size)
+   * \brief Default mutate function for real vectors (fixed and runtime size)
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note Since mutation requires to know the range and learning rate(mutation step), so this function requires
+   * `Args_t` to be (or derived from) a real box-constraint.
+   *
+   * \param src The gene before mutation
+   * \param v The gene after mutation
+   * \param box The box constraint
    */
   template <typename unused = void>
   inline static void mFun_d(const Var_t *src, Var_t *v, const Args_t *box) {
@@ -311,7 +418,16 @@ struct GADefaults {
   }
 
   /**
-   * @brief Default mutate function for binary vectors (fixed and runtime size)
+   * \brief Default mutate function for binary vectors (fixed and runtime size)
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
+   *
+   * \param src The gene before mutation
+   * \param v The gene after mutation
+   * \param box The box constraint
    */
   template <typename unused = void>
   inline static void mFun_b(const Var_t *src, Var_t *v, const Args_t *box) {
@@ -323,6 +439,18 @@ struct GADefaults {
     v->operator[](idx) = !v->operator[](idx);
   }
 
+  /**
+   * \brief Default mutate function for symbolic vectors (fixed and runtime size)
+   *
+   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when non-box Args_t is
+   * used.
+   *
+   * \note This function requires `Args_t` to be (or derived from) a symbolic box-constraint.
+   *
+   * \param src The gene before mutation
+   * \param v The gene after mutation
+   * \param box The box constraint
+   */
   template <typename unused = void>
   inline static void mFun_s(const Var_t *src, Var_t *v, const Args_t *box) {
     static_assert(Args_t::isBox, "Default mFun requires Args_t to be a box constriant");
@@ -352,23 +480,11 @@ struct GADefaults<Var_t, void, dvo> {
     iFunNd<_min, _max>(p);
   }
 
-  /**
-   * @brief Default crossover function for fixed-size float/double array/vector
-   *        (Genetic without args)
-   *
-   * @tparam _r crossover ratio, 0<r<1
-   */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     internal::template imp_GADefaults_DVO<Var_t, dvo>::template imp_cFunNd<_r>(p1, p2, c1, c2);
   }
 
-  /**
-   * @brief Defaults crossover function for runtime-size float/double array/vector
-   *        (Genetic without args)
-   *
-   * @tparam _r crossover ratio, 0<r<1
-   */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
 #define Heu_PRIVATE_IMP_cFunX \
@@ -380,33 +496,16 @@ struct GADefaults<Var_t, void, dvo> {
         cFunNd<_r>(p1, p2, c1, c2);
   }
 
-  /**
-   * @brief Default crossover function for fixed-size array/vector
-   *        (Genetic without args)
-   *
-   */
-
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     internal::template imp_GADefaults_DVO<Var_t, dvo>::imp_cFunSwapNs(p1, p2, c1, c2);
   }
 
-  /**
-   * @brief Default crossover function for runtime-size array/vector
-   *        (Genetic without args)
-   *
-   */
   inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     Heu_PRIVATE_IMP_cFunX
 
         cFunSwapNs(p1, p2, c1, c2);
   }
 
-  /**
-   * @brief Discrete random selection crossover by probability for fixed-size array/vector
-   *             (without args)
-   *
-   * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
-   */
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     static const double constexpr r = DivDecode<p>::real;
@@ -419,12 +518,6 @@ struct GADefaults<Var_t, void, dvo> {
     }
   }
 
-  /**
-   * @brief Discrete random selection crossover by probability for runtime-size array/vector
-   *             (without args)
-   *
-   * @tparam p probability that c1 choose its value from p1 and c2 from p2. Default value 0.5
-   */
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     Heu_PRIVATE_IMP_cFunX cFunRandNs(p1, p2, c1, c2);
