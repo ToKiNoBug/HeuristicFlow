@@ -44,6 +44,8 @@ namespace internal {
  *
  * This class implements different methods to make reference points.
  *
+ * \sa NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
+ *
  * \tparam Var_t
  * \tparam ObjNum
  * \tparam rOpt
@@ -117,6 +119,8 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
  * \brief Internal base class for NSGA3(double layers).
  *
  * This class implements different methods to make reference points.
+ *
+ * \sa NSGA3Base
  *
  * \tparam Var_t
  * \tparam ObjNum

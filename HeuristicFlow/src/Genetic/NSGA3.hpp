@@ -18,6 +18,25 @@ namespace Eigen {
 /**
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
  */
+
+/**
+ * \ingroup HEU_Genetic
+ * \brief NSGA3 is the thrid Nondominated Sorting Genetic Algorithm. It's suitable for many objective problems.
+ *
+ *
+ * The default value of template parameters are listed in braces
+ * \tparam Var_t Type of decision variable
+ * \tparam ObjNum Number of objectives (Eigen::Dynamic for runtime)
+ * \tparam rOpt Record fitness or not (don't record)
+ * \tparam rpOpt Reference point option (Single layer)
+ * \tparam Args_t Other parameters (void)
+ * \tparam _iFun_ Initialization function (nullptr)
+ * \tparam _fFun_ Fitness function (nullptr)
+ * \tparam _cFun_ Crossover function (nullptr)
+ * \tparam _mFun_ Mutation function (nullptr)
+ *
+ * \sa NSGA3Base NSGA3Abstract NSGABase MOGABase MOGAAbstract GABase
+ */
 template <typename Var_t, int ObjNum, RecordOption rOpt = DONT_RECORD_FITNESS,
           ReferencePointOption rpOpt = ReferencePointOption::SINGLE_LAYER, class Args_t = void,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_ = nullptr,
@@ -30,6 +49,10 @@ class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iF
  public:
   EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
+  /**
+   * \brief
+   *
+   */
   void initializePop() {
     this->makeReferencePoses();
     Base_t::initializePop();
