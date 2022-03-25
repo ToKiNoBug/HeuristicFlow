@@ -102,6 +102,9 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
  * parameter to stop unnecessary template instatiation. For example, when using `iFunNd`, use `iFunNd<>`. Don't miss the
  * template braces if this static member function is a templated one.
  *
+ * \note This struct has a specilization for `Args_t` as `void` (which means no parameters).
+ *
+ * \sa GADefaults<Var_t, void, dvo>
  * \sa internal::GABase internal::GAAbstract
  *
  */
@@ -463,6 +466,18 @@ struct GADefaults {
 
 template <typename Var_t, DoubleVectorOption dvo>
 struct GADefaults<Var_t, void, dvo> {
+  /**
+   * \brief Initialization function for fixed double array without args.
+   *
+   * iFun without args as box constraint can't provide much support for initialization.
+   * In this function, the minimum and maximum can only be passed through template parameters.
+   *
+   * This function works like initialization with a square real box.
+   *
+   * \tparam _min Minimum value in DivCode (0.0 for default)
+   * \tparam _max Maximum value in DivCode (1.0 for default)
+   * \param p Var_t to be initialized.
+   */
   template <DivCode _min = DivEncode<0, 1>::code, DivCode _max = DivEncode<1, 1>::code>
   inline static void iFunNd(Var_t *p) {
     static const double min = DivDecode<_min>::real;
@@ -475,16 +490,38 @@ struct GADefaults<Var_t, void, dvo> {
     }
   }
 
+  /**
+   * \brief Initialization function for fixed float array without args.
+   *
+   * iFun without args as box constraint can't provide much support for initialization.
+   * In this function, the minimum and maximum can only be passed through template parameters.
+   *
+   * This function works like initialization with a square real box.
+   *
+   * \tparam _min Minimum value in DivCode (0.0 for default)
+   * \tparam _max Maximum value in DivCode (1.0 for default)
+   * \param p Var_t to be initialized.
+   */
   template <DivCode _min = DivEncode<0, 1>::code, DivCode _max = DivEncode<1, 1>::code>
   inline static void iFunNf(Var_t *p) {
     iFunNd<_min, _max>(p);
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunNd
+   */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     internal::template imp_GADefaults_DVO<Var_t, dvo>::template imp_cFunNd<_r>(p1, p2, c1, c2);
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunXd
+   */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
 #define Heu_PRIVATE_IMP_cFunX \
@@ -496,16 +533,31 @@ struct GADefaults<Var_t, void, dvo> {
         cFunNd<_r>(p1, p2, c1, c2);
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunSwapNs
+   */
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     internal::template imp_GADefaults_DVO<Var_t, dvo>::imp_cFunSwapNs(p1, p2, c1, c2);
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunSwapXs
+   */
   inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     Heu_PRIVATE_IMP_cFunX
 
         cFunSwapNs(p1, p2, c1, c2);
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunRandNs
+   */
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     static const double constexpr r = DivDecode<p>::real;
@@ -518,6 +570,11 @@ struct GADefaults<Var_t, void, dvo> {
     }
   }
 
+  /**
+   * \brief This function has the same effect as its counterpart in GADefaults.
+   *
+   * \sa GADefaults::cFunRandXs
+   */
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     Heu_PRIVATE_IMP_cFunX cFunRandNs(p1, p2, c1, c2);

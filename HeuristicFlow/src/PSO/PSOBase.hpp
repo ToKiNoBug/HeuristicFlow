@@ -18,7 +18,7 @@ namespace Eigen {
 
 namespace internal {
 
-/// Abstrcat base class for most PSO solvers
+// Abstrcat base class for most PSO solvers
 template <class Var_t, int DIM, class Fitness_t, RecordOption Record, class Arg_t,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
@@ -38,7 +38,7 @@ class PSOBase : public PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFu
   static const int dims = DIM;
 };
 
-/// partial specialization for PSOBase with Runtime dimensions
+// partial specialization for PSOBase with Runtime dimensions
 template <class Var_t, class Fitness_t, RecordOption Record, class Arg_t,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>

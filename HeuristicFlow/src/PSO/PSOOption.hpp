@@ -16,7 +16,7 @@
 
 namespace Eigen {
 
-/// Options to PSO
+// Options to PSO
 struct PSOOption {
  public:
   PSOOption() {
@@ -27,17 +27,17 @@ struct PSOOption {
     learnFactorP = 2;
     learnFactorG = 2;
   }
-  /// size of population
+  // size of population
   size_t populationSize;
-  /// maximum allowed generation
+  // maximum allowed generation
   size_t maxGeneration;
-  /// maximun allowed failtimes;
+  // maximun allowed failtimes;
   size_t maxFailTimes;
-  /// speed factor
+  // speed factor
   double inertiaFactor;
-  /// pBest factor
+  // pBest factor
   double learnFactorP;
-  /// gBest factor
+  // gBest factor
   double learnFactorG;
 };
 

@@ -18,6 +18,11 @@
 /**
  * \defgroup HEU_Genetic GeneticAlgorithms
  *
+ * This module has some implementations of varities of genetic algorithm solvers, including `SOGA` for single objectives
+ * while `NSGA2` and `NSGA3` for multiple objectives. Besides, `GADefaults` provides many candidate functions to for
+ * initialization, crossover and mutation.
+ *
+ * \sa SOGA NSGA2 NSGA3 GADefaults
  */
 
 namespace Eigen {

@@ -23,7 +23,7 @@ namespace Eigen {
 
 namespace internal {
 
-/**
+/*
  * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
  *
  * @tparam Var_t Type of determination vector.
@@ -206,7 +206,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   using Point_t = typename Base_t::Point;        \
   using Particle_t = typename Base_t::Particle;
 
-/// partial specialization for PSO with recording
+// partial specialization for PSO with recording
 template <class Var_t, class Fitness_t, class Arg_t, typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
 class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>

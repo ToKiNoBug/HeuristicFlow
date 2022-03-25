@@ -18,7 +18,7 @@ namespace Eigen {
 namespace internal {
 template <typename Var_t, bool isVarEigenTypes>
 struct __impl_PSODefaults {
-  /// Candidate function for initialization
+  // Candidate function for initialization
   inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
     for (int idx = 0; idx < xMin->size(); idx++) {
       x->operator[](idx) = ei_randD(xMin->operator[](idx), xMax->operator[](idx));
@@ -29,7 +29,7 @@ struct __impl_PSODefaults {
 
 template <typename Var_t>
 struct __impl_PSODefaults<Var_t, true> {
-  /// Candidate function for initialization
+  // Candidate function for initialization
   inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
     x->setRandom(xMin->size(), 1);
     (*x) *= (*xMax - *xMin) / 2;

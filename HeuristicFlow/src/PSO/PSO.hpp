@@ -20,8 +20,8 @@
 
 namespace Eigen {
 
-/// Generalized PSO solver
-/**
+// Generalized PSO solver
+/*
  * @brief Generalized PSO solver.
  *
  * @tparam Var_t Type of determination vector.
@@ -51,7 +51,7 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
     }
   }
 
-  /// function used to provide a result for recording
+  // function used to provide a result for recording
   virtual double bestFitness() const { return this->gBest.fitness; }
 
  protected:
@@ -112,7 +112,7 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
   static_assert(isEigenTypes == false, "Wrong specialization of PSO");
 };
 
-/// Convenient typedef for stdArray (fix-sized and Runtime sized)
+// Convenient typedef for stdArray (fix-sized and Runtime sized)
 template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t = void,
           typename internal::PSOParameterPack<stdVecD_t<DIM>, double, Arg_t>::iFun_t _iFun_ = nullptr,
           typename internal::PSOParameterPack<stdVecD_t<DIM>, double, Arg_t>::fFun_t _fFun_ = nullptr>
@@ -123,12 +123,12 @@ template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t
           typename internal::PSOParameterPack<Eigen::Array<double, DIM, 1>, double, Arg_t>::fFun_t _fFun_ = nullptr>
 using PSO_Eigen = PSO<Eigen::Array<double, DIM, 1>, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
-/// Partial specilization for PSO using Eigen's fix-sized Array
+// Partial specilization for PSO using Eigen's fix-sized Array
 template <typename Var_t, int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_>
 class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
-    /// Partial specilization for PSO using Eigen's fix-sized Array
+    // Partial specilization for PSO using Eigen's fix-sized Array
     : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_> {
   using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
