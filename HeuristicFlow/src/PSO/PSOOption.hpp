@@ -14,9 +14,22 @@
 #include "InternalHeaderCheck.h"
 #include "../../Global"
 
+/**
+ * \defgroup HEU_PSO Particle Swarm Optimization algorithm
+ *
+ * This module provides fundamental implementation of PSO.
+ */
+
 namespace Eigen {
 
 // Options to PSO
+
+/**
+ * \ingroup HEU_PSO
+ * \struct PSOOption
+ * \brief Basical option of PSO
+ *
+ */
 struct PSOOption {
  public:
   PSOOption() {
@@ -27,17 +40,17 @@ struct PSOOption {
     learnFactorP = 2;
     learnFactorG = 2;
   }
-  // size of population
+  /// size of population, default value is 200
   size_t populationSize;
-  // maximum allowed generation
+  /// maximum allowed generation, default value is 300
   size_t maxGeneration;
-  // maximun allowed failtimes;
+  /// maximun allowed failtimes, default value is 100
   size_t maxFailTimes;
-  // speed factor
+  /// speed factor, default value is 0.8
   double inertiaFactor;
-  // pBest factor
+  /// pBest factor, default value is 2
   double learnFactorP;
-  // gBest factor
+  /// gBest factor, default value is 2
   double learnFactorG;
 };
 
