@@ -20,15 +20,23 @@
 
 namespace Eigen {
 
-// Generalized PSO solver
-/*
- * @brief Generalized PSO solver.
+/**
+ * \ingroup HEU_PSO
+ * \class PSO
+ * \brief Generalized PSO solver.
  *
- * @tparam Var_t Type of determination vector.
- * @tparam DIM Dimensional of Var_t
- * @tparam FitnessOpt Trainning direction
- * @tparam RecordOpt Record trainning curve or not.
- * @tparam Arg_t Any other parameters.
+ * All default value for template parameters are listed in braces
+ *
+ * \tparam Var_t Type of decision variable.
+ * \tparam DIM Dimensional of Var_t
+ * \tparam isEigenTypes If Var_t is a Eigen's Array/Matrix (true)
+ * \tparam FitnessOpt Trainning direction (FITNESS_LESS_BETTER)
+ * \tparam RecordOpt Record trainning curve or not. (DONT_RECORD_FITNESS)
+ * \tparam Arg_t Pseudo-global other args stored in the solver. (void)
+ * \tparam _iFun_ Initialization function at compile time (nullptr)
+ * \tparam _fFun_ Fitness function at compile time (nullptr)
+ *
+ * \note This class implements PSO for the condition that `isEigenTypes` is `false`.
  */
 template <typename Var_t, int DIM, bool isEigenTypes = true, FitnessOption FitnessOpt = FITNESS_LESS_BETTER,
           RecordOption RecordOpt = DONT_RECORD_FITNESS, class Arg_t = void,
@@ -43,6 +51,15 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
   static const DoubleVectorOption Flag =
       (std::is_same<Var_t, stdVecD_t<DIM>>::value) ? DoubleVectorOption::Std : DoubleVectorOption::Custom;
 
+  /**
+   * \brief Set the range of position and velocity.
+   *
+   * \note This function will shape the box to a square box. Non't call this if you need a non-square box.
+   *
+   * \param pMin Minium position value
+   * \param pMax Maximum position value
+   * \param vMax Maximum velocity absolute value
+   */
   void setPVRange(double pMin, double pMax, double vMax) {
     for (size_t i = 0; i < this->dimensions(); i++) {
       this->_posMin[i] = pMin;
@@ -51,10 +68,22 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
     }
   }
 
-  // function used to provide a result for recording
+  /**
+   * \brief Function used to provide a result for recording
+   *
+   * \return double The best fitness to be recorded
+   */
   virtual double bestFitness() const { return this->gBest.fitness; }
 
  protected:
+  /**
+   * \brief To determine whether fitness a is better than b
+   *
+   * \param a The first input
+   * \param b The second input
+   * \return true A is better than B
+   * \return false A is not better than B
+   */
   inline static bool isBetterThan(double a, double b) {
     if (FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
       return a > b;
@@ -63,7 +92,12 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
     }
   }
 
+  /**
+   * \brief Update gBest and pBest
+   *
+   */
   virtual void updatePGBest() {
+    // gBest for current generation
     Point_t* curGBest = &this->_population.front().pBest;
 
     for (Particle_t& i : this->_population) {
@@ -84,6 +118,10 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
     }
   }
 
+  /**
+   * \brief Update the position and velocity of all particles
+   *
+   */
   virtual void updatePopulation() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
@@ -112,18 +150,60 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
   static_assert(isEigenTypes == false, "Wrong specialization of PSO");
 };
 
-// Convenient typedef for stdArray (fix-sized and Runtime sized)
+//
+
+/**
+ * \ingroup HEU_PSO
+ * \brief Convenient typedef for stdArray (fix-sized and Runtime sized)
+ *
+ * \tparam DIM Dimensions of decision variable. Use `Eigen::Dynamic` for runtime determined.
+ * \tparam FitnessOpt Optimization direction
+ * \tparam RecordOpt Whether to record the fitness of each generation when running.
+ * \tparam Arg_t Pseudo-global other args stored in the solver. (void)
+ * \tparam _iFun_ Initialization function at compile time (nullptr)
+ * \tparam _fFun_ Fitness function at compile time (nullptr)
+ */
 template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t = void,
           typename internal::PSOParameterPack<stdVecD_t<DIM>, double, Arg_t>::iFun_t _iFun_ = nullptr,
           typename internal::PSOParameterPack<stdVecD_t<DIM>, double, Arg_t>::fFun_t _fFun_ = nullptr>
 using PSO_std = PSO<stdVecD_t<DIM>, DIM, false, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
+/**
+ * \ingroup HEU_PSO
+ * \brief Convenient typedef for Eigen Arrays (fix-sized and Runtime sized)
+ *
+ * \tparam DIM Dimensions of decision variable. Use `Eigen::Dynamic` for runtime determined.
+ * \tparam FitnessOpt Optimization direction
+ * \tparam RecordOpt Whether to record the fitness of each generation when running.
+ * \tparam Arg_t Pseudo-global other args stored in the solver. (void)
+ * \tparam _iFun_ Initialization function at compile time (nullptr)
+ * \tparam _fFun_ Fitness function at compile time (nullptr)
+ */
 template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t = void,
           typename internal::PSOParameterPack<Eigen::Array<double, DIM, 1>, double, Arg_t>::iFun_t _iFun_ = nullptr,
           typename internal::PSOParameterPack<Eigen::Array<double, DIM, 1>, double, Arg_t>::fFun_t _fFun_ = nullptr>
 using PSO_Eigen = PSO<Eigen::Array<double, DIM, 1>, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
-// Partial specilization for PSO using Eigen's fix-sized Array
+/**
+ * \ingroup HEU_PSO
+ * \class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
+ * \brief Partial specilization for PSO using Eigen's fix-sized Array
+ *
+ * This specialization has the same function with PSO, but uses Eigen's api as much as possible, which provides chances
+ * to be boosted.
+ *
+ * This class has exactly same API with PSO.
+ *
+ * \sa PSO For API format
+ *
+ * \tparam Var_t
+ * \tparam DIM
+ * \tparam FitnessOpt
+ * \tparam RecordOpt
+ * \tparam Arg_t
+ * \tparam _iFun_
+ * \tparam _fFun_
+ */
 template <typename Var_t, int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_>
