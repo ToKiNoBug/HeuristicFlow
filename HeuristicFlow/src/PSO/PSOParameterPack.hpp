@@ -103,8 +103,13 @@ class PSOParameterPack {
 
 /**
  * \ingroup HEU_PSO
- * \brief
+ * \class PSOParameterPack<Var_t, Fitness_t, void>
+ * \brief Specilized for PSO without args
  *
+ * Most functions are same as PSOParameterPack except there is no member named `_arg`.\n Besides, iFun and fFun don't
+ * have a input of type `const Args_t*`
+ *
+ * \sa PSOParameterPack
  */
 template <class Var_t, class Fitness_t>
 class PSOParameterPack<Var_t, Fitness_t, void> {

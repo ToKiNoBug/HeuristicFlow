@@ -49,12 +49,17 @@ class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
  public:
   EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
-  inline int dimensions() const { return dims; }
+  inline int dimensions() const {
+    assert(this->_posMin.size() == this->_posMax.size());
+    assert(this->_posMax.size() == this->_velocityMax.size());
+    return this->_posMin.size();
+  }
 
-  inline void setDimensions(int d) { dims = d; }
-
- protected:
-  int dims;
+  inline void setDimensions(int d) {
+    this->_posMin.resize(d);
+    this->_posMax.resize(d);
+    this->_velocityMax.resize(d);
+  }
 };
 
 }  //  namespace internal

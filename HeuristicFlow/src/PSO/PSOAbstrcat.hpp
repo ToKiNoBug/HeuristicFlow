@@ -23,12 +23,23 @@ namespace Eigen {
 
 namespace internal {
 
-/*
- * @brief Base-base class for PSO solvers. Some fundamental typedefs and functions here.
+/**
+ * \ingroup HEU_PSO
+ * \class PSOAbstract
+ * \brief Internal base class for PSO solvers.
  *
- * @tparam Var_t Type of determination vector.
- * @tparam Record Record trainning curve or not.
- * @tparam Arg_t Any other parameters
+ * Some fundamental types and functions are here.
+ *
+ * This template class has a specilization for PSO solvers without recording.
+ *
+ * \tparam Var_t Type of determination vector.
+ * \tparam Fitness_t Type of fitness value.
+ * \tparam Record Record trainning curve or not.
+ * \tparam Arg_t Any other parameters
+ * \tparam _iFun_ Initialization function at compile time
+ * \tparam _fFun_ Initialization function at compile time
+ *
+ * \sa GABase It's counterpart in Genetic module.
  */
 template <class Var_t, class Fitness_t, RecordOption Record, class Arg_t,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
@@ -41,47 +52,118 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
  public:
   EIGEN_HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)
 
-  class Point {
+  /**
+   * \brief Point is a pair of position together with fitness. It's speedless and.
+   *
+   */
+  struct Point {
    public:
+    /// The position of a point
     Var_t position;
+    /// The fitness value of a point
     Fitness_t fitness;
   };
 
-  class Particle : public Point {
+  /**
+   * \brief Particle is a moveable point, it has its velocity and knows the best point it has ever reached.
+   *
+   * \note Particle is inherited from Point, since it's just a point with speed and pBst.
+   */
+  struct Particle : public Point {
    public:
+    /// The velocity of a point
     Var_t velocity;
-    // bool isCalculated;
+    /// The ever reached best point.
     Point pBest;
   };
 
  public:
-  PSOAbstract(){};
-  virtual ~PSOAbstract(){};
-
+  /**
+   * \brief Set the option object
+   *
+   * \param opt Option of PSO solver
+   */
   inline void setOption(const PSOOption& opt) { _option = opt; }
 
+  /**
+   * \brief Get the option object
+   *
+   * \return const PSOOption& A const-ref to the option object
+   */
   inline const PSOOption& option() const { return _option; }
 
+  /**
+   * \brief Get the generation.
+   *
+   * \return size_t generation
+   */
   inline size_t generation() const { return _generation; }
 
+  /**
+   * \brief Get the fail times.
+   *
+   * Fail times refers to continuous generations that the solver failed to find a better solution.
+   *
+   * \return size_t fail times.
+   */
   inline size_t failTimes() const { return _failTimes; }
 
+  /**
+   * \brief Get the minimun postion
+   *
+   * \return const Var_t& Minimum position
+   */
   inline const Var_t& posMin() const { return _posMin; }
 
+  /**
+   * \brief Get the maximum position
+   *
+   * \return const Var_t& Maximum position
+   */
   inline const Var_t& posMax() const { return _posMax; }
 
+  /**
+   * \brief Get the maximum velocity
+   *
+   * \note Max velocity means the maximum absolute value of velocity.
+   *
+   * \return const Var_t& Maximum velocity
+   */
   inline const Var_t& velocityMax() const { return _velocityMax; }
 
+  /**
+   * \brief Get the population
+   *
+   * \return const std::vector<Particle>& A constant reference to the population
+   */
   inline const std::vector<Particle>& population() const { return _population; }
 
+  /**
+   * \brief Get the global best solution that PSO has ever found.
+   *
+   * \return const Point& A const-ref to gBest.
+   */
   inline const Point& globalBest() const { return gBest; }
 
+  /**
+   * \brief Set the range of position and velocity
+   *
+   * \param pMin Min val of position
+   * \param pMax Max val of position
+   * \param vMax Max val of velocity
+   */
   inline void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax) {
     _posMin = pMin;
     _posMax = pMax;
     _velocityMax = vMax;
   }
 
+  /**
+   * \brief Initialize the whole population
+   *
+   * This function reset the generation and failTimes to 0, and gBest to the first member of population.
+   *
+   */
   void initializePop() {
     _population.resize(_option.populationSize);
 
@@ -99,6 +181,15 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
     _failTimes = 0;
   }
 
+  /**
+   * \brief run the algorithm
+   *
+   * \tparam this_t Type of solver. This can be a PSOAbstract, or the solver type at the end of the inheriting chain.
+   *
+   * run() is designed to be a template function inorder to achieve compile polymorphism, kind of like CRTP
+   *
+   * \sa GABase::run
+   */
   template <class this_t = PSOAbstract>
   void run() {
     _generation = 0;
@@ -139,22 +230,47 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   }
 
  protected:
+  /// The option of PSO solver
   PSOOption _option;
+
+  /// Generation used.
   size_t _generation;
+
+  /// failtimes
   size_t _failTimes;
 
+  /// Minimum position
   Var_t _posMin;
+
+  /// Maximum position
   Var_t _posMax;
+
+  /// Maximum velocity (absolute value)
   Var_t _velocityMax;
 
+  /// All partiles in a vector
   std::vector<Particle> _population;
 
+  /// The global pBest that the solver has ever found
   Point gBest;
 
+  /**
+   * \brief Record fitness for non-recording solvers.
+   * This function is useless here but it will be reloaded for PSOAbstract with recording.
+   */
   inline void __impl_clearRecord() {}
 
+  /**
+   * \brief Record fitness for non-recording solvers.
+   * This function is useless here but it will be reloaded for PSOAbstract with recording.
+   */
   inline void __impl_recordFitness() {}
 
+  /**
+   * \brief Compute fitness for the whole population
+   *
+   * In default cases, this function will boost the fitness computation via multi-threading.
+   */
   virtual void calculateAll() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
@@ -170,12 +286,28 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
 #endif
   }
 
+  /**
+   * \brief Update the value of pBest and gBest
+   *
+   */
   virtual void updatePGBest() = 0;
 
+  /**
+   * \brief Update the position and velocity of each particle
+   *
+   */
   virtual void updatePopulation() = 0;
 
+  /**
+   * \brief Some custom operation after each generation.
+   *
+   * This function is not specially implemented in Eigen. If you hope to customize PSO, inherit PSO and reload this
+   * virtual function.
+   *
+   */
   virtual void customOptAfterEachGeneration(){};
 
+  // reloaded by template parameters to fit all types of `Args_t`
   template <bool _HasParameters, class unused = void>
   struct PSOExecutor {
     inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin, const Var_t* pMax,
@@ -206,7 +338,19 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   using Point_t = typename Base_t::Point;        \
   using Particle_t = typename Base_t::Particle;
 
-// partial specialization for PSO with recording
+/**
+ * \ingroup HEU_PSO
+ * \class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
+ * \brief partial specialization for PSO with recording
+ *
+ * \note PSOAbstract with record is herited from PSOAbstract without record.
+ *
+ * \tparam Var_t Type of determination vector.
+ * \tparam Fitness_t Type of fitness value.
+ * \tparam Arg_t Any other parameters
+ * \tparam _iFun_ Initialization function at compile time
+ * \tparam _fFun_ Initialization function at compile time
+ */
 template <class Var_t, class Fitness_t, class Arg_t, typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
 class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
@@ -217,23 +361,53 @@ class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
  public:
   EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
+  /**
+   * \brief Get the fitness record
+   *
+   * \return const std::vector<Fitness_t>& The fitness record.
+   */
   const std::vector<Fitness_t>& record() const { return _record; }
 
+  /**
+   * \brief Get the current gBest
+   *
+   * \return Fitness_t The fitness value
+   */
   virtual Fitness_t bestFitness() const = 0;
 
+  /**
+   * \brief This function reloades and calls the function in the base class.
+   *
+   * \tparam this_t Type of solver.
+   *
+   * \sa PSOAbstract::run
+   */
   template <class this_t = PSOAbstract>
   void run() {
     Base_t::template run<this_t>();
   }
 
  protected:
+  /// The fitness record
   std::vector<Fitness_t> _record;
 
+  /**
+   * \brief Clear the record.
+   *
+   * \sa PSOAbstract::__impl_clearRecord
+   *
+   */
   inline void __impl_clearRecord() {
     _record.clear();
     _record.reserve(this->_option.maxGeneration + 1);
   }
 
+  /**
+   * \brief Record fitness.
+   *
+   * \sa PSOAbstract::__impl_recordFitness
+   *
+   */
   inline void __impl_recordFitness() { _record.emplace_back(bestFitness()); }
 };
 
