@@ -1,22 +1,32 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_NSGA3BASE_HPP
-#define EIGEN_HEU_NSGA3BASE_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_NSGA3BASE_HPP
+#define HEU_NSGA3BASE_HPP
 
 #include "InternalHeaderCheck.h"
 #include "NSGA3Abstract.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Different options of reference points.
  *
  * Here's two ways to generate reference points: the Das and Dennis' systematic approach generates a single layer, while
@@ -38,7 +48,7 @@ enum ReferencePointOption {
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class NSGA3Base
  * \brief Internal base class for NSGA3(single layer).
  *
@@ -65,7 +75,8 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
   using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
+  ~NSGA3Base() {}
+  HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
   /**
    * \brief Get the precision of RPs
@@ -104,9 +115,9 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
     this->referencePoses.resize(this->objectiveNum(), referencePointCount());
     std::vector<Fitness_t> rfP;
     this->computeReferencePointPoses(this->objectiveNum(), _precision, &rfP);
-    std::shuffle(rfP.begin(), rfP.end(), global_mt19937);
-    for (size_t c = 0; c < this->referencePoses.cols(); c++) {
-      for (size_t r = 0; r < this->referencePoses.rows(); r++) {
+    std::shuffle(rfP.begin(), rfP.end(), global_mt19937());
+    for (int c = 0; c < this->referencePoses.cols(); c++) {
+      for (int r = 0; r < this->referencePoses.rows(); r++) {
         this->referencePoses(r, c) = rfP[c][r];
       }
     }
@@ -114,7 +125,7 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
 };
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class NSGA3Base
  * \brief Internal base class for NSGA3(double layers).
  *
@@ -142,12 +153,13 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Args_t, _iFun_, _fFun_, _cFun
   using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
+  HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
   NSGA3Base() {
     _innerPrecision = 3;
     _outerPrecision = 4;
   };
+  ~NSGA3Base() {}
 
   /**
    * \brief Get the precison of inner layer
@@ -199,10 +211,10 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Args_t, _iFun_, _fFun_, _cFun
     this->computeReferencePointPoses(this->objectiveNum(), _innerPrecision, &irfP);
     this->computeReferencePointPoses(this->objectiveNum(), _outerPrecision, &orfP);
 
-    for (int c = 0; c < this->referencePoses.cols(); c++) {
-      for (int r = 0; r < this->objectiveNum(); r++) {
+    for (size_t c = 0; c < (size_t)this->referencePoses.cols(); c++) {
+      for (size_t r = 0; r < this->objectiveNum(); r++) {
         if (c < irfP.size()) {
-          this->referencePoses(r, c) = irfP[c][r] * M_SQRT1_2;
+          this->referencePoses(r, c) = irfP[c][r] * 0.70710678118654752440;
         } else {
           this->referencePoses(r, c) = orfP[c - irfP.size()][r];
         }
@@ -214,6 +226,6 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Args_t, _iFun_, _fFun_, _cFun
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_NSGA3BASE_HPP
+#endif  //  HEU_NSGA3BASE_HPP

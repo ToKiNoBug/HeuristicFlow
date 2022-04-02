@@ -24,7 +24,7 @@ add_executable(PSO_testPSOBase PSO_testPSOBase.cpp)
 add_executable(PSO_TSP PSO_TSP.cpp)
 add_executable(SOGA_Ackley SOGA_Ackley.cpp)
 add_executable(SOGA_TSP SOGA_TSP.cpp)
-add_executable(Boxes test_Boxes.cpp)
+add_executable(Boxes boxes.cpp)
 
 find_package(OpenMP)
 

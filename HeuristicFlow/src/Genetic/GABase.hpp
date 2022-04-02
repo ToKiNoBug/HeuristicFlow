@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_GABASE_H
-#define EIGEN_HEU_GABASE_H
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_GABASE_H
+#define HEU_GABASE_H
 
 #include <tuple>
 #include <vector>
@@ -18,21 +28,21 @@
 #include <algorithm>
 #include <type_traits>
 
-#ifdef EIGEN_HEU_DO_OUTPUT
+#ifdef HEU_DO_OUTPUT
 #include <iostream>
 #endif
 
-#include "../../Global"
+#include <HeuristicFlow/Global>
 #include "InternalHeaderCheck.h"
 #include "GAOption.hpp"
 #include "GAAbstract.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class GABase
  * \brief Genetic algorithm base class.
  *  It's an abstrcat base class for all genetic algorithm solvers.
@@ -65,9 +75,17 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  private:
   using Base_t = GAAbstract<Var_t, Fitness_t, Args_t>;
 
- public:
-  EIGEN_HEU_MAKE_GAABSTRACT_TYPES(Base_t)
+ protected:
+#if __cplusplus < 201703L
+  static constexpr bool shouldGeneAlignExplicitly = (sizeof(Var_t) % 16 == 0) || (sizeof(Fitness_t) % 16 == 0);
+#else
+  static constexpr bool shouldGeneAlignExplicitly = false;
+#endif
 
+ public:
+  HEU_MAKE_GAABSTRACT_TYPES(Base_t)
+
+  ~GABase() {}
   /**
    * \class Gene
    * \brief Type of a individual
@@ -90,11 +108,17 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     bool isCalculated() const { return _isCalculated; }  ///< If the fitness is computed
     void setUncalculated() { _isCalculated = false; }    ///< Set the fitness to be uncomputed
     fastFitness_t fitness() const { return _Fitness; }   ///< Get fitness
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(shouldGeneAlignExplicitly)
   };
   /// list iterator to Gene
-  using GeneIt_t = typename std::list<Gene>::iterator;
+
+ protected:
+  using poplist_t = typename std::conditional<shouldGeneAlignExplicitly,
+                                              std::list<Gene, Eigen::aligned_allocator<Gene>>, std::list<Gene>>::type;
 
  public:
+  using GeneIt_t = typename poplist_t::iterator;
   /**
    * \brief Set the option object
    *
@@ -120,52 +144,6 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 
       i.setUncalculated();
     }
-    customOptAfterInitialization();
-  }
-
-  /// start to solve
-
-  /**
-   * \brief Run the solver
-   *
-   * \tparam this_t Type of a solver. This type is added to record fitness through some template tricks like CRTP.
-   */
-  template <class this_t = GABase>
-  void run() {
-    _generation = 0;
-    _failTimes = 0;
-    static_cast<this_t *>(this)->__impl_clearRecord();
-    while (true) {
-      _generation++;
-      calculateAll();
-
-      select();
-
-      static_cast<this_t *>(this)->__impl_recordFitness();
-
-      if (_generation > _option.maxGenerations) {
-#ifdef EIGEN_HEU_DO_OUTPUT
-        std::cout << "Terminated by max generation limitation" << std::endl;
-#endif
-        break;
-      }
-      if (_option.maxFailTimes > 0 && _failTimes > _option.maxFailTimes) {
-#ifdef EIGEN_HEU_DO_OUTPUT
-        std::cout << "Terminated by max failTime limitation" << std::endl;
-#endif
-        break;
-      }
-#ifdef EIGEN_HEU_DO_OUTPUT
-      std::cout << "Generation "
-                << _generation
-                //<<" , elite fitness="<<_eliteIt->fitness()
-                << std::endl;
-#endif
-      customOptAfterEachGeneration();
-      crossover();
-      mutate();
-    }
-    _generation--;
   }
 
   /**
@@ -173,7 +151,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    *
    * \return const std::list<Gene>& Const reference the the population
    */
-  inline const std::list<Gene> &population() const { return _population; }
+  inline const poplist_t &population() const { return _population; }
 
   /**
    * \brief Get the population that has been used.
@@ -190,30 +168,58 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   inline size_t failTimes() const { return _failTimes; }
 
  protected:
-  std::list<Gene> _population;  ///< Population stored in list
-  GAOption _option;             ///< Option of GA solver
+  poplist_t _population;  ///< Population stored in list
+  GAOption _option;       ///< Option of GA solver
 
   size_t _generation;  ///< Current generation
   size_t _failTimes;   ///< Current failtimes
 
-  /**
-   * \brief This virtual function is added for flexibility. If you hope to do something after the initialization and
-   * before running, inherit and reimplement this function.
-   *
-   * This function won't be used by ANY solvers written by me.
-   */
-  virtual void customOptAfterInitialization() {}
+  inline void __impl_clearRecord() {}  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
-  /**
-   * \brief This virtual function is added for flexibility. If you hope to do something after selection in each
-   * generation, inherit and reimplement this function.
-   *
-   * This function won't be used by ANY solvers written by me.
-   */
-  virtual void customOptAfterEachGeneration() {}
-
-  inline void __impl_clearRecord() {}    ///< Nothing is need to do if the solver doesn't record fitnesses.
+  template <class this_t>
   inline void __impl_recordFitness() {}  ///< Nothing is need to do if the solver doesn't record fitnesses.
+
+  /**
+   * \brief Run the solver
+   *
+   * \tparam this_t Type of a solver. This type is added to record fitness through some template tricks like CRTP.
+   */
+  template <class this_t>
+  void __impl_run() {
+    _generation = 0;
+    _failTimes = 0;
+    static_cast<this_t *>(this)->__impl_clearRecord();
+    while (true) {
+      _generation++;
+      static_cast<this_t *>(this)->__impl_computeAllFitness();
+
+      static_cast<this_t *>(this)->__impl_select();
+
+      static_cast<this_t *>(this)->template __impl_recordFitness<this_t>();
+
+      if (_generation > _option.maxGenerations) {
+#ifdef HEU_DO_OUTPUT
+        std::cout << "Terminated by max generation limitation" << std::endl;
+#endif
+        break;
+      }
+      if (_option.maxFailTimes > 0 && _failTimes > _option.maxFailTimes) {
+#ifdef HEU_DO_OUTPUT
+        std::cout << "Terminated by max failTime limitation" << std::endl;
+#endif
+        break;
+      }
+#ifdef HEU_DO_OUTPUT
+      std::cout << "Generation "
+                << _generation
+                //<<" , elite fitness="<<_eliteIt->fitness()
+                << std::endl;
+#endif
+      static_cast<this_t *>(this)->__impl_crossover();
+      static_cast<this_t *>(this)->__impl_mutate();
+    }
+    _generation--;
+  }
 
   /**
    * \brief Compute fitness for the whole population
@@ -221,7 +227,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * If OpenMP is used, this process will be parallelized.
    *
    */
-  virtual void calculateAll() {
+  void __impl_computeAllFitness() {
 #ifdef EIGEN_HAS_OPENMP
     std::vector<Gene *> tasks;
     tasks.resize(0);
@@ -262,14 +268,14 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * Usually the population will exceeds the population size, so this procedure erases relatively worse genes to ensure
    * the size of population can be restored.
    */
-  virtual void select() = 0;
+  // void select() = 0;
 
   /**
    * \brief Apply crossover.
    *
    * Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to population.
    */
-  virtual void crossover() {
+  void __impl_crossover() {
     std::vector<GeneIt_t> crossoverQueue;
     crossoverQueue.clear();
     crossoverQueue.reserve(_population.size());
@@ -307,7 +313,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   /**
    * \brief Apply mutation operation which slightly modify gene. The modified gene will add to the population.
    */
-  virtual void mutate() {
+  void __impl_mutate() {
     std::vector<GeneIt_t> mutateList;
     mutateList.reserve(size_t(this->_population.size() * this->_option.mutateProb * 2));
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
@@ -355,13 +361,13 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   };
 };
 
-#define EIGEN_HEU_MAKE_GABASE_TYPES           \
+#define HEU_MAKE_GABASE_TYPES(Base_t)         \
   using Gene = typename Base_t::Gene;         \
   using GeneIt_t = typename Base_t::GeneIt_t; \
-  EIGEN_HEU_MAKE_GAABSTRACT_TYPES
+  HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class GABase
  * \brief partial specialization for GABase with record.
  *
@@ -384,29 +390,14 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _
     : public GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
   using Base_t = GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
-  friend Base_t;
+  friend class GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  HEU_MAKE_GABASE_TYPES(Base_t)
 
-  /**
-   * \brief Reimplement the run function so that recording related functions can be called.
-   *
-   * \tparam this_t Type of derived classs
-   */
-  template <class this_t = GABase>
-  inline void run() {
-    Base_t::template run<this_t>();
-  }
+  ~GABase() {}
 
   /// best fitness
-
-  /**
-   * \brief Get the fitness value of best gene
-   *
-   * \return Fitness_t Best fitness
-   */
-  virtual Fitness_t bestFitness() const = 0;
 
   /// result
 
@@ -430,9 +421,12 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _
     _record.reserve(this->_option.maxGenerations + 1);
   }
 
-  inline void __impl_recordFitness() { _record.emplace_back(bestFitness()); }
+  template <class this_t>
+  inline void __impl_recordFitness() {
+    _record.emplace_back(static_cast<this_t *>(this)->bestFitness());
+  }
 };
 }  //  namespace internal
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  // EIGEN_HEU_GABASE_H
+#endif  // HEU_GABASE_H

@@ -1,25 +1,35 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_BOXSHAPES_HPP
-#define EIGEN_HEU_BOXSHAPES_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-#include <Eigen/Core>
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_BOXSHAPES_HPP
+#define HEU_BOXSHAPES_HPP
+
+#include <Eigen/Dense>
 #include "InternalHeaderCheck.h"
 #include "BoxRTCTRange.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class NonsquareBox
  * \brief Internal typedef of base class for various types of boxes.
  *
@@ -29,11 +39,11 @@ namespace internal {
  *
  * \note Non-square box types.
  */
-template <typename Scalar_t, int Size, DoubleVectorOption DVO>
+template <typename Scalar_t, int Size, ContainerOption DVO>
 class NonsquareBox : public BoxDynamicRange<Scalar_t, Size, BoxShape::RECTANGLE_BOX, DVO> {};
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class SquareBox
  * \brief Internal base class for various types of boxes.
  *
@@ -46,7 +56,7 @@ class NonsquareBox : public BoxDynamicRange<Scalar_t, Size, BoxShape::RECTANGLE_
  *
  * \note Square box with compile time range
  */
-template <typename Scalar_t, int Size, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, int Size, ContainerOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
 class SquareBox : public BoxFixedRange<Scalar_t, MinCT, MaxCT> {
  private:
@@ -61,7 +71,7 @@ class SquareBox : public BoxFixedRange<Scalar_t, MinCT, MaxCT> {
  */
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class SquareBox
  * \brief Internal base class for various types of boxes.
  *
@@ -73,7 +83,7 @@ class SquareBox : public BoxFixedRange<Scalar_t, MinCT, MaxCT> {
  *
  * \note Square box with runtime ranges
  */
-template <typename Scalar_t, int Size, DoubleVectorOption DVO, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, int Size, ContainerOption DVO, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
 class SquareBox<Scalar_t, Size, DVO, false, MinCT, MaxCT>
     : public BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
@@ -86,6 +96,6 @@ class SquareBox<Scalar_t, Size, DVO, false, MinCT, MaxCT>
 
 }  // namespace internal
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_BOXSHAPES_HPP
+#endif  // HEU_BOXSHAPES_HPP

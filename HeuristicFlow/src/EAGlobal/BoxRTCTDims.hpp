@@ -1,24 +1,34 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_BOXRTCTDIMS_HPP
-#define EIGEN_HEU_BOXRTCTDIMS_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_BOXRTCTDIMS_HPP
+#define HEU_BOXRTCTDIMS_HPP
 
 #include "InternalHeaderCheck.h"
 #include "BoxShapes.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxCTDim
  * \brief Internal base class for various types of boxes.
  *
@@ -32,7 +42,7 @@ namespace internal {
  *
  * \note Square box with fixed dims
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
 class BoxCTDim : public SquareBox<Scalar_t, Dim, DVO, isFixedRange, MinCT, MaxCT> {
  private:
@@ -50,7 +60,7 @@ class BoxCTDim : public SquareBox<Scalar_t, Dim, DVO, isFixedRange, MinCT, MaxCT
 /**
  * @brief NonSquarebox with fixed dims
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, int Dim, ContainerOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
 class BoxCTDim<Scalar_t, Dim, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxCT>
     : public NonsquareBox<Scalar_t, Dim, DVO> {
@@ -66,7 +76,7 @@ class BoxCTDim<Scalar_t, Dim, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT,
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxRTDim
  * \brief Internal base class for various types of boxes.
  *
@@ -79,7 +89,7 @@ class BoxCTDim<Scalar_t, Dim, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT,
  *
  * \note Square box with runtime dims
  */
-template <typename Scalar_t, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, ContainerOption DVO, BoxShape BS, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
 class BoxRTDim : public SquareBox<Scalar_t, Eigen::Dynamic, DVO, isFixedRange, MinCT, MaxCT> {
  private:
@@ -111,7 +121,7 @@ class BoxRTDim : public SquareBox<Scalar_t, Eigen::Dynamic, DVO, isFixedRange, M
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxRTDim
  * \brief Internal base class for various types of boxes.
  *
@@ -123,7 +133,7 @@ class BoxRTDim : public SquareBox<Scalar_t, Eigen::Dynamic, DVO, isFixedRange, M
  *
  * \note Non-square box with dynamic dims
  */
-template <typename Scalar_t, DoubleVectorOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, ContainerOption DVO, bool isFixedRange, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT>
 class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxCT>
     : public NonsquareBox<Scalar_t, Eigen::Dynamic, DVO> {
@@ -147,7 +157,7 @@ class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxC
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxDims
  * \brief Internal conditional base class for boolean box and symbolic box.
  * It's also a base class of real box.
@@ -160,13 +170,13 @@ class BoxRTDim<Scalar_t, DVO, BoxShape::RECTANGLE_BOX, isFixedRange, MinCT, MaxC
  * \tparam MinCT Minimum value at compile time
  * \tparam MaxCT Maximum value at compile time
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
 class BoxDims : public std::conditional<Dim == Eigen::Dynamic, BoxRTDim<Scalar_t, DVO, BS, isFixedRange, MinCT, MaxCT>,
                                         BoxCTDim<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, MaxCT>>::type {};
 
 }  // namespace internal
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_BOXRTCTDIMS_HPP
+#endif  // HEU_BOXRTCTDIMS_HPP

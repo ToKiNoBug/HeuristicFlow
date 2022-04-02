@@ -1,24 +1,34 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_BOXREAL_H
-#define EIGEN_HEU_BOXREAL_H
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_BOXREAL_H
+#define HEU_BOXREAL_H
 
 #include "InternalHeaderCheck.h"
 #include "BoxRTCTDims.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class RealBoxBase
  * \brief Internal base class for all kinds of real boxes.
  *
@@ -32,7 +42,7 @@ namespace internal {
  *
  * \note Real boxes of different types
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange,
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, bool isFixedRange,
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
 class RealBoxBase : public BoxDims<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, MaxCT> {
  private:
@@ -48,7 +58,7 @@ class RealBoxBase : public BoxDims<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, 
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class learnRateBody
  * \brief Internal base class that for runtime learning rate.
  *
@@ -68,7 +78,7 @@ struct learnRateBody {
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class RealBox
  * \brief Compile-time ranged box with fixed learning rate
  *
@@ -81,7 +91,7 @@ struct learnRateBody {
  * \tparam MaxCT Max value (DivCode)
  * \tparam LearnRateCT Learn rate at compile time(DivCode)
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, bool isFixedRange = false,
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, bool isFixedRange = false,
           TemplateVal_t<Scalar_t> MinCT = TemplateVal_t<Scalar_t>(1),
           TemplateVal_t<Scalar_t> MaxCT = TemplateVal_t<Scalar_t>(1),
           TemplateVal_t<Scalar_t> LearnRateCT = TemplateVal_t<Scalar_t>(1)>
@@ -99,7 +109,7 @@ class RealBox : public RealBoxBase<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, 
  */
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Runtime-ranged box with runtime range and learning rate
  *
  * \tparam Scalar_t Type of scalar
@@ -110,7 +120,7 @@ class RealBox : public RealBoxBase<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, 
  * \tparam MaxCT Meaningless for this specialization
  * \tparam LearnRateCT Meaningless for this specialization
  */
-template <typename Scalar_t, int Dim, DoubleVectorOption DVO, BoxShape BS, TemplateVal_t<Scalar_t> MinCT,
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, TemplateVal_t<Scalar_t> MinCT,
           TemplateVal_t<Scalar_t> MaxCT, TemplateVal_t<Scalar_t> LearnRateCT>
 class RealBox<Scalar_t, Dim, DVO, BS, false, MinCT, MaxCT, LearnRateCT>
     : public RealBoxBase<Scalar_t, Dim, DVO, BS, false, MinCT, MaxCT>,
@@ -119,6 +129,6 @@ class RealBox<Scalar_t, Dim, DVO, BS, false, MinCT, MaxCT, LearnRateCT>
 
 }  // namespace internal
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_BOXREAL_H
+#endif  // HEU_BOXREAL_H

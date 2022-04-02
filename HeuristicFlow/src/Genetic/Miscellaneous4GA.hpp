@@ -1,25 +1,35 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_MICELLANEOUS4GA_HPP
-#define EIGEN_HEU_MICELLANEOUS4GA_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_MISCELLANEOUS4GA_HPP
+#define HEU_MISCELLANEOUS4GA_HPP
 
 #include <assert.h>
-#include "../../Global"
+#include <HeuristicFlow/Global>
 #include "InternalHeaderCheck.h"
 #include "GAAbstract.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
-template <typename Var_t, DoubleVectorOption dvo>
+template <typename Var_t, ContainerOption dvo>
 struct imp_GADefaults_DVO {
   template <DivCode _r>
   inline static void imp_cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
@@ -46,7 +56,7 @@ struct imp_GADefaults_DVO {
 };
 
 template <typename Var_t>
-struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
+struct imp_GADefaults_DVO<Var_t, ContainerOption::Eigen> {
   template <DivCode _r>
   inline static void imp_cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
     static const double constexpr r = DivDecode<_r>::real;
@@ -76,7 +86,7 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
 }  // namespace internal
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \struct GADefaults
  * \brief The GADefaults struct defines several candidate operations for GA.
  *
@@ -108,7 +118,7 @@ struct imp_GADefaults_DVO<Var_t, DoubleVectorOption::Eigen> {
  * \sa internal::GABase internal::GAAbstract
  *
  */
-template <typename Var_t, class Args_t = void, DoubleVectorOption dvo = DoubleVectorOption::Std>
+template <typename Var_t, class Args_t = void, ContainerOption dvo = ContainerOption::Std>
 struct GADefaults {
  private:
   static_assert(!std::is_same<Args_t, void>::value,
@@ -328,7 +338,7 @@ struct GADefaults {
    * \param c2 The second child
    */
   template <DivCode _r = DivEncode<1, 5>::code>
-  inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *a) {
+  inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
     GADefaults<Var_t, void, dvo>::template cFunXd<_r>(p1, p2, c1, c2);
   }
 
@@ -464,7 +474,7 @@ struct GADefaults {
   }
 };
 
-template <typename Var_t, DoubleVectorOption dvo>
+template <typename Var_t, ContainerOption dvo>
 struct GADefaults<Var_t, void, dvo> {
   /**
    * \brief Initialization function for fixed double array without args.
@@ -581,6 +591,6 @@ struct GADefaults<Var_t, void, dvo> {
   }
 };
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_MICELLANEOUS4GA_HPP
+#endif  //  HEU_MISCELLANEOUS4GA_HPP

@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_TYPES_HPP
-#define EIGEN_HEU_TYPES_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_TYPES_HPP
+#define HEU_TYPES_HPP
 
 #include <Eigen/Core>
 #include <type_traits>
@@ -19,10 +29,10 @@
 #include "Enumerations.hpp"
 #include "Constants.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief C++ std container for fixed and dynamic sizes.
  *
  * Use std::vector for dynamic size and std::array as fixed size.
@@ -35,7 +45,7 @@ using stdContainer =
     typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>, std::array<scalar_t, Dim> >::type;
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief C++ std container of double.
  *
  * \tparam Size Number of element. Use Eigen::Dynamic for dynamic size.
@@ -44,21 +54,21 @@ template <int Size>
 using stdVecD_t = stdContainer<double, Size>;
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Container for different types, sizes and scalar types.
  *
  * \tparam scalar_t Type of elements.
  * \tparam Size Size at compile time. Use Eigen::Dynamic for dynamic size.
  * \tparam DVO Type of container.
- * Use DoubleVectorOption::Eigen for Eigen::Array<scalar_t,Size,1> and
+ * Use ContainerOption::Eigen for Eigen::Array<scalar_t,Size,1> and
  * other enum values for stdContainer<scalar_t,Size>.
  *
  */
-template <typename scalar_t, int Size, DoubleVectorOption DVO>
-using Container = typename std::conditional<(DVO != DoubleVectorOption::Eigen), stdContainer<scalar_t, Size>,
+template <typename scalar_t, int Size, ContainerOption DVO>
+using Container = typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
                                             Eigen::Array<double, Size, 1> >::type;
 
-// template<DoubleVectorOption dvo,size_t Dim>
+// template<ContainerOption dvo,size_t Dim>
 // using FitnessVec_t= Container<double,Dim,dvo>;
 
 namespace internal {
@@ -83,6 +93,6 @@ struct heu_initializeSize<Eigen::Dynamic> {
 
 }  //    namespace internal
 
-}  //   namespace Eigen
+}  //   namespace heu
 
-#endif  // EIGEN_HEU_TYPES_HPP
+#endif  // HEU_TYPES_HPP

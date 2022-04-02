@@ -1,12 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 #include <Eigen/Dense>
 #include <HeuristicFlow/Genetic>
 #include <iostream>
@@ -14,18 +23,20 @@
 using namespace Eigen;
 using namespace std;
 
+// Ackely function is a single objective testing function with great number of local minimum points, but its global
+// minimum point is [0,0] and corresponding value is 0. A good solver should be able to find the global minimum point.
 void testAckley_withRecord() {
-  using args_t = Eigen::BoxNdS<2, Std>;
+  using args_t = heu::BoxNdS<2, heu::Std>;
 
-  using solver_t = SOGA<array<double, 2>, Eigen::FITNESS_LESS_BETTER, Eigen::RECORD_FITNESS, args_t,
-                        Eigen::GADefaults<array<double, 2>, args_t, Std>::iFunNd<>, nullptr,
-                        Eigen::GADefaults<array<double, 2>, args_t, Std>::cFunNd,
-                        Eigen::GADefaults<array<double, 2>, args_t, Std>::mFun_d<>>;
+  using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, args_t,
+                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>, nullptr,
+                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
+                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun_d<>>;
   solver_t algo;
 
-  GAOption opt;
+  heu::GAOption opt;
   opt.populationSize = 50;
-  opt.maxFailTimes = -1;
+  opt.maxFailTimes = 50;  // The solver will end if it hasn't been finding a better solution for 50 generations.
   opt.maxGenerations = 100;
 
   algo.setOption(opt);

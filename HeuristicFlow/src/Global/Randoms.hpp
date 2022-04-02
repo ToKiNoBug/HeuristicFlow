@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_RANDOMS_HPP
-#define EIGEN_HEU_RANDOMS_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_RANDOMS_HPP
+#define HEU_RANDOMS_HPP
 
 #include <stdint.h>
 #include <random>
@@ -17,19 +27,19 @@
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 #ifdef __GNUC__
 #if (defined __WIN32) || (defined __WIN64)
 //  MingW's implementation for std::random_device doesn't produce a real random number
-#define EIGEN_HEU_std_random_device_NOT_RELIABLE
+#define HEU_std_random_device_NOT_RELIABLE
 #endif
 #endif  //#ifdef __CNUC__
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Internal global std::random device
  *
  * \return std::random_device& A reference to this static variable
@@ -39,14 +49,14 @@ inline std::random_device& global_random_device() {
   return rdv;
 }
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Internal global std::mt19937 used as a high-performance
  * random number generater.
  *
  * \return std::mt19937& A reference to this instance.
  */
 inline std::mt19937& global_mt19937() {
-#ifdef EIGEN_HEU_std_random_device_NOT_RELIABLE
+#ifdef HEU_std_random_device_NOT_RELIABLE
   // Use a hash value of system clock as the random seed
   static auto now = std::chrono::system_clock::now();
   static std::time_t time = std::chrono::system_clock::to_time_t(now);
@@ -62,7 +72,7 @@ inline std::mt19937& global_mt19937() {
 }  // namespace internal
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Uniform random number (double) in range [0,1)
  *
  * \return double random number
@@ -73,7 +83,7 @@ inline double ei_randD() {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Uniform random number (double) in range [min,max)
  *
  * \param min Minimum value
@@ -83,7 +93,7 @@ inline double ei_randD() {
 inline double ei_randD(const double min, const double max) { return (max - min) * ei_randD() + min; }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Uniform random number (float) in range [0,1)
  *
  * \return double random number
@@ -94,7 +104,7 @@ inline float ei_randF() {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Uniform random index in range [0,size)
  *
  * \tparam int_t Type of integer
@@ -108,7 +118,7 @@ inline int_t ei_randIdx(int_t size) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Uniform random index in range [min,max_plus_1)
  *
  * \tparam int_t Type of integer
@@ -122,6 +132,6 @@ inline int_t ei_randIdx(int_t min, int_t max_plus_1) {
   return int_t((max_plus_1 - min) * ei_randF() + min);
 }
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_RANDOMS_HPP
+#endif  // HEU_RANDOMS_HPP

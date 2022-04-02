@@ -1,27 +1,37 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_PSOBASE_HPP
-#define EIGEN_HEU_PSOBASE_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_PSOBASE_HPP
+#define HEU_PSOBASE_HPP
 
 #include "InternalHeaderCheck.h"
 #include "PSOOption.hpp"
 #include "PSOAbstrcat.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 // Abstrcat base class for most PSO solvers
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \class PSOBase
  * \brief Internal base class for PSO solvers
  *
@@ -44,9 +54,10 @@ class PSOBase : public PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFu
   using Base_t = PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFun_>;
 
  public:
-  EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  ~PSOBase() {}
 
- public:
+  HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+
   /**
    * \brief Get dimensions
    *
@@ -62,7 +73,7 @@ class PSOBase : public PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFu
 //
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
  * \brief Partial specialization for PSOBase with Runtime dimensions
  *
@@ -83,7 +94,8 @@ class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
   using Base_t = PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFun_>;
 
  public:
-  EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  ~PSOBase() {}
+  HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
   /**
    * \brief Get dimensions at runtime
@@ -113,5 +125,5 @@ class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
 
 }  //  namespace internal
 
-}  //  namespace Eigen
-#endif  // EIGEN_HEU_PSOBASE_HPP
+}  //  namespace heu
+#endif  // HEU_PSOBASE_HPP

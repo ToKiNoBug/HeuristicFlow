@@ -1,45 +1,40 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_GAABSTRACT_HPP
-#define EIGEN_HEU_GAABSTRACT_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+#ifndef HEU_GAABSTRACT_HPP
+#define HEU_GAABSTRACT_HPP
 
 #include <type_traits>
 
 #include "InternalHeaderCheck.h"
-#include "../../Global"
+#include <HeuristicFlow/Global>
 
-/**
- * \defgroup HEU_Genetic GeneticAlgorithms
- *
- * This module has some implementations of varities of genetic algorithm solvers, including `SOGA` for single objectives
- * while `NSGA2` and `NSGA3` for multiple objectives. Besides, `GADefaults` provides many candidate functions to for
- * initialization, crossover and mutation.
- *
- * \sa SOGA NSGA2 NSGA3 GADefaults
- */
-
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
-EIGEN_HEU_MAKE_FUNAREA(iFun, iFun, GA)
-EIGEN_HEU_MAKE_FUNAREA(fFun, fFun, GA)
-EIGEN_HEU_MAKE_FUNAREA(cFun, cFun, GA)
-EIGEN_HEU_MAKE_FUNAREA(mFun, mFun, GA)
+HEU_MAKE_FUNAREA(iFun, GA)
+HEU_MAKE_FUNAREA(mFun, GA)
+HEU_MAKE_FUNAREA(fFun, GA)
+HEU_MAKE_FUNAREA(cFun, GA)
 
 /**
- * @brief The GAAbstract class declares 4 operator functions and related reloaded functions.
- */
-
-/**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class GAAbstract
  * \brief Internal base class.
  *
@@ -53,6 +48,7 @@ EIGEN_HEU_MAKE_FUNAREA(mFun, mFun, GA)
 template <typename Var_t, typename Fitness_t, class Args_t>
 class GAAbstract {
  public:
+  ~GAAbstract(){};
   /// Function to initialize Var
   using initializeFun = void (*)(Var_t *, const Args_t *);
   /// Function to calculate fitness for Var
@@ -71,7 +67,7 @@ class GAAbstract {
    * \tparam i Initialization function ptr.
    */
   template <initializeFun i>
-  using iFunBody = typename iFunArea_GA<void, Var_t *, const Args_t *>::template funBody<i>;
+  using iFunBody = typename iFunArea_GA<Var_t *, const Args_t *>::template funBody<i>;
 
   /**
    * \class fFunBody
@@ -80,7 +76,7 @@ class GAAbstract {
    * \tparam f Fitness function ptr.
    */
   template <fitnessFun f>
-  using fFunBody = typename fFunArea_GA<void, const Var_t *, const Args_t *, Fitness_t *>::template funBody<f>;
+  using fFunBody = typename fFunArea_GA<const Var_t *, const Args_t *, Fitness_t *>::template funBody<f>;
 
   /**
    * \class cFunBody
@@ -90,7 +86,7 @@ class GAAbstract {
    */
   template <crossoverFun c>
   using cFunBody =
-      typename cFunArea_GA<void, const Var_t *, const Var_t *, Var_t *, Var_t *, const Args_t *>::template funBody<c>;
+      typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *, const Args_t *>::template funBody<c>;
 
   /**
    * \class mFunBody
@@ -99,7 +95,7 @@ class GAAbstract {
    * \tparam m Mutation function ptr.
    */
   template <mutateFun m>
-  using mFunBody = typename mFunArea_GA<void, const Var_t *, Var_t *, const Args_t *>::template funBody<m>;
+  using mFunBody = typename mFunArea_GA<const Var_t *, Var_t *, const Args_t *>::template funBody<m>;
 
   const Args_t &args() const { return _args; }  ///< Const reference to the other parameters
 
@@ -115,8 +111,7 @@ class GAAbstract {
 template <typename Var_t, typename Fitness_t>
 class GAAbstract<Var_t, Fitness_t, void> {
  public:
-  GAAbstract(){};
-  virtual ~GAAbstract(){};
+  ~GAAbstract(){};
 
   /// Function to initialize Var
   using initializeFun = void (*)(Var_t *);
@@ -130,21 +125,21 @@ class GAAbstract<Var_t, Fitness_t, void> {
   using ArgsType = void;
 
   template <initializeFun i>
-  using iFunBody = typename iFunArea_GA<void, Var_t *>::template funBody<i>;
+  using iFunBody = typename iFunArea_GA<Var_t *>::template funBody<i>;
 
   template <fitnessFun f>
-  using fFunBody = typename fFunArea_GA<void, const Var_t *, Fitness_t *>::template funBody<f>;
+  using fFunBody = typename fFunArea_GA<const Var_t *, Fitness_t *>::template funBody<f>;
 
   template <crossoverFun c>
-  using cFunBody = typename cFunArea_GA<void, const Var_t *, const Var_t *, Var_t *, Var_t *>::template funBody<c>;
+  using cFunBody = typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *>::template funBody<c>;
 
   template <mutateFun m>
-  using mFunBody = typename mFunArea_GA<void, const Var_t *, Var_t *>::template funBody<m>;
+  using mFunBody = typename mFunArea_GA<const Var_t *, Var_t *>::template funBody<m>;
 
   static const bool HasParameters = false;
 };
 
-#define EIGEN_HEU_MAKE_GAABSTRACT_TYPES(Base_t)         \
+#define HEU_MAKE_GAABSTRACT_TYPES(Base_t)               \
   using initializeFun = typename Base_t::initializeFun; \
   using fitnessFun = typename Base_t::fitnessFun;       \
   using crossoverFun = typename Base_t::crossoverFun;   \
@@ -153,6 +148,6 @@ class GAAbstract<Var_t, Fitness_t, void> {
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_GAABSTRACT_HPP
+#endif  //  HEU_GAABSTRACT_HPP

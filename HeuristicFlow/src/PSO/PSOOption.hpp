@@ -1,31 +1,35 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_PSOOPTION_HPP
-#define EIGEN_HEU_PSOOPTION_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_PSOOPTION_HPP
+#define HEU_PSOOPTION_HPP
 
 #include <stdint.h>
 #include "InternalHeaderCheck.h"
-#include "../../Global"
+#include <HeuristicFlow/Global>
 
-/**
- * \defgroup HEU_PSO Particle Swarm Optimization algorithm
- *
- * This module provides fundamental implementation of PSO.
- */
-
-namespace Eigen {
+namespace heu {
 
 // Options to PSO
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \struct PSOOption
  * \brief Basical option of PSO
  *
@@ -54,6 +58,6 @@ struct PSOOption {
   double learnFactorG;
 };
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  // EIGEN_HEU_PSOOPTION_HPP
+#endif  // HEU_PSOOPTION_HPP

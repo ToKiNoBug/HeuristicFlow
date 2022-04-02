@@ -1,29 +1,40 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_MOGAABSTRACT_HPP
-#define EIGEN_HEU_MOGAABSTRACT_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_MOGAABSTRACT_HPP
+#define HEU_MOGAABSTRACT_HPP
 
 #include <queue>
 #include <functional>
 #include <unordered_set>
 
-#include "../../EAGlobal"
+#include <HeuristicFlow/Global>
+#include <HeuristicFlow/EAGlobal>
 #include "InternalHeaderCheck.h"
 #include "GABase.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class MOGAAbstract
  * \brief Base class for multi-objective genetic algorithm solver.
  *
@@ -52,9 +63,8 @@ class MOGAAbstract
   static_assert(ObjNum != 1, "You assigend 1 objective in multi-objective problems");
 
  public:
-  MOGAAbstract(){};
-  virtual ~MOGAAbstract(){};
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  ~MOGAAbstract(){};
+  HEU_MAKE_GABASE_TYPES(Base_t)
 
   /**
    * \brief Type of fitness is stored in an Eigen vector of double.
@@ -104,7 +114,6 @@ class MOGAAbstract
    *
    */
   inline void initializePop() {
-    this->prevFrontSize = -1;
     this->_pfGenes.clear();
     this->_pfGenes.reserve(this->_option.populationSize * 2);
     Base_t::initializePop();
@@ -119,7 +128,7 @@ class MOGAAbstract
    *
    * \return Fitness_t ideal point
    */
-  virtual Fitness_t bestFitness() const {
+  Fitness_t bestFitness() const {
     Fitness_t best = this->_population.front()._Fitness;
     for (const Gene& i : this->_population) {
       if (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
@@ -132,11 +141,9 @@ class MOGAAbstract
   }
 
  protected:
-  size_t prevFrontSize;                      ///< Size of PF in the previous generation
-  size_t prevPFCheckSum;                     ///< The hash checksum of PF in the previous generation
   std::unordered_set<const Gene*> _pfGenes;  ///< A hash set to store the whole PF
 
-  /**
+  /*
    * \brief Compute the hash checksum of current PF
    *
    * PF checksum is computed with the hash of addresses of every Gene that consist of PF.
@@ -149,7 +156,8 @@ class MOGAAbstract
    *
    * \return size_t The checksum of PF
    */
-  virtual size_t makePFCheckSum() const {
+  /*
+  size_t makePFCheckSum() const {
     std::vector<const Gene*> pfvec;
     pfvec.reserve(_pfGenes.size());
     for (auto i : _pfGenes) {
@@ -162,12 +170,12 @@ class MOGAAbstract
       checkSum ^= std::hash<const void*>()(pfvec[i]);
     }
     return checkSum;
-  }
+  }*/
 
 };  // MOGAAbstract
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //   EIGEN_HEU_MOGAABSTRACT_HPP
+#endif  //   HEU_MOGAABSTRACT_HPP

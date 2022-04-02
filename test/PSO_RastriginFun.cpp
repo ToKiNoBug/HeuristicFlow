@@ -1,12 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 #include <Eigen/Dense>
 #include <HeuristicFlow/PSO>
 #include <iostream>
@@ -14,13 +23,14 @@
 using namespace Eigen;
 using namespace std;
 
+// Test NSGA2 with rastrigin function
 void testRastriginFun() {
   static const size_t N = 20;
-  using solver_t = PSO_Eigen<N, FITNESS_LESS_BETTER, RECORD_FITNESS>;
+  using solver_t = heu::PSO_Eigen<N, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS>;
 
   using Var_t = Eigen::Array<double, N, 1>;
 
-  PSOOption opt;
+  heu::PSOOption opt;
   opt.populationSize = 400;
   opt.maxGeneration = 50 * N;
   opt.maxFailTimes = -1;
@@ -31,9 +41,9 @@ void testRastriginFun() {
 
   solver_t solver;
 
-  solver_t::iFun_t iFun = [](Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *vMax) {
+  solver_t::iFun_t iFun = [](Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
     for (size_t i = 0; i < N; i++) {
-      x->operator[](i) = ei_randD(xMin->operator[](i), xMax->operator[](i));
+      x->operator[](i) = heu::ei_randD(xMin->operator[](i), xMax->operator[](i));
       v->operator[](i) = 0;
     }
   };
@@ -64,9 +74,8 @@ void testRastriginFun() {
        << " generations" << endl;
 
   cout << "result fitness = " << solver.bestFitness() << endl;
-
-  const Var_t &result = solver.globalBest().position;
   /*
+  const Var_t &result = solver.globalBest().position;
   cout<<"result = [";
   for(auto i : result) {
       cout<<i<<" , ";

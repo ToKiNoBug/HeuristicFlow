@@ -1,25 +1,34 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_FUNBODY_HPP
-#define EIGEN_HEU_FUNBODY_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_FUNBODY_HPP
+#define HEU_FUNBODY_HPP
 
 #include <type_traits>
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Global
- * \brief This marco metafunction is used to generate a struct
- * that adpatively mantain a function pointer.
+ * \ingroup CXX14_METAHEURISTIC
+ * \brief This marco metafunction is used to generate a struct that adpatively mantain a function pointer.
  *
  *
  * If a function name is provided at compile time, it can execute the function,
@@ -27,18 +36,18 @@ namespace Eigen {
  * at runtime.
  *
  */
-#define EIGEN_HEU_MAKE_FUNAREA(funFlag, FunFlag, Suffix)                                          \
-  template <typename return_t = void, typename... a>                                              \
+#define HEU_MAKE_FUNAREA(funFlag, Suffix)                                                         \
+  template <typename... a>                                                                        \
   class funFlag##Area_##Suffix {                                                                  \
    public:                                                                                        \
-    using funPtr_t = return_t (*)(a...);                                                          \
+    using funPtr_t = void (*)(a...);                                                              \
                                                                                                   \
    private:                                                                                       \
-    template <return_t (*_fun)(a...)>                                                             \
+    template <void (*_fun)(a...)>                                                                 \
     class funBodyCT {                                                                             \
      public:                                                                                      \
       inline constexpr funPtr_t funFlag() const { return _fun; }                                  \
-      inline return_t run##FunFlag(a... _a) const { return _fun(_a...); }                         \
+      inline void run##funFlag(a... _a) const { _fun(_a...); }                                    \
                                                                                                   \
      private:                                                                                     \
       static_assert(_fun != nullptr, "Template function mustn't be nullptr");                     \
@@ -48,18 +57,18 @@ namespace Eigen {
      public:                                                                                      \
       funBodyRT() { _funPtr = nullptr; }                                                          \
       inline funPtr_t funFlag() const { return _funPtr; }                                         \
-      inline return_t run##FunFlag(a... _a) const { return _funPtr(_a...); }                      \
-      inline void set##FunFlag(funPtr_t __) { _funPtr = __; }                                     \
+      inline void run##funFlag(a... _a) const { _funPtr(_a...); }                                 \
+      inline void set##funFlag(funPtr_t __) { _funPtr = __; }                                     \
                                                                                                   \
      protected:                                                                                   \
       funPtr_t _funPtr;                                                                           \
     };                                                                                            \
                                                                                                   \
    public:                                                                                        \
-    template <return_t (*_fun)(a...)>                                                             \
+    template <void (*_fun)(a...)>                                                                 \
     using funBody = typename std::conditional<_fun == nullptr, funBodyRT, funBodyCT<_fun>>::type; \
   };
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  // EIGEN_HEU_FUNBODY_HPP
+#endif  // HEU_FUNBODY_HPP

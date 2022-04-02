@@ -1,29 +1,53 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_MOGABASE_HPP
-#define EIGEN_HEU_MOGABASE_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_MOGABASE_HPP
+#define HEU_MOGABASE_HPP
 
 #include <assert.h>
 
 #include "InternalHeaderCheck.h"
 #include "MOGAAbstract.hpp"
 
-#ifndef Heu_MOGA_MaxRunTimeObjNum
-#define Heu_MOGA_MaxRunTimeObjNum 32
+#ifndef HEU_MAX_RUNTIME_OBJNUM
+
+/**
+ * \ingroup CXX14_METAHEURISTIC
+ * \brief Maximum runtime objective numbers at runtime.
+ * NSGA2 with runtime objective numbers requires limited objNum.
+ *
+ * To change this value, define this macro before including this module, see the following code:
+ *
+ * \code {.cpp}
+ * #define HEU_MAX_RUNTIME_OBJNUM 64
+ * #include <unsupported/Eigen/CXX14/MetaHeuristic>
+ * \endcode
+ *
+ */
+#define HEU_MAX_RUNTIME_OBJNUM 32
 #endif
 
-namespace Eigen {
+namespace heu {
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class MOGABase
  * \brief Base class for multiple objective genetic solvers.
  *
@@ -52,18 +76,19 @@ class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, 
   using Base_t = MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  ~MOGABase() {}
+  HEU_MAKE_GABASE_TYPES(Base_t)
 
   /**
    * \brief Returns numbers of objectives
    *
    * \return constexpr size_t Numbers of objecvites at compile time.
    */
-  inline constexpr size_t objectiveNum() const { return ObjNum; }
+  constexpr size_t objectiveNum() const { return ObjNum; }
 };
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class MOGABase
  * \brief Base class for multiple objective genetic solvers.
  *
@@ -85,9 +110,10 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_
     : public MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  public:
   using Base_t = MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  HEU_MAKE_GABASE_TYPES(Base_t)
 
   MOGABase() { _objectiveNum = 0; }
+  ~MOGABase() {}
 
   /**
    * \brief Return the value of objecvites
@@ -99,16 +125,14 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_
   /**
    * \brief Set the Objective Num object
    *
-   * \note Runtime assertion will fail if given _objNum is less than 2, or it exceeds Heu_MOGA_MaxRunTimeObjNum.
+   * \note Runtime assertion will fail if given _objNum is less than 2, or it exceeds HEU_MAX_RUNTIME_OBJNUM.
    * \note This member function exists only when template parameter ObjNum is Eigen::Dynamic.
    *
    * \param _objNum Number of objectives
    */
   inline void setObjectiveNum(int _objNum) {
-#ifndef Heu_NO_RTASSERT
     assert(_objNum > 1);
-    assert(_objNum <= Heu_MOGA_MaxRunTimeObjNum);
-#endif
+    assert(_objNum <= HEU_MAX_RUNTIME_OBJNUM);
     _objectiveNum = _objNum;
   }
 
@@ -118,6 +142,6 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  // EIGEN_HEU_ MOGABASE_HPP
+#endif  // HEU_ MOGABASE_HPP

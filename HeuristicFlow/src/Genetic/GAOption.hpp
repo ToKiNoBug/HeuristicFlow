@@ -1,25 +1,35 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_GAOPTION_HPP
-#define EIGEN_HEU_GAOPTION_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_GAOPTION_HPP
+#define HEU_GAOPTION_HPP
 
 #include <stdint.h>
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 
 /// options about GA algorithm
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \struct GAOption
  * \brief GAOption is a struct encapsulating several general options for most types of genetic algorithm.
  *
@@ -50,6 +60,9 @@ struct GAOption {
    * \brief GA will stop once best solution hasn't been improved for continuous maxFailTimes generations. Default value
    * is 100.
    *
+   * \note This member doesn't works for MOGA solvers like NSGA2 and NSGA3 since there's no proper way to estimate if
+   * the PF hasn't been changing for generations.
+   *
    */
   size_t maxFailTimes;
 
@@ -72,6 +85,6 @@ struct GAOption {
   double mutateProb;
 };
 
-}  //    namespace Eigen
+}  //    namespace heu
 
-#endif  // EIGEN_HEU_GAOPTION_HPP
+#endif  // HEU_GAOPTION_HPP

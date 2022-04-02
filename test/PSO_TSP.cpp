@@ -1,12 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 #include <Eigen/Dense>
 #include <HeuristicFlow/PSO>
 #include <iostream>
@@ -16,26 +25,27 @@ using namespace std;
 
 #include <algorithm>
 
+// this tests shows how to solve TSP problems with PSO
 void testTSP_PSO(const size_t N) {
   static const size_t SpaceDim = 2;
-
+  // type of decision variable encoded in double
   using Var_t = Eigen::ArrayXd;
-
+  //  type of args
   using DistanceMat_t = Eigen::ArrayXXd;
-
-  using Solver_t = PSO_Eigen<Eigen::Dynamic, FITNESS_LESS_BETTER, RECORD_FITNESS, DistanceMat_t,
-                             PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
+  //  type of solver
+  using Solver_t = heu::PSO_Eigen<Eigen::Dynamic, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, DistanceMat_t,
+                                  heu::PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
 
   using Args_t = Solver_t::Args_t;
 
   Solver_t solver;
 
   using sortUnit = std::pair<double, size_t>;
-
+  //  Decode ArrayXd into a permulation through sorting.
   Solver_t::fFun_t fFun = [](const Var_t* x, const Args_t* args, double* fitness) {
-    const size_t N = (*args).rows();
-    std::vector<sortUnit> sortSpace(N);
-    for (size_t i = 0; i < N; i++) {
+    const size_t _N = (*args).rows();
+    std::vector<sortUnit> sortSpace(_N);
+    for (size_t i = 0; i < _N; i++) {
       sortSpace[i] = std::make_pair(x->operator[](i), i);
     }
 
@@ -45,7 +55,7 @@ void testTSP_PSO(const size_t N) {
 
     *fitness = 0;
 
-    for (size_t i = 0; i + 1 < N; i++) {
+    for (size_t i = 0; i + 1 < _N; i++) {
       *fitness += (*args)(sortSpace[i].second, sortSpace[i + 1].second);
     }
   };
@@ -66,7 +76,8 @@ void testTSP_PSO(const size_t N) {
     }
   }
 
-  PSOOption opt;
+  // Set the option of PSO
+  heu::PSOOption opt;
   opt.inertiaFactor = 0.8;
   opt.learnFactorG = 2;
   opt.learnFactorP = 2;
@@ -74,8 +85,10 @@ void testTSP_PSO(const size_t N) {
   opt.maxFailTimes = opt.maxGeneration / 10;
   opt.populationSize = 100;
 
+  // Set the dimension of PSO
   solver.setDimensions(N);
 
+  // Set posMin,posMax and velocityMax
   solver.setPVRange(0, 1, 0.5);
 
   solver.setfFun(fFun);
@@ -86,6 +99,7 @@ void testTSP_PSO(const size_t N) {
   {
     double iniFitness;
     fFun(&solver.population().front().position, &solver.args(), &iniFitness);
+    // The initial fitness value as reference
     cout << "iniFitness = " << iniFitness << endl;
   }
 

@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/C%2B%2B-14-blue?style=plastic) ![](https://img.shields.io/badge/Eigen-v3.3+-yellowgreen?style=plastic) 
 
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/TokiNoBug/OptimTemplates?style=plastic) ![GitHub](https://img.shields.io/github/license/TokiNoBug/OptimTemplates?style=plastic)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/TokiNoBug/HeuristicFlow?style=plastic) ![GitHub](https://img.shields.io/github/license/TokiNoBug/HeuristicFlow?style=plastic)
 
 C++ template class lib for several optimization algorithms, like GA, NSGA2,NSGA3,PSO,etc.
 
@@ -27,9 +27,6 @@ Implemented :
 3. NSGA-III
 4. PSO
 
-TODO:
-1. Rewrite documents
-2. Final checks
 
 Waiting to be implemented :
 1. GravitySearchAlgorithm

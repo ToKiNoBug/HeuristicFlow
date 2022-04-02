@@ -1,12 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 #include <Eigen/Dense>
 #include <HeuristicFlow/Genetic>
 #include <iostream>
@@ -14,17 +23,17 @@
 using namespace Eigen;
 using namespace std;
 
-/// Zitzler–Deb–Thiele's function N. 3
+/// Zitzler–Deb–Thiele's function N. 3 is a MO testing function
 void testNSGA2_ZDT3() {
   // 0<=x_i<=1, 1<=i<=30
   static const size_t XNum = 30;
-  static const double r = 0.2;
+  // static const double r = 0.2;
 
-  Eigen::NSGA2<std::array<double, XNum>, 2, FITNESS_LESS_BETTER, RECORD_FITNESS> algo;
+  heu::NSGA2<std::array<double, XNum>, 2, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS> algo;
 
   void (*iFun)(std::array<double, XNum>*) = [](std::array<double, XNum>* x) {
     for (size_t i = 0; i < XNum; i++) {
-      x->operator[](i) = Eigen::ei_randD();
+      x->operator[](i) = heu::ei_randD();
     }
   };
 
@@ -42,22 +51,22 @@ void testNSGA2_ZDT3() {
     f->operator[](1) = g * h;
   };
 
-  auto cFun = Eigen::GADefaults<std::array<double, XNum>>::cFunNd<(Eigen::DivEncode<1, 2>::code)>;
+  auto cFun = heu::GADefaults<std::array<double, XNum>>::cFunNd<(heu::DivEncode<1, 2>::code)>;
 
   void (*mFun)(const std::array<double, XNum>* src, std::array<double, XNum>*) = [](const std::array<double, XNum>* src,
                                                                                     std::array<double, XNum>* x) {
     *x = *src;
-    const size_t mutateIdx = Eigen::ei_randIdx(XNum);
+    const size_t mutateIdx = heu::ei_randIdx(XNum);
 
-    x->operator[](mutateIdx) += 0.005 * Eigen::ei_randD(-1, 1);
+    x->operator[](mutateIdx) += 0.005 * heu::ei_randD(-1, 1);
 
     x->operator[](mutateIdx) = std::min(x->operator[](mutateIdx), 1.0);
     x->operator[](mutateIdx) = std::max(x->operator[](mutateIdx), 0.0);
   };
 
-  GAOption opt;
+  heu::GAOption opt;
   opt.populationSize = 200;
-  opt.maxFailTimes = 500;
+  // opt.maxFailTimes = 500;  // this member is useless to MOGA solvers
   opt.maxGenerations = 2000;
 
   algo.setiFun(iFun);

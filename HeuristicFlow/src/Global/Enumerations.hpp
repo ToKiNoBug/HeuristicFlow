@@ -1,24 +1,38 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_ENUMERATIONS_HPP
-#define EIGEN_HEU_ENUMERATIONS_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_ENUMERATIONS_HPP
+#define HEU_ENUMERATIONS_HPP
 
 #include <stdint.h>
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Whether to record trainning curve of not
+ *
+ * If `RECORD_FITNESS` is assigned to a solver, a specialization of its internal base class will be activated resulting
+ * in an extra member `std::vector<Fitness_t> _record`. In that conditon, the solver will record the best fitness of
+ * each generation when it's running.
  *
  */
 enum RecordOption : uint8_t {
@@ -27,7 +41,7 @@ enum RecordOption : uint8_t {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convert enumeration to string
  *
  * \param r The enum value
@@ -43,9 +57,11 @@ inline const char* Enum2String(RecordOption r) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Optimization direction
  *
+ * It's vital to tell which direction is better. If `FITNESS_LESS_BETTER` is assigned, a solver will tries the find the
+ * minimum value and vise versa.
  */
 enum FitnessOption : uint8_t {
   FITNESS_LESS_BETTER = false,    ///< Less fitness value is better
@@ -53,7 +69,7 @@ enum FitnessOption : uint8_t {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convert enumeration to string
  *
  * \param f The enum value
@@ -69,33 +85,33 @@ inline const char* Enum2String(FitnessOption f) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  *
  * \brief Which type of container to use.
  *
  * \note Std uses std::vector for dynamic and std::array for fixed.\n\n
- *  While Eigen refers to Eigen::Array<scalar_t,size,1>. If you hope
+ *  While Eigen refers to `Eigen::Array<scalar_t,size,1>`. If you hope
  *  to use Eigen's matrices or even tensors, inherit it and reload
- *  operator[] to avoid size-checking.\n\n
+ *  `operator[](int)` to avoid size-checking.\n\n
  *  Custom types should at least be able to act like a vector.
- *  It must has opeartor[](int) that provides random access and
- *  member function size() const that returns the number of elements.
- *  Also if it's dynamic-sized, it should have function resize(int) to change its size.
+ *  It must has `opeartor[](int)` that provides random access and
+ *  member function `size() const` that returns the number of elements.
+ *  Also if it's dynamic-sized, it should have function `resize(int)` to change its size.
  */
-enum DoubleVectorOption {
+enum ContainerOption {
   Std = 'S',    ///< C++ standard containers
   Eigen = 'E',  ///< Eigen containers
   Custom = 'C'  ///< User defined custom types.
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convert enumeration to string
  *
  * \param e The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(DoubleVectorOption e) {
+inline const char* Enum2String(ContainerOption e) {
   switch (e) {
     case Std:
       return "C++ std vector/array";
@@ -107,7 +123,7 @@ inline const char* Enum2String(DoubleVectorOption e) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief The type of a box-constraint
  *
  * \note Box constraint is the most regular encoding types
@@ -122,7 +138,7 @@ enum BoxShape {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convert enumeration to string
  *
  * \param b The enum value
@@ -138,7 +154,7 @@ inline const char* Enum2String(BoxShape b) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Encoding type of a box constraint
  *
  * \note Various encoding types are used in evoluntionary
@@ -154,7 +170,7 @@ enum EncodeType {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convert enumeration to string
  *
  * \param e The enum value
@@ -171,6 +187,6 @@ inline const char* Enum2String(EncodeType e) {
   }
 }
 
-}  //    namespace Eigen
+}  //    namespace heu
 
-#endif  // EIGEN_HEU_ENUMERATIONS_HPP
+#endif  // HEU_ENUMERATIONS_HPP

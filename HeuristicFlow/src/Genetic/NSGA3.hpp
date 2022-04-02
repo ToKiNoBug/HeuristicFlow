@@ -1,27 +1,40 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_NSGA3_HPP
-#define EIGEN_HEU_NSGA3_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_NSGA3_HPP
+#define HEU_NSGA3_HPP
 
 #include "InternalHeaderCheck.h"
 #include "NSGA3Base.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
  * @brief Parital specialization for NSGA3 using Eigen's array as fitness values
  */
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \brief NSGA3 is the thrid Nondominated Sorting Genetic Algorithm. It's suitable for many objective problems.
+ *
+ * NSGA3 uses many reference points to maintain a diverse and uniform PF.
+ * \sa internal::NSGA3Abstract::select for this special procedure.
  *
  *
  * The default value of template parameters are listed in braces
@@ -35,7 +48,28 @@ namespace Eigen {
  * \tparam _cFun_ Crossover function (nullptr)
  * \tparam _mFun_ Mutation function (nullptr)
  *
- * \sa NSGA3Base NSGA3Abstract NSGABase MOGABase MOGAAbstract GABase
+ * \sa GAOption for ga running parameters
+ * \sa SOGA for APIs that all genetic solvers have
+ * \sa NSGA2 for APIs that all MOGA solvers have
+ *
+ * ## APIs that all NSGA3 solvers have:
+ * - `const RefMat_t& referencePoints() const` returns a matrix of reference points. Each coloumn is the coordinate of a
+ * RP. (Here RP refers to the word reference point)
+ * - `size_t referencePointCount() const` number of reference points according to the RP precision.
+ *
+ *
+ * ## APIs that NSGA3 solvers using single-layer RPs have:
+ * - `size_t referencePointPrecision() const` returns the RP precision.
+ * - `void setReferencePointPrecision(size_t)` set the RP precision
+ *
+ *
+ * ## APIs that NSGA2 solvers using double-layer RPs have:
+ * - `size_t innerPrecision() const` returns the precision of inner layer RP.
+ * - `size_t outerPrecision() const` returns the precision of outer layer RP.
+ * - `void setReferencePointPrecision(size_t i, size_t o)` set the precison of inner and outer layer.
+ *
+ * \note When using NSGA3 solvers, is strongly recommended to set the precision explicitly before initializing the
+ * population. Don't rely on the default value!
  */
 template <typename Var_t, int ObjNum, RecordOption rOpt = DONT_RECORD_FITNESS,
           ReferencePointOption rpOpt = ReferencePointOption::SINGLE_LAYER, class Args_t = void,
@@ -47,7 +81,9 @@ class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iF
   using Base_t = internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
+  NSGA3() {}
+  ~NSGA3() {}
+  HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
   /**
    * \brief
@@ -57,8 +93,14 @@ class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iF
     this->makeReferencePoses();
     Base_t::initializePop();
   }
+
+  /**
+   * \brief Run the solver.
+   *
+   */
+  void run() { this->template __impl_run<NSGA3>(); }
 };
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_NSGA3_HPP
+#endif  //  HEU_NSGA3_HPP

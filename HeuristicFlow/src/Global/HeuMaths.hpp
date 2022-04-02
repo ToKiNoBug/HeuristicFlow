@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_HeuMaths_HPP
-#define EIGEN_HEU_HeuMaths_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_HeuMaths_HPP
+#define HEU_HeuMaths_HPP
 
 #include <stdint.h>
 #include <type_traits>
@@ -16,7 +26,7 @@
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 /*
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
@@ -27,24 +37,19 @@ namespace Eigen {
 #endif
 
 */
-/*
-template<typename A>
-inline A square(A a)
-{
-return a*a;
+template <typename A>
+inline A square(A a) {
+  return a * a;
 }
 
-inline double sign(double x)
-{
-if(x>0) return 1;
-if(x<0) return -1;
-return 0;
+inline double sign(double x) {
+  if (x > 0) return 1;
+  if (x < 0) return -1;
+  return 0;
 }
-
-*/
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Compute fractorial.
  *
  * \tparam num_t Type of integer
@@ -60,7 +65,7 @@ inline num_t fractorial(num_t n) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Computer combinatorial number C^K_N.
  * This function is called by NSGA3 when making reference points.
  *
@@ -164,7 +169,7 @@ inline T imp_max(T a, U b, Args_t... args) {
 }  // namespace internal
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Find Minimum value for multiple inputs
  *
  * \tparam T Type of input
@@ -179,7 +184,7 @@ inline T min(T a, Args_t... args) {
 }
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Find maximum value for multiple inputs
  *
  * \tparam T Type of input
@@ -193,6 +198,6 @@ inline T max(T a, Args_t... args) {
   return internal::imp_max(a, args...);
 }
 
-}  //    namespace Eigen
+}  //    namespace heu
 
-#endif  // EIGEN_HEU_Maths_HPP
+#endif  // HEU_Maths_HPP

@@ -1,12 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 #include <Eigen/Dense>
 #include <HeuristicFlow/PSO>
 #include <cmath>
@@ -14,23 +23,27 @@
 using namespace Eigen;
 using namespace std;
 
+// this tests shows the hierarchy of PSO solvers.
 void testPSOBase() {
   using Var_t = std::vector<double>;
 
-  internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, void, nullptr, nullptr>* abstractNoRec = nullptr;
+  heu::internal::PSOAbstract<Var_t, double, heu::DONT_RECORD_FITNESS, void, nullptr, nullptr>* abstractNoRec = nullptr;
 
-  internal::PSOAbstract<Var_t, double, RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* abstractDoRec = nullptr;
+  heu::internal::PSOAbstract<Var_t, double, heu::RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* abstractDoRec =
+      nullptr;
 
-  internal::PSOBase<Var_t, 10, double, RecordOption::DONT_RECORD_FITNESS, void, nullptr, nullptr>* baseNoRec = nullptr;
+  heu::internal::PSOBase<Var_t, 10, double, heu::RecordOption::DONT_RECORD_FITNESS, void, nullptr, nullptr>* baseNoRec =
+      nullptr;
 
-  internal::PSOBase<Var_t, 0, double, RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* baseDoRec = nullptr;
-
-  // DoRec is derived from NoRec
-  abstractNoRec = abstractDoRec;
+  heu::internal::PSOBase<Var_t, 0, double, heu::RecordOption::RECORD_FITNESS, void, nullptr, nullptr>* baseDoRec =
+      nullptr;
 
   // base is derived from abstract
   abstractNoRec = baseNoRec;
   abstractDoRec = baseDoRec;
+
+  // DoRec is derived from NoRec
+  abstractNoRec = abstractDoRec;
 }
 
 int main() {

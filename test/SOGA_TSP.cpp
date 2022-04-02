@@ -1,11 +1,21 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
+
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 
 #include <Eigen/Dense>
 #include <HeuristicFlow/Genetic>
@@ -14,6 +24,7 @@
 using namespace Eigen;
 using namespace std;
 
+// Test SOGA with TSP problem
 void testTSP_SOGA(const uint32_t PointNum) {
   static const uint8_t DIM = 2;
   // static const double LengthBase=100;
@@ -23,8 +34,8 @@ void testTSP_SOGA(const uint32_t PointNum) {
   points.reserve(PointNum);
   for (uint32_t i = 0; i < PointNum; i++) {
     points.emplace_back();
-    for (auto &i : points.back()) {
-      i = ei_randD();
+    for (auto &v : points.back()) {
+      v = heu::ei_randD();
     }
   }
   /*
@@ -41,23 +52,24 @@ void testTSP_SOGA(const uint32_t PointNum) {
 
   // typedef vector<permUnit> permulation;
   //       var,        less=better,    data src
-  SOGA<vector<double>, FITNESS_LESS_BETTER, DONT_RECORD_FITNESS, std::tuple<const vector<Point_t> *>> algo;
+  heu::SOGA<vector<double>, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS, std::tuple<const vector<Point_t> *>>
+      algo;
   static const uint8_t dataIdx = 0;
   typedef tuple<const vector<Point_t> *> Args_t;
   Args_t args;  //=make_tuple(PointNum,points.data());
   get<dataIdx>(args) = &points;
   // initialize function
 
-  auto initializeFun = [](vector<double> *x, const Args_t *args) {
-    const uint32_t permL = get<dataIdx>(*args)->size();
+  auto initializeFun = [](vector<double> *x, const Args_t *_args) {
+    const uint32_t permL = get<dataIdx>(*_args)->size();
     x->resize(permL);
     for (uint32_t i = 0; i < permL; i++) {
-      x->operator[](i) = ei_randD();
+      x->operator[](i) = heu::ei_randD();
     }
   };
 
   // calculate fitness
-  auto calculateFun = [](const vector<double> *x, const Args_t *args, double *f) {
+  auto calculateFun = [](const vector<double> *x, const Args_t *_args, double *f) {
     const uint32_t permL = x->size();
     vector<permUnit> perm(permL);
     for (uint32_t i = 0; i < permL; i++) {
@@ -70,8 +82,8 @@ void testTSP_SOGA(const uint32_t PointNum) {
 
     double L = 0;
     for (uint32_t i = 1; i < permL; i++) {
-      const Point_t &prev = get<dataIdx>(*args)->operator[](perm[i - 1].second);
-      const Point_t &cur = get<dataIdx>(*args)->operator[](perm[i].second);
+      const Point_t &prev = get<dataIdx>(*_args)->operator[](perm[i - 1].second);
+      const Point_t &cur = get<dataIdx>(*_args)->operator[](perm[i].second);
       double curL = 0;
       for (uint8_t d = 0; d < DIM; d++) {
         curL += (prev[d] - cur[d]) * (prev[d] - cur[d]);
@@ -93,14 +105,14 @@ void testTSP_SOGA(const uint32_t PointNum) {
   }
 
   auto crossoverFun =
-      Eigen::GADefaults<vector<double>, Args_t, DoubleVectorOption::Std>::cFunXd<Eigen::DivCode::DivCode_Half>;
+      heu::GADefaults<vector<double>, Args_t, heu::ContainerOption::Std>::cFunXd<heu::DivCode::DivCode_Half>;
 
   auto mutateFun = [](const vector<double> *src, vector<double> *x, const Args_t *) {
     *x = *src;
     const uint32_t permL = x->size();
-    if (ei_randD() < 0.5) {  // modify one element's value
+    if (heu::ei_randD() < 0.5) {  // modify one element's value
       double &v = x->operator[](std::rand() % permL);
-      v += ei_randD(-0.01, 0.01);
+      v += heu::ei_randD(-0.01, 0.01);
       v = std::min(v, 1.0);
       v = std::max(v, 0.0);
     } else {
@@ -114,9 +126,12 @@ void testTSP_SOGA(const uint32_t PointNum) {
     }
   };
 
-  GAOption opt;
+  heu::GAOption opt;
   opt.maxGenerations = 30 * PointNum;
-  opt.maxFailTimes = -1;
+  opt.maxFailTimes = opt.maxGenerations;
+  //  If maxFailTimes is equal or greater than maxGenerations, the solver will definatly runs
+  //  for 100 generations. Since member `maxFailTimes` is of type `size_t`, you can also use
+  //  -1 to achieve this, however it's kind of undefined behavior
 
   algo.setiFun(initializeFun);
   algo.setmFun(mutateFun);

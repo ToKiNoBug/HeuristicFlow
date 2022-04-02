@@ -1,14 +1,23 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_NSGA3ABSTRACT_HPP
-#define EIGEN_HEU_NSGA3ABSTRACT_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+#ifndef HEU_NSGA3ABSTRACT_HPP
+#define HEU_NSGA3ABSTRACT_HPP
 
 #include <unordered_map>
 #include <unordered_set>
@@ -16,12 +25,12 @@
 #include "InternalHeaderCheck.h"
 #include "NSGABase.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Internal base class for NSGA3.
  *
  * This class implements most part of NSGA3' selection precedure. Also it maintains reference points in a matrix.
@@ -45,7 +54,10 @@ class NSGA3Abstract
   using Base_t = NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
+  ~NSGA3Abstract() {}
+  HEU_MAKE_NSGABASE_TYPES(Base_t)
+  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+
   using RefPointIdx_t = size_t;
 
   /// Type of reference point(called RP in brief) matrix. Each coloumn is the coordinate of a RP.
@@ -110,7 +122,7 @@ class NSGA3Abstract
    *
    * \sa NSGA2
    */
-  void select() {
+  void __impl_select() {
     // population size before selection.
     const size_t popSizeBef = this->_population.size();
     std::vector<infoUnit3> pop;
@@ -140,7 +152,7 @@ class NSGA3Abstract
     selected.reserve(this->_option.populationSize);
 
     // pointer to undertermined layer Fl
-    std::vector<infoUnit3*>* FlPtr = nullptr;
+    std::vector<infoUnitBase_t*>* FlPtr = nullptr;
 
     // if need to use RP in this selection
     bool needRefPoint;
@@ -155,7 +167,7 @@ class NSGA3Abstract
       // We need to select part of members in Fl and eliminate the rest
       if (selected.size() + this->pfLayers.front().size() > this->_option.populationSize) {
         needRefPoint = true;
-        FlPtr = (decltype(FlPtr))&this->pfLayers.front();
+        FlPtr = &this->pfLayers.front();
         break;
       }
 
@@ -225,7 +237,7 @@ class NSGA3Abstract
    * intercept of this hyperplane. If the matrix is singular, use the diagonal line as intercept.
    * 6. Update the translateFitness : gene.translatedFitness/=intercept.
    */
-  void normalize(const std::unordered_set<infoUnit3*>& selected, const std::vector<infoUnit3*>& Fl) const {
+  void normalize(const std::unordered_set<infoUnit3*>& selected, const std::vector<infoUnitBase_t*>& Fl) const {
     const size_t M = this->objectiveNum();
     stdContainer<const infoUnit3*, ObjNum> extremePtrs;
     heu_initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs, M);
@@ -241,7 +253,7 @@ class NSGA3Abstract
     ideal.setConstant(pinfD);
 
     for (size_t c = 0; c < M; c++) {
-      extremePtrs[c] = *(Fl.begin());
+      extremePtrs[c] = static_cast<infoUnit3*>(Fl[0]);
       extremePoints.col(c) = extremePtrs[c]->fitnessCache;
     }
 
@@ -258,7 +270,7 @@ class NSGA3Abstract
       ideal = ideal.min(i->fitnessCache);
       for (size_t objIdx = 0; objIdx < M; objIdx++) {
         if (i->fitnessCache[objIdx] > extremePtrs[objIdx]->fitnessCache[objIdx]) {
-          extremePtrs[objIdx] = i;
+          extremePtrs[objIdx] = static_cast<infoUnit3*>(i);
         }
       }
     }
@@ -280,7 +292,7 @@ class NSGA3Abstract
     }
 
     for (auto i : Fl) {
-      i->translatedFitness = (i->fitnessCache - ideal) / intercepts;
+      static_cast<infoUnit3*>(i)->translatedFitness = (i->fitnessCache - ideal) / intercepts;
     }
   }  //  normalize
 
@@ -334,9 +346,10 @@ class NSGA3Abstract
    * \param Fl_src Source of Fl
    * \param Fl_dst Destination of Fl
    */
-  void associate(const std::vector<infoUnit3*>& Fl_src,
+  void associate(const std::vector<infoUnitBase_t*>& Fl_src,
                  std::unordered_multimap<RefPointIdx_t, infoUnit3*>* Fl_dst) const {
-    for (auto i : Fl_src) {
+    for (auto j : Fl_src) {
+      infoUnit3* i = static_cast<infoUnit3*>(j);
       RefPointIdx_t idx = findNearest(i->translatedFitness, &i->distance);
       i->closestRefPoint = idx;
       Fl_dst->emplace(idx, i);
@@ -393,7 +406,7 @@ class NSGA3Abstract
           }
           pickedGene = minGene;
         } else {
-          // pick a ei_random member in associatedGenesInFl
+          // pick a random member in associatedGenesInFl
           size_t N = 0;
           for (auto it = associatedGenesInFl.first; it != associatedGenesInFl.second; ++it) {
             N++;
@@ -425,7 +438,7 @@ class NSGA3Abstract
   inline static void findMinSet(std::unordered_map<RefPointIdx_t, size_t>& refPoints,
                                 std::vector<std::unordered_map<RefPointIdx_t, size_t>::iterator>* minNicheIterators) {
     minNicheIterators->clear();
-    size_t minNiche = -1;
+    size_t minNiche = 0xFFFFFFFF;
     for (auto i : refPoints) {
       minNiche = std::min(minNiche, i.second);
     }
@@ -438,7 +451,7 @@ class NSGA3Abstract
 
  private:
   // make reference points with Das and Dennis’s method recrusively.
-  void pri_makeRP(const size_t dimN, const size_t precision, const size_t curDim, const size_t curP, const size_t accum,
+  void pri_makeRP(const size_t dimN, const size_t precision, const size_t curDim, const size_t, const size_t accum,
                   Fitness_t* rec, std::vector<Fitness_t>* dst) const {
     if (curDim + 1 >= dimN) {
       rec->operator[](dimN - 1) = 1.0 - double(accum) / precision;
@@ -455,7 +468,7 @@ class NSGA3Abstract
   void pri_startRP(const size_t dimN, const size_t precision, std::vector<Fitness_t>* dst) const {
     Fitness_t rec;
 #if __cplusplus >= 201703L
-    if constexpr (ObjNum == Runtime) {
+    if constexpr (ObjNum == Eigen::Dynamic) {
       rec.resize(this->objectiveNum());
     }
 #else
@@ -479,14 +492,14 @@ class NSGA3Abstract
   }
 };
 
-#define EIGEN_HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t) \
-  EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)            \
-  using RefMat_t = typename Base_t::RefMat_t;      \
-  using infoUnit3 = typename Base_t::infoUnit3;    \
+#define HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)    \
+  HEU_MAKE_NSGABASE_TYPES(Base_t)               \
+  using RefMat_t = typename Base_t::RefMat_t;   \
+  using infoUnit3 = typename Base_t::infoUnit3; \
   using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_NSGA3ABSTRACT_HPP
+#endif  //  HEU_NSGA3ABSTRACT_HPP

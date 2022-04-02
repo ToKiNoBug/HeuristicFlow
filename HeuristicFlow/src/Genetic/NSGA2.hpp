@@ -1,28 +1,40 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_NSGA2BASE_HPP
-#define EIGEN_HEU_NSGA2BASE_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_NSGA2BASE_HPP
+#define HEU_NSGA2BASE_HPP
 
 #include "InternalHeaderCheck.h"
 #include "NSGABase.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class NSGA2
  * \brief NSGA2 MOGA solver. Suitable for not too many objectives.
  *
  * This class implemented the NSGA-II algorithm.\n
- * NSGA-II is a template for multi-objective genetic algorithm based on
- * Pareto optimality. It selects by nondomainance sorting
+ * NSGA-II is a template for multi-objective genetic algorithm based on Pareto optimality. It selects by nondomainance
+ * sorting.
+ *
+ * \sa NSGA2::select for this special procedure.
  *
  * @tparam Var_t Type of decisition variable.
  * @tparam ObjNum Numbers of objectives.
@@ -33,6 +45,21 @@ namespace Eigen {
  * @tparam _fFun_ Compile-time fFun, use nullptr for runtime
  * @tparam _cFun_ Compile-time cFun, use nullptr for runtime
  * @tparam _mFun_ Compile-time mFun, use nullptr for runtime
+ *
+ * \sa GAOption for ga running parameters
+ * \sa SOGA for APIs that all genetic solvers have.
+ * \sa NSGA3 for many objective problems
+ *
+ * ## APIs that MOGA solvers have:
+ * - `void paretoFront(std::vector<Fitness_t>& front) const` get pareto front of fitness values.
+ * - `void paretoFront(std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const` get pareto front of
+ * decision variables and fitness values.
+ * - `const std::unordered_set<const Gene*>& pfGenes() const` returns a const reference to the PF hash set.
+ * - `size_t objectiveNum() const` get the number of objectives.
+ *
+ * ## APIs that MOGA with dynamic objective numbers have:
+ * - `void setObjectiveNum(int _objNum)` set the objective number.
+ *
  */
 template <typename Var_t, int ObjNum, FitnessOption fOpt = FITNESS_LESS_BETTER, RecordOption rOpt = DONT_RECORD_FITNESS,
           class Args_t = void,
@@ -46,8 +73,9 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
  private:
  public:
   NSGA2(){};
-  virtual ~NSGA2(){};
-  EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)
+  ~NSGA2(){};
+  HEU_MAKE_NSGABASE_TYPES(Base_t)
+  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
   /**
    * \brief This struct is used to store nondomainance sorting-related informations in select operation. A pointer to
@@ -65,6 +93,12 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
      */
     double congestion;
   };
+
+  /**
+   * \brief Run the solver.
+   *
+   */
+  inline void run() { this->template __impl_run<NSGA2>(); }
 
  protected:
   /**
@@ -95,9 +129,7 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
    */
   template <int64_t objIdx>
   static bool compareByFitness(const infoUnitBase_t *A, const infoUnitBase_t *B) {
-#ifndef Heu_NO_STATICASSERT
     static_assert(objIdx >= 0, "Invalid comparison flag");
-#endif
     if (A == B) return false;
     /// compare by fitness on single objective
     return A->fitnessCache[objIdx] < B->fitnessCache[objIdx];
@@ -140,16 +172,15 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
    * attributes of a gene.
    *
    */
-  virtual void select() {
+  void __impl_select() {
     using cmpFun_t = bool (*)(const infoUnitBase_t *, const infoUnitBase_t *);
-    static const size_t objCapacity = (ObjNum == Eigen::Dynamic) ? (Heu_MOGA_MaxRunTimeObjNum) : ObjNum;
+    static const size_t objCapacity = (ObjNum == Eigen::Dynamic) ? (HEU_MAX_RUNTIME_OBJNUM) : ObjNum;
     static const std::array<cmpFun_t, objCapacity> fitnessCmpFuns = expand<0, objCapacity - 1>();
 
     const size_t popSizeBefore = this->_population.size();
     std::vector<infoUnit2> pop;
     pop.clear();
     pop.reserve(popSizeBefore);
-    this->sortSpace.reserve(2 * this->_option.populationSize);
     this->sortSpace.resize(popSizeBefore);
 
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
@@ -272,6 +303,6 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
   }
 };
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_NSGA2BASE_HPP
+#endif  // HEU_NSGA2BASE_HPP

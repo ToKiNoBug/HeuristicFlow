@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_PSO_HPP
-#define EIGEN_HEU_PSO_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_PSO_HPP
+#define HEU_PSO_HPP
 #include <array>
 #include <vector>
 #include <tuple>
@@ -18,10 +28,10 @@
 #include "PSOOption.hpp"
 #include "PSOBase.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \class PSO
  * \brief Generalized PSO solver.
  *
@@ -36,7 +46,51 @@ namespace Eigen {
  * \tparam _iFun_ Initialization function at compile time (nullptr)
  * \tparam _fFun_ Fitness function at compile time (nullptr)
  *
+ * \sa SOGA for the meanning of `Arg_t`
+ *
  * \note This class implements PSO for the condition that `isEigenTypes` is `false`.
+ *
+ * PSO solvers have different APIs for different template parameters.
+ *
+ * ## These APIs are common:
+ * - `void setOption(const PSOOption&)` to set the option of a PSO solver.
+ * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of posMin, posMax, and
+ * velocityMax.
+ * - `void setPVRange(double pMin, double pMax, double vMax)` will also set these value but it shapes the box into a
+ * square box.
+ * - `void initializePop()` to initialize the whole population.
+ * - `void run()` to run the PSO algorithm.
+ * - `double bestFitness() const` returns the best fitness value.
+ * - `const PSOOption& option() const` returns a const-ref to the PSOOption object.
+ * - `size_t generation() const` returns the generations that the solver has spend.
+ * - `size_t failTimes() const` returns the failtimes for current population.
+ * - `const Var_t& posMin() const` returns a const-ref to the minimum value of positoin.
+ * - `const Var_t& posMax() const` returns a const-ref to the maximum value of position.
+ * - `const Var_t& velocityMax() const` returns a const-ref to the maximum value of the abstract value of velocity.
+ * - `const std::vector<Particle>& population() const` returns a const-ref to the population.
+ * - `const Point& globalBest() const` returns a const-ref to the best solution that has ever found.
+ * - `int dimensions() const` returns the dimensions of decision variables.
+ * - `solver_t::HasParameters` marks whether `Arg_t` is `void`
+ * - `typename solver_t::iFun_t` is the type of initialization function
+ * - `typename solver_t::fFun_t` is the type of fitness function.
+ * - `iFun_t iFun() const` returns the initialization function.
+ * - `fFun_t fFun() const` returns the fitness function.
+ *
+ *
+ * ## These APIs exist when `Args_t` is not `void` :
+ * - `const Arg_t &args() const` returns a const-ref to args in the solver.
+ * - `void setArgs(const Arg_t &)` set the value of args.
+ *
+ *
+ * ## These APIs exist when template parameter `_iFun_` is `nullptr` :
+ * - `setiFun(iFun_t)` sets the initialization function.
+ *
+ * ## These APIs exist when template parameter `_fFun_` is `nullptr` :
+ * - `setfFun(fFun_t)` sets the fitness function.
+ *
+ * ## These APIs exist when template parameter `ObjNum` is `Eigen::Dynamic` :
+ * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to d.
+ *
  */
 template <typename Var_t, int DIM, bool isEigenTypes = true, FitnessOption FitnessOpt = FITNESS_LESS_BETTER,
           RecordOption RecordOpt = DONT_RECORD_FITNESS, class Arg_t = void,
@@ -46,34 +100,26 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
   using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
  public:
-  EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  PSO() {}
+  ~PSO() {}
+  HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
 
-  static const DoubleVectorOption Flag =
-      (std::is_same<Var_t, stdVecD_t<DIM>>::value) ? DoubleVectorOption::Std : DoubleVectorOption::Custom;
-
-  /**
-   * \brief Set the range of position and velocity.
-   *
-   * \note This function will shape the box to a square box. Non't call this if you need a non-square box.
-   *
-   * \param pMin Minium position value
-   * \param pMax Maximum position value
-   * \param vMax Maximum velocity absolute value
-   */
-  void setPVRange(double pMin, double pMax, double vMax) {
-    for (size_t i = 0; i < this->dimensions(); i++) {
-      this->_posMin[i] = pMin;
-      this->_posMax[i] = pMax;
-      this->_velocityMax[i] = vMax;
-    }
-  }
+  static const ContainerOption Flag =
+      (std::is_same<Var_t, stdVecD_t<DIM>>::value) ? ContainerOption::Std : ContainerOption::Custom;
 
   /**
-   * \brief Function used to provide a result for recording
+   * \brief Get the current gBest fitness
    *
-   * \return double The best fitness to be recorded
+   * \return double Current global best fitness
    */
-  virtual double bestFitness() const { return this->gBest.fitness; }
+  double bestFitness() const { return this->gBest.fitness; }
+
+  /**
+   * \brief Run the PSO solver
+   *
+   */
+  inline void run() { this->template __impl_run<PSO>(); }
 
  protected:
   /**
@@ -96,7 +142,7 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
    * \brief Update gBest and pBest
    *
    */
-  virtual void updatePGBest() {
+  void __impl_updatePGBest() {
     // gBest for current generation
     Point_t* curGBest = &this->_population.front().pBest;
 
@@ -122,14 +168,14 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
    * \brief Update the position and velocity of all particles
    *
    */
-  virtual void updatePopulation() {
+  void __impl_updatePopulation() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)
 #endif  //  EIGEN_HAS_OPENMP
-    for (int idx = 0; idx < this->_population.size(); idx++) {
-      Particle_t& i = this->_population[idx];
-      for (size_t idx = 0; idx < Base_t::dimensions(); idx++) {
+    for (int index = 0; index < this->_population.size(); index++) {
+      Particle_t& i = this->_population[index];
+      for (int idx = 0; idx < this->dimensions(); idx++) {
         i.velocity[idx] = this->_option.inertiaFactor * i.velocity[idx] +
                           this->_option.learnFactorP * ei_randD() * (i.pBest.position[idx] - i.position[idx]) +
                           this->_option.learnFactorG * ei_randD() * (this->gBest.position[idx] - i.position[idx]);
@@ -153,7 +199,7 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
 //
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convenient typedef for stdArray (fix-sized and Runtime sized)
  *
  * \tparam DIM Dimensions of decision variable. Use `Eigen::Dynamic` for runtime determined.
@@ -169,7 +215,7 @@ template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t
 using PSO_std = PSO<stdVecD_t<DIM>, DIM, false, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Convenient typedef for Eigen Arrays (fix-sized and Runtime sized)
  *
  * \tparam DIM Dimensions of decision variable. Use `Eigen::Dynamic` for runtime determined.
@@ -185,7 +231,7 @@ template <int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t
 using PSO_Eigen = PSO<Eigen::Array<double, DIM, 1>, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
 /**
- * \ingroup HEU_PSO
+ * \ingroup CXX14_METAHEURISTIC
  * \class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
  * \brief Partial specilization for PSO using Eigen's fix-sized Array
  *
@@ -213,15 +259,21 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
   using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
  public:
-  EIGEN_HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
+  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
 
-  virtual void setPVRange(double pMin, double pMax, double vMax) {
-    this->_posMin.setConstant(this->dimensions(), 1, pMin);
-    this->_posMax.setConstant(this->dimensions(), 1, pMax);
-    this->_velocityMax.setConstant(this->dimensions(), 1, vMax);
-  }
+  /**
+   * \brief Function used to provide a result for recording
+   *
+   * \return double The best fitness to be recorded
+   */
+  double bestFitness() const { return this->gBest.fitness; }
 
-  virtual double bestFitness() const { return this->gBest.fitness; }
+  /**
+   * \brief Run the PSO solver
+   *
+   */
+  inline void run() { this->template __impl_run<PSO>(); }
 
  protected:
   static bool isBetterThan(double a, double b) {
@@ -232,7 +284,11 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
     }
   }
 
-  virtual void updatePGBest() {
+  /**
+   * \brief Update the value of pBest and gBest
+   *
+   */
+  void __impl_updatePGBest() {
     Point_t* curGBest = &this->_population.front().pBest;
 
     for (Particle_t& i : this->_population) {
@@ -253,12 +309,16 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
     }
   }
 
-  virtual void updatePopulation() {
+  /**
+   * \brief Update the position and velocity of each particle
+   *
+   */
+  void __impl_updatePopulation() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)
 #endif  //  EIGEN_HAS_OPENMP
-    for (int idx = 0; idx < this->_population.size(); idx++) {
+    for (int idx = 0; idx < (int)this->_population.size(); idx++) {
       Particle_t& i = this->_population[idx];
       i.velocity = this->_option.inertiaFactor * i.velocity +
                    this->_option.learnFactorP * ei_randD() * (i.pBest.position - i.position) +
@@ -278,6 +338,6 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
   static_assert(DIM > 0 || DIM == Eigen::Dynamic, "Invalid template parameter DIM");
 };
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_PSO_HPP
+#endif  // HEU_PSO_HPP

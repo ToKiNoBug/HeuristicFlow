@@ -1,32 +1,42 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_BOX_RTCTRange_HPP
-#define EIGEN_HEU_BOX_RTCTRange_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_BOX_RTCTRange_HPP
+#define HEU_BOX_RTCTRange_HPP
 
 #include <stdint.h>
 #include <assert.h>
 
 #include "InternalHeaderCheck.h"
-#include "../../Global"
+#include <HeuristicFlow/Global>
 
 /**
  * This file has implementation for different min() and max()
  * and incomplete setMin() and setMax() implementation
  */
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxDynamicRange
  * \brief Internal base class for various types of boxes.
  *
@@ -37,7 +47,7 @@ namespace internal {
  *
  * \note Non-square box with runtime range.
  */
-template <typename Scalar_t, int Size, BoxShape BS, DoubleVectorOption DVO>
+template <typename Scalar_t, int Size, BoxShape BS, ContainerOption DVO>
 class BoxDynamicRange {
  public:
   using Var_t = Container<Scalar_t, Size, DVO>;  ///< Type of decision variable
@@ -66,7 +76,7 @@ class BoxDynamicRange {
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxDynamicRange
  * \brief Internal base class for various types of boxes.
  *
@@ -77,7 +87,7 @@ class BoxDynamicRange {
  *
  * \note Square box with runtime range
  */
-template <typename Scalar_t, int Size, DoubleVectorOption DVO>
+template <typename Scalar_t, int Size, ContainerOption DVO>
 class BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
  public:
   using Var_t = Container<Scalar_t, Size, DVO>;                           ///< Type of decision variable
@@ -103,7 +113,7 @@ class BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
 };
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \brief Types that can pass a Scalar_t in templates.
  *
  * \tparam Scalar_t Type of scalar
@@ -113,7 +123,7 @@ template <typename Scalar_t>
 using TemplateVal_t = typename std::conditional<std::is_floating_point<Scalar_t>::value, DivCode, Scalar_t>::type;
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \class BoxFixedRange
  * \brief Internal base class for various types of boxes.
  *
@@ -164,6 +174,6 @@ class BoxFixedRange {
 
 }  // namespace internal
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_BOX_RTCTRange_HPP
+#endif  // HEU_BOX_RTCTRange_HPP

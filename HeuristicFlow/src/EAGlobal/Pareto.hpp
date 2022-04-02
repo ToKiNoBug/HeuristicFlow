@@ -1,34 +1,44 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_PARETO_HPP
-#define EIGEN_HEU_PARETO_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_PARETO_HPP
+#define HEU_PARETO_HPP
 
 #include "InternalHeaderCheck.h"
-#include "../../Global"
+#include <HeuristicFlow/Global>
 
-/**
- * \defgroup HEU_EAGlobal EAGlobal (Micellaneous for evoluntionary algorithms)
- *
- */
-
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_EAGlobal
+ * \ingroup CXX14_METAHEURISTIC
  * \struct Pareto
  * \brief Pareto optimality in multi-objective problems
  *
  * \tparam ObjNum Number of objectives, Eigen::Dynamic for runtime objs
  * \tparam fOpt Whether greater or less fitness means better.
+ *
+ * \note If the number of objectives can't be fixed at compile time, you can use `Eigen::Dynamic`(-1) to `ObjNum`. But
+ * other negative numbers and 0 aren't allowed. Mention that Pareto optimality is a concept for multi-objective
+ * problems, using 1 for `ObjNum` is not allowed as well. You will see static assertion failure if invalid value of
+ * `ObjNum` is assigned to template parameter.
  */
 template <int ObjNum, FitnessOption fOpt>
 struct Pareto {
@@ -59,6 +69,6 @@ struct Pareto {
 };
 
 }  //    namespace internal
-}  //    namespace Eigen
+}  //    namespace heu
 
-#endif  // EIGEN_HEU_PARETO_HPP
+#endif  // HEU_PARETO_HPP

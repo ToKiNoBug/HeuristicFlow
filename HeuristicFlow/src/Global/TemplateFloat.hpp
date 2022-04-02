@@ -1,25 +1,44 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_TEMPLATEFLOAT_HPP
-#define EIGEN_HEU_TEMPLATEFLOAT_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_TEMPLATEFLOAT_HPP
+#define HEU_TEMPLATEFLOAT_HPP
 
 #include <stdint.h>
 
 #include "InternalHeaderCheck.h"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Global
- * \brief This enumeration encode a floating-point number
- * by a division of int32 and uint32 stored in uint64
+ * \ingroup CXX14_METAHEURISTIC
+ * \brief This enumeration encode a floating-point number by a division of int32 and uint32 stored in uint64
+ *
+ * In this way, floating-point values can be passed through template parameters and knowen at compile time under C++20.
+ *
+ * Members of this enumeration are some fundamental math constants.
+ *
+ * \note This enum should be taken as integers instead of enumerations. The reason it's designed to be a enum is to
+ * prevent from being mixed up with general integers -- when you misuse integers as DivCode without explicitly
+ * converting its type, you receive an error.
+ *
+ * \sa PowCode DivEncode DivDecode
  *
  */
 enum DivCode : uint64_t {
@@ -39,7 +58,7 @@ enum DivCode : uint64_t {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \struct DivEncode
  * \brief Metafunction to encode the numerator and denominator into uint64.
  *
@@ -49,7 +68,9 @@ enum DivCode : uint64_t {
  *
  * \tparam a Numerator, it can be positive, negative or 0
  * \tparam b Denominator, not less than 1.
- * \return DivCode code the encoded
+ * \return `DivCode` code the encoded
+ *
+ * \sa DivCode DivDecode
  */
 template <int32_t a, uint32_t b>
 struct DivEncode {
@@ -61,13 +82,15 @@ struct DivEncode {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \struct DivDecode
  * \brief Metafunction to decode a DivCode back to the numerator and denominator
  * and corresponding floating-point number.
  *
- * \tparam dc DivCode to be decoded.
- * \return double real the decoded floating-point number at compile time.
+ * \tparam `dc` `DivCode` to be decoded.
+ * \return `double` real the decoded floating-point number at compile time.
+ *
+ * \sa DivCode DivEncode
  */
 template <DivCode dc>
 struct DivDecode {
@@ -78,7 +101,7 @@ struct DivDecode {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \brief This enumeration encode a floating-point number
  * by storing its sign, its coefficient and exponent into a uint64.
  *
@@ -88,6 +111,8 @@ struct DivDecode {
  * PowEncode has 16 diget(decimal) of precision.
  *
  * In all the 64 binary bits, 1 for sign, 54 for significant digits and 9 bits for power.
+ *
+ * \sa DivCode PowEncode PowDecode
  */
 enum PowCode : uint64_t {
 
@@ -131,7 +156,7 @@ struct PowEncode_OneE<0> {
 }  // namespace internal
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \struct PowEncode
  * \brief Metafunction to encode a floating-point number like scientific notation
  *
@@ -143,6 +168,8 @@ struct PowEncode_OneE<0> {
  * \code {.cpp}
  * PowEncode<1919810,-20>::code==PowEncode<191981,-20>::code;  // 1.191981^-20.
  * \endcode
+ *
+ * \sa PowCode PowDecode
  *
  */
 template <int64_t significant, int16_t power>
@@ -170,7 +197,7 @@ struct PowEncode {
 };
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \struct PowDecode
  * \brief Metafunction to decode a divcode back into its real numer.
  *
@@ -182,6 +209,7 @@ struct PowEncode {
  * constexpr double real=PowDecode<pCode>::real;
  * \endcode
  *
+ * \sa PowCode PowEncode
  */
 template <PowCode pc>
 struct PowDecode {
@@ -206,6 +234,6 @@ struct PowDecode {
   static const constexpr double real = digital * powPart;
 };
 
-}  // namespace Eigen
+}  // namespace heu
 
-#endif  // EIGEN_HEU_TEMPLATEFLOAT_HPP
+#endif  // HEU_TEMPLATEFLOAT_HPP

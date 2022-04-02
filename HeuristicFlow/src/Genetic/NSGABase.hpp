@@ -1,24 +1,34 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_NSGABASE_HPP
-#define EIGEN_HEU_NSGABASE_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_NSGABASE_HPP
+#define HEU_NSGABASE_HPP
 
 #include "InternalHeaderCheck.h"
 #include "MOGABase.hpp"
 
-namespace Eigen {
+namespace heu {
 
 namespace internal {
 
 /**
- * \ingroup HEU_Genetic
+ * \ingroup CXX14_METAHEURISTIC
  * \class NSGABase
  * \brief Base class for nondominated sorting series of genetic algorithms, like NSGA2 and NSGA3.
  *
@@ -44,7 +54,8 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFu
   using Base_t = MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)
+  ~NSGABase() {}
+  HEU_MAKE_GABASE_TYPES(Base_t)
   using Fitness_t = typename Base_t::Fitness_t;
 
   /**
@@ -72,6 +83,7 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFu
      * \brief Iterator to related gene
      */
     GeneIt_t iterator;
+
   };  //  infoUnitBase
 
   /**
@@ -116,7 +128,7 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFu
    * \brief Function to calculate infoUnitBase::domainedByNum of a population.
    *
    */
-  virtual void calculateDominatedNum() {
+  void calculateDominatedNum() {
     const size_t popSizeBefore = sortSpace.size();
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
@@ -147,7 +159,7 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFu
    * \brief Divide the sorted population (is sortSpace) into a few non-dominated layers.
    *
    */
-  virtual void divideLayers() {
+  void divideLayers() {
     std::sort(sortSpace.begin(), sortSpace.end(), sortByDominatedNum);
     pfLayers.clear();
     const size_t popSizeBef = sortSpace.size();
@@ -171,30 +183,17 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFu
     for (size_t i = 0; i < curFrontSize; i++) {
       this->_pfGenes.emplace(&*(pfs[i]->iterator));
     }
-    if (this->prevFrontSize != curFrontSize) {
-      this->_failTimes = 0;
-      this->prevFrontSize = curFrontSize;
-    } else {
-      size_t checkSum = this->makePFCheckSum();
-
-      if (this->prevPFCheckSum == checkSum) {
-        this->_failTimes++;
-      } else {
-        this->_failTimes = 0;
-        this->prevPFCheckSum = checkSum;
-      }
-    }
   }  // updatePF()
 
 };  // NSGABase
 
-#define EIGEN_HEU_MAKE_NSGABASE_TYPES(Base_t)           \
-  EIGEN_HEU_MAKE_GABASE_TYPES(Base_t)                   \
+#define HEU_MAKE_NSGABASE_TYPES(Base_t)                 \
+  HEU_MAKE_GABASE_TYPES(Base_t)                         \
   using infoUnitBase_t = typename Base_t::infoUnitBase; \
   using Fitness_t = typename Base_t::Fitness_t;
 
 }  //  namespace internal
 
-}  //  namespace Eigen
+}  //  namespace heu
 
-#endif  //  EIGEN_HEU_NSGABASE_HPP
+#endif  //  HEU_NSGABASE_HPP

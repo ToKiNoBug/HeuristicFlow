@@ -1,14 +1,24 @@
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2022 Shawn Li <tokinobug@163.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla
-// Public License v. 2.0. If a copy of the MPL was not distributed
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+ Copyright © 2021-2022  TokiNoBug
+This file is part of HeuristicFlow.
 
-#ifndef EIGEN_HEU_LOGISTICCHAOS_HPP
-#define EIGEN_HEU_LOGISTICCHAOS_HPP
+    HeuristicFlow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HeuristicFlow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HeuristicFlow.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#ifndef HEU_LOGISTICCHAOS_HPP
+#define HEU_LOGISTICCHAOS_HPP
 
 #include <cstdint>
 #include <assert.h>
@@ -16,10 +26,10 @@
 #include "InternalHeaderCheck.h"
 #include "Randoms.hpp"
 
-namespace Eigen {
+namespace heu {
 
 /**
- * \ingroup HEU_Global
+ * \ingroup CXX14_METAHEURISTIC
  * \class LogisticChaos
  * \brief A chaos device to generate logistic chaotic sequence.
  *
@@ -96,5 +106,5 @@ class LogisticChaos {
   constexpr static const double miu = 4.0;
 };
 
-}  //    namespace Eigen
-#endif  // EIGEN_HEU_LOGISTICCHAOS_H
+}  //    namespace heu
+#endif  // HEU_LOGISTICCHAOS_H
