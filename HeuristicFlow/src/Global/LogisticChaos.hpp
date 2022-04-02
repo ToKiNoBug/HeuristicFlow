@@ -29,7 +29,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \class LogisticChaos
  * \brief A chaos device to generate logistic chaotic sequence.
  *

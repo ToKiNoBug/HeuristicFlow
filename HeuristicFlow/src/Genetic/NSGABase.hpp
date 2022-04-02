@@ -28,7 +28,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class NSGABase
  * \brief Base class for nondominated sorting series of genetic algorithms, like NSGA2 and NSGA3.
  *

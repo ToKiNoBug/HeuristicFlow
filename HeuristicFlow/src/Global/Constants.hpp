@@ -30,28 +30,28 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Positive infinity float
  *
  */
 const float pinfF = std::numeric_limits<float>::infinity();
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Positive infinity double
  *
  */
 const double pinfD = std::numeric_limits<double>::infinity();
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Negativev infinity float
  *
  */
 const float ninfF = -pinfF;
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Negative infinity double
  *
  */

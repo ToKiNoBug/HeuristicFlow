@@ -32,7 +32,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief C++ std container for fixed and dynamic sizes.
  *
  * Use std::vector for dynamic size and std::array as fixed size.
@@ -45,7 +45,7 @@ using stdContainer =
     typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>, std::array<scalar_t, Dim> >::type;
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief C++ std container of double.
  *
  * \tparam Size Number of element. Use Eigen::Dynamic for dynamic size.
@@ -54,7 +54,7 @@ template <int Size>
 using stdVecD_t = stdContainer<double, Size>;
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Container for different types, sizes and scalar types.
  *
  * \tparam scalar_t Type of elements.

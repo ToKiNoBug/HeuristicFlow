@@ -26,7 +26,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \brief Different options of reference points.
  *
  * Here's two ways to generate reference points: the Das and Dennis' systematic approach generates a single layer, while
@@ -48,7 +48,7 @@ enum ReferencePointOption {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class NSGA3Base
  * \brief Internal base class for NSGA3(single layer).
  *
@@ -125,7 +125,7 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class NSGA3Base
  * \brief Internal base class for NSGA3(double layers).
  *

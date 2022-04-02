@@ -26,6 +26,8 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
+ * \ingroup HEU_GENETIC
+ * \class SOGA
  * \brief Single-object genetic solver.
  *
  * \tparam Var_t  Type of decisition variable.

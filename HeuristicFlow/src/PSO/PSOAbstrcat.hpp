@@ -34,7 +34,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_PSO
  * \class PSOAbstract
  * \brief Internal base class for PSO solvers.
  *
@@ -345,7 +345,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   using Particle_t = typename Base_t::Particle;
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_PSO
  * \class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
  * \brief partial specialization for PSO with recording
  *

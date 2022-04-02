@@ -28,7 +28,7 @@ This file is part of HeuristicFlow.
 #ifndef HEU_MAX_RUNTIME_OBJNUM
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \brief Maximum runtime objective numbers at runtime.
  * NSGA2 with runtime objective numbers requires limited objNum.
  *
@@ -47,7 +47,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class MOGABase
  * \brief Base class for multiple objective genetic solvers.
  *
@@ -88,7 +88,7 @@ class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, 
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class MOGABase
  * \brief Base class for multiple objective genetic solvers.
  *

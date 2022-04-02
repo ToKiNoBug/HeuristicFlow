@@ -86,7 +86,7 @@ struct imp_GADefaults_DVO<Var_t, ContainerOption::Eigen> {
 }  // namespace internal
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \struct GADefaults
  * \brief The GADefaults struct defines several candidate operations for GA.
  *

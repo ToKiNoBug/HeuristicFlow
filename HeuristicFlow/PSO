@@ -26,4 +26,9 @@ This file is part of HeuristicFlow.
 #include "src/PSO/PSO.hpp"
 #include "src/PSO/PSODefaults.hpp"
 
+/**
+ * \defgroup HEU_PSO PSO
+ * Particle swarm optimization.
+ *
+ */
 #endif  // HEU_PSO_

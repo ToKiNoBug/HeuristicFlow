@@ -34,7 +34,7 @@ HEU_MAKE_FUNAREA(fFun, GA)
 HEU_MAKE_FUNAREA(cFun, GA)
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class GAAbstract
  * \brief Internal base class.
  *

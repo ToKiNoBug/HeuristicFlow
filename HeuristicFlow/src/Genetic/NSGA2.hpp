@@ -26,7 +26,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class NSGA2
  * \brief NSGA2 MOGA solver. Suitable for not too many objectives.
  *

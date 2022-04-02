@@ -30,7 +30,7 @@ namespace heu {
  */
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \brief NSGA3 is the thrid Nondominated Sorting Genetic Algorithm. It's suitable for many objective problems.
  *
  * NSGA3 uses many reference points to maintain a diverse and uniform PF.

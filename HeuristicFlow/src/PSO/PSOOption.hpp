@@ -29,7 +29,7 @@ namespace heu {
 // Options to PSO
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_PSO
  * \struct PSOOption
  * \brief Basical option of PSO
  *

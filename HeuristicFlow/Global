@@ -31,4 +31,10 @@ This file is part of HeuristicFlow.
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 
+/**
+ * \defgroup HEU_GLOBAL Global
+ * Global miscellenuous for HeuristicFlow.
+ *
+ */
+
 #endif  // HEU_GLOBAL_

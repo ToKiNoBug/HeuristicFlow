@@ -31,7 +31,7 @@ HEU_MAKE_FUNAREA(iFun, PSO)
 HEU_MAKE_FUNAREA(fFun, PSO)
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_PSO
  * \class PSOParameterPack
  * \brief This class maintains a member `Args_t _args` if `Args_t` is void. Besides it defines the format of
  * initialization function and fitness function.
@@ -113,7 +113,7 @@ class PSOParameterPack {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_PSO
  * \class PSOParameterPack<Var_t, Fitness_t, void>
  * \brief Specilized for PSO without args
  *

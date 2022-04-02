@@ -30,7 +30,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \brief Internal base class for NSGA3.
  *
  * This class implements most part of NSGA3' selection precedure. Also it maintains reference points in a matrix.

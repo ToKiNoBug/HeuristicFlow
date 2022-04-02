@@ -27,7 +27,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief This marco metafunction is used to generate a struct that adpatively mantain a function pointer.
  *
  *

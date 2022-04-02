@@ -27,7 +27,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief This enumeration encode a floating-point number by a division of int32 and uint32 stored in uint64
  *
  * In this way, floating-point values can be passed through template parameters and knowen at compile time under C++20.
@@ -58,7 +58,7 @@ enum DivCode : uint64_t {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \struct DivEncode
  * \brief Metafunction to encode the numerator and denominator into uint64.
  *
@@ -82,7 +82,7 @@ struct DivEncode {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \struct DivDecode
  * \brief Metafunction to decode a DivCode back to the numerator and denominator
  * and corresponding floating-point number.
@@ -101,7 +101,7 @@ struct DivDecode {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief This enumeration encode a floating-point number
  * by storing its sign, its coefficient and exponent into a uint64.
  *
@@ -156,7 +156,7 @@ struct PowEncode_OneE<0> {
 }  // namespace internal
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \struct PowEncode
  * \brief Metafunction to encode a floating-point number like scientific notation
  *
@@ -197,7 +197,7 @@ struct PowEncode {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \struct PowDecode
  * \brief Metafunction to decode a divcode back into its real numer.
  *

@@ -42,7 +42,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class GABase
  * \brief Genetic algorithm base class.
  *  It's an abstrcat base class for all genetic algorithm solvers.
@@ -367,7 +367,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class GABase
  * \brief partial specialization for GABase with record.
  *

@@ -39,7 +39,7 @@ namespace internal {
 #endif  //#ifdef __CNUC__
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Internal global std::random device
  *
  * \return std::random_device& A reference to this static variable
@@ -49,7 +49,7 @@ inline std::random_device& global_random_device() {
   return rdv;
 }
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Internal global std::mt19937 used as a high-performance
  * random number generater.
  *
@@ -72,7 +72,7 @@ inline std::mt19937& global_mt19937() {
 }  // namespace internal
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Uniform random number (double) in range [0,1)
  *
  * \return double random number
@@ -83,7 +83,7 @@ inline double ei_randD() {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Uniform random number (double) in range [min,max)
  *
  * \param min Minimum value
@@ -93,7 +93,7 @@ inline double ei_randD() {
 inline double ei_randD(const double min, const double max) { return (max - min) * ei_randD() + min; }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Uniform random number (float) in range [0,1)
  *
  * \return double random number
@@ -104,7 +104,7 @@ inline float ei_randF() {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Uniform random index in range [0,size)
  *
  * \tparam int_t Type of integer
@@ -118,7 +118,7 @@ inline int_t ei_randIdx(int_t size) {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Uniform random index in range [min,max_plus_1)
  *
  * \tparam int_t Type of integer

@@ -29,7 +29,7 @@ namespace heu {
 /// options about GA algorithm
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \struct GAOption
  * \brief GAOption is a struct encapsulating several general options for most types of genetic algorithm.
  *

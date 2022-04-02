@@ -27,7 +27,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Whether to record trainning curve of not
  *
  * If `RECORD_FITNESS` is assigned to a solver, a specialization of its internal base class will be activated resulting
@@ -41,7 +41,7 @@ enum RecordOption : uint8_t {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Convert enumeration to string
  *
  * \param r The enum value
@@ -57,7 +57,7 @@ inline const char* Enum2String(RecordOption r) {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Optimization direction
  *
  * It's vital to tell which direction is better. If `FITNESS_LESS_BETTER` is assigned, a solver will tries the find the
@@ -69,7 +69,7 @@ enum FitnessOption : uint8_t {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Convert enumeration to string
  *
  * \param f The enum value
@@ -85,7 +85,7 @@ inline const char* Enum2String(FitnessOption f) {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  *
  * \brief Which type of container to use.
  *
@@ -105,7 +105,7 @@ enum ContainerOption {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Convert enumeration to string
  *
  * \param e The enum value
@@ -123,7 +123,7 @@ inline const char* Enum2String(ContainerOption e) {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief The type of a box-constraint
  *
  * \note Box constraint is the most regular encoding types
@@ -138,7 +138,7 @@ enum BoxShape {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Convert enumeration to string
  *
  * \param b The enum value
@@ -154,7 +154,7 @@ inline const char* Enum2String(BoxShape b) {
 }
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Encoding type of a box constraint
  *
  * \note Various encoding types are used in evoluntionary
@@ -170,7 +170,7 @@ enum EncodeType {
 };
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GLOBAL
  * \brief Convert enumeration to string
  *
  * \param e The enum value

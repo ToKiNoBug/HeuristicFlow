@@ -34,7 +34,7 @@ namespace heu {
 namespace internal {
 
 /**
- * \ingroup CXX14_METAHEURISTIC
+ * \ingroup HEU_GENETIC
  * \class MOGAAbstract
  * \brief Base class for multi-objective genetic algorithm solver.
  *
