@@ -31,7 +31,7 @@ struct __impl_PSODefaults {
   // Candidate function for initialization
   inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
     for (int idx = 0; idx < xMin->size(); idx++) {
-      x->operator[](idx) = ei_randD(xMin->operator[](idx), xMax->operator[](idx));
+      x->operator[](idx) = randD(xMin->operator[](idx), xMax->operator[](idx));
       v->operator[](idx) = 0;
     }
   }

@@ -40,7 +40,7 @@ void testNSGA2_Kursawe() {
   // initialize function
   auto iFun = [](std::array<double, 3> *x) {
     for (auto &i : *x) {
-      i = heu::ei_randD(-5, 5);
+      i = heu::randD(-5, 5);
     }
   };
 
@@ -71,8 +71,8 @@ void testNSGA2_Kursawe() {
   // mutate function
   auto mFun = [](const std::array<double, 3> *src, std::array<double, 3> *x) {
     *x = *src;
-    const size_t idx = heu::ei_randIdx(3);
-    x->operator[](idx) += 0.1 * heu::ei_randD(-1, 1);
+    const size_t idx = heu::randIdx(3);
+    x->operator[](idx) += 0.1 * heu::randD(-1, 1);
     x->operator[](idx) = std::min(x->operator[](idx), 5.0);
     x->operator[](idx) = std::max(x->operator[](idx), -5.0);
   };

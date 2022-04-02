@@ -175,10 +175,12 @@ class PSO : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun
 #endif  //  EIGEN_HAS_OPENMP
     for (int index = 0; index < this->_population.size(); index++) {
       Particle_t& i = this->_population[index];
+      const double rndP = randD();
+      const double rndG = randD();
       for (int idx = 0; idx < this->dimensions(); idx++) {
         i.velocity[idx] = this->_option.inertiaFactor * i.velocity[idx] +
-                          this->_option.learnFactorP * ei_randD() * (i.pBest.position[idx] - i.position[idx]) +
-                          this->_option.learnFactorG * ei_randD() * (this->gBest.position[idx] - i.position[idx]);
+                          this->_option.learnFactorP * rndP * (i.pBest.position[idx] - i.position[idx]) +
+                          this->_option.learnFactorG * rndG * (this->gBest.position[idx] - i.position[idx]);
         if (std::abs(i.velocity[idx]) > this->_velocityMax[idx]) {
           i.velocity[idx] = sign(i.velocity[idx]) * this->_velocityMax[idx];
         }
@@ -321,8 +323,8 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
     for (int idx = 0; idx < (int)this->_population.size(); idx++) {
       Particle_t& i = this->_population[idx];
       i.velocity = this->_option.inertiaFactor * i.velocity +
-                   this->_option.learnFactorP * ei_randD() * (i.pBest.position - i.position) +
-                   this->_option.learnFactorG * ei_randD() * (this->gBest.position - i.position);
+                   this->_option.learnFactorP * randD() * (i.pBest.position - i.position) +
+                   this->_option.learnFactorG * randD() * (this->gBest.position - i.position);
 
       i.velocity = i.velocity.min(this->_velocityMax);
       i.velocity = i.velocity.max(-this->_velocityMax);

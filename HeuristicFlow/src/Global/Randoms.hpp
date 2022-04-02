@@ -77,7 +77,7 @@ inline std::mt19937& global_mt19937() {
  *
  * \return double random number
  */
-inline double ei_randD() {
+inline double randD() {
   static std::uniform_real_distribution<double> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
@@ -90,7 +90,7 @@ inline double ei_randD() {
  * \param max Maximum value
  * \return double random number
  */
-inline double ei_randD(const double min, const double max) { return (max - min) * ei_randD() + min; }
+inline double randD(const double min, const double max) { return (max - min) * randD() + min; }
 
 /**
  * \ingroup HEU_GLOBAL
@@ -98,7 +98,7 @@ inline double ei_randD(const double min, const double max) { return (max - min) 
  *
  * \return double random number
  */
-inline float ei_randF() {
+inline float randF() {
   static std::uniform_real_distribution<float> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
@@ -112,9 +112,9 @@ inline float ei_randF() {
  * \return int_t Random index in range [0,size-1]
  */
 template <typename int_t>
-inline int_t ei_randIdx(int_t size) {
+inline int_t randIdx(int_t size) {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
-  return int_t(ei_randF() * size);
+  return int_t(randF() * size);
 }
 
 /**
@@ -127,9 +127,9 @@ inline int_t ei_randIdx(int_t size) {
  * \return int_t Random index in range [min,max_plus_1 -1]
  */
 template <typename int_t>
-inline int_t ei_randIdx(int_t min, int_t max_plus_1) {
+inline int_t randIdx(int_t min, int_t max_plus_1) {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
-  return int_t((max_plus_1 - min) * ei_randF() + min);
+  return int_t((max_plus_1 - min) * randF() + min);
 }
 
 }  // namespace heu

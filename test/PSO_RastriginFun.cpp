@@ -43,7 +43,7 @@ void testRastriginFun() {
 
   solver_t::iFun_t iFun = [](Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
     for (size_t i = 0; i < N; i++) {
-      x->operator[](i) = heu::ei_randD(xMin->operator[](i), xMax->operator[](i));
+      x->operator[](i) = heu::randD(xMin->operator[](i), xMax->operator[](i));
       v->operator[](i) = 0;
     }
   };
