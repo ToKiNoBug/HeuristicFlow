@@ -18,7 +18,7 @@ This file is part of HeuristicFlow.
 */
 
 /**
- * \defgroup HEU_SimpleMatrix SimpleMatrix
+ * \defgroup HEU_SIMPLEMATRIX SimpleMatrix
  * Simple 2D array of any type without arithmatic computation.
  *
  */

@@ -28,12 +28,30 @@ This file is part of HeuristicFlow.
 
 namespace Heu {
 /// col-major matrix with basic types only
+
+/**
+ * \ingroup HEU_SIMPLEMATRIX
+ * \brief Matrix with dynamic size
+ * \class MatrixDynamicSize
+ *
+ * This template class maintains a matrix with dynamic size. It supports all kinds of element but it doesn't implement
+ * any math computations.
+ *
+ * It has both STL-like APIs and Eigen-like APIs.
+ *
+ * \tparam Scalar_t Type of element
+ * \tparam allocator_t Type of allocator
+ */
 template <class Scalar_t, class allocator_t = std::allocator<Scalar_t>>
 class MatrixDynamicSize {
  protected:
   using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t, const Scalar_t &>::type;
 
  public:
+  /**
+   * \brief Construct a new Matrix Dynamic Size object. Set the size to 0 and dataPtr to nullptr
+   *
+   */
   MatrixDynamicSize() {
     rowNum = 0;
     colNum = 0;
@@ -41,6 +59,12 @@ class MatrixDynamicSize {
     dataPtr = nullptr;
   };
 
+  /**
+   * \brief Construct a new Matrix Dynamic Size object with given rows and cols.
+   *
+   * \param r
+   * \param c
+   */
   MatrixDynamicSize(size_t r, size_t c) {
     rowNum = r;
     colNum = c;
@@ -52,7 +76,11 @@ class MatrixDynamicSize {
       }
   }
 
-  /// Deep copy function
+  /**
+   * \brief Deep copy constructor
+   *
+   * \param src Source of copying
+   */
   explicit MatrixDynamicSize(const MatrixDynamicSize &src) {
     resize(src.rowNum, src.colNum);
     for (size_t i = 0; i < size(); i++) {
@@ -61,6 +89,13 @@ class MatrixDynamicSize {
   }
 
   /// Deep copy
+
+  /**
+   * \brief Deep copy operator
+   *
+   * \param src Source of copying
+   * \return const MatrixDynamicSize& A const ref to *this
+   */
   const MatrixDynamicSize &operator=(const MatrixDynamicSize &src) {
     resize(src.rowNum, src.colNum);
     for (size_t i = 0; i < size(); i++) {
@@ -69,6 +104,10 @@ class MatrixDynamicSize {
     return *this;
   }
 
+  /**
+   * \brief Destroy the Matrix Dynamic Size object and all its elements
+   *
+   */
   ~MatrixDynamicSize() {
     if (dataPtr != nullptr) {
       alloc().deallocate(dataPtr, _capacity);
@@ -79,19 +118,55 @@ class MatrixDynamicSize {
     }
   };
 
+  /**
+   * \brief Type of non-const iterator
+   *
+   */
   using iterator = Scalar_t *;
+
+  /**
+   * \brief Type of const iterator
+   *
+   */
   using citerator = const Scalar_t *;
 
+  /**
+   * \brief Same as that in STL
+   *
+   */
   inline iterator begin() noexcept { return dataPtr; }
 
+  /**
+   * \brief Same as that in STL
+   *
+   */
   inline iterator end() noexcept { return dataPtr + size(); }
 
+  /**
+   * \brief Same as that in STL
+   *
+   */
   inline citerator begin() const noexcept { return dataPtr; }
 
+  /**
+   * \brief Same as that in STL
+   *
+   */
   inline citerator end() const noexcept { return dataPtr + size(); }
 
+  /**
+   * \brief Number of elements. Same as that in STL
+   *
+   */
   inline size_t size() const noexcept { return rowNum * colNum; }
 
+  /**
+   * \brief To reserve some space. Same as that in std::vector
+   *
+   * This function will do nothing if s is less than current capacity
+   *
+   * \param s Size to be reserved
+   */
   void reserve(size_t s) {
     if (_capacity <= s) return;
 
@@ -110,6 +185,12 @@ class MatrixDynamicSize {
     }
   }
 
+  /**
+   * \brief Change the shape of matrix
+   *
+   * \param r New row numbers
+   * \param c New coloumn numbers
+   */
   void resize(size_t r, size_t c) {
     if (r * c != size()) {
       if (r * c > _capacity) {
@@ -135,28 +216,67 @@ class MatrixDynamicSize {
     colNum = c;
   }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline size_t rows() const noexcept { return rowNum; }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline size_t cols() const noexcept { return colNum; }
 
+  /**
+   * \brief Same API to std::vector
+   *
+   */
   inline size_t capacity() const noexcept { return _capacity; }
 
+  /**
+   * \brief Same API to std::vector
+   */
   inline const Scalar_t &operator[](size_t n) const noexcept { return dataPtr[n]; }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline const Scalar_t &operator()(size_t n) const noexcept { return dataPtr[n]; }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline const Scalar_t &operator()(size_t r, size_t c) const noexcept { return dataPtr[rowNum * c + r]; }
 
+  /**
+   * \brief Same API to std::vector
+   */
   inline Scalar_t &operator[](size_t n) noexcept { return dataPtr[n]; }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline Scalar_t &operator()(size_t n) noexcept { return dataPtr[n]; }
 
+  /**
+   * \brief Same API to eigen's matrices
+   */
   inline Scalar_t &operator()(size_t r, size_t c) noexcept { return dataPtr[rowNum * c + r]; }
 
+  /**
+   * \brief Same API to std::vector
+   */
   inline Scalar_t *data() noexcept { return dataPtr; }
 
+  /**
+   * \brief Same API to std::vector
+   */
   inline const Scalar_t *data() const noexcept { return dataPtr; }
 
+  /**
+   * \brief Fill the matrix with a element
+   *
+   * \param src
+   */
   inline void fill(fast_t src) noexcept {
     for (auto &i : *this) {
       i = src;
