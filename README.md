@@ -15,15 +15,16 @@ HeuristicFlow has been tested on MingW(gcc 8.1.0) and MSVC143.
 namespace: `Heu`
 
 Modules:
-1. [Genetic](./docs/Genetic.md)
-2. [Global](./docs/Genetic.md)
-3. [SimpleMatrix](./docs/SimpleMatrix.md)
-4. PSO
+1. Genetic
+2. Global
+3. EAGlobal
+4. SimpleMatrix
+5. PSO
 
 
 Implemented : 
-1. [GA](./docs/Genetic/SOGA.md)
-2. [NSGA-II](./docs/Genetic/NSGA2.md)
+1. GA
+2. NSGA-II
 3. NSGA-III
 4. PSO
 
