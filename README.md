@@ -8,7 +8,7 @@ C++ template class lib for several optimization algorithms, like GA, NSGA2,NSGA3
 
 As a template lib, HeuristicFlow is header only.
 
-HeuristicFlow doesn't depend on Eigen but it supports boosting with it. Include `#include <Eigen/Dense>` **before** including this lib will enable you to use it with Eigen.
+Dependents: [libEigen](https://eigen.tuxfamily.org/) and c++14 standard library.
 
 HeuristicFlow has been tested on MingW(gcc 8.1.0) and MSVC143.
 
