@@ -21,26 +21,50 @@ This file is part of Heuristic.
 #define Heu_MATRIXFIXEDSIZE_H
 
 #include <stdint.h>
-#include <array>
 #include <assert.h>
+#include <array>
 
 #include "InternalHeaderCheck.h"
 
 namespace Heu {
 
+/**
+ * \ingroup HEU_SIMPLEMATRIX
+ * \brief Matrix with fixed size
+ *
+ * \tparam Scalar_t Type of element
+ * \tparam Rows Row number
+ * \tparam Cols Coloumn number
+ */
 template <class Scalar_t, size_t Rows, size_t Cols>
 class MatrixFixedSize {
  protected:
   using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t, const Scalar_t &>::type;
 
  public:
+  /**
+   * \brief Construct a new Matrix Fixed Size object
+   *
+   */
   MatrixFixedSize(){};
+
+  /**
+   * \brief Destroy the Matrix Fixed Size object
+   *
+   */
   ~MatrixFixedSize(){};
 
+  /// Non-constant iterator (actually a pointer)
   using iterator = Scalar_t *;
+
+  /// Constant iterator (const-ptr actually)
   using citerator = const Scalar_t *;
 
-  /// Deep copy
+  /**
+   * \brief Deep copy function
+   *
+   * \param src Source of copying
+   */
   explicit MatrixFixedSize(const MatrixFixedSize &src) {
     for (size_t i = 0; i < size(); i++) {
       array[i] = src.array[i];
@@ -55,11 +79,11 @@ class MatrixFixedSize {
 
   inline citerator end() const noexcept { return array.data() + size(); }
 
-  inline constexpr size_t size() noexcept { return Rows * Cols; }
+  constexpr size_t size() noexcept { return Rows * Cols; }
 
-  inline constexpr size_t rows() noexcept { return Rows; }
+  constexpr size_t rows() noexcept { return Rows; }
 
-  inline constexpr size_t cols() noexcept { return Cols; }
+  constexpr size_t cols() noexcept { return Cols; }
 
   inline const Scalar_t &operator()(size_t n) const noexcept { return array[n]; }
 
