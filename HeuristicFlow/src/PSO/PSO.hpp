@@ -56,8 +56,8 @@ namespace heu {
  * - `void setOption(const PSOOption&)` to set the option of a PSO solver.
  * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of posMin, posMax, and
  * velocityMax.
- * - `void setPVRange(double pMin, double pMax, double vMax)` will also set these value but it shapes the box into a
- * square box.
+ * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it shapes the box into
+ * a square box.
  * - `void initializePop()` to initialize the whole population.
  * - `void run()` to run the PSO algorithm.
  * - `double bestFitness() const` returns the best fitness value.
@@ -322,9 +322,10 @@ class PSO<Var_t, DIM, true, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>
 #endif  //  EIGEN_HAS_OPENMP
     for (int idx = 0; idx < (int)this->_population.size(); idx++) {
       Particle_t& i = this->_population[idx];
+      const Scalar_t lFP = randD(), lFG = randD();
       i.velocity = this->_option.inertiaFactor * i.velocity +
-                   this->_option.learnFactorP * randD() * (i.pBest.position - i.position) +
-                   this->_option.learnFactorG * randD() * (this->gBest.position - i.position);
+                   this->_option.learnFactorP * lFP * (i.pBest.position - i.position) +
+                   this->_option.learnFactorG * lFG * (this->gBest.position - i.position);
 
       i.velocity = i.velocity.min(this->_velocityMax);
       i.velocity = i.velocity.max(-this->_velocityMax);

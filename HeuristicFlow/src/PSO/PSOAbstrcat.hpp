@@ -62,6 +62,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
  public:
   ~PSOAbstract() {}
   HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)
+  using Scalar_t = typename toElement<Var_t>::type;
 
   /**
    * \brief Point is a pair of position together with fitness. It's speedless and.
@@ -127,11 +128,25 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   inline const Var_t& posMin() const { return _posMin; }
 
   /**
+   * \brief Get the minimun postion
+   *
+   * \return Var_t& Minimum position
+   */
+  inline Var_t& posMin() { return _posMin; }
+
+  /**
    * \brief Get the maximum position
    *
    * \return const Var_t& Maximum position
    */
   inline const Var_t& posMax() const { return _posMax; }
+
+  /**
+   * \brief Get the maximum position
+   *
+   * \return Var_t& Maximum position
+   */
+  inline Var_t& posMax() { return _posMax; }
 
   /**
    * \brief Get the maximum velocity
@@ -141,6 +156,15 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \return const Var_t& Maximum velocity
    */
   inline const Var_t& velocityMax() const { return _velocityMax; }
+
+  /**
+   * \brief Get the maximum velocity
+   *
+   * \note Max velocity means the maximum absolute value of velocity.
+   *
+   * \return Var_t& Maximum velocity
+   */
+  inline Var_t& velocityMax() { return _velocityMax; }
 
   /**
    * \brief Get the population
@@ -178,7 +202,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \param pMax Maximum position value
    * \param vMax Maximum velocity absolute value
    */
-  inline void setPVRange(double pMin, double pMax, double vMax) {
+  inline void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax) {
     for (int i = 0; i < this->_posMin.size(); i++) {
       this->_posMin[i] = pMin;
       this->_posMax[i] = pMax;
@@ -339,9 +363,10 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   };
 };
 
-#define HEU_MAKE_PSOABSTRACT_TYPES(Base_t) \
-  HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)  \
-  using Point_t = typename Base_t::Point;  \
+#define HEU_MAKE_PSOABSTRACT_TYPES(Base_t)    \
+  HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)     \
+  using Point_t = typename Base_t::Point;     \
+  using Scalar_t = typename Base_t::Scalar_t; \
   using Particle_t = typename Base_t::Particle;
 
 /**

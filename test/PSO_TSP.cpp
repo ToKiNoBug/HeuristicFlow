@@ -28,7 +28,7 @@ using namespace std;
 // this tests shows how to solve TSP problems with PSO
 void testTSP_PSO(const size_t N) {
   static const size_t SpaceDim = 2;
-  // type of decision variable encoded in double
+  // type of decision variable encoded in float
   using Var_t = Eigen::ArrayXd;
   //  type of args
   using DistanceMat_t = Eigen::ArrayXXd;
@@ -40,7 +40,7 @@ void testTSP_PSO(const size_t N) {
 
   Solver_t solver;
 
-  using sortUnit = std::pair<double, size_t>;
+  using sortUnit = std::pair<float, uint32_t>;
   //  Decode ArrayXd into a permulation through sorting.
   Solver_t::fFun_t fFun = [](const Var_t* x, const Args_t* args, double* fitness) {
     const size_t _N = (*args).rows();
@@ -65,7 +65,7 @@ void testTSP_PSO(const size_t N) {
   dMat.setZero();
 
   {
-    Eigen::Array<double, SpaceDim, Eigen::Dynamic> points;
+    Eigen::Array<float, SpaceDim, Eigen::Dynamic> points;
     points.setRandom(SpaceDim, N);
 
     for (size_t r = 0; r < N; r++) {

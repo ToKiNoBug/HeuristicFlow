@@ -93,6 +93,18 @@ struct heu_initializeSize<Eigen::Dynamic> {
 
 }  //    namespace internal
 
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Get the type of element from a type of vector/matrix
+ *
+ * \tparam Vec_t Type of vector/matrix
+ * \return type Type of element
+ */
+template <class Vec_t>
+struct toElement {
+  using type = typename std::decay<decltype(Vec_t()[0])>::type;
+};
+
 }  //   namespace heu
 
 #endif  // HEU_TYPES_HPP
