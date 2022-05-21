@@ -26,7 +26,7 @@ This file is part of Heuristic.
 
 #include "InternalHeaderCheck.h"
 
-namespace Heu {
+namespace heu {
 
 /**
  * \ingroup HEU_SIMPLEMATRIX
@@ -46,13 +46,13 @@ class MatrixFixedSize {
    * \brief Construct a new Matrix Fixed Size object
    *
    */
-  MatrixFixedSize(){};
+  MatrixFixedSize() = default;
 
   /**
    * \brief Destroy the Matrix Fixed Size object
    *
    */
-  ~MatrixFixedSize(){};
+  ~MatrixFixedSize() = default;
 
   /// Non-constant iterator (actually a pointer)
   using iterator = Scalar_t *;
@@ -79,11 +79,11 @@ class MatrixFixedSize {
 
   inline citerator end() const noexcept { return array.data() + size(); }
 
-  constexpr size_t size() noexcept { return Rows * Cols; }
+  constexpr size_t size() const noexcept { return Rows * Cols; }
 
-  constexpr size_t rows() noexcept { return Rows; }
+  constexpr size_t rows() const noexcept { return Rows; }
 
-  constexpr size_t cols() noexcept { return Cols; }
+  constexpr size_t cols() const noexcept { return Cols; }
 
   inline const Scalar_t &operator()(size_t n) const noexcept { return array[n]; }
 
@@ -125,6 +125,6 @@ class MatrixFixedSize {
  protected:
   std::array<Scalar_t, Rows * Cols> array;
 };
-}  // namespace Heu
+}  // namespace heu
 
 #endif  // MATRIXFIXEDSIZE_H

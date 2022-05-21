@@ -26,7 +26,7 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 
-namespace Heu {
+namespace heu {
 /// col-major matrix with basic types only
 
 /**
@@ -300,6 +300,6 @@ class MatrixDynamicSize {
   }
 };
 
-}  // namespace Heu
+}  // namespace heu
 
 #endif  // MATRIXDYNAMICSIZE_H

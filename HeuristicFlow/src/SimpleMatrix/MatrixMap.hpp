@@ -20,7 +20,7 @@ This file is part of Heuristic.
 #ifndef Heu_MATRIXMAP_HPP
 #define Heu_MATRIXMAP_HPP
 
-namespace Heu {
+namespace heu {
 
 #include "InternalHeaderCheck.h"
 
@@ -46,7 +46,7 @@ class MatrixMap {
     p = s.p;
   }
 
-  ~MatrixMap() { ; }
+  ~MatrixMap() = default;
 
   void deepCopyTo(MatrixMap *dst) const {
     dst->r = r;
@@ -56,30 +56,40 @@ class MatrixMap {
     }
   }
 
-  inline size_t rows() const { return r; }
+  inline size_t rows() const noexcept { return r; }
 
-  inline size_t cols() const { return c; }
+  inline size_t cols() const noexcept { return c; }
 
-  inline size_t size() const { return r * c; }
+  inline size_t size() const noexcept { return r * c; }
 
-  inline Scalar_t *data() const { return p; }
+  inline Scalar_t *data() noexcept { return p; }
 
-  inline const Scalar_t *cdata() const { return p; }
+  inline const Scalar_t *data() const noexcept { return p; }
 
-  inline Scalar_t *begin() const { return p; }
+  inline Scalar_t *begin() noexcept { return p; }
 
-  inline Scalar_t *end() const { return p + r * c; }
+  inline Scalar_t *end() noexcept { return p + r * c; }
 
-  inline void resize(size_t _r, size_t _c) const {
+  inline const Scalar_t *cbegin() const noexcept { return p; }
+
+  inline const Scalar_t *cend() const noexcept { return p + r * c; }
+
+  inline void resize(size_t _r, size_t _c) const noexcept {
     r = _r;
     c = _c;
   }
 
-  inline Scalar_t &operator()(size_t i) const { return p[i]; }
+  inline Scalar_t &operator()(size_t i) { return p[i]; }
 
-  inline Scalar_t &operator[](size_t i) const { return p[i]; }
+  inline Scalar_t &operator[](size_t i) { return p[i]; }
 
-  inline Scalar_t &operator()(size_t _r, size_t _c) const { return p[r * _c + _r]; }
+  inline Scalar_t &operator()(size_t _r, size_t _c) { return p[r * _c + _r]; }
+
+  inline const Scalar_t &operator()(size_t i) const { return p[i]; }
+
+  inline const Scalar_t &operator[](size_t i) const { return p[i]; }
+
+  inline const Scalar_t &operator()(size_t _r, size_t _c) const { return p[r * _c + _r]; }
 
   inline void fill(fast_t src) {
     for (auto &i : *this) {
@@ -95,6 +105,6 @@ class MatrixMap {
   size_t c;
 };
 
-}  // namespace Heu
+}  // namespace heu
 
 #endif  //  Heu_MATRIXMAP_HPP

@@ -353,7 +353,7 @@ struct GADefaults {
    * \param c2 The second child
    */
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
-    GADefaults<Var_t, void, dvo>::template cFunSwapNs(p1, p2, c1, c2);
+    GADefaults<Var_t, void, dvo>::cFunSwapNs(p1, p2, c1, c2);
   }
 
   /**
@@ -367,7 +367,7 @@ struct GADefaults {
    * \param c2 The second child
    */
   inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2, const Args_t *) {
-    GADefaults<Var_t, void, dvo>::template cFunSwapXs(p1, p2, c1, c2);
+    GADefaults<Var_t, void, dvo>::cFunSwapXs(p1, p2, c1, c2);
   }
 
   /**

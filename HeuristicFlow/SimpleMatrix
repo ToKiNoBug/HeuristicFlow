@@ -30,4 +30,4 @@ This file is part of HeuristicFlow.
 #include "src/SimpleMatrix/MatrixDynamicSize.hpp"
 #include "src/SimpleMatrix/MatrixMap.hpp"
 
-#endif HEU_SIMPLEMATRIX_
+#endif // HEU_SIMPLEMATRIX_
