@@ -33,7 +33,7 @@ void testTSP_PSO(const size_t N) {
   //  type of args
   using DistanceMat_t = Eigen::ArrayXXd;
   //  type of solver
-  using Solver_t = heu::PSO_Eigen<Eigen::Dynamic, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, DistanceMat_t,
+  using Solver_t = heu::PSO<Eigen::ArrayXd,Eigen::Dynamic, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, DistanceMat_t,
                                   heu::PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
 
   using Args_t = Solver_t::Args_t;

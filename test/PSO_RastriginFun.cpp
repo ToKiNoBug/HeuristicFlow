@@ -26,7 +26,7 @@ using namespace std;
 // Test NSGA2 with rastrigin function
 void testRastriginFun() {
   static const size_t N = 20;
-  using solver_t = heu::PSO_Eigen<N, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS>;
+  using solver_t = heu::PSO<Eigen::Array<double, N, 1>,N, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS>;
 
   using Var_t = Eigen::Array<double, N, 1>;
 
