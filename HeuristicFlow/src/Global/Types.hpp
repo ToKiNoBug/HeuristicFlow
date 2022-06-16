@@ -105,6 +105,20 @@ struct toElement {
   using type = typename std::decay<decltype(Vec_t()[0])>::type;
 };
 
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Determine whether T is a Eigen class
+ *
+ * \note A class that publicaly inherits from Eigen class is also taken as Eigen class, cause it has Eigen APIs.
+ *
+ * \tparam T Type of vector/matrix
+ * \return value Whether T is a Eigen class.
+ */
+template <typename T>
+struct isEigenClass {
+  static constexpr bool value = std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
+};
+
 }  //   namespace heu
 
 #endif  // HEU_TYPES_HPP
