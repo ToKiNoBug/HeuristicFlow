@@ -23,6 +23,8 @@ This file is part of HeuristicFlow.
 #include "src/PSO/PSOParameterPack.hpp"
 #include "src/PSO/PSOOption.hpp"
 #include "src/PSO/PSOBase.hpp"
+#include "src/PSO/PSO4Eigen.hpp"
+#include "src/PSO/PSO4std.hpp"
 #include "src/PSO/PSO.hpp"
 #include "src/PSO/PSODefaults.hpp"
 

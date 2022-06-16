@@ -119,6 +119,52 @@ struct isEigenClass {
   static constexpr bool value = std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
 };
 
+namespace internal {
+
+// get the compile-time size of a eigen class
+template <class T>
+struct getEigenClassSizeCT {
+  static constexpr int value = T::SizeAtCompileTime;
+  static_assert(isEigenClass<T>::value, "T must be a Eigen class!");
+};
+
+// get the compile-time size of a std::array
+template <class T>
+struct stdArraySizeCT {
+  static constexpr int value = sizeof(T) / sizeof(typename toElement<T>::type);
+};
+
+// get the compile-time size of a std::array / std::vector
+template <class T>
+struct getStdVectorOrArraySizeCT {
+ private:
+  using scalar_t = typename toElement<T>::type;
+  static constexpr bool isSizeFixed = !std::is_same<std::vector<scalar_t>, T>::value;
+
+ public:
+  static constexpr int value = (isSizeFixed) ? (stdArraySizeCT<T>::value) : (Eigen::Dynamic);
+};
+
+template <class T, bool isTEigenClass>
+struct getSizeCTOfAnyVector_v {
+  // here implements when isTEigenClass==true
+  static constexpr int value = getEigenClassSizeCT<T>::value;
+};
+
+template <class T>
+struct getSizeCTOfAnyVector_v<T,false>
+{
+    static constexpr int value = getStdVectorOrArraySizeCT<T>::value;
+};
+
+// get the compile-time size of a std vector /std array / eigen class
+template <class T>
+struct getSizeCTOfAnyVector {
+  static constexpr bool isTEigenClass = isEigenClass<T>::value;
+  static constexpr int value = getSizeCTOfAnyVector_v<T,isTEigenClass>::value;
+};
+}  // namespace internal
+
 }  //   namespace heu
 
 #endif  // HEU_TYPES_HPP

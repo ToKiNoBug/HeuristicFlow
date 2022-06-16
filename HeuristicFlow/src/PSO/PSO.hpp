@@ -33,6 +33,8 @@ This file is part of HeuristicFlow.
 
 namespace heu {
 
+namespace internal {}  //  namespace internal
+
 /**
  * \ingroup HEU_PSO
  * \class PSO
@@ -94,18 +96,20 @@ namespace heu {
  * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to d.
  *
  */
-template <typename Var_t, int DIM, FitnessOption FitnessOpt = FITNESS_LESS_BETTER,
-          RecordOption RecordOpt = DONT_RECORD_FITNESS, class Arg_t = void,
-          typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_ = nullptr,
+template <typename Var_t, FitnessOption FitnessOpt = FITNESS_LESS_BETTER, RecordOption RecordOpt = DONT_RECORD_FITNESS,
+          class Arg_t = void, typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_ = nullptr,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_ = nullptr>
-class PSO : public std::conditional<
-                isEigenClass<Var_t>::value,
-                typename internal::PSO4Eigen<Var_t, DIM, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
-                typename internal::PSO4std<Var_t, DIM, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type {
-  using Base_t = typename std::conditional<
-      isEigenClass<Var_t>::value,
-      typename internal::PSO4Eigen<Var_t, DIM, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
-      typename internal::PSO4std<Var_t, DIM, FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type;
+class PSO : public std::conditional<isEigenClass<Var_t>::value,
+                                    typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                                                 FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
+                                    typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                                               FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type {
+  using Base_t =
+      typename std::conditional<isEigenClass<Var_t>::value,
+                                typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                                             FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
+                                typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                                           FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type;
 
  public:
   PSO(){};
