@@ -50,15 +50,15 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Args_t,
+template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
 class MOGAAbstract
-    : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+    : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
   static_assert(ObjNum > 0 || ObjNum == Eigen::Dynamic, "Invalid template parameter Dim");
   static_assert(ObjNum != 1, "You assigend 1 objective in multi-objective problems");
 

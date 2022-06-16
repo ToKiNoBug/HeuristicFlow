@@ -22,6 +22,7 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "GABase.hpp"
+#include "DefaultGeneType.hpp"
 
 namespace heu {
 
@@ -75,7 +76,7 @@ namespace heu {
  * - `Fitness_t bestFitness() const` returns the fitness of best solution in current population.
  * - `size_t generation() const` returns the generation that solvers has passed.
  * - `size_t failTimes() const` returns the fail times of current population.
- * - `const std::list<Gene> & population() const` returns a const-reference to the population.
+ * - `const std::list<Gene_t> & population() const` returns a const-reference to the population.
  * - `const GAOption & option() const` returns a const-reference to the GAOption of solver.
  * - `typename solver_t::initializeFun` is the type of iFuns
  * - `typename solver_t::fitnessFun` is the type of fFuns
@@ -105,10 +106,13 @@ template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER, RecordOption
           typename internal::GAAbstract<Var_t, double, Args_t>::fitnessFun _fFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::mutateFun _mFun_ = nullptr>
-class SOGA : public internal::GABase<Var_t, double, Record, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_,
+                                     _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = internal::GABase<Var_t, double, Record, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
-  friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_, _fFun_,
+                                  _cFun_, _mFun_>;
+  friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS, internal::DefaultGene_t<Var_t, double>, Args_t,
+                                _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
@@ -138,11 +142,7 @@ class SOGA : public internal::GABase<Var_t, double, Record, Args_t, _iFun_, _fFu
     this->_eliteIt = this->_population.begin();
   }
 
-  /**
-   * \brief Run the solver.
-   *
-   */
-  inline void run() { this->template __impl_run<SOGA>(); }
+  HEU_RELOAD_MEMBERFUCTION_RUN
 
  protected:
   GeneIt_t _eliteIt;  ///< Iterator the the elite

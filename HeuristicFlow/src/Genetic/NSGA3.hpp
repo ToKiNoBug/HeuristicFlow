@@ -22,6 +22,7 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "NSGA3Base.hpp"
+#include "DefaultGeneType.hpp"
 
 namespace heu {
 
@@ -77,8 +78,12 @@ template <typename Var_t, int ObjNum, RecordOption rOpt = DONT_RECORD_FITNESS,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_ = nullptr,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_ = nullptr>
-class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
+                                         internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t,
+                                         _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t =
+      internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+                          Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   NSGA3() {}
@@ -94,11 +99,7 @@ class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, Args_t, _iF
     Base_t::initializePop();
   }
 
-  /**
-   * \brief Run the solver.
-   *
-   */
-  void run() { this->template __impl_run<NSGA3>(); }
+  HEU_RELOAD_MEMBERFUCTION_RUN
 };
 
 }  //  namespace heu

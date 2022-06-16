@@ -43,7 +43,7 @@ class LogisticChaos {
    * \brief Construct a new Logistic Chaos object with random initial value.
    *
    */
-  LogisticChaos() { _value = ei_randD(); }
+  LogisticChaos() { _value = randD(); }
 
   /**
    * \brief Construct a new Logistic Chaos object with assigned initial value.

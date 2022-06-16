@@ -44,19 +44,19 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, RecordOption rOpt, class Args_t,
+template <typename Var_t, int ObjNum, RecordOption rOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
 class NSGA3Abstract
-    : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+    : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t = NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   ~NSGA3Abstract() {}
   HEU_MAKE_NSGABASE_TYPES(Base_t)
-  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
   using RefPointIdx_t = size_t;
 

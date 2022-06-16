@@ -30,7 +30,7 @@ This file is part of HeuristicFlow.
 #include "src/Global/TemplateFloat.hpp"
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
-
+#include "src/Global/Macros.hpp"
 /**
  * \defgroup HEU_GLOBAL Global
  * Global miscellenuous for HeuristicFlow.

@@ -62,7 +62,7 @@ namespace internal {
  * \tparam _cFun_ Function to apply crossover. Use nullptr if you hope to determine it at runtime
  * \tparam _mFun_ Function to apply mutation. Use nullptr if you hope to determine it at runtime
  */
-template <typename Var_t, typename Fitness_t, RecordOption Record, class Args_t,
+template <typename Var_t, typename Fitness_t, RecordOption Record, class Gene, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::crossoverFun _cFun_,
@@ -86,38 +86,15 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
   ~GABase() {}
-  /**
-   * \class Gene
-   * \brief Type of a individual
-   *
-   */
-  class Gene {
-   public:
-    /**
-     * \brief Type that are light to be returned.
-     *
-     * Use Fitness_t if it's size is not greater that 8, and const Fitness_t & otherwise.
-     */
-    using fastFitness_t =
-        typename std::conditional<(sizeof(Fitness_t) > sizeof(double)), const Fitness_t &, Fitness_t>::type;
-
-    Var_t self;          ///< Value of decision variable
-    Fitness_t _Fitness;  ///< Value of fitness
-    bool _isCalculated;  ///< Whether the fitness is computed
-
-    bool isCalculated() const { return _isCalculated; }  ///< If the fitness is computed
-    void setUncalculated() { _isCalculated = false; }    ///< Set the fitness to be uncomputed
-    fastFitness_t fitness() const { return _Fitness; }   ///< Get fitness
-
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(shouldGeneAlignExplicitly)
-  };
-  /// list iterator to Gene
 
  protected:
   using poplist_t = typename std::conditional<shouldGeneAlignExplicitly,
                                               std::list<Gene, Eigen::aligned_allocator<Gene>>, std::list<Gene>>::type;
 
  public:
+  /// Type of gene
+  using Gene_t = Gene;
+  /// list iterator to Gene
   using GeneIt_t = typename poplist_t::iterator;
   /**
    * \brief Set the option object
@@ -362,7 +339,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 };
 
 #define HEU_MAKE_GABASE_TYPES(Base_t)         \
-  using Gene = typename Base_t::Gene;         \
+  using Gene_t = typename Base_t::Gene_t;     \
   using GeneIt_t = typename Base_t::GeneIt_t; \
   HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
@@ -381,16 +358,16 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  *
  * \note GABase with record is derived from GABase without record to avoid duplicated implementation.
  */
-template <typename Var_t, typename Fitness_t, class Args_t,
+template <typename Var_t, typename Fitness_t, class Gene, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::mutateFun _mFun_>
-class GABase<Var_t, Fitness_t, RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
-    : public GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class GABase<Var_t, Fitness_t, RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
+    : public GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
-  friend class GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)

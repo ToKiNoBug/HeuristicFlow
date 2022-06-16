@@ -67,13 +67,13 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Args_t,
+template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t = MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   ~MOGABase() {}
@@ -101,15 +101,15 @@ class MOGABase : public MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, 
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, FitnessOption fOpt, RecordOption rOpt, class Args_t,
+template <typename Var_t, FitnessOption fOpt, RecordOption rOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::ArrayXd, Args_t>::mutateFun _mFun_>
-class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
-    : public MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
+    : public MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  public:
-  using Base_t = MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = MOGAAbstract<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
   HEU_MAKE_GABASE_TYPES(Base_t)
 
   MOGABase() { _objectiveNum = 0; }

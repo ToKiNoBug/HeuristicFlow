@@ -22,6 +22,7 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "NSGABase.hpp"
+#include "DefaultGeneType.hpp"
 
 namespace heu {
 
@@ -67,15 +68,20 @@ template <typename Var_t, int ObjNum, FitnessOption fOpt = FITNESS_LESS_BETTER, 
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_ = nullptr,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_ = nullptr>
-class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
+                                        internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t, _iFun_,
+                                        _fFun_, _cFun_, _mFun_> {
+  using Base_t =
+      internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+                         Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  private:
  public:
   NSGA2(){};
   ~NSGA2(){};
   HEU_MAKE_NSGABASE_TYPES(Base_t)
-  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, internal::DefaultGene_t<Var_t, Fitness_t>,
+                                Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
   /**
    * \brief This struct is used to store nondomainance sorting-related informations in select operation. A pointer to
@@ -94,11 +100,7 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, Args_t, _iFun
     double congestion;
   };
 
-  /**
-   * \brief Run the solver.
-   *
-   */
-  inline void run() { this->template __impl_run<NSGA2>(); }
+  HEU_RELOAD_MEMBERFUCTION_RUN
 
  protected:
   /**

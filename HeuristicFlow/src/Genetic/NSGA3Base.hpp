@@ -66,13 +66,13 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, RecordOption rOpt, ReferencePointOption rpOpt, class Args_t,
+template <typename Var_t, int ObjNum, RecordOption rOpt, ReferencePointOption rpOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   ~NSGA3Base() {}
@@ -142,15 +142,15 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFu
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, RecordOption rOpt, class Args_t,
+template <typename Var_t, int ObjNum, RecordOption rOpt, class Gene, class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
-    : public NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
+    : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
   HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
