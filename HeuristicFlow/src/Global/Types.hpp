@@ -66,7 +66,7 @@ using stdVecD_t = stdContainer<double, Size>;
  */
 template <typename scalar_t, int Size, ContainerOption DVO>
 using Container = typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
-                                            Eigen::Array<double, Size, 1> >::type;
+                                            Eigen::Array<scalar_t, Size, 1> >::type;
 
 // template<ContainerOption dvo,size_t Dim>
 // using FitnessVec_t= Container<double,Dim,dvo>;

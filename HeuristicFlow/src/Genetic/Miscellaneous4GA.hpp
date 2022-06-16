@@ -166,9 +166,11 @@ struct GADefaults {
   template <BoxShape BS, typename unused = void>
   struct SymBoxOp  //  non-square box
   {
+      using scalar_t = typename toElement<Var_t>::type;
+
     inline static void imp_doiFunNs(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min()[idx], box->max()[idx] + 1);
+        v->operator[](idx) = randIdx(box->min()[idx], scalar_t(box->max()[idx] + 1));
       }
     }
 
@@ -182,15 +184,17 @@ struct GADefaults {
       if (randD() * (numLess + numGreater) <= numLess)
         v->operator[](idx) = randIdx(box->min()[idx], val);
       else
-        v->operator[](idx) = randIdx(val + 1, box->max()[idx] + 1);
+        v->operator[](idx) = randIdx(scalar_t(val + 1), scalar_t(box->max()[idx] + 1));
     }
   };
 
   template <typename unused>
   struct SymBoxOp<BoxShape::SQUARE_BOX, unused> {
+      using scalar_t = typename toElement<Var_t>::type;
+
     inline static void imp_doiFunNs(Var_t *v, const Args_t *box) {
       for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min(), box->max() + 1);
+        v->operator[](idx) = randIdx(box->min(),scalar_t( box->max() + 1));
       }
     }
 
@@ -204,7 +208,7 @@ struct GADefaults {
       if (randD() * (numLess + numGreater) <= numLess)
         v->operator[](idx) = randIdx(box->min(), val);
       else
-        v->operator[](idx) = randIdx(val + 1, box->max() + 1);
+        v->operator[](idx) = randIdx(scalar_t(val + 1), scalar_t(box->max() + 1));
     }
   };
 
