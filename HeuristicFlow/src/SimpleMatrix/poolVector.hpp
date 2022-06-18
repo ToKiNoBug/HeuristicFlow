@@ -8,7 +8,14 @@
 #include "InternalHeaderCheck.h"
 
 namespace heu {
-
+/**
+ * \ingroup HEU_SIMPLEMATRIX
+ * \brief A 1-d vector that avoid constructing and destroying instants as much as possible.
+ * Possibly faster when using as std::vector<std::vector>
+ *
+ * \tparam Scalar_t Type of element
+ * \tparam allocator_t Type of memory allocator
+ */
 template <class Scalar_t, class allocator_t = std::allocator<Scalar_t>>
 class poolVector {
  private:
