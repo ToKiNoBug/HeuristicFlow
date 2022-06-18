@@ -29,5 +29,6 @@ This file is part of HeuristicFlow.
 #include "src/SimpleMatrix/MatrixFixedSize.hpp"
 #include "src/SimpleMatrix/MatrixDynamicSize.hpp"
 #include "src/SimpleMatrix/MatrixMap.hpp"
+#include "src/SimpleMatrix/poolVector.hpp"
 
-#endif // HEU_SIMPLEMATRIX_
+#endif  // HEU_SIMPLEMATRIX_

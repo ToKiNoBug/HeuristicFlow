@@ -2,9 +2,15 @@
 
 #include <HeuristicFlow/Global>
 #include <HeuristicFlow/EAGlobal>
+#include <HeuristicFlow/SimpleMatrix>
 
 #include <list>
 #include <iostream>
+
+using std::cerr;
+using std::cin;
+using std::cout;
+using std::endl;
 
 constexpr int dimensions = 2;
 constexpr int electronNum = 100;
@@ -21,6 +27,12 @@ void ackely(const Eigen::Array2d* _x, double* f) {
 struct Electron {
   Eigen::Array2d state;
   double energy;
+};
+
+class test {
+ public:
+  test() { cout << "Constructor" << endl; }
+  ~test() { cout << "Destructor" << endl; }
 };
 
 bool electronSortCompareFun(const Electron* A, const Electron* B) { return (A->energy < B->energy); }
@@ -129,15 +141,17 @@ class labAOS {
 };
 
 int main() {
-  std::vector<double> normRand(1e3);
-  for (auto& i : normRand) {
-    i = heu::normD();
-  }
-  std::cout << "rand=[";
-  for (auto i : normRand) {
-    std::cout << i << ',';
-  }
-  std::cout << "];\n" << std::endl;
+  //
+  std::vector<test> testArr;
+  cout << __LINE__ << endl;
+  testArr.reserve(10);
+  cout << __LINE__ << endl;
+  testArr.resize(10);
+  cout << __LINE__ << endl;
+  testArr.resize(0);
+  cout << __LINE__ << endl;
 
-  system("pause");
+  // test tst;
+
+  // system("pause");
 }
