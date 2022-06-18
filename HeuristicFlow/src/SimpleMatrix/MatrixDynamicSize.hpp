@@ -292,7 +292,7 @@ class MatrixDynamicSize {
   size_t _capacity;
 
  private:
-  static const bool isClass = std::is_class<Scalar_t>::value;
+  static constexpr bool isClass = std::is_class<Scalar_t>::value;
 
   inline static allocator_t &alloc() {
     static allocator_t alloctor;

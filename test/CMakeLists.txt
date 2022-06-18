@@ -25,6 +25,7 @@ add_executable(PSO_TSP PSO_TSP.cpp)
 add_executable(SOGA_Ackley SOGA_Ackley.cpp)
 add_executable(SOGA_TSP SOGA_TSP.cpp)
 add_executable(Boxes boxes.cpp)
+add_executable(poolVector poolVector.cpp)
 
 find_package(OpenMP)
 
