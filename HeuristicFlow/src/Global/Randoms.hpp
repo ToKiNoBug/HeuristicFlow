@@ -82,6 +82,12 @@ inline double randD() {
   return rnd(internal::global_mt19937());
 }
 
+inline void randD(double* dst, const int num) {
+  for (int i = 0; i < num; i++) {
+    dst[i] = randD();
+  }
+}
+
 /**
  * \ingroup HEU_GLOBAL
  * \brief Uniform random number (double) in range [min,max)
@@ -91,6 +97,12 @@ inline double randD() {
  * \return double random number
  */
 inline double randD(const double min, const double max) { return (max - min) * randD() + min; }
+
+inline void randD(double* dst, const int num, const double min, const double max) {
+  for (int i = 0; i < num; i++) {
+    dst[i] = randD(min, max);
+  }
+}
 
 /**
  * \ingroup HEU_GLOBAL
@@ -130,6 +142,18 @@ template <typename int_t>
 inline int_t randIdx(int_t min, int_t max_plus_1) {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
   return int_t((max_plus_1 - min) * randF() + min);
+}
+
+inline double normD() {
+  static std::normal_distribution<double> norm(0.0, 1.0);
+  return norm(internal::global_mt19937());
+}
+
+inline double normD(double mu, double sigma) { return normD() * sigma + mu; }
+
+inline float normF() {
+  static std::normal_distribution<float> norm(0.0f, 1.0f);
+  return norm(internal::global_mt19937());
 }
 
 }  // namespace heu
