@@ -15,6 +15,11 @@ using std::endl;
 constexpr int dimensions = 2;
 constexpr int electronNum = 100;
 
+constexpr double photonRate = 0.1;
+
+constexpr double varMin = -5;
+constexpr double varMax = 5;
+
 inline double gaussianCurve(const double x, const double mu = 0.0, const double sigma = 1.0) {
   return 1 / (sigma * std::sqrt(2 * M_PI)) * std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
 }
@@ -24,18 +29,19 @@ void ackely(const Eigen::Array2d* _x, double* f) {
   *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) - exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI * y))) + 20 + M_E;
 }
 
-struct Electron {
+class Electron {
+ public:
+  Electron() { isComputed = false; }
   Eigen::Array2d state;
   double energy;
+  bool isComputed;
+  void setUncomputed() noexcept { isComputed = false; }
 };
 
-class test {
- public:
-  test() { cout << "Constructor" << endl; }
-  ~test() { cout << "Destructor" << endl; }
-};
-
-bool electronSortCompareFun(const Electron* A, const Electron* B) { return (A->energy < B->energy); }
+template <typename pointer_t>
+bool electronSortCompareFun(pointer_t A, pointer_t B) {
+  return (A->energy < B->energy);
+}
 
 class Layer : public std::vector<Electron*> {
  public:
@@ -43,6 +49,7 @@ class Layer : public std::vector<Electron*> {
   double bindingEnergy;
   int LEidx;
 
+  const Eigen::Array2d& LEState() const { return this->at(LEidx)->state; }
   void updateLayerBSBE() {
     LEidx = 0;
     bindingState = this->front()->state;
@@ -61,21 +68,22 @@ class Layer : public std::vector<Electron*> {
 
 class labAOS {
  public:
-  std::vector<Electron> electrons;
+  std::list<Electron> electrons;
   std::vector<Layer> atom;
   Eigen::Array2d bindingState;
   double bindingEnergy;
-  int LEidx;
+  std::list<Electron>::iterator lowestEnergyIterator;
 
   void updateAtomBSBE() {
     bindingState = electrons.front().state;
     bindingEnergy = electrons.front().energy;
-    LEidx = 0;
-    for (int idx = 1; idx < electrons.size(); idx++) {
-      bindingState += electrons[idx].state;
-      bindingEnergy += electrons[idx].energy;
-      if (electrons[idx].energy < electrons[LEidx].energy) {
-        LEidx = idx;
+    lowestEnergyIterator = electrons.begin();
+
+    for (auto it = electrons.begin(); it != electrons.end(); ++it) {
+      bindingState += it->state;
+      bindingEnergy += it->energy;
+      if (it->energy < lowestEnergyIterator->energy) {
+        lowestEnergyIterator = it;
       }
     }
 
@@ -90,6 +98,20 @@ class labAOS {
   }
 
   void makeLayers() {
+    std::vector<std::list<Electron>::iterator> elecSortSpace;
+    elecSortSpace.reserve(electrons.size());
+    for (auto it = electrons.begin(); it != electrons.end(); ++it) {
+      elecSortSpace.emplace_back(it);
+    }
+
+    std::sort(elecSortSpace.begin(), elecSortSpace.end(), electronSortCompareFun<std::list<Electron>::iterator>);
+
+    while (elecSortSpace.size() > electronNum) {
+      electrons.erase(elecSortSpace.back());
+      elecSortSpace.pop_back();
+    }
+
+    //////////////////////////////////////////////////
     atom.reserve(electronNum);
     atom.clear();
     int layerNum = heu::randIdx(3, int(electrons.size()));
@@ -100,7 +122,7 @@ class labAOS {
     }
 
     numOfEachLayer /= numOfEachLayer.sum();
-    numOfEachLayer *= electronNum;
+    numOfEachLayer *= electrons.size();
     Eigen::ArrayXi intNumOfEachLayer = numOfEachLayer.round().cast<int>();
 
     for (int idx = 1; idx < intNumOfEachLayer.size(); idx++) {
@@ -108,15 +130,8 @@ class labAOS {
     }
 
     for (auto& val : numOfEachLayer) {
-      if (val > electronNum) val = electronNum;
+      if (val > electrons.size()) val = electrons.size();
     }
-
-    std::vector<Electron*> elecSortSpace(electronNum);
-    for (int idx = 0; idx < electronNum; idx++) {
-      elecSortSpace[idx] = this->electrons.data() + idx;
-    }
-
-    std::sort(elecSortSpace.begin(), elecSortSpace.end(), electronSortCompareFun);
 
     atom.resize(layerNum);
     for (auto& i : atom) {
@@ -124,12 +139,12 @@ class labAOS {
     }
     int curLayerIdx = 0;
 
-    for (int countedElectrons = 0; countedElectrons < electronNum; countedElectrons++) {
+    for (int countedElectrons = 0; countedElectrons < electrons.size(); countedElectrons++) {
       if (countedElectrons >= intNumOfEachLayer[curLayerIdx]) {
         curLayerIdx++;
       }
 
-      atom[curLayerIdx].emplace_back(elecSortSpace[countedElectrons]);
+      atom[curLayerIdx].emplace_back(&*elecSortSpace[countedElectrons]);
     }
 
     while (atom.back().size() <= 0) {
@@ -137,20 +152,60 @@ class labAOS {
     }
   }
 
-  void initializePop() { electrons.resize(electronNum); }
+  void initializePop() { electrons.resize(electronNum * 2); }
+
+ protected:
+  void computeAll() {
+    for (auto& e : electrons) {
+      if (e.isComputed) {
+        continue;
+      }
+      ackely(&e.state, &e.energy);
+      e.isComputed = true;
+    }
+  }
+
+  void updateElectrons() {
+    for (int layerIdx = 0; layerIdx < atom.size(); layerIdx++) {
+      for (auto elecPtr : atom[layerIdx]) {
+        electrons.emplace_back();
+        Electron* newElecPtr = &electrons.back();
+        if (heu::randD() <= photonRate) {
+          applyPhoton(atom[layerIdx], layerIdx + 1, *elecPtr, newElecPtr);
+        } else {
+          applyNonPhoton(*elecPtr, newElecPtr);
+        }
+        newElecPtr->setUncomputed();
+      }
+    }
+  }
+
+  static void applyPhoton(const Layer& layer, const int layerK, const Electron& prevElec, Electron* newElec) {
+    Eigen::Array2d alpha, beta, gamma;
+
+    heu::randD(alpha.data(), alpha.size());
+    heu::randD(beta.data(), beta.size());
+    heu::randD(gamma.data(), gamma.size());
+
+    auto deltaX = alpha * (beta * layer.LEState() - gamma * layer.bindingState);
+
+    if (prevElec.energy >= layer.bindingEnergy) {
+      newElec->state = prevElec.state + deltaX / double(layerK);
+    } else {
+      newElec->state = prevElec.state + deltaX;
+    }
+    newElec->setUncomputed();
+  }
+
+  static void applyNonPhoton(const Electron& prevElec, Electron* newElec) {
+    Eigen::Array2d rand;
+    heu::randD(rand.data(), rand.size(), 0, 1);
+    newElec->state = prevElec.state + rand;
+    newElec->setUncomputed();
+  }
 };
 
 int main() {
-  //
-  std::vector<test> testArr;
-  cout << __LINE__ << endl;
-  testArr.reserve(10);
-  cout << __LINE__ << endl;
-  testArr.resize(10);
-  cout << __LINE__ << endl;
-  testArr.resize(0);
-  cout << __LINE__ << endl;
-
   // test tst;
 
   // system("pause");
