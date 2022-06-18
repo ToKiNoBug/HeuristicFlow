@@ -56,29 +56,29 @@ class poolVector {
   inline size_t size() const noexcept { return _size; }
   inline size_t capacity() const noexcept { return _capacity; }
 
-  inline Scalar_t& operator[](size_t idx) {
+  inline Scalar_t& operator[](const size_t idx) {
     assert(idx < _size);
     return _data[idx];
   }
-  inline const Scalar_t& operator[](size_t idx) const {
-    assert(idx < _size);
-    return _data[idx];
-  }
-
-  inline Scalar_t& operator()(size_t idx) {
-    assert(idx < _size);
-    return _data[idx];
-  }
-  inline const Scalar_t& operator()(size_t idx) const {
+  inline const Scalar_t& operator[](const size_t idx) const {
     assert(idx < _size);
     return _data[idx];
   }
 
-  inline Scalar_t& at(size_t idx) {
+  inline Scalar_t& operator()(const size_t idx) {
     assert(idx < _size);
     return _data[idx];
   }
-  inline const Scalar_t& at(size_t idx) const {
+  inline const Scalar_t& operator()(const size_t idx) const {
+    assert(idx < _size);
+    return _data[idx];
+  }
+
+  inline Scalar_t& at(const size_t idx) {
+    assert(idx < _size);
+    return _data[idx];
+  }
+  inline const Scalar_t& at(const size_t idx) const {
     assert(idx < _size);
     return _data[idx];
   }
@@ -105,7 +105,7 @@ class poolVector {
     return _data[_size - 1];
   }
 
-  inline void reserve(size_t newCapacity) {
+  inline void reserve(const size_t newCapacity) {
     if (newCapacity <= capacity()) {
       return;
     }
@@ -133,7 +133,7 @@ class poolVector {
     _capacity = newCapacity;
   }
 
-  inline void resize(size_t newSize) {
+  inline void resize(const size_t newSize) {
     if (newSize != size()) {
       if (newSize > _capacity) {
         if (_data != nullptr) {
@@ -156,14 +156,14 @@ class poolVector {
     _size = newSize;
   }
 
-  inline void clear() { _size = 0; }
+  inline void clear() noexcept { _size = 0; }
 
   inline void pop_back() {
     assert(_size > 0);
     _size--;
   }
 
-  inline void push_back(const Scalar_t& back) {
+  inline void push_back(const Scalar_t& back = Scalar_t()) {
     if (_size < _capacity) {
       _data[_size] = back;
       _size++;
