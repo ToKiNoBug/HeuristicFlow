@@ -12,11 +12,7 @@ project(HeuristicFlow LANGUAGES CXX)
 #message("CMAKE_BINARY_DIR=" ${CMAKE_BINARY_DIR})
 
 add_subdirectory(./HeuristicFlow)
-add_subdirectory(./test)
-add_subdirectory(./lab)
-#add_subdirectory(./lab4newAlgorithms)
-add_subdirectory(./HeuristicFlow/src/Genetic)
-add_subdirectory(./HeuristicFlow/src/Global)
-add_subdirectory(./HeuristicFlow/src/PSO)
-add_subdirectory(./HeuristicFlow/src/EAGlobal)
+add_subdirectory(./test) # Test current algorithm
+add_subdirectory(./lab) # Test new algorithm
+
 
