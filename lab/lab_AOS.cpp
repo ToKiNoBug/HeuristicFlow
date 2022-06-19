@@ -14,19 +14,28 @@ using std::endl;
 
 constexpr int dimensions = 2;
 constexpr int electronNum = 100;
+constexpr int maxGeneration = 100;
 
 constexpr double photonRate = 0.1;
 
 constexpr double varMin = -5;
 constexpr double varMax = 5;
 
-inline double gaussianCurve(const double x, const double mu = 0.0, const double sigma = 1.0) {
+/*
+ * Referenced paper : Mahdi Azizi.Atomic orbital search: A novel metaheuristic algorithm[J].Applied Mathematical
+ * Modelling.2021,93:657-693.
+ * Link : https://doi.org/10.1016/j.apm.2020.12.021 *
+ *
+ */
+
+inline double gaussianCurve(const double x, const double mu = 0.0, const double sigma = 1.0) noexcept {
   return 1 / (sigma * std::sqrt(2 * M_PI)) * std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
 }
 
-void ackely(const Eigen::Array2d* _x, double* f) {
+void ackely(const Eigen::Array2d* _x, double* f) noexcept {
   double x = _x->operator[](0), y = _x->operator[](1);
   *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) - exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI * y))) + 20 + M_E;
+  *f = std::log10(*f);
 }
 
 class Electron {
@@ -73,6 +82,58 @@ class labAOS {
   Eigen::Array2d bindingState;
   double bindingEnergy;
   std::list<Electron>::iterator lowestEnergyIterator;
+  int generations;
+  std::vector<double> record;
+
+  void initializePop() {
+    electrons.resize(electronNum);
+    for (auto& elec : electrons) {
+      elec.setUncomputed();
+      heu::randD(elec.state.data(), elec.state.size(), varMin, varMax);
+    }
+    atom.resize(electronNum);
+    for (auto& layer : atom) {
+      layer.reserve(electronNum);
+      layer.clear();
+    }
+    atom.clear();
+    record.clear();
+    record.reserve(maxGeneration + 1);
+  }
+
+  void run() {
+    generations = 0;
+    while (true) {
+      computeAll();
+
+      updateAtomBSBE();
+
+      record.emplace_back(this->lowestEnergyIterator->energy);
+
+      makeLayers();
+
+      if (generations >= maxGeneration) {
+        break;
+      }
+
+      updateLayeBSBE();
+
+      updateElectrons();
+
+      generations++;
+    }
+  }
+
+ protected:
+  void computeAll() {
+    for (auto& e : electrons) {
+      if (e.isComputed) {
+        continue;
+      }
+      ackely(&e.state, &e.energy);
+      e.isComputed = true;
+    }
+  }
 
   void updateAtomBSBE() {
     bindingState = electrons.front().state;
@@ -90,13 +151,6 @@ class labAOS {
     bindingEnergy /= electrons.size();
     bindingState /= electrons.size();
   }
-
-  void updateLayeBSBE() {
-    for (auto& l : atom) {
-      l.updateLayerBSBE();
-    }
-  }
-
   void makeLayers() {
     std::vector<std::list<Electron>::iterator> elecSortSpace;
     elecSortSpace.reserve(electrons.size());
@@ -112,11 +166,13 @@ class labAOS {
     }
 
     //////////////////////////////////////////////////
-    atom.reserve(electronNum);
     atom.clear();
-    int layerNum = heu::randIdx(3, int(electrons.size()));
+    int layerNum = heu::randIdx(3, int(electrons.size()) - 1);
+
     Eigen::ArrayXd numOfEachLayer(layerNum);
+
     numOfEachLayer.setZero();
+
     for (int idx = 0; idx < layerNum; idx++) {
       numOfEachLayer[idx] = gaussianCurve(idx + 1, 0, layerNum / 6);
     }
@@ -129,7 +185,7 @@ class labAOS {
       intNumOfEachLayer[idx] += intNumOfEachLayer[idx - 1];
     }
 
-    for (auto& val : numOfEachLayer) {
+    for (auto& val : intNumOfEachLayer) {
       if (val > electrons.size()) val = electrons.size();
     }
 
@@ -152,16 +208,9 @@ class labAOS {
     }
   }
 
-  void initializePop() { electrons.resize(electronNum * 2); }
-
- protected:
-  void computeAll() {
-    for (auto& e : electrons) {
-      if (e.isComputed) {
-        continue;
-      }
-      ackely(&e.state, &e.energy);
-      e.isComputed = true;
+  inline void updateLayeBSBE() {
+    for (auto& l : atom) {
+      l.updateLayerBSBE();
     }
   }
 
@@ -175,29 +224,36 @@ class labAOS {
         } else {
           applyNonPhoton(*elecPtr, newElecPtr);
         }
+
+        for (double& var : newElecPtr->state) {
+          var = std::max(var, varMin);
+          var = std::min(var, varMax);
+        }
+
         newElecPtr->setUncomputed();
       }
     }
   }
 
-  static void applyPhoton(const Layer& layer, const int layerK, const Electron& prevElec, Electron* newElec) {
+ private:
+  void applyPhoton(const Layer& layer, const int layerK, const Electron& prevElec, Electron* newElec) {
     Eigen::Array2d alpha, beta, gamma;
 
     heu::randD(alpha.data(), alpha.size());
     heu::randD(beta.data(), beta.size());
     heu::randD(gamma.data(), gamma.size());
 
-    auto deltaX = alpha * (beta * layer.LEState() - gamma * layer.bindingState);
-
     if (prevElec.energy >= layer.bindingEnergy) {
+      auto deltaX = alpha * (beta * this->lowestEnergyIterator->state - gamma * this->bindingState);
       newElec->state = prevElec.state + deltaX / double(layerK);
     } else {
+      auto deltaX = alpha * (beta * layer.LEState() - gamma * layer.bindingState);
       newElec->state = prevElec.state + deltaX;
     }
     newElec->setUncomputed();
   }
 
-  static void applyNonPhoton(const Electron& prevElec, Electron* newElec) {
+  void applyNonPhoton(const Electron& prevElec, Electron* newElec) {
     Eigen::Array2d rand;
     heu::randD(rand.data(), rand.size(), 0, 1);
     newElec->state = prevElec.state + rand;
@@ -207,6 +263,20 @@ class labAOS {
 
 int main() {
   // test tst;
+
+  labAOS solver;
+  solver.initializePop();
+  cout << "Initialized" << endl;
+  solver.run();
+  cout << "Finished" << endl;
+
+  cout << "result=[" << solver.lowestEnergyIterator->state << "];\n\n";
+
+  cout << "Trainning Curve:\nfitness=[";
+  for (auto fitness : solver.record) {
+    cout << fitness << ',';
+  }
+  cout << "];\n" << endl;
 
   // system("pause");
 }
