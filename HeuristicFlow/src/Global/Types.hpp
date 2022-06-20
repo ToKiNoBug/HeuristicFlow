@@ -152,18 +152,25 @@ struct getSizeCTOfAnyVector_v {
 };
 
 template <class T>
-struct getSizeCTOfAnyVector_v<T,false>
-{
-    static constexpr int value = getStdVectorOrArraySizeCT<T>::value;
+struct getSizeCTOfAnyVector_v<T, false> {
+  static constexpr int value = getStdVectorOrArraySizeCT<T>::value;
 };
 
 // get the compile-time size of a std vector /std array / eigen class
 template <class T>
 struct getSizeCTOfAnyVector {
   static constexpr bool isTEigenClass = isEigenClass<T>::value;
-  static constexpr int value = getSizeCTOfAnyVector_v<T,isTEigenClass>::value;
+  static constexpr int value = getSizeCTOfAnyVector_v<T, isTEigenClass>::value;
 };
 }  // namespace internal
+
+template <class T>
+struct array_traits {
+  using Scalar_t = typename toElement<T>::type;
+  static constexpr bool isEigenClass = isEigenClass<T>::value;
+  static constexpr ContainerOption containerType = (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
+  static constexpr int sizeCT = internal::getSizeCTOfAnyVector<T>::value;
+};
 
 }  //   namespace heu
 

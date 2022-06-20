@@ -37,6 +37,8 @@ void test_Box() {
   cout << "sizeof(box0) = " << sizeof(box0)
        << endl;  // every thing about this boxes are known at compile time, so its size is 1
 
+  cout << "box0.applyConstraint(-4e-3) = " << box0.applyConstraint(-4e-3) << endl;
+
   // Dynamic dim non-suqare box
   heu::BoxXdN<heu::ContainerOption::Eigen> box;
 

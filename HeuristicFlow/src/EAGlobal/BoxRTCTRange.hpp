@@ -67,6 +67,12 @@ class BoxDynamicRange {
 
   inline void setMax(const Var_t _m) { _maxV = _m; }  ///< Set the maximum vector
 
+  inline Scalar_t applyConstraint(const Scalar_t val, const int idx) const {
+    return std::min(_maxV[idx], std::max(_minV[idx], val));
+  }
+
+  inline void applyConstraint(Scalar_t* val, const int idx) const { *val = applyConstraint(*val, idx); }
+
  protected:
   Var_t _minV;  ///< This member exists when it's non-square box
   Var_t _maxV;  ///< This member exists when it's non-square box
@@ -106,6 +112,12 @@ class BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
   inline void setMin(Scalar_t s) { _minS = s; }  ///< Set maximum value for each dim
 
   inline void setMax(Scalar_t s) { _maxS = s; }  ///< Set minimum value for each dim
+
+  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const {
+    return std::min(_maxS, std::max(_minS, val));
+  }
+
+  inline void applyConstraint(Scalar_t* val, const int idx = -1) const { *val = applyConstraint(*val, idx); }
 
  protected:
   Scalar_t _minS;  ///< This member exists when it's a runtime square box
@@ -153,6 +165,12 @@ class BoxFixedRange {
    * \return constexpr Scalar_t Maximum value
    */
   inline constexpr Scalar_t max() const { return Decoder<isFloatPoint>::maxCT; }
+
+  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const {
+    return std::min(max(), std::max(min(), val));
+  }
+
+  inline void applyConstraint(Scalar_t* val, const int idx = -1) const { *val = applyConstraint(*val, idx); }
 
  private:
   static const constexpr bool isFloatPoint = std::is_floating_point<Scalar_t>::value;

@@ -69,10 +69,6 @@ template <int Dim, ContainerOption DVO = ContainerOption::Std, bool isFixedRange
 using BoxNdS = internal::RealBox<double, Dim, DVO, BoxShape::SQUARE_BOX, isFixedRange, MinCT, MaxCT, LRCT>;
 
 /**
- *
- */
-
-/**
  * \ingroup CXX14_METAHEURISTIC
  * \brief runtime(X) dim real(d-double) square(S) box
  *
