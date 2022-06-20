@@ -1,0 +1,6 @@
+#ifndef HEU_AOS_
+#define HEU_AOS_
+
+#include "src/AOS/AOSParameterPack.hpp"
+
+#endif  //  HEU_AOS_
