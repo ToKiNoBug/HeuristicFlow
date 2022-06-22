@@ -57,6 +57,10 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
   inline const std::vector<Layer>& layers() const {return _layers};
 
+  inline size_t generation() const noexcept { return _generation; }
+
+  inline size_t earlyStopCounter() const noexcept { return _earlyStopCounter; }
+
  protected:
   std::list<Electron_t> _electrons;
   std::vector<Layer> _layers;
@@ -64,6 +68,8 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   Fitness_t _bindingEnergy;
   const Electron_t* _atomBestPtr;
   AOSOption _option;
+  size_t _generation;
+  size_t _earlyStopCounter;
 
   void __impl_computeFitness() {
 #ifdef EIGEN_HAS_OPENMP
@@ -81,7 +87,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
     for (int i = 0; i < tasks.size(); i++) {
       Electron_t* ptr = tasks[i];
 
-      AOSExecutor<Base_t::hasParameters>::doFitness(this, &ptr->self, &ptr->_Fitness);
+      AOSExecutor<>::doFitness(this, &ptr->self, &ptr->_Fitness);
 
       ptr->isComputed = true;
     }
@@ -91,7 +97,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
         continue;
       }
 
-      AOSExecutor<Base_t::hasParameters>::doFitness(this, &i.self, &i._Fitness);
+      AOSExecutor<>::doFitness(this, &i.self, &i._Fitness);
 
       i.isComputed = true;
     }
@@ -99,7 +105,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   }
 
  protected:
-  template <bool hasParameter, typename unused = void>
+  template <bool hasParameter = Base_t::hasParameters, typename unused = void>
   struct AOSExecutor {
     static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
       solver->runiFun(v, &this->arg());

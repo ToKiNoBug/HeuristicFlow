@@ -69,8 +69,8 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
   }
 
-  void __impl_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer,
-                                Electron_t* child) const {
+  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, cosnt int layerIdx,
+                                 Electron_t* child) const {
     const Var_t& parentState = parent.state;
     Var_t alpha(parentState.rows(), parentState.cols()),
         beta(parentState.rows(), parentState.cols()), gamma(parentState.rows(), parentState.cols());
@@ -85,9 +85,9 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
           parent.state + alpha * (beta * layer.layerBestState() - gamma * layer.bindingState);
     } else {
       // E_i^k>=BE^k
-      child->state =
-          parent.state +
-          alpha * (beta * this->bestElectron().state - gamma * this->bindingState()) / layer.size();
+      child->state = parent.state +
+                     alpha * (beta * this->bestElectron().state - gamma * this->bindingState()) /
+                         (layerIdx + 1);
     }
 
     for (int varIdx = 0; varIdx < alpha.size(); varIdx++) {
@@ -95,7 +95,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
   }
 
-  inline void __impl_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+  inline void __impl2_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
     child->state =
         parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
 
@@ -187,8 +187,8 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
   }
 
-  void __impl_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer,
-                                Electron_t* child) const {
+  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, cosnt int layerIdx,
+                                 Electron_t* child) const {
     const Var_t& parentState = parent.state;
 
 #warning Initialization here is waiting to be optimized
@@ -214,7 +214,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
             parent.state[varIdx] + alpha[varIdx] *
                                        (beta[varIdx] * this->bestElectron().state[varIdx] -
                                         gamma[varIdx] * this->bindingState()[varIdx]) /
-                                       layer.size();
+                                       (layerIdx + 1);
       }
     }
 
@@ -223,7 +223,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
   }
 
-  inline void __impl_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+  inline void __impl2_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
     /*
     child->state =
         parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
