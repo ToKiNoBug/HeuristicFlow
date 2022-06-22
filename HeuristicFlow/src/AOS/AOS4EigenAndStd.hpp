@@ -91,7 +91,16 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
 
     for (int varIdx = 0; varIdx < alpha.size(); varIdx++) {
-      this->applyConstraint(&child->state(varIdx));
+      this->applyConstraint(&child->state(varIdx), varIdx);
+    }
+  }
+
+  inline void __impl_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+    child->state =
+        parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
+
+    for (int idx = 0; idx < parent.state.size(); idx++) {
+      this->applyConstraint(&child->state(idx), idx);
     }
   }
 };
@@ -191,8 +200,9 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     const Var_t& parentState = parent.state;
 
 #warning Initialization here is waiting to be optimized
-
     Var_t alpha = parentState, beta = parentState, gamma = parentState;
+#warning and here
+    child->state = parent.state;
 
     randD(alpha.data(), alpha.size());
     randD(beta.data(), beta.size());
@@ -216,8 +226,20 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
       }
     }
 
-    for (auto& val : child->state) {
-      this->applyConstraint(&val);
+    for (int idx = 0; idx < this->dimensions(); idx++) {
+      this->applyConstraint(&val, idx);
+    }
+  }
+
+  inline void __impl_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+    /*
+    child->state =
+        parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
+        */
+    child->state = parent.state;
+    for (int idx = 0; idx < this->dimensions(); idx++) {
+      child->state[idx] += randD(-this->learningRate(), this->learningRate());
+      this->applyConstraint(&child->state[idx], idx);
     }
   }
 };
