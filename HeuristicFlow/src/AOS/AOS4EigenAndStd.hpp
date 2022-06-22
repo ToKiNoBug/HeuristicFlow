@@ -105,14 +105,6 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
   }
 };
 
-/*
-
-
-
-
-
-*/
-
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
           AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,

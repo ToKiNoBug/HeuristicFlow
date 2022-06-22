@@ -10,6 +10,8 @@
 namespace heu {
 namespace internal {
 
+#warning Remember to migrate all functions that compares between Fitness_t s, they are not adpative for potential multi-objective solvers
+
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
           AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron>
@@ -115,11 +117,6 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
     static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness* f) {
       solver->runfFun(v, f);
     }
-  };
-
-  template <Fitness fOpt>
-  struct LayerExecutor<false, fOpt> {
-    static inline void updateLayerBSBELE(layer* layer) {}
   };
 
   template <FitnessOpt fOpt>
