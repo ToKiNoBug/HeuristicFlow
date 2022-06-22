@@ -33,8 +33,8 @@ HEU_MAKE_FUNAREA(fFun, PSO)
 /**
  * \ingroup HEU_PSO
  * \class PSOParameterPack
- * \brief This class maintains a member `Args_t _args` if `Args_t` is void. Besides it defines the format of
- * initialization function and fitness function.
+ * \brief This class maintains a member `Args_t _args` if `Args_t` is void. Besides it defines the
+ * format of initialization function and fitness function.
  *
  * \tparam Var_t Type of decision variable.
  * \tparam Fitness_t Type of fitness
@@ -63,8 +63,8 @@ class PSOParameterPack {
    * \param pMax Maximum position
    * \param vMax Maximum velocity (Maximum absolute value of velocity)
    */
-  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax, const Var_t *vMax,
-                          const Args_t *);
+  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
+                          const Var_t *vMax, const Args_t *);
 
   /**
    * \brief Type of fitness function
@@ -77,11 +77,12 @@ class PSOParameterPack {
   using fFun_t = void (*)(const Var_t *pos, const Args_t *, Fitness_t *f);
 
   template <iFun_t _i>
-  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *, const Var_t *,
-                                         const Args_t *>::template funBody<_i>;
+  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *,
+                                         const Var_t *, const Args_t *>::template funBody<_i>;
 
   template <fFun_t _i>
-  using fFunBody = typename fFunArea_PSO<const Var_t *, const Args_t *, Fitness_t *>::template funBody<_i>;
+  using fFunBody =
+      typename fFunArea_PSO<const Var_t *, const Args_t *, Fitness_t *>::template funBody<_i>;
 
   /**
    * \brief Set the Args object
@@ -117,8 +118,8 @@ class PSOParameterPack {
  * \class PSOParameterPack<Var_t, Fitness_t, void>
  * \brief Specilized for PSO without args
  *
- * Most functions are same as PSOParameterPack except there is no member named `_arg`.\n Besides, iFun and fFun don't
- * have a input of type `const Args_t*`
+ * Most functions are same as PSOParameterPack except there is no member named `_arg`.\n Besides,
+ * iFun and fFun don't have a input of type `const Args_t*`
  *
  * \sa PSOParameterPack
  */
@@ -128,12 +129,13 @@ class PSOParameterPack<Var_t, Fitness_t, void> {
   ~PSOParameterPack() {}
   using Args_t = void;
 
-  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax, const Var_t *vMax);
+  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
+                          const Var_t *vMax);
   using fFun_t = void (*)(const Var_t *, Fitness_t *);
 
   template <iFun_t _i>
-  using iFunBody =
-      typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *, const Var_t *>::template funBody<_i>;
+  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *,
+                                         const Var_t *>::template funBody<_i>;
 
   template <fFun_t _i>
   using fFunBody = typename fFunArea_PSO<const Var_t *, Fitness_t *>::template funBody<_i>;

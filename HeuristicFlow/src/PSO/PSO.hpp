@@ -58,10 +58,10 @@ namespace internal {}  //  namespace internal
  *
  * ## These APIs are common:
  * - `void setOption(const PSOOption&)` to set the option of a PSO solver.
- * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of posMin, posMax, and
- * velocityMax.
- * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it shapes the box into
- * a square box.
+ * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of
+ * posMin, posMax, and velocityMax.
+ * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it
+ * shapes the box into a square box.
  * - `void initializePop()` to initialize the whole population.
  * - `void run()` to run the PSO algorithm.
  * - `double bestFitness() const` returns the best fitness value.
@@ -70,7 +70,8 @@ namespace internal {}  //  namespace internal
  * - `size_t failTimes() const` returns the failtimes for current population.
  * - `const Var_t& posMin() const` returns a const-ref to the minimum value of positoin.
  * - `const Var_t& posMax() const` returns a const-ref to the maximum value of position.
- * - `const Var_t& velocityMax() const` returns a const-ref to the maximum value of the abstract value of velocity.
+ * - `const Var_t& velocityMax() const` returns a const-ref to the maximum value of the abstract
+ * value of velocity.
  * - `const std::vector<Particle>& population() const` returns a const-ref to the population.
  * - `const Point& globalBest() const` returns a const-ref to the best solution that has ever found.
  * - `int dimensions() const` returns the dimensions of decision variables.
@@ -96,20 +97,22 @@ namespace internal {}  //  namespace internal
  * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to d.
  *
  */
-template <typename Var_t, FitnessOption FitnessOpt = FITNESS_LESS_BETTER, RecordOption RecordOpt = DONT_RECORD_FITNESS,
-          class Arg_t = void, typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_ = nullptr,
+template <typename Var_t, FitnessOption FitnessOpt = FITNESS_LESS_BETTER,
+          RecordOption RecordOpt = DONT_RECORD_FITNESS, class Arg_t = void,
+          typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_ = nullptr,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_ = nullptr>
-class PSO : public std::conditional<isEigenClass<Var_t>::value,
-                                    typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
-                                                                 FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
-                                    typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
-                                                               FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type {
-  using Base_t =
-      typename std::conditional<isEigenClass<Var_t>::value,
-                                typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
-                                                             FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
-                                typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
-                                                           FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type;
+class PSO : public std::conditional<
+                isEigenClass<Var_t>::value,
+                typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                             FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>,
+                typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value,
+                                           FitnessOpt, RecordOpt, Arg_t, _iFun_, _fFun_>>::type {
+  using Base_t = typename std::conditional<
+      isEigenClass<Var_t>::value,
+      typename internal::PSO4Eigen<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value, FitnessOpt,
+                                   RecordOpt, Arg_t, _iFun_, _fFun_>,
+      typename internal::PSO4std<Var_t, internal::getSizeCTOfAnyVector<Var_t>::value, FitnessOpt,
+                                 RecordOpt, Arg_t, _iFun_, _fFun_>>::type;
 
  public:
   PSO(){};
