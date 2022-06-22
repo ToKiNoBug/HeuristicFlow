@@ -1,8 +1,11 @@
 #ifndef HEU_AOSBOXED_HPP
 #define HEU_AOSBOXED_HPP
 
-#include "AOSParameterPack.hpp"
 #include <list>
+#include <HeuristicFlow/SimpleMatrix>
+
+#include "AOSParameterPack.hpp"
+#include "AOSOption.hpp"
 
 namespace heu {
 namespace internal {
@@ -20,15 +23,46 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t);
   using Electron_t = Electron;
 
+  using FastFitness_t = typename std::conditional<sizeof(Fitness_t) <= sizeof(void*), Fitness_t,
+                                                  const Fitness_t&>::type;
+
   class Layer : public std::vector<Electron*> {
    public:
     Var_t bindingState;
     Fitness_t bindingEnergy;
     int layerBestIdx;
+
+    inline Var_t& layerBestState() noexcept { return at(layerBestIdx)->state; }
+
+    inline const Var_t& layerBestState() const noexcept { return at(layerBestIdx)->state; }
+
+    inline FastFitness_t layerBestEnergy() const noexcept { return at(layerBestIdx)->energy; }
   };
+
+  inline AOSOption& option() noexcept { return _option; }
+
+  inline const AOSOption& option() const noexcept { return _option; }
+
+  inline void setOption(const AOSOption& _opt) noexcept { _option = _opt; }
+
+  inline const Electron_t& bestElectron() const { return *_atomBestPtr; }
+
+  inline const Var_t& bindingState() const { return _bindingState; }
+
+  inline FastFitness_t bindingEnergy() const { return _bindingEnergy; }
+
+  inline const std::list<Electron_t>& electrons() const {return _electrons};
+
+  inline const std::vector<Layer>& layers() const {return _layers};
 
  protected:
   std::list<Electron_t> _electrons;
+  std::vector<Layer> _layers;
+  Var_t _bindingState;
+  Fitness_t _bindingEnergy;
+  const Electron_t* _atomBestPtr;
+  AOSOption _option;
+
   void __impl_computeFitness() {
 #ifdef EIGEN_HAS_OPENMP
     std::vector<Electron_t*> tasks;
@@ -83,124 +117,25 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
     }
   };
 
-  template <bool isEigenClass, FitnessOption fOpt>
-  struct LayerExecutor {
-    static inline void updateLayerBSBELE(Layer* layer) {
-      layer->bindingState = layer->front()->state;
-      layer->bindingEnergy = layer->front()->energy;
-      layer->layerBestIdx = 0;
-      for (int idx = 1; idx < layer->size(); idx++) {
-        layer->bindingState += layer->at(idx)->state;
-        layer->bindingEnergy += layer->at(idx)->energy;
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (layer->at(idx) < layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
-          }
-        } else {
-          if (layer->at(idx) > layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
-          }
-        }
-      }
-
-      layer->bindingState /= layer->size();
-      layer->bindingEnergy /= layer->size();
-    }
-
-    static inline void updateAtomBSBELE(const std::list<Electron_t>& electrons, Var_t* BS,
-                                        Fitness_t* BE, const Electron_t** LEIt) {
-      BS->setZero(electrons.front().state.rows(), electrons.front().state.cols());
-      *BE = 0;
-      *LEIt = &electrons.front();
-
-      for (const Electron_t& elec : electrons) {
-        *BS += elec.state;
-        *BE += elec.energy;
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (elec.energy < *LEIt->energy) {
-            *LEIt = &elec;
-          }
-        } else {
-          if (elec.energy > *LEIt->energy) {
-            *LEIt = &elec;
-          }
-        }
-      }
-
-      *BS /= electrons.size();
-      *BE /= electrons.size();
-    }
-  };
-
   template <Fitness fOpt>
   struct LayerExecutor<false, fOpt> {
-    static inline void updateLayerBSBELE(layer* layer) {
-      layer->bindingState = layer->front()->state;
-      layer->bindingEnergy = layer->front()->energy;
-      layer->layerBestIdx = 0;
-
-      const int varDim = layer->front()->size();
-
-      for (int idx = 1; idx < layer->size(); idx++) {
-        // layer->bindingState += layer->at(idx)->state;
-        for (int varIdx = 0; varIdx < varDim; varIdx++) {
-          layer->bindingEnergy[varIdx] += layer->at(idx)->energy[varIdx];
-        }
-
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (layer->at(idx) < layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
-          }
-        } else {
-          if (layer->at(idx) > layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
-          }
-        }
-      }
-
-      // layer->bindingState /= layer->size();
-      for (auto& var : layer->bindingState) {
-        var /= layer->size();
-      }
-      layer->bindingEnergy /= layer->size();
-    }
-
-    static inline void updateAtomBSBELE(const std::list<Electron_t>& electrons, Var_t* BS,
-                                        Fitness_t* BE, const Electron_t** LEIt) {
-      *BS = electrons.front().state;
-      for (auto& val : *BS) {
-        val = 0;
-      }
-
-      *BE = 0;
-      *LEIt = &electrons.front();
-
-      for (const Electron_t& elec : electrons) {
-        //*BS += elec.state;
-        for (int varIdx = 0; varIdx < BS->size(); valIdx++) {
-          BS->operator[](valIdx) += elec.energy[valIdx];
-        }
-
-        *BE += elec.energy;
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (elec.energy < *LEIt->energy) {
-            *LEIt = &elec;
-          }
-        } else {
-          if (elec.energy > *LEIt->energy) {
-            *LEIt = &elec;
-          }
-        }
-      }
-
-      //*BS /= electrons.size();
-      for (auto& val : *BS) {
-        val /= electrons.size();
-      }
-      *BE /= electrons.size();
-    }
+    static inline void updateLayerBSBELE(layer* layer) {}
   };
+
+  template <FitnessOpt fOpt>
+  inline static bool isBetter(FastFitness_t a, FastFitness_t b) noexcept {
+    if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+      return a < b;
+    }
+    return a > b;
+  }
 };
+
+#define HEU_MAKE_AOSBOXED_TYPES(Base_t)         \
+  HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t)       \
+  using Electron_t = typename Base_t::Electron; \
+  using Layer_t = typename Base_t::Layer;       \
+  using FastFitness_t = typename Base_t ::FastFitness_t;
 
 }  // namespace internal
 }  // namespace heu
