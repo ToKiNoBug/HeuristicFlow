@@ -45,9 +45,10 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
   void __impl_computeLayerBSBELE() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic, tasks.size() / thN)
+#pragma omp parallel for schedule(dynamic, this->_layers.size() / thN)
 #endif  //  EIGEN_HAS_OPENMP
-    for (Layer_t layer& : this->_layers) {
+    for (int idx = 0; idx < this->_layer.size(); idx++) {
+      Layer_t& layer = this->_layers[idx];
       layer->bindingState = layer->front()->state;
       layer->bindingEnergy = layer->front()->energy;
       layer->layerBestIdx = 0;
@@ -70,7 +71,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
   }
 
-  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, cosnt int layerIdx,
+  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, const int layerIdx,
                                  Electron_t* child) const {
     const Var_t& parentState = parent.state;
     Var_t alpha(parentState.rows(), parentState.cols()),
@@ -118,18 +119,18 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
 
  protected:
   void __impl_computeAtomBSBELE() {
-    this->_bindingState = electrons.front().state;
+    this->_bindingState = this->_electrons.front().state;
     for (auto& val : this->_bindingState) {
       val = 0;
     }
 
     this->_bindingEnergy = 0;
-    this->_atomBestPtr = &electrons.front();
+    this->_atomBestPtr = &this->_electrons.front();
 
-    for (const Electron_t& elec : electrons) {
+    for (const Electron_t& elec : this->_electrons) {
       // this->_bindingState += elec.state;
-      for (int varIdx = 0; varIdx < this->_bindingState.size(); valIdx++) {
-        this->_bindingState.operator[](valIdx) += elec.energy[valIdx];
+      for (int varIdx = 0; varIdx < this->_bindingState.size(); varIdx++) {
+        this->_bindingState.operator[](varIdx) += elec.energy[varIdx];
       }
 
       this->_bindingEnergy += elec.energy;
@@ -146,17 +147,18 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
 
     // this->_bindingState /= electrons.size();
     for (auto& val : this->_bindingState) {
-      val /= electrons.size();
+      val /= this->_electrons.size();
     }
-    this->_bindingEnergy /= electrons.size();
+    this->_bindingEnergy /= this->_electrons.size();
   }
 
   void __impl_computeLayerBSBELE() {
 #ifdef EIGEN_HAS_OPENMP
     static const int32_t thN = Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic, tasks.size() / thN)
+#pragma omp parallel for schedule(dynamic, this->_layers.size() / thN)
 #endif  //  EIGEN_HAS_OPENMP
-    for (Layer_t& layer : this->_layers) {
+    for (int idx = 0; idx < this->_layers.size(); idx++) {
+      Layer_t& layer = this->_layers[idx];
       layer->bindingState = layer->front()->state;
       layer->bindingEnergy = layer->front()->energy;
       layer->layerBestIdx = 0;
@@ -188,7 +190,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
   }
 
-  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, cosnt int layerIdx,
+  void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, const int layerIdx,
                                  Electron_t* child) const {
     const Var_t& parentState = parent.state;
 
@@ -220,7 +222,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
 
     for (int idx = 0; idx < this->dimensions(); idx++) {
-      this->applyConstraint(&val, idx);
+      this->applyConstraint(&child->state[idx], idx);
     }
   }
 

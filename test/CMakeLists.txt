@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 #set(CMAKE_ADD2LINE D:/mingw/mingw64/bin/addr2line.exe)
 #set(CMAKE_AR D:/mingw/mingw64/bin/ar.exe)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -26,6 +26,7 @@ add_executable(SOGA_Ackley SOGA_Ackley.cpp)
 add_executable(SOGA_TSP SOGA_TSP.cpp)
 add_executable(Boxes boxes.cpp)
 add_executable(poolVector poolVector.cpp)
+add_executable(AOS_Ackley AOS_Ackley.cpp)
 
 find_package(OpenMP)
 
@@ -40,4 +41,5 @@ if(OpenMP_CXX_FOUND)
     target_link_libraries(SOGA_Ackley PUBLIC OpenMP::OpenMP_CXX)
     target_link_libraries(SOGA_TSP PUBLIC OpenMP::OpenMP_CXX)
     target_link_libraries(Boxes PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(AOS_Ackley PUBLIC OpenMP::OpenMP_CXX)
 endif()

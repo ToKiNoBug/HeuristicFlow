@@ -24,7 +24,7 @@ class AOSParameterPack {
   using iFunBody = typename iFunArea_AOS<Var_t *, const Arg_t *>::template iFunBody<_i>;
   template <fFun_t _f>
   using fFunBody =
-      typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t 8>::template fFunBody<_f>;
+      typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t>::template fFunBody<_f>;
 
   static void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *, const Arg_t *) {
     constexpr bool
@@ -55,7 +55,7 @@ class AOSParameterPack<Var_t, Fitness_t, void> {
   template <iFun_t _i>
   using iFunBody = typename iFunArea_AOS<Var_t *>::template iFunBody<_i>;
   template <fFun_t _f>
-  using fFunBody = typename fFunArea_AOS<const Var_t *, Fitness_t 8>::template fFunBody<_f>;
+  using fFunBody = typename fFunArea_AOS<const Var_t *, Fitness_t>::template fFunBody<_f>;
 
   static inline void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *) {
     constexpr bool
@@ -68,7 +68,7 @@ class AOSParameterPack<Var_t, Fitness_t, void> {
 };
 
 #define HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t) \
-  usisng Args_t = typename Base_t ::Args_t;     \
+  using Args_t = typename Base_t ::Args_t;      \
   using iFun_t = typename Base_t ::iFun_t;      \
   using fFun_t = typename Base_t ::fFun_t;
 

@@ -37,11 +37,11 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
     Fitness_t bindingEnergy;
     int layerBestIdx;
 
-    inline Var_t& layerBestState() noexcept { return at(layerBestIdx)->state; }
+    inline Var_t& layerBestState() noexcept { return this->at(layerBestIdx)->state; }
 
-    inline const Var_t& layerBestState() const noexcept { return at(layerBestIdx)->state; }
+    inline const Var_t& layerBestState() const noexcept { return this->at(layerBestIdx)->state; }
 
-    inline FastFitness_t layerBestEnergy() const noexcept { return at(layerBestIdx)->energy; }
+    inline FastFitness_t layerBestEnergy() const noexcept { return this->at(layerBestIdx)->energy; }
   };
 
   inline AOSOption& option() noexcept { return _option; }
@@ -56,9 +56,9 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
   inline FastFitness_t bindingEnergy() const { return _bindingEnergy; }
 
-  inline const std::list<Electron_t>& electrons() const {return _electrons};
+  inline const std::list<Electron_t>& electrons() const { return _electrons; };
 
-  inline const std::vector<Layer>& layers() const {return _layers};
+  inline const std::vector<Layer>& layers() const { return _layers; };
 
   inline size_t generation() const noexcept { return _generation; }
 
@@ -121,19 +121,19 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
         for (int idx = 0; idx < solver->dimensions(); idx++) {
           if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
-            v->operator[](idx) = randD(this->min(), this->max());
+            v->operator[](idx) = randD(solver->min(), solver->max());
           } else {
-            v->operator[](idx) = randD(this->min()[idx], this->max()[idx]);
+            v->operator[](idx) = randD(solver->min()[idx], solver->max()[idx]);
           }
         }
 
       } else {
-        solver->runiFun(v, &this->arg());
+        solver->runiFun(v, &solver->arg());
       }
     }
 
-    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness* f) {
-      solver->runfFun(v, &this->arg(), f);
+    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) {
+      solver->runfFun(v, &solver->arg(), f);
     }
   };
 
@@ -150,9 +150,9 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
         for (int idx = 0; idx < solver->dimensions(); idx++) {
           if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
-            v->operator[](idx) = randD(this->min(), this->max());
+            v->operator[](idx) = randD(solver->min(), solver->max());
           } else {
-            v->operator[](idx) = randD(this->min()[idx], this->max()[idx]);
+            v->operator[](idx) = randD(solver->min()[idx], solver->max()[idx]);
           }
         }
 
@@ -161,14 +161,14 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       }
     }
 
-    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness* f) {
+    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) {
       solver->runfFun(v, f);
     }
   };
 
-  template <FitnessOpt fOpt>
+  template <FitnessOption fOpt>
   inline static bool isBetter(FastFitness_t a, FastFitness_t b) noexcept {
-    if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+    if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
       return a < b;
     }
     return a > b;

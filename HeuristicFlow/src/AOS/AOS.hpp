@@ -3,38 +3,45 @@
 
 #include <algorithm>
 
+#include <HeuristicFlow/EAGlobal>
+
 #include "InternalHeaderCheck.hpp"
 #include "AOSBase.hpp"
 #include "AOSDefaultElectron.hpp"
 
 namespace heu {
-
+/*
+template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
+          FitnessOption fOpt, RecordOption rOpt>
+*/
 template <typename Var_t, BoxShape BS, FitnessOption fOpt = FitnessOption::FITNESS_LESS_BETTER,
           RecordOption rOpt = RecordOption::DONT_RECORD_FITNESS, class Arg_t = void,
           typename internal::AOSParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_ = nullptr,
           bool isFixedRange = false, DivCode MinCT = DivEncode<0, 1>::code,
-          DivCode MaxCT = DivEncode<1, 1>::code, DivCode LRCT = DivEncode<1, 50>::code,
+          DivCode MaxCT = DivEncode<1, 1>::code, DivCode LRCT = DivEncode<1, 5>::code,
           typename internal::AOSParameterPack<Var_t, double, Arg_t>::fFun_t _iFun_ =
               internal::AOSParameterPack<Var_t, double,
                                          Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled>
 class AOS : public internal::AOSBase<
                 Var_t, double, Arg_t,
-                internal::RealBox<array_traits<Var_t>::Scalar_t, array_traits<Var_t>::sizeCT,
-                                  array_traits<Var_t>::containerType, BS, isFixedRange, MinCT,
-                                  MaxCT, LRCT>,
-                _iFun_, _fFun_, internal::DefaultElectron<Var_t, double>, fOpt, rOPt> {
+                internal::RealBox<typename array_traits<Var_t>::Scalar_t,
+                                  array_traits<Var_t>::sizeCT, array_traits<Var_t>::containerType,
+                                  BS, isFixedRange, MinCT, MaxCT, LRCT>,
+                _iFun_, _fFun_, internal::DefaultElectron<Var_t, double>, fOpt, rOpt> {
   using Base_t = typename internal::AOSBase<
       Var_t, double, Arg_t,
-      internal::RealBox<array_traits<Var_t>::Scalar_t, array_traits<Var_t>::sizeCT,
+      internal::RealBox<typename array_traits<Var_t>::Scalar_t, array_traits<Var_t>::sizeCT,
                         array_traits<Var_t>::containerType, BS, isFixedRange, MinCT, MaxCT, LRCT>,
-      _iFun_, _fFun_, internal::DefaultElectron<Var_t, double>, fOpt, rOPt>;
+      _iFun_, _fFun_, internal::DefaultElectron<Var_t, double>, fOpt, rOpt>;
 
  public:
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 
   friend class internal::AOSBase<
       Var_t, double, Arg_t,
-      internal::RealBox<array_traits<Var_t>::Scalar_t, array_traits<Var_t>::sizeCT,
+      internal::RealBox<typename array_traits<Var_t>::Scalar_t, array_traits<Var_t>::sizeCT,
                         array_traits<Var_t>::containerType, BS, isFixedRange, MinCT, MaxCT, LRCT>,
       _iFun_, _fFun_, internal::DefaultElectron<Var_t, double>, fOpt,
       RecordOption::DONT_RECORD_FITNESS>;
@@ -102,7 +109,7 @@ class AOS : public internal::AOSBase<
 
     int curLayerIdx = 0;
     for (int countedElectrons = 0; countedElectrons < this->_electrons.size(); countedElectrons++) {
-      if (countedElectrons >= numOfElectrons[curLayerIdx]) {
+      if (countedElectrons >= numOfEachLayer[curLayerIdx]) {
         curLayerIdx++;
       }
 

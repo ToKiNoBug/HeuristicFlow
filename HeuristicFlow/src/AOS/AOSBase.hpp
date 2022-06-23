@@ -31,7 +31,7 @@ class AOSBase
     this->_electrons.resize(this->_option.electronNum);
 
     for (Electron_t& elec : this->_electrons) {
-      Base_t::AOSExecutor<>::doInitialization(this, &elec.state);
+      Base_t::template AOSExecutor<>::doInitialization(this, &elec.state);
       elec.setUncomputed();
     }
 
@@ -40,7 +40,7 @@ class AOSBase
 
     this->_layers.clear();
     this->_layers.resize(this->_option.electronNum);
-    for (layer_t& layer : this->_layers) {
+    for (Layer_t& layer : this->_layers) {
       layer.reserve(this->_option.electronNum);
     }
     this->_layers.clear();
@@ -57,7 +57,7 @@ class AOSBase
   template <class this_t>
   inline void __impl_updateElectrons() {
     for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
-      layer_t& curLayer = this->_layers[layerIdx];
+      Layer_t& curLayer = this->_layers[layerIdx];
       for (Electron_t* elecPtr : this->_layers[layerIdx]) {
         this->_electrons.emplace_back();
         Electron_t* newPtr = &this->_electrons.back();
@@ -112,7 +112,7 @@ class AOSBase<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, Electron, fOpt,
  public:
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 
-  friend class Base_t;
+  friend Base_t;
 
   const std::vector<Fitness_t>& record() const noexcept { return _record; }
 
