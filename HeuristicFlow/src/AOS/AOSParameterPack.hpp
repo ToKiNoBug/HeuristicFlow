@@ -21,10 +21,10 @@ class AOSParameterPack {
   using fFun_t = void (*)(const Var_t *, const Arg_t *, Fitness_t *);
 
   template <iFun_t _i>
-  using iFunBody = typename iFunArea_AOS<Var_t *, const Arg_t *>::template iFunBody<_i>;
+  using iFunBody = typename iFunArea_AOS<Var_t *, const Arg_t *>::template funBody<_i>;
   template <fFun_t _f>
   using fFunBody =
-      typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t>::template fFunBody<_f>;
+      typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t>::template funBody<_f>;
 
   static void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *, const Arg_t *) {
     constexpr bool
@@ -53,9 +53,9 @@ class AOSParameterPack<Var_t, Fitness_t, void> {
   using fFun_t = void (*)(const Var_t *, Fitness_t *);
 
   template <iFun_t _i>
-  using iFunBody = typename iFunArea_AOS<Var_t *>::template iFunBody<_i>;
+  using iFunBody = typename iFunArea_AOS<Var_t *>::template funBody<_i>;
   template <fFun_t _f>
-  using fFunBody = typename fFunArea_AOS<const Var_t *, Fitness_t>::template fFunBody<_f>;
+  using fFunBody = typename fFunArea_AOS<const Var_t *, Fitness_t *>::template funBody<_f>;
 
   static inline void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *) {
     constexpr bool

@@ -170,7 +170,7 @@ struct getSizeCTOfAnyVector {
 template <class T>
 struct array_traits {
   using Scalar_t = typename toElement<T>::type;
-  static constexpr bool isEigenClass = isEigenClass<T>::value;
+  static constexpr bool isEigenClass = ::heu::template isEigenClass<T>::value;
   static constexpr ContainerOption containerType =
       (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
   static constexpr int sizeCT = internal::getSizeCTOfAnyVector<T>::value;

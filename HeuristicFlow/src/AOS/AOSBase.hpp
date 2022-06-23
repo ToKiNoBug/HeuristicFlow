@@ -4,6 +4,8 @@
 #include "InternalHeaderCheck.hpp"
 #include "AOS4EigenAndStd.hpp"
 
+#include <iostream>
+
 namespace heu {
 namespace internal {
 
@@ -31,7 +33,7 @@ class AOSBase
     this->_electrons.resize(this->_option.electronNum);
 
     for (Electron_t& elec : this->_electrons) {
-      Base_t::template AOSExecutor<>::doInitialization(this, &elec.state);
+      Base_t::template AOSExecutor<>::doInitiailization(this, &elec.state);
       elec.setUncomputed();
     }
 
@@ -68,7 +70,7 @@ class AOSBase
           static_cast<this_t*>(this)->__impl2_applyNonPhotonEffect(*elecPtr, newPtr);
         }
 
-        newPtr->setUncomuted();
+        newPtr->setUncomputed();
       }
     }
   }
@@ -77,7 +79,8 @@ class AOSBase
   void __impl_run() {
     while (true) {
       static_cast<this_t*>(this)->__impl_computeFitness();
-      static_cast<this_t*>(this)->__impl_updateAtomBSBELE();
+
+      static_cast<this_t*>(this)->__impl_computeAtomBSBELE();
 
       static_cast<this_t*>(this)->__impl_recordFitness();
 
@@ -87,11 +90,11 @@ class AOSBase
         break;
       }
 
-      static_cast<this_t*>(this)->__impl_updateLayerBSBELE();
+      static_cast<this_t*>(this)->__impl_computeLayerBSBELE();
 
       static_cast<this_t*>(this)->template __impl_updateElectrons<this_t>();
 
-      this->_generations++;
+      this->_generation++;
     }
   }
 

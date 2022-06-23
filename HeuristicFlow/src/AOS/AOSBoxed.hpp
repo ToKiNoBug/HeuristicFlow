@@ -17,9 +17,9 @@ template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
           typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron>
 class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
-                 AOSParameterPack<Var_t, Fitness_t, Arg_t>::template iFunBody<_iFun_>,
-                 AOSParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_>,
-                 Box_t {
+                 public AOSParameterPack<Var_t, Fitness_t, Arg_t>::template iFunBody<_iFun_>,
+                 public AOSParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_>,
+                 public Box_t {
   using Base_t = AOSParameterPack<Var_t, Fitness_t, Arg_t>;
 
  public:
@@ -90,7 +90,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
     for (int i = 0; i < tasks.size(); i++) {
       Electron_t* ptr = tasks[i];
 
-      AOSExecutor<>::doFitness(this, &ptr->self, &ptr->_Fitness);
+      AOSExecutor<>::doFitness(this, &ptr->state, &ptr->energy);
 
       ptr->isComputed = true;
     }
@@ -111,7 +111,8 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   template <bool hasParameter = Base_t::hasParameters, typename unused = void>
   struct AOSExecutor {
     static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
-      if constexpr (Base_t::iFunAtCompileTime ==
+      if constexpr (AOSParameterPack<Var_t, Fitness_t,
+                                     Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
         if constexpr (array_traits<Var_t>::isEigenClass) {
           v->resize(solver->dimensions(), 1);
@@ -140,7 +141,8 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   template <typename unused>
   struct AOSExecutor<false, unused> {
     static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
-      if constexpr (Base_t::iFunAtCompileTime ==
+      if constexpr (AOSParameterPack<Var_t, Fitness_t,
+                                     Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
         if constexpr (array_traits<Var_t>::isEigenClass) {
           v->resize(solver->dimensions(), 1);
@@ -177,7 +179,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
 #define HEU_MAKE_AOSBOXED_TYPES(Base_t)               \
   HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t)             \
-  using Electron_t = typename Base_t::Electron;       \
+  using Electron_t = typename Base_t::Electron_t;     \
   using ElectronIt_t = typename Base_t::ElectronIt_t; \
   using Layer_t = typename Base_t::Layer;             \
   using FastFitness_t = typename Base_t ::FastFitness_t;

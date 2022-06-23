@@ -43,31 +43,27 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
   }
 
   void __impl_computeLayerBSBELE() {
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic, this->_layers.size() / thN)
-#endif  //  EIGEN_HAS_OPENMP
-    for (int idx = 0; idx < this->_layer.size(); idx++) {
-      Layer_t& layer = this->_layers[idx];
-      layer->bindingState = layer->front()->state;
-      layer->bindingEnergy = layer->front()->energy;
-      layer->layerBestIdx = 0;
-      for (int idx = 1; idx < layer->size(); idx++) {
-        layer->bindingState += layer->at(idx)->state;
-        layer->bindingEnergy += layer->at(idx)->energy;
+    for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
+      Layer_t& layer = this->_layers[layerIdx];
+      layer.bindingState = layer.front()->state;
+      layer.bindingEnergy = layer.front()->energy;
+      layer.layerBestIdx = 0;
+      for (int idx = 1; idx < layer.size(); idx++) {
+        layer.bindingState += layer.at(idx)->state;
+        layer.bindingEnergy += layer.at(idx)->energy;
         if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (layer->at(idx) < layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
+          if (layer.at(idx) < layer.at(layer.layerBestIdx)) {
+            layer.layerBestIdx = idx;
           }
         } else {
-          if (layer->at(idx) > layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
+          if (layer.at(idx) > layer.at(layer.layerBestIdx)) {
+            layer.layerBestIdx = idx;
           }
         }
       }
 
-      layer->bindingState /= layer->size();
-      layer->bindingEnergy /= layer->size();
+      layer.bindingState /= layer.size();
+      layer.bindingEnergy /= layer.size();
     }
   }
 
@@ -81,7 +77,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     randD(beta.data(), beta.size());
     randD(gamma.data(), gamma.size());
 
-    if (Base_t::isBetter<fOpt>(parent.energy, layer.bindingEnergy)) {
+    if (Base_t::template isBetter<fOpt>(parent.energy, layer.bindingEnergy)) {
       // E_i^k<BE^k
       child->state =
           parent.state + alpha * (beta * layer.layerBestState() - gamma * layer.bindingState);
@@ -99,7 +95,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
 
   inline void __impl2_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
     child->state =
-        parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
+        parent.state + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
 
     for (int idx = 0; idx < parent.state.size(); idx++) {
       this->applyConstraint(&child->state(idx), idx);
@@ -153,40 +149,36 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
   }
 
   void __impl_computeLayerBSBELE() {
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
-#pragma omp parallel for schedule(dynamic, this->_layers.size() / thN)
-#endif  //  EIGEN_HAS_OPENMP
-    for (int idx = 0; idx < this->_layers.size(); idx++) {
-      Layer_t& layer = this->_layers[idx];
-      layer->bindingState = layer->front()->state;
-      layer->bindingEnergy = layer->front()->energy;
-      layer->layerBestIdx = 0;
+    for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
+      Layer_t& layer = this->_layers[layerIdx];
+      layer.bindingState = layer.front()->state;
+      layer.bindingEnergy = layer.front()->energy;
+      layer.layerBestIdx = 0;
 
-      const int varDim = layer->front()->size();
+      const int varDim = layer.front()->size();
 
-      for (int idx = 1; idx < layer->size(); idx++) {
-        // layer->bindingState += layer->at(idx)->state;
+      for (int idx = 1; idx < layer.size(); idx++) {
+        // layer.bindingState += layer.at(idx)->state;
         for (int varIdx = 0; varIdx < varDim; varIdx++) {
-          layer->bindingEnergy[varIdx] += layer->at(idx)->energy[varIdx];
+          layer.bindingEnergy[varIdx] += layer.at(idx)->energy[varIdx];
         }
 
         if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (layer->at(idx) < layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
+          if (layer.at(idx).energy < layer.bestElectron().energy) {
+            layer.layerBestIdx = idx;
           }
         } else {
-          if (layer->at(idx) > layer->at(layer->layerBestIdx)) {
-            layer->layerBestIdx = idx;
+          if (layer.at(idx).energy > layer.bestElectron().energy) {
+            layer.layerBestIdx = idx;
           }
         }
       }
 
-      // layer->bindingState /= layer->size();
-      for (auto& var : layer->bindingState) {
-        var /= layer->size();
+      // layer.bindingState /= layer.size();
+      for (auto& var : layer.bindingState) {
+        var /= layer.size();
       }
-      layer->bindingEnergy /= layer->size();
+      layer.bindingEnergy /= layer.size();
     }
   }
 

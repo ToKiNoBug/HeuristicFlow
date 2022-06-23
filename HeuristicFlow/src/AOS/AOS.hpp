@@ -21,7 +21,7 @@ template <typename Var_t, BoxShape BS, FitnessOption fOpt = FitnessOption::FITNE
           typename internal::AOSParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_ = nullptr,
           bool isFixedRange = false, DivCode MinCT = DivEncode<0, 1>::code,
           DivCode MaxCT = DivEncode<1, 1>::code, DivCode LRCT = DivEncode<1, 5>::code,
-          typename internal::AOSParameterPack<Var_t, double, Arg_t>::fFun_t _iFun_ =
+          typename internal::AOSParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_ =
               internal::AOSParameterPack<Var_t, double,
                                          Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled>
 class AOS : public internal::AOSBase<

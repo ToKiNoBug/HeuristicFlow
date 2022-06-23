@@ -29,7 +29,7 @@ struct SOFunctions<Var_t, Fitness_t, void> {
                 "Fitness_t must be a floating point number");
   inline static void rastrigin(const Var_t *x, Fitness_t *fitness) {
     *fitness = 10 * x->size();
-    for (var xi : *x) {
+    for (auto xi : *x) {
       *fitness += square(xi) - 10 * std::cos(M_PI * 2 * xi);
     }
   }
