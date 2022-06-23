@@ -1,6 +1,7 @@
 #ifndef HEU_AOSBASE_HPP
 #define HEU_AOSBASE_HPP
 
+#include "InternalHeaderCheck.hpp"
 #include "AOS4EigenAndStd.hpp"
 
 namespace heu {

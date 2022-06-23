@@ -1,6 +1,7 @@
 #ifndef HEU_AOS4EIGENANDSTD_HPP
 #define HEU_AOS4EIGENANDSTD_HPP
 
+#include "InternalHeaderCheck.hpp"
 #include "AOSBoxed.hpp"
 
 namespace heu {

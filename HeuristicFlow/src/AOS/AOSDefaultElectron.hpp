@@ -1,6 +1,8 @@
 #ifndef HEU_AOSDEFAULTELECTRON_HPP
 #define HEU_AOSDEFAULTELECTRON_HPP
 
+#include "InternalHeaderCheck.hpp"
+
 namespace heu {
 namespace internal {
 template <typename Var_t, class Fitness_t>

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "InternalHeaderCheck.hpp"
+
 namespace heu {
 
 struct AOSOption {

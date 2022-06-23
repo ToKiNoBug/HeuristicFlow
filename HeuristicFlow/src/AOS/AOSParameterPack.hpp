@@ -3,6 +3,8 @@
 
 #include <HeuristicFlow/Global>
 
+#include "InternalHeaderCheck.hpp"
+
 namespace heu {
 
 namespace internal {

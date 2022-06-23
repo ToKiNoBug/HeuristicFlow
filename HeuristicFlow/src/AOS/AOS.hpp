@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "InternalHeaderCheck.hpp"
 #include "AOSBase.hpp"
 #include "AOSDefaultElectron.hpp"
 

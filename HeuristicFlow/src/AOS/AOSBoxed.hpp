@@ -4,6 +4,7 @@
 #include <list>
 #include <HeuristicFlow/SimpleMatrix>
 
+#include "InternalHeaderCheck.hpp"
 #include "AOSParameterPack.hpp"
 #include "AOSOption.hpp"
 

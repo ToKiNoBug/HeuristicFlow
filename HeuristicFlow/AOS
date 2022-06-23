@@ -1,6 +1,18 @@
 #ifndef HEU_AOS_
 #define HEU_AOS_
 
+#include "src/AOS/AOSOption.hpp"
+#include "src/AOS/AOSDefaultElectron.hpp"
 #include "src/AOS/AOSParameterPack.hpp"
+#include "src/AOS/AOSBoxed.hpp"
+#include "src/AOS/AOS4EigenAndStd.hpp"
+#include "src/AOS/AOSBase.hpp"
+#include "src/AOS/AOS.hpp"
+
+/**
+ * \defgroup HEU_AOS AOS
+ * The Atom Orbit Search algorithm
+ *
+ */
 
 #endif  //  HEU_AOS_
