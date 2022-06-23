@@ -41,8 +41,8 @@ namespace heu {
  * \tparam Dim Size at compile time. Use Eigen::Dynamic for dynamic size.
  */
 template <typename scalar_t, int Dim>
-using stdContainer =
-    typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>, std::array<scalar_t, Dim> >::type;
+using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
+                                               std::array<scalar_t, Dim> >::type;
 
 /**
  * \ingroup HEU_GLOBAL
@@ -65,8 +65,9 @@ using stdVecD_t = stdContainer<double, Size>;
  *
  */
 template <typename scalar_t, int Size, ContainerOption DVO>
-using Container = typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
-                                            Eigen::Array<scalar_t, Size, 1> >::type;
+using Container =
+    typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
+                              Eigen::Array<scalar_t, Size, 1> >::type;
 
 // template<ContainerOption dvo,size_t Dim>
 // using FitnessVec_t= Container<double,Dim,dvo>;
@@ -109,14 +110,16 @@ struct toElement {
  * \ingroup HEU_GLOBAL
  * \brief Determine whether T is a Eigen class
  *
- * \note A class that publicaly inherits from Eigen class is also taken as Eigen class, cause it has Eigen APIs.
+ * \note A class that publicaly inherits from Eigen class is also taken as Eigen class, cause it has
+ * Eigen APIs.
  *
  * \tparam T Type of vector/matrix
  * \return value Whether T is a Eigen class.
  */
 template <typename T>
 struct isEigenClass {
-  static constexpr bool value = std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
+  static constexpr bool value =
+      std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
 };
 
 namespace internal {
@@ -168,8 +171,10 @@ template <class T>
 struct array_traits {
   using Scalar_t = typename toElement<T>::type;
   static constexpr bool isEigenClass = isEigenClass<T>::value;
-  static constexpr ContainerOption containerType = (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
+  static constexpr ContainerOption containerType =
+      (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
   static constexpr int sizeCT = internal::getSizeCTOfAnyVector<T>::value;
+  static constexpr bool isFixedSize = (sizeCT != Eigen::Dynamic);
 };
 
 }  //   namespace heu
