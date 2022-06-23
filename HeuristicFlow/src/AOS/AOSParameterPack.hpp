@@ -21,7 +21,16 @@ class AOSParameterPack {
   template <iFun_t _i>
   using iFunBody = typename iFunArea_AOS<Var_t *, const Arg_t *>::template iFunBody<_i>;
   template <fFun_t _f>
-  using fFunBody = typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t 8>::template fFunBody<_f>;
+  using fFunBody =
+      typename fFunArea_AOS<const Var_t *, const Arg_t *, Fitness_t 8>::template fFunBody<_f>;
+
+  static void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *, const Arg_t *) {
+    constexpr bool
+        You_think_you_called_the_default_initialize_function_of_AOS_but_it_is_reserved_as_a_symbol =
+            false;
+    assert(
+        You_think_you_called_the_default_initialize_function_of_AOS_but_it_is_reserved_as_a_symbol);
+  }
 
   static constexpr bool hasParameters = true;
 
@@ -46,6 +55,13 @@ class AOSParameterPack<Var_t, Fitness_t, void> {
   template <fFun_t _f>
   using fFunBody = typename fFunArea_AOS<const Var_t *, Fitness_t 8>::template fFunBody<_f>;
 
+  static inline void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *) {
+    constexpr bool
+        You_think_you_called_the_default_initialize_function_of_AOS_but_it_is_reserved_as_a_symbol =
+            false;
+    assert(
+        You_think_you_called_the_default_initialize_function_of_AOS_but_it_is_reserved_as_a_symbol);
+  }
   static constexpr bool hasParameters = false;
 };
 

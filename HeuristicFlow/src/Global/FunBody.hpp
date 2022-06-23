@@ -28,7 +28,8 @@ namespace heu {
 
 /**
  * \ingroup HEU_GLOBAL
- * \brief This marco metafunction is used to generate a struct that adpatively mantain a function pointer.
+ * \brief This marco metafunction is used to generate a struct that adpatively mantain a function
+ * pointer.
  *
  *
  * If a function name is provided at compile time, it can execute the function,
@@ -48,6 +49,7 @@ namespace heu {
      public:                                                                                      \
       inline constexpr funPtr_t funFlag() const { return _fun; }                                  \
       inline void run##funFlag(a... _a) const { _fun(_a...); }                                    \
+      constexpr funPtr_t funFlag##AtCompileTime = _fun;                                           \
                                                                                                   \
      private:                                                                                     \
       static_assert(_fun != nullptr, "Template function mustn't be nullptr");                     \
@@ -59,6 +61,7 @@ namespace heu {
       inline funPtr_t funFlag() const { return _funPtr; }                                         \
       inline void run##funFlag(a... _a) const { _funPtr(_a...); }                                 \
       inline void set##funFlag(funPtr_t __) { _funPtr = __; }                                     \
+      constexpr funPtr_t funFlag##AtCompileTime = nullptr;                                        \
                                                                                                   \
      protected:                                                                                   \
       funPtr_t _funPtr;                                                                           \

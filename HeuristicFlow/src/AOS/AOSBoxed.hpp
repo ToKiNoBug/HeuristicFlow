@@ -13,8 +13,8 @@ namespace internal {
 #warning Remember to migrate all functions that compares between Fitness_t s, they are not adpative for potential multi-objective solvers
 
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron>
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron>
 class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
                  AOSParameterPack<Var_t, Fitness_t, Arg_t>::template iFunBody<_iFun_>,
                  AOSParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_>,
@@ -24,6 +24,8 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
  public:
   HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t);
   using Electron_t = Electron;
+
+  using ElectronIt_t = typename std::list<Electron_t>::iterator;
 
   using FastFitness_t = typename std::conditional<sizeof(Fitness_t) <= sizeof(void*), Fitness_t,
                                                   const Fitness_t&>::type;
@@ -108,7 +110,25 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   template <bool hasParameter = Base_t::hasParameters, typename unused = void>
   struct AOSExecutor {
     static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
-      solver->runiFun(v, &this->arg());
+      if constexpr (Base_t::iFunAtCompileTime ==
+                    Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
+        if constexpr (array_traits<Var_t>::isEigenClass) {
+          v->resize(solver->dimensions(), 1);
+        } else if constexpr (array_traits<Var_t>::sizeCT == -1) {
+          v->resize(solver->dimensions());
+        }
+
+        for (int idx = 0; idx < solver->dimensions(); idx++) {
+          if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
+            v->operator[](idx) = randD(this->min(), this->max());
+          } else {
+            v->operator[](idx) = randD(this->min()[idx], this->max()[idx]);
+          }
+        }
+
+      } else {
+        solver->runiFun(v, &this->arg());
+      }
     }
 
     static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness* f) {
@@ -118,7 +138,27 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
   template <typename unused>
   struct AOSExecutor<false, unused> {
-    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) { solver->runiFun(v); }
+    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
+      if constexpr (Base_t::iFunAtCompileTime ==
+                    Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
+        if constexpr (array_traits<Var_t>::isEigenClass) {
+          v->resize(solver->dimensions(), 1);
+        } else if constexpr (array_traits<Var_t>::sizeCT == -1) {
+          v->resize(solver->dimensions());
+        }
+
+        for (int idx = 0; idx < solver->dimensions(); idx++) {
+          if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
+            v->operator[](idx) = randD(this->min(), this->max());
+          } else {
+            v->operator[](idx) = randD(this->min()[idx], this->max()[idx]);
+          }
+        }
+
+      } else {
+        solver->runiFun(v);
+      }
+    }
 
     static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness* f) {
       solver->runfFun(v, f);
@@ -134,10 +174,11 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   }
 };
 
-#define HEU_MAKE_AOSBOXED_TYPES(Base_t)         \
-  HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t)       \
-  using Electron_t = typename Base_t::Electron; \
-  using Layer_t = typename Base_t::Layer;       \
+#define HEU_MAKE_AOSBOXED_TYPES(Base_t)               \
+  HEU_MAKE_AOSPARAMETERPACK_TYPES(Base_t)             \
+  using Electron_t = typename Base_t::Electron;       \
+  using ElectronIt_t = typename Base_t::ElectronIt_t; \
+  using Layer_t = typename Base_t::Layer;             \
   using FastFitness_t = typename Base_t ::FastFitness_t;
 
 }  // namespace internal

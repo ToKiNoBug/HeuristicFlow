@@ -7,8 +7,8 @@ namespace heu {
 namespace internal {
 
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
           FitnessOption fOpt, RecordOption rOpt>
 class AOSBase
     : public std::conditional<
@@ -36,6 +36,13 @@ class AOSBase
 
     this->_generation = 0;
     this->_earlyStopCounter = 0;
+
+    this->_layers.clear();
+    this->_layers.resize(this->_option.electronNum);
+    for (layer_t& layer : this->_layers) {
+      layer.reserve(this->_option.electronNum);
+    }
+    this->_layers.clear();
   }
 
  protected:
@@ -91,8 +98,8 @@ class AOSBase
 };
 
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
-          AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
+          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
           FitnessOption fOpt>
 class AOSBase<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, Electron, fOpt,
               RecordOption::RECORD_FITNESS>
@@ -103,6 +110,8 @@ class AOSBase<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, Electron, fOpt,
 
  public:
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
+
+  friend class Base_t;
 
   const std::vector<Fitness_t>& record() const noexcept { return _record; }
 

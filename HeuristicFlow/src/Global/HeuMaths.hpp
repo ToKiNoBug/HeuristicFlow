@@ -198,6 +198,13 @@ inline T max(T a, Args_t... args) {
   return internal::imp_max(a, args...);
 }
 
+template <typename scalar_t = double>
+inline scalar_t gaussianCurve(const scalar_t x, const scalar_t mu = 0.0,
+                              const scalar_t sigma = 1.0) noexcept {
+  return 1 / (sigma * std::sqrt(2 * M_PI)) *
+         std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
+}
+
 }  //    namespace heu
 
 #endif  // HEU_Maths_HPP
