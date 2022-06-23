@@ -60,12 +60,58 @@ class AOS : public internal::AOSBase<
 
     std::sort(elecSortSpace.begin(), elecSortSpace.end(), electronIteratorCompareFun);
 
+    // remove worse electrons
     while (elecSortSpace.size() > this->_option.electronNum) {
       this->_electrons.erase(elecSortSpace.back());
       elecSortSpace.pop_back();
     }
 
     this->_layers.clear();
+
+    // a estimation value of layer number
+    const int tempLayerNum = randIdx(3, int(this->_electrons.size() - 1));
+
+    // the accumulate distribution of electrons
+    Eigen::ArrayXi numOfEachLayer(tempLayerNum);
+    {
+      Eigen::ArrayXd floatNumOfEachLayer(tempLayerNum);
+      for (int idx = 0; idx < tempLayerNum; idx++) {
+        floatNumOfEachLayer[idx] = gaussianCurve<double>(idx + 1, 0, tempLayerNum / 6.0);
+      }
+      floatNumOfEachLayer /= floatNumOfEachLayer.sum();
+      floatNumOfEachLayer *= this->_electrons.size();
+      numOfEachLayer = floatNumOfEachLayer.round().cast<int>();
+    }
+
+    for (int idx = 1; idx < numOfEachLayer.size(); idx++) {
+      numOfEachLayer[idx] += numOfEachLayer[idx - 1];
+    }
+
+    for (int& val : numOfEachLayer) {
+      if (val > this->_electrons.size()) {
+        val = this->_electrons.size();
+      }
+    }
+
+    this->_layers.resize(tempLayerNum);
+
+    for (Layer_t& layer : this->_layers) {
+      layer.clear();
+    }
+
+    int curLayerIdx = 0;
+    for (int countedElectrons = 0; countedElectrons < this->_electrons.size(); countedElectrons++) {
+      if (countedElectrons >= numOfElectrons[curLayerIdx]) {
+        curLayerIdx++;
+      }
+
+      this->_layers[curLayerIdx].emplace_back(&*elecSortSpace[countedElectrons]);
+    }
+
+    // remove empty layers
+    while (this->_layers.back().size() <= 0) {
+      this->_layers.pop_back();
+    }
   }
 };
 
