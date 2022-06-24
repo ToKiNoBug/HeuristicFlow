@@ -71,7 +71,7 @@ class AOS : public internal::AOSBase<
     this->_layers.clear();
 
     // a estimation value of layer number
-    const int tempLayerNum = randIdx(3, int(this->_electrons.size() - 1));
+    const int tempLayerNum = randIdx(1, int(this->_option.maxLayerNum + 1));
 
     // the accumulate distribution of electrons
     Eigen::ArrayXi numOfEachLayer(tempLayerNum);

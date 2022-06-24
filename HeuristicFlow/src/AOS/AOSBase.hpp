@@ -28,6 +28,13 @@ class AOSBase
 
   void initializePop() {
     this->_layers.clear();
+
+    {
+      const bool assignedMaxLayerNumMustNotBeGreaterThanElectronNum =
+          (this->_option.maxLayerNum <= this->_option.electronNum);
+      assert(assignedMaxLayerNumMustNotBeGreaterThanElectronNum);
+    }
+
     this->_electrons.clear();
 
     this->_electrons.resize(this->_option.electronNum);

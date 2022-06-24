@@ -14,9 +14,10 @@ using std::endl;
 
 constexpr int dimensions = 2;
 constexpr int electronNum = 50;
-constexpr int maxGeneration = 100;
+constexpr int maxGeneration = 50;
+constexpr int maxLayerNum = 5;
 
-constexpr double photonRate = 0.1;
+constexpr double photonRate = 0.5;
 
 constexpr double varMin = -5;
 constexpr double varMax = 5;
@@ -173,7 +174,7 @@ class labAOS {
 
     //////////////////////////////////////////////////
     atom.clear();
-    int layerNum = heu::randIdx(3, int(electrons.size()) - 1);
+    int layerNum = heu::randIdx(1, maxLayerNum + 1);
 
     Eigen::ArrayXd numOfEachLayer(layerNum);
 
@@ -225,7 +226,7 @@ class labAOS {
       for (auto elecPtr : atom[layerIdx]) {
         electrons.emplace_back();
         Electron* newElecPtr = &electrons.back();
-        if (heu::randD() <= photonRate) {
+        if (heu::randD() > photonRate) {
           applyPhoton(atom[layerIdx], layerIdx + 1, *elecPtr, newElecPtr);
         } else {
           applyNonPhoton(*elecPtr, newElecPtr);

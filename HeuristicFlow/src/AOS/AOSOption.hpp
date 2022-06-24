@@ -13,6 +13,7 @@ struct AOSOption {
     maxGeneration = 30;
     maxEarlyStop = 20;
     photonRate = 0.1;
+    maxLayerNum = 5;
   }
 
   ~AOSOption() = default;
@@ -20,6 +21,7 @@ struct AOSOption {
   size_t electronNum;
   size_t maxGeneration;
   size_t maxEarlyStop;
+  size_t maxLayerNum;
   double photonRate;
 };
 

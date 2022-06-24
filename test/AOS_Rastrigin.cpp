@@ -18,7 +18,8 @@ int main() {
   opt.electronNum = 50;
   opt.maxEarlyStop = 15;
   opt.maxGeneration = 50;
-  opt.photonRate = 0.7;
+  opt.photonRate = 0.1;
+  opt.maxLayerNum = 5;
 
   solver.setOption(opt);
 
