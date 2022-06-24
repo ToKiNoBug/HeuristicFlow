@@ -16,8 +16,8 @@ int main() {
 
   heu::AOSOption opt;
   opt.electronNum = 50;
-  opt.maxEarlyStop = 15;
-  opt.maxGeneration = 50;
+  opt.maxEarlyStop = -1;
+  opt.maxGeneration = 1000;
   opt.photonRate = 0.1;
   opt.maxLayerNum = 5;
 
@@ -35,13 +35,18 @@ for (const auto& X : solver.electrons()) {
 }
 cout << "]';\n\n\n\n" << endl;
 */
-
+  std::clock_t clocks = std::clock();
   solver.run();
+  clocks = std::clock() - clocks;
+
+  cout << "AOS finished with " << double(clocks) / CLOCKS_PER_SEC * 1e6 / solver.generation()
+       << " ms per generation" << endl;
 
   // cout << "result Var_t = [" << solver.bestElectron().state << "];\n\n";
-
-  cout << "result fitness = " << solver.bestElectron().energy << " in " << solver.generation()
-       << " generations" << endl;
+  /*
+cout << "result fitness = " << solver.bestElectron().energy << " in " << solver.generation()
+     << " generations" << endl;
+     */
   /*
 cout << "record=[";
 for (auto i : solver.record()) {

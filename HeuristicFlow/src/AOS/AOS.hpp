@@ -102,9 +102,12 @@ class AOS : public internal::AOSBase<
     }
 
     int curLayerIdx = 0;
+    this->_layers.front().reserve(numOfEachLayer[0]);
     for (int countedElectrons = 0; countedElectrons < this->_electrons.size(); countedElectrons++) {
       if (countedElectrons >= numOfEachLayer[curLayerIdx]) {
         curLayerIdx++;
+        this->_layers[curLayerIdx].reserve(numOfEachLayer[curLayerIdx] -
+                                           numOfEachLayer[curLayerIdx - 1]);
       }
 
       this->_layers[curLayerIdx].emplace_back(&*elecSortSpace[countedElectrons]);

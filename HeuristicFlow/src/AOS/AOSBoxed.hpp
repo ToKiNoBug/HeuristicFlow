@@ -12,7 +12,7 @@ namespace heu {
 namespace internal {
 
 //#warning Remember to migrate all functions that compares between Fitness_t s, they are not
-//adpative for potential multi-objective solvers
+// adpative for potential multi-objective solvers
 
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
           typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
