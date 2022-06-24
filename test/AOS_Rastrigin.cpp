@@ -8,8 +8,10 @@ using std::cout, std::endl;
 int main() {
   constexpr int Dim = 2;
 
-  heu::AOS<std::vector<double>, heu::BoxShape::SQUARE_BOX, heu::FITNESS_LESS_BETTER,
-           heu::RECORD_FITNESS, void, heu::testFunctions<std::vector<double>>::rastrigin, true,
+  using Arg_t = int;
+  heu::AOS<std::vector<double>, heu::BoxShape::RECTANGLE_BOX, heu::FITNESS_LESS_BETTER,
+           heu::RECORD_FITNESS, Arg_t,
+           heu::testFunctions<std::vector<double>, double, Arg_t>::rastrigin, false,
            heu::DivEncode<-5, 1>::code, heu::DivEncode<5, 1>::code, heu::DivEncode<3, 2>::code>
       solver;
 
@@ -21,21 +23,28 @@ int main() {
   opt.maxLayerNum = 5;
 
   solver.setOption(opt);
-
-  solver.setDimensions(Dim);
+  /*
+solver.setDimensions(Dim);
+solver.setMax(5);
+solver.setMin(-5);
+solver.setLearnRate(1.0);
+*/
+  solver.setMin({-5, -5});
+  solver.setMax({5, 5});
+  solver.setLearnRate({1, 1});
 
   solver.initializePop();
 
   /*
-  cout << "box range = " << solver.min() << " , " << solver.max() << " , " << solver.learnRate()
-       << endl;
+cout << "box range = " << solver.min() << " , " << solver.max() << " , " << solver.learnRate()
+     << endl;
 
-  cout << "InitialS=[";
-  for (const auto& X : solver.electrons()) {
-    cout << X.state.transpose() << ";\n";
-  }
-  cout << "]';\n\n\n\n" << endl;
-  */
+cout << "InitialS=[";
+for (const auto& X : solver.electrons()) {
+  cout << X.state.transpose() << ";\n";
+}
+cout << "]';\n\n\n\n" << endl;
+*/
 
   solver.run();
 

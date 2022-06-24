@@ -182,7 +182,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
             layer.layerBestIdx = idx;
           }
         } else {
-          if (layer.at(idx).energy > layer.layerBestEnergy()) {
+          if (layer.at(idx)->energy > layer.layerBestEnergy()) {
             layer.layerBestIdx = idx;
           }
         }
@@ -239,7 +239,11 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
         */
     child->state = parent.state;
     for (int idx = 0; idx < this->dimensions(); idx++) {
-      child->state[idx] += randD(-this->learnRate(), this->learnRate());
+      if constexpr (Base_t::Shape == BoxShape::SQUARE_BOX) {
+        child->state[idx] += randD(-this->learnRate(), this->learnRate());
+      } else {
+        child->state[idx] += randD(-this->learnRate()[idx], this->learnRate()[idx]);
+      }
       this->applyConstraint(&child->state[idx], idx);
     }
   }

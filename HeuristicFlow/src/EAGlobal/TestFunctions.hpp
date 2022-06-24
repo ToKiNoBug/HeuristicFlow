@@ -13,12 +13,12 @@ struct SOFunctions {
   static_assert(std::is_floating_point<Fitness_t>::value,
                 "Fitness_t must be a floating point number");
 
-  inline static void rastrigin(const Var_t *x, Fitness_t *fitness, Arg_t *) {
+  inline static void rastrigin(const Var_t *x, const Arg_t *, Fitness_t *fitness) {
     SOFunctions<Var_t, Fitness_t, void>::rastrigin(x, fitness);
   }
 
   template <typename unused = void>
-  inline static void ackley(const Var_t *x, Fitness_t *f, Arg_t *) {
+  inline static void ackley(const Var_t *x, const Arg_t *, Fitness_t *f) {
     SOFunctions<Var_t>::template ackley<unused>(x, f);
   }
 };
