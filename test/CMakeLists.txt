@@ -27,6 +27,7 @@ add_executable(SOGA_TSP SOGA_TSP.cpp)
 add_executable(Boxes boxes.cpp)
 add_executable(poolVector poolVector.cpp)
 add_executable(AOS_Rastrigin AOS_Rastrigin.cpp)
+add_executable(testFunctions testFunctions.cpp)
 
 find_package(OpenMP)
 
@@ -42,4 +43,5 @@ if(OpenMP_CXX_FOUND)
     target_link_libraries(SOGA_TSP PUBLIC OpenMP::OpenMP_CXX)
     target_link_libraries(Boxes PUBLIC OpenMP::OpenMP_CXX)
     target_link_libraries(AOS_Rastrigin PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(testFunctions PUBLIC OpenMP::OpenMP_CXX)
 endif()
