@@ -134,7 +134,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     for (const Electron_t& elec : this->_electrons) {
       // this->_bindingState += elec.state;
       for (int varIdx = 0; varIdx < this->_bindingState.size(); varIdx++) {
-        this->_bindingState.operator[](varIdx) += elec.energy[varIdx];
+        this->_bindingState.operator[](varIdx) += elec.state[varIdx];
       }
 
       this->_bindingEnergy += elec.energy;
@@ -169,20 +169,20 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
       layer.bindingEnergy = layer.front()->energy;
       layer.layerBestIdx = 0;
 
-      const int varDim = layer.front()->size();
+      const int varDim = layer.front()->state.size();
 
       for (int idx = 1; idx < layer.size(); idx++) {
         // layer.bindingState += layer.at(idx)->state;
         for (int varIdx = 0; varIdx < varDim; varIdx++) {
-          layer.bindingEnergy[varIdx] += layer.at(idx)->energy[varIdx];
+          layer.bindingState[varIdx] += layer.at(idx)->state[varIdx];
         }
 
         if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
-          if (layer.at(idx).energy < layer.bestElectron().energy) {
+          if (layer.at(idx)->energy < layer.layerBestEnergy()) {
             layer.layerBestIdx = idx;
           }
         } else {
-          if (layer.at(idx).energy > layer.bestElectron().energy) {
+          if (layer.at(idx).energy > layer.layerBestEnergy()) {
             layer.layerBestIdx = idx;
           }
         }
@@ -209,7 +209,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     randD(beta.data(), beta.size());
     randD(gamma.data(), gamma.size());
 
-    if (Base_t::isBetter<fOpt>(parent.energy, layer.bindingEnergy)) {
+    if (Base_t::template isBetter<fOpt>(parent.energy, layer.bindingEnergy)) {
       // E_i^k<BE^k
       for (int varIdx = 0; varIdx < this->dimensions(); varIdx++) {
         child->state[varIdx] =
@@ -239,7 +239,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
         */
     child->state = parent.state;
     for (int idx = 0; idx < this->dimensions(); idx++) {
-      child->state[idx] += randD(-this->learningRate(), this->learningRate());
+      child->state[idx] += randD(-this->learnRate(), this->learnRate());
       this->applyConstraint(&child->state[idx], idx);
     }
   }
