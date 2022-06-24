@@ -4,8 +4,6 @@
 #include "InternalHeaderCheck.hpp"
 #include "AOS4EigenAndStd.hpp"
 
-#include <iostream>
-
 namespace heu {
 namespace internal {
 

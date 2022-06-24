@@ -200,10 +200,13 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
                                  Electron_t* child) const {
     const Var_t& parentState = parent.state;
 
-#warning Initialization here is waiting to be optimized
-    Var_t alpha = parentState, beta = parentState, gamma = parentState;
-#warning and here
-    child->state = parent.state;
+    Var_t alpha, beta, gamma;
+    if constexpr (!array_traits<Var_t>::isFixedSize) {
+      alpha.resize(this->dimensions());
+      beta.resize(this->dimensions());
+      gamma.resize(this->dimensions());
+      child->state.resize(this->dimensions());
+    }
 
     randD(alpha.data(), alpha.size());
     randD(beta.data(), beta.size());

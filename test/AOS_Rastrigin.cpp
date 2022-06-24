@@ -8,11 +8,10 @@ using std::cout, std::endl;
 int main() {
   constexpr int Dim = 2;
 
-  using Arg_t = int;
-  heu::AOS<std::vector<double>, heu::BoxShape::RECTANGLE_BOX, heu::FITNESS_LESS_BETTER,
-           heu::RECORD_FITNESS, Arg_t,
-           heu::testFunctions<std::vector<double>, double, Arg_t>::rastrigin, false,
-           heu::DivEncode<-5, 1>::code, heu::DivEncode<5, 1>::code, heu::DivEncode<3, 2>::code>
+  heu::AOS<Eigen::Array<double, Dim, 1>, heu::BoxShape::SQUARE_BOX, heu::FITNESS_LESS_BETTER,
+           heu::RECORD_FITNESS, void, heu::testFunctions<Eigen::Array<double, Dim, 1>>::rastrigin,
+           true, heu::DivEncode<-5, 1>::code, heu::DivEncode<5, 1>::code,
+           heu::DivEncode<3, 2>::code>
       solver;
 
   heu::AOSOption opt;
@@ -23,15 +22,6 @@ int main() {
   opt.maxLayerNum = 5;
 
   solver.setOption(opt);
-  /*
-solver.setDimensions(Dim);
-solver.setMax(5);
-solver.setMin(-5);
-solver.setLearnRate(1.0);
-*/
-  solver.setMin({-5, -5});
-  solver.setMax({5, 5});
-  solver.setLearnRate({1, 1});
 
   solver.initializePop();
 
