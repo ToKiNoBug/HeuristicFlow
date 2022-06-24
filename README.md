@@ -8,11 +8,11 @@ C++ template class lib for several optimization algorithms, like GA, NSGA2,NSGA3
 
 As a template lib, HeuristicFlow is header only.
 
-Dependents: [libEigen](https://eigen.tuxfamily.org/) and c++14 standard library.
+Dependents: [libEigen](https://eigen.tuxfamily.org/) and **C++17** standard library.
 
 HeuristicFlow has been tested on MingW(gcc 8.1.0) and MSVC143.
 
-namespace: `Heu`
+namespace: `heu`
 
 Modules:
 1. Genetic
@@ -20,6 +20,7 @@ Modules:
 3. EAGlobal
 4. SimpleMatrix
 5. PSO
+6. AOS
 
 
 Implemented : 
@@ -27,6 +28,7 @@ Implemented :
 2. NSGA-II
 3. NSGA-III
 4. PSO
+5. AOS(Atom Orbit Search)
 
 
 Waiting to be implemented :
