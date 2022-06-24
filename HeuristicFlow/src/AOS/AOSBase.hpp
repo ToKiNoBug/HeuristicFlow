@@ -37,6 +37,8 @@ class AOSBase
       elec.setUncomputed();
     }
 
+    this->_atomBestPtr = &this->_electrons.front();
+
     this->_generation = 0;
     this->_earlyStopCounter = 0;
 

@@ -13,7 +13,7 @@ using std::cout;
 using std::endl;
 
 constexpr int dimensions = 2;
-constexpr int electronNum = 100;
+constexpr int electronNum = 50;
 constexpr int maxGeneration = 100;
 
 constexpr double photonRate = 0.1;
@@ -22,20 +22,25 @@ constexpr double varMin = -5;
 constexpr double varMax = 5;
 
 /*
- * Referenced paper : Mahdi Azizi.Atomic orbital search: A novel metaheuristic algorithm[J].Applied Mathematical
- * Modelling.2021,93:657-693.
- * Link : https://doi.org/10.1016/j.apm.2020.12.021 *
+ * Referenced paper : Mahdi Azizi.Atomic orbital search: A novel metaheuristic algorithm[J].Applied
+ * Mathematical Modelling.2021,93:657-693. Link : https://doi.org/10.1016/j.apm.2020.12.021 *
  *
  */
 
-inline double gaussianCurve(const double x, const double mu = 0.0, const double sigma = 1.0) noexcept {
-  return 1 / (sigma * std::sqrt(2 * M_PI)) * std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
+inline double gaussianCurve(const double x, const double mu = 0.0,
+                            const double sigma = 1.0) noexcept {
+  return 1 / (sigma * std::sqrt(2 * M_PI)) *
+         std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
 }
 
 void ackely(const Eigen::Array2d* _x, double* f) noexcept {
+  heu::testFunctions<Eigen::Array2d>::rastrigin(_x, f);
+  return;
+
   double x = _x->operator[](0), y = _x->operator[](1);
-  *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) - exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI * y))) + 20 + M_E;
-  *f = std::log10(*f);
+  *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) -
+       exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI * y))) + 20 + M_E;
+  //*f = std::log10(*f);
 }
 
 class Electron {
@@ -158,7 +163,8 @@ class labAOS {
       elecSortSpace.emplace_back(it);
     }
 
-    std::sort(elecSortSpace.begin(), elecSortSpace.end(), electronSortCompareFun<std::list<Electron>::iterator>);
+    std::sort(elecSortSpace.begin(), elecSortSpace.end(),
+              electronSortCompareFun<std::list<Electron>::iterator>);
 
     while (elecSortSpace.size() > electronNum) {
       electrons.erase(elecSortSpace.back());
@@ -236,7 +242,8 @@ class labAOS {
   }
 
  private:
-  void applyPhoton(const Layer& layer, const int layerK, const Electron& prevElec, Electron* newElec) {
+  void applyPhoton(const Layer& layer, const int layerK, const Electron& prevElec,
+                   Electron* newElec) {
     Eigen::Array2d alpha, beta, gamma;
 
     heu::randD(alpha.data(), alpha.size());
@@ -266,17 +273,18 @@ int main() {
 
   labAOS solver;
   solver.initializePop();
-  cout << "Initialized" << endl;
   solver.run();
-  cout << "Finished" << endl;
+  /*
+cout << "result=[" << solver.lowestEnergyIterator->state << "];\n\n";
 
-  cout << "result=[" << solver.lowestEnergyIterator->state << "];\n\n";
+cout << "Trainning Curve:\nfitness=[";
+for (auto fitness : solver.record) {
+  cout << fitness << ',';
+}
+cout << "];\n" << endl;
+*/
 
-  cout << "Trainning Curve:\nfitness=[";
-  for (auto fitness : solver.record) {
-    cout << fitness << ',';
-  }
-  cout << "];\n" << endl;
+  cout << "best fitness=" << solver.lowestEnergyIterator->energy << endl;
 
   // system("pause");
 }

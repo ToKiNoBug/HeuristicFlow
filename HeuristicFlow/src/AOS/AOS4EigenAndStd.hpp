@@ -19,6 +19,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
 
  protected:
   void __impl_computeAtomBSBELE() {
+    auto prevBestPtr = this->_atomBestPtr;
     this->_bindingState.setZero(this->_electrons.front().state.rows(),
                                 this->_electrons.front().state.cols());
     this->_bindingEnergy = 0;
@@ -27,7 +28,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     for (const Electron_t& elec : this->_electrons) {
       this->_bindingState += elec.state;
       this->_bindingEnergy += elec.energy;
-      if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+      if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
         if (elec.energy < this->_atomBestPtr->energy) {
           this->_atomBestPtr = &elec;
         }
@@ -40,6 +41,12 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
 
     this->_bindingState /= this->_electrons.size();
     this->_bindingEnergy /= this->_electrons.size();
+
+    if (prevBestPtr->energy == this->_atomBestPtr->energy) {
+      this->_earlyStopCounter++;
+    } else {
+      this->_earlyStopCounter = 0;
+    }
   }
 
   void __impl_computeLayerBSBELE() {
@@ -51,7 +58,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
       for (int idx = 1; idx < layer.size(); idx++) {
         layer.bindingState += layer.at(idx)->state;
         layer.bindingEnergy += layer.at(idx)->energy;
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+        if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
           if (layer.at(idx) < layer.at(layer.layerBestIdx)) {
             layer.layerBestIdx = idx;
           }
@@ -115,6 +122,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
 
  protected:
   void __impl_computeAtomBSBELE() {
+    auto prevBestPtr = this->_atomBestPtr;
     this->_bindingState = this->_electrons.front().state;
     for (auto& val : this->_bindingState) {
       val = 0;
@@ -130,7 +138,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
       }
 
       this->_bindingEnergy += elec.energy;
-      if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+      if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
         if (elec.energy < this->_atomBestPtr->energy) {
           this->_atomBestPtr = &elec;
         }
@@ -146,6 +154,12 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
       val /= this->_electrons.size();
     }
     this->_bindingEnergy /= this->_electrons.size();
+
+    if (prevBestPtr->energy == this->_atomBestPtr->energy) {
+      this->_earlyStopCounter++;
+    } else {
+      this->_earlyStopCounter = 0;
+    }
   }
 
   void __impl_computeLayerBSBELE() {
@@ -163,7 +177,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
           layer.bindingEnergy[varIdx] += layer.at(idx)->energy[varIdx];
         }
 
-        if (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
+        if constexpr (fOpt == FitnessOption::FITNESS_LESS_BETTER) {
           if (layer.at(idx).energy < layer.bestElectron().energy) {
             layer.layerBestIdx = idx;
           }

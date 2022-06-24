@@ -10,12 +10,6 @@
 #include "AOSDefaultElectron.hpp"
 
 namespace heu {
-/*
-template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
-          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
-          typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron,
-          FitnessOption fOpt, RecordOption rOpt>
-*/
 template <typename Var_t, BoxShape BS, FitnessOption fOpt = FitnessOption::FITNESS_LESS_BETTER,
           RecordOption rOpt = RecordOption::DONT_RECORD_FITNESS, class Arg_t = void,
           typename internal::AOSParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_ = nullptr,
@@ -51,7 +45,7 @@ class AOS : public internal::AOSBase<
  protected:
   static inline bool electronIteratorCompareFun(const ElectronIt_t& a,
                                                 const ElectronIt_t& b) noexcept {
-    if (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
+    if constexpr (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
       return a->energy > b->energy;
     } else {
       return a->energy < b->energy;
