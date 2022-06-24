@@ -43,8 +43,7 @@ constexpr double varMax = 5;
 
 /*
  * Referenced paper : Mahdi Azizi.Atomic orbital search: A novel metaheuristic algorithm[J].Applied
- * Mathematical Modelling.2021,93:657-693. Link : https://doi.org/10.1016/j.apm.2020.12.021 *
- *
+ * Mathematical Modelling.2021,93:657-693. Link : https://doi.org/10.1016/j.apm.2020.12.021
  */
 
 inline double gaussianCurve(const double x, const double mu = 0.0,
