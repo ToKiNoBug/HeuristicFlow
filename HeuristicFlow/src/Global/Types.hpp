@@ -177,6 +177,12 @@ struct array_traits {
   static constexpr bool isFixedSize = (sizeCT != Eigen::Dynamic);
 };
 
+template <class T, int size>
+struct sizeMayMatch {
+  static constexpr bool value =
+      (!array_traits<T>::isFixedSize) || (array_traits<T>::sizeCT == size);
+};
+
 }  //   namespace heu
 
 #endif  // HEU_TYPES_HPP

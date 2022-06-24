@@ -23,20 +23,22 @@ This file is part of HeuristicFlow.
 using namespace Eigen;
 using namespace std;
 
-// Ackely function is a single objective testing function with great number of local minimum points, but its global
-// minimum point is [0,0] and corresponding value is 0. A good solver should be able to find the global minimum point.
+// Ackely function is a single objective testing function with great number of local minimum points,
+// but its global minimum point is [0,0] and corresponding value is 0. A good solver should be able
+// to find the global minimum point.
 void testAckley_withRecord() {
   using args_t = heu::BoxNdS<2, heu::Std>;
 
-  using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, args_t,
-                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>, nullptr,
-                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
+  using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS,
+                             args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>,
+                             nullptr, heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
                              heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun_d<>>;
   solver_t algo;
 
   heu::GAOption opt;
   opt.populationSize = 50;
-  opt.maxFailTimes = 50;  // The solver will end if it hasn't been finding a better solution for 50 generations.
+  opt.maxFailTimes =
+      50;  // The solver will end if it hasn't been finding a better solution for 50 generations.
   opt.maxGenerations = 100;
 
   algo.setOption(opt);
@@ -51,10 +53,15 @@ void testAckley_withRecord() {
 
   algo.setfFun(
       // Ackely function
+      heu::testFunctions<array<double, 2>, double, args_t>::ackley
+      /*
       [](const array<double, 2>* _x, const solver_t::ArgsType*, double* f) {
         double x = _x->operator[](0), y = _x->operator[](1);
-        *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) - exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI * y))) + 20 + M_E;
-      });
+        *f = -20 * exp(-0.2 * sqrt(0.5 * (x * x + y * y))) - exp(0.5 * (cos(M_2_PI * x) + cos(M_2_PI
+      * y))) + 20 + M_E;
+      }*/
+
+  );
 
   algo.initializePop();
 
@@ -63,7 +70,8 @@ void testAckley_withRecord() {
   t = std::clock() - t;
   // cout<<algo.bestFitness();
 
-  cout << "Solving spend " << algo.generation() << " generations in " << double(t) / CLOCKS_PER_SEC << " sec\n";
+  cout << "Solving spend " << algo.generation() << " generations in " << double(t) / CLOCKS_PER_SEC
+       << " sec\n";
   cout << "Result = [" << algo.result()[0] << " , " << algo.result()[1] << "]\n";
 
   cout << "Fitness history :\n";
