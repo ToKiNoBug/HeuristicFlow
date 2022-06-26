@@ -13,8 +13,14 @@ include_directories(D:/CppLibs/eigen-3.4.0)
 
 add_executable(lab_AOS lab_AOS.cpp)
 
+#add_executable(4Float128 4Float128.cpp)
+
 find_package(OpenMP)
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(lab_AOS PUBLIC OpenMP::OpenMP_CXX)
 endif()
+
+
+
+#add_compile_options(-lquadmath)

@@ -137,7 +137,12 @@ struct MOFunctions22<Var_t, Fitness_t, void> {
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
 #warning Poloni function hasn't been finished yet
-    // constexpr double A1 = std::sin(1.0);
+    // A1 = 0.5*sin(1)-2*cos(1)+sin(2)-1.5*cos(2)
+    constexpr double A1 =
+        0.87364856231406409441675015609208455034347519302074844792508553304659184302050078940737876109778881072998046875000000000000000000;
+    // A2 = 1.5*sin(1)-cos(1)+2*sin(2)-0.5*cos(2)
+    constexpr double A2 =
+        2.74857244326863962686864072157634249269337869363896678191405505936963961366448216949720517732203006744384765625000000000000000000
   }
 };
 
