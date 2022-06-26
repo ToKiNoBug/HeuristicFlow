@@ -25,250 +25,13 @@ This file is part of HeuristicFlow.
 #include <type_traits>
 #include <HeuristicFlow/Global>
 
+#include "testFunctionsCommon.hpp"
+
+#include "SOFunctions.hpp"
+#include "MOFunctions.hpp"
+
 namespace heu {
 namespace internal {
-struct emptyStruct {};
-
-#define HEU_REPEAT_FUNCTIONS(className, functionName)                            \
-  inline static void functionName(const Var_t *x, const Arg_t *, Fitness_t *f) { \
-    className<Var_t, Fitness_t, void>::functionName(x, f);                       \
-  }
-
-template <typename Var_t, class Fitness_t = double, class Arg_t = void>
-struct SOFunctions2 {
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, ackley)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, beale)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, GoldSteinPrice)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, booth)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, bukin)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, matyas)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, levy)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, himmelblau)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, easom)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, crossInTray)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, eggHolder)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, holderTable)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, McCormick)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, schaffer2)
-  HEU_REPEAT_FUNCTIONS(SOFunctions2, schaffer4)
-};
-
-template <typename Var_t, class Fitness_t>
-struct SOFunctions2<Var_t, Fitness_t, void> {
- private:
-  static_assert(std::is_floating_point<Fitness_t>::value,
-                "Fitness_t must be a floating point number");
-  static_assert((!array_traits<Var_t>::isFixedSize) || (array_traits<Var_t>::sizeCT == 2),
-                "2 testing functions require a 2-d array");
-  inline static void assert4Size() {
-    if constexpr (!array_traits<Var_t>::isFixedSize) {
-      assert(_x->size() == 2);
-    }
-  }
-
- public:
-  inline static void ackley(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    auto x = _x->operator[](0), y = _x->operator[](1);
-    *f = -20 * std::exp(-0.2 * std::sqrt(0.5 * (x * x + y * y))) -
-         std::exp(0.5 * (std::cos(M_2_PI * x) + std::cos(M_2_PI * y))) + 20 + M_E;
-  }
-
-  inline static void beale(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = square(1.5 - x + x * y) + square(2.25 - x + x * y * y) + square(2.625 - x + x * y * y * y);
-  }
-
-  inline static void GoldsteinPrice(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    const auto part1 =
-        1 + square(1 + x + y) * (19 - 14 * x + 3 * x * x - 14 * y + 6 * x * y + 3 * y * y);
-    const auto part2 =
-        30 + square(2 * x - 3 * y) * (18 - 32 * x + 12 * x + 47 * y - 36 * x * y + 27 * y * y);
-    *f = part1 * part2;
-  }
-
-  inline static void booth(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = square(x + 2 * y - 7) + square(2 * x + y - 5);
-  }
-
-  inline static void bukin(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = 100 * std::sqrt(std::abs(y - 0.01 * x * x)) + 0.01 * std::abs(x + 10);
-  }
-
-  inline static void matyas(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = 0.26 * (x * x + y * y) - 0.48 * x * y;
-  }
-
-  inline static void levy(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = square(std::sin(3 * M_PI * x)) + square(x - 1) * (1 + square(std::sin(3 * M_PI * y))) +
-         square(y - 1) * (1 + square(std::sin(2 * M_PI * y)));
-  }
-
-  inline static void himmelblau(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = square(x * x + y - 11) + square(x + y * y - 7);
-  }
-
-  inline static void threeHumpCamel(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = 2 * x * x - 1.05 * std::pow(x, 4) + std::pow(x, 6) / 6 + x * y + y * y;
-  }
-
-  inline static void easom(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = -std::cos(x) * std::cos(y) * std::exp(-square(x - M_PI) - square(y - M_PI));
-  }
-
-  inline static void crossInTray(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    *f = -0.0001 * std::pow(1 + std::abs(std::sin(x) * std::sin(y) *
-                                         std::exp(
-
-                                             std::abs(100 - std::sqrt(x * x + y * y) / M_PI)
-
-                                                 )
-
-                                             ),
-                            0.1);
-  }
-
-  inline static void eggHolder(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-    const auto y_plus_47 = y + 47;
-
-    *f = -y_plus_47 * std::sin(std::sqrt(std::abs(x / 2 + y_plus_47))) -
-         x * std::sin(std::sqrt(std::abs(x - y_plus_47)));
-  }
-
-  inline static void holderTable(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-
-    *f = -std::abs(std::sin(x) * std::cos(y) *
-                   std::exp(
-
-                       std::abs(1 - std::sqrt(x * x - y * y) / M_PI)
-
-                           ));
-  }
-
-  inline static void McCormick(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-
-    *f = std::sin(x + y) + square(x - y) - 1.5 * x + 2.5 * y + 1;
-  }
-
-  inline static void schaffer2(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-
-    *f = 0.5 + (square(std::sin(x * x - y * y) - 0.5)) / square(1 + 0.001 * (x * x + y * y));
-  }
-
-  inline static void schaffer4(const Var_t *_x, Fitness_t *f) {
-    assert4Size();
-    const auto x = _x->operator[](0);
-    const auto y = _x->operator[](1);
-
-    *f = 0.5 + (square(std::cos(std::sin(std::abs(x * x - y * y)))) - 0.5) /
-                   square(1 + 0.001 * (x * x + y * y));
-  }
-};
-
-template <typename Var_t, class Fitness_t = double, class Arg_t = void>
-struct SOFunctionsX {
-  static_assert(std::is_floating_point<Fitness_t>::value,
-                "Fitness_t must be a floating point number");
-
-  HEU_REPEAT_FUNCTIONS(SOFunctionsX, rastrigin)
-  HEU_REPEAT_FUNCTIONS(SOFunctionsX, sphere)
-  HEU_REPEAT_FUNCTIONS(SOFunctionsX, rosenbrock)
-  HEU_REPEAT_FUNCTIONS(SOFunctionsX, styblinskiTang)
-};
-
-template <typename Var_t, class Fitness_t>
-struct SOFunctionsX<Var_t, Fitness_t, void> {
-  static_assert(std::is_floating_point<Fitness_t>::value,
-                "Fitness_t must be a floating point number");
-  inline static void rastrigin(const Var_t *x, Fitness_t *fitness) {
-    *fitness = 10 * x->size();
-    for (auto xi : *x) {
-      *fitness += square(xi) - 10 * std::cos(M_PI * 2 * xi);
-    }
-  }
-
-  inline static void sphere(const Var_t *x, Fitness_t *f) {
-    if constexpr (array_traits<Var_t>::isEigenClass) {
-      *f = (x->array()).square().sum();
-    } else {
-      double res = 0;
-      for (auto i : *x) {
-        res += i * i;
-      }
-
-      *f = res;
-    }
-  }
-
-  inline static void rosenbrock(const Var_t *x, Fitness_t *f) {
-    if constexpr (array_traits<Var_t>::isEigenClass) {
-      auto square_1_minus_x_top = (1 - x->topRows(x->size() - 1)).square().sum();
-      auto minusSquare = (x->topRows(x->size() - 1) - x->bottomRows(x->size() - 1)).square().sum();
-      *f = 100 * minusSquare + square_1_minus_x_top;
-    } else {
-      double val = 0;
-      for (int idx = 0; idx < x->size() - 1; idx++) {
-        val += 100 * square(x->operator[](idx + 1) - x->operator[](idx)) +
-               square(1 - x->operator[](idx));
-      }
-      *f = val;
-    }
-  }
-
-  inline static void styblinskiTang(const Var_t *x, Fitness_t *f) {
-    if constexpr (array_traits<Var_t>::isEigenClass) {
-      auto arr = x->array();
-      *f = (arr.pow(4) - 16 * arr.square() + 5 * arr).sum();
-    } else {
-      double val = 0;
-      for (auto xi : *x) {
-        val += xi * xi * xi * xi - 16 * xi * xi + 5 * xi;
-      }
-      *f = val / 2;
-    }
-  }
-};
 
 template <typename Var_t, class Fitness_t = double, class Arg_t = void>
 struct SOFunctions
@@ -276,15 +39,24 @@ struct SOFunctions
       public std::conditional<sizeMayMatch<Var_t, 2>::value, SOFunctions2<Var_t, Fitness_t, Arg_t>,
                               emptyStruct>::type {};
 
+template <typename Var_t, class Fitness_t, class Arg_t>
+struct MOFunctions
+    : public MOFunctionsXX<Var_t, Fitness_t, Arg_t>,
+      public std::conditional<sizeMayMatch<Var_t, 2>::value && sizeMayMatch<Fitness_t, 2>::value,
+                              MOFunctions22<Var_t, Fitness_t, Arg_t>, emptyStruct>::type,
+      public std::conditional<sizeMayMatch<Fitness_t, 2>::value,
+                              MOFunctionsX2<Var_t, Fitness_t, Arg_t>, emptyStruct>::type {
+  static_assert((!array_traits<Fitness_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT >= 2),
+                "The size of Fitness_t must be greater than 1.");
+};
+
 }  //  namespace internal
 
 template <typename Var_t, class Fitness_t = double, class Arg_t = void>
-struct testFunctions : public std::conditional<std::is_floating_point<Fitness_t>::value,
-                                               internal::SOFunctions<Var_t, Fitness_t, Arg_t>,
-                                               internal::emptyStruct>::type {
-  static_assert(std::is_floating_point<Fitness_t>::value,
-                "Multi-objectives testing functions are not implemented yet");
-};
+struct testFunctions
+    : public std::conditional<std::is_floating_point<Fitness_t>::value,
+                              internal::SOFunctions<Var_t, Fitness_t, Arg_t>,
+                              internal::MOFunctions<Var_t, Fitness_t, Arg_t>>::type {};
 
 }  //  namespace heu
 #endif

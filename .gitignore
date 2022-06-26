@@ -85,3 +85,4 @@ CMakeLists.txt.user
 *.hhc
 *.hhk
 *.7z
+runPy.py

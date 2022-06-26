@@ -33,13 +33,12 @@ void testTSP_PSO(const size_t N) {
   //  type of args
   using DistanceMat_t = Eigen::ArrayXXd;
   //  type of solver
-  using Solver_t = heu::PSO<Eigen::ArrayXd, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, DistanceMat_t,
-                                  heu::PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
+  using Solver_t = heu::PSO<Eigen::ArrayXd, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS,
+                            DistanceMat_t, heu::PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
 
   using Args_t = Solver_t::Args_t;
 
   Solver_t solver;
-
 
   using sortUnit = std::pair<float, uint32_t>;
   //  Decode ArrayXd into a permulation through sorting.
@@ -50,7 +49,9 @@ void testTSP_PSO(const size_t N) {
       sortSpace[i] = std::make_pair(x->operator[](i), i);
     }
 
-    static const auto cmpFun = [](const sortUnit& a, const sortUnit& b) { return a.first < b.first; };
+    static const auto cmpFun = [](const sortUnit& a, const sortUnit& b) {
+      return a.first < b.first;
+    };
 
     std::sort(sortSpace.begin(), sortSpace.end(), cmpFun);
 
@@ -108,8 +109,8 @@ void testTSP_PSO(const size_t N) {
   solver.run();
   c = clock() - c;
 
-  cout << "finished in " << double(c) * 1000 / CLOCKS_PER_SEC << " miliseconds and " << solver.generation()
-       << " generations" << endl;
+  cout << "finished in " << double(c) * 1000 / CLOCKS_PER_SEC << " miliseconds and "
+       << solver.generation() << " generations" << endl;
 
   cout << "result fitness = " << solver.bestFitness() << endl;
   /*

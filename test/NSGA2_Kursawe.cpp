@@ -34,7 +34,8 @@ The Kursawe function has 1~3 dim(s) input and 2 dim(s) output.
 void testNSGA2_Kursawe() {
   // 1<=i<=3,  -5<=x_i<=5
 
-  // All functions at compile time is their default value (nullptr), so they must be assigned at runtime
+  // All functions at compile time is their default value (nullptr), so they must be assigned at
+  // runtime
   heu::NSGA2<std::array<double, 3>, 2, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS> algo;
 
   // initialize function
@@ -45,22 +46,11 @@ void testNSGA2_Kursawe() {
   };
 
   // The kursawe function is the fitness function
-  auto fFun = [](const std::array<double, 3> *x, Eigen::Array<double, 2, 1> *f) {
-    double f1 = 0, f2 = 0;
-    for (int i = 0; i < 2; i++) {
-      f1 += -10 *
-            exp(-0.2 * sqrt((x->operator[](i)) * (x->operator[](i)) + (x->operator[](i + 1)) * (x->operator[](i + 1))));
-    }
-    for (int i = 0; i < 3; i++) {
-      f2 += pow(abs(x->operator[](i)), 0.8) + 5 * sin(x->operator[](i) * x->operator[](i) * x->operator[](i));
-    }
-    f->operator[](0) = f1;
-    f->operator[](1) = f2;
-  };
+  auto fFun = heu::testFunctions<std::array<double, 3>, Eigen::Array<double, 2, 1>>::Kursawe;
 
   // crossover function
-  auto cFun = [](const std::array<double, 3> *p1, const std::array<double, 3> *p2, std::array<double, 3> *ch1,
-                 std::array<double, 3> *ch2) {
+  auto cFun = [](const std::array<double, 3> *p1, const std::array<double, 3> *p2,
+                 std::array<double, 3> *ch1, std::array<double, 3> *ch2) {
     for (int i = 0; i < 3; i++) {
       static const double r = 0.2;
       ch1->operator[](i) = r * p1->operator[](i) + (1 - r) * p2->operator[](i);
@@ -93,8 +83,8 @@ void testNSGA2_Kursawe() {
   std::clock_t t = std::clock();
   algo.run();
   t = std::clock() - t;
-  cout << "Solving finished in " << double(t) / CLOCKS_PER_SEC << " seconds and " << algo.generation() << " generations"
-       << endl;
+  cout << "Solving finished in " << double(t) / CLOCKS_PER_SEC << " seconds and "
+       << algo.generation() << " generations" << endl;
   std::vector<Eigen::Array<double, 2, 1>> paretoFront;
   algo.paretoFront(paretoFront);
   cout << "paretoFront=[";
