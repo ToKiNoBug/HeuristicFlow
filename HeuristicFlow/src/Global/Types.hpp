@@ -42,7 +42,7 @@ namespace heu {
  */
 template <typename scalar_t, int Dim>
 using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
-                                               std::array<scalar_t, Dim> >::type;
+                                               std::array<scalar_t, size_t(Dim)> >::type;
 
 /**
  * \ingroup HEU_GLOBAL

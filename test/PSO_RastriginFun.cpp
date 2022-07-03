@@ -24,6 +24,8 @@ This file is part of HeuristicFlow.
 using namespace Eigen;
 using namespace std;
 
+using std::cout, std::endl;
+
 // Test NSGA2 with rastrigin function
 void testRastriginFun() {
   static const size_t N = 20;

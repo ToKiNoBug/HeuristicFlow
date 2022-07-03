@@ -27,7 +27,8 @@ namespace heu {
 template <typename Scalar_t>
 class MatrixMap {
  protected:
-  using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t, const Scalar_t &>::type;
+  using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t,
+                                           const Scalar_t &>::type;
 
  public:
   MatrixMap(Scalar_t *d, size_t _r, size_t _c) {
@@ -74,7 +75,7 @@ class MatrixMap {
 
   inline const Scalar_t *cend() const noexcept { return p + r * c; }
 
-  inline void resize(size_t _r, size_t _c) const noexcept {
+  inline void resize(size_t _r, size_t _c) noexcept {
     r = _r;
     c = _c;
   }
