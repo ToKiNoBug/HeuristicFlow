@@ -33,19 +33,33 @@ This file is part of HeuristicFlow.
 namespace heu {
 namespace internal {
 
+struct emptyStruct0 {};
+struct emptyStruct1 {};
+struct emptyStruct2 {};
+struct emptyStruct3 {};
+struct emptyStruct4 {};
+struct emptyStruct5 {};
+struct emptyStruct6 {};
+struct emptyStruct7 {};
+struct emptyStruct8 {};
+
 template <typename Var_t, class Fitness_t = double, class Arg_t = void>
 struct SOFunctions
     : public SOFunctionsX<Var_t, Fitness_t, Arg_t>,
       public std::conditional<sizeMayMatch<Var_t, 2>::value, SOFunctions2<Var_t, Fitness_t, Arg_t>,
-                              emptyStruct>::type {};
+                              emptyStruct0>::type {};
 
 template <typename Var_t, class Fitness_t, class Arg_t>
 struct MOFunctions
     : public MOFunctionsXX<Var_t, Fitness_t, Arg_t>,
+      public std::conditional<sizeMayMatch<Var_t, 1>::value && sizeMayMatch<Fitness_t, 2>::value,
+                              MOFunctions12<Var_t, Fitness_t, Arg_t>, emptyStruct1>::type,
       public std::conditional<sizeMayMatch<Var_t, 2>::value && sizeMayMatch<Fitness_t, 2>::value,
-                              MOFunctions22<Var_t, Fitness_t, Arg_t>, emptyStruct>::type,
+                              MOFunctions22<Var_t, Fitness_t, Arg_t>, emptyStruct2>::type,
+      public std::conditional<sizeMayMatch<Var_t, 2>::value && sizeMayMatch<Fitness_t, 3>::value,
+                              MOFunctions23<Var_t, Fitness_t, Arg_t>, emptyStruct3>::type,
       public std::conditional<sizeMayMatch<Fitness_t, 2>::value,
-                              MOFunctionsX2<Var_t, Fitness_t, Arg_t>, emptyStruct>::type {
+                              MOFunctionsX2<Var_t, Fitness_t, Arg_t>, emptyStruct4>::type {
   static_assert((!array_traits<Fitness_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT >= 2),
                 "The size of Fitness_t must be greater than 1.");
 };

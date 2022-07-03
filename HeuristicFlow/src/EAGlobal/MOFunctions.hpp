@@ -72,6 +72,7 @@ template <typename Var_t, class Fitness_t, class Arg_t = void>
 struct MOFunctions22 {
   HEU_REPEAT_FUNCTIONS(MOFunctions22, BinhKorn)
   HEU_REPEAT_FUNCTIONS(MOFunctions22, ChangkongHaimes)
+  HEU_REPEAT_FUNCTIONS(MOFunctions22, Poloni)
 };
 
 template <typename Var_t, class Fitness_t>
@@ -136,13 +137,58 @@ struct MOFunctions22<Var_t, Fitness_t, void> {
     initializeFitnessSize(f);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
-#warning Poloni function hasn't been finished yet
     // A1 = 0.5*sin(1)-2*cos(1)+sin(2)-1.5*cos(2)
     constexpr double A1 =
         0.87364856231406409441675015609208455034347519302074844792508553304659184302050078940737876109778881072998046875000000000000000000;
     // A2 = 1.5*sin(1)-cos(1)+2*sin(2)-0.5*cos(2)
     constexpr double A2 =
-        2.74857244326863962686864072157634249269337869363896678191405505936963961366448216949720517732203006744384765625000000000000000000
+        2.74857244326863962686864072157634249269337869363896678191405505936963961366448216949720517732203006744384765625000000000000000000;
+
+    const auto B1 = 0.5 * std::sin(x) - 2 * std::cos(x) + std::sin(y) - 1.5 * std::cos(y);
+    const auto B2 = 1.5 * std::sin(x) - std::cos(x) + 2 * std::sin(y) - 0.5 * std::cos(y);
+
+    f->operator[](0) = 1 + square(A1 - B1) + square(A2 - B2);
+    f->operator[](1) = square(x + 3) + square(y + 1);
+  }
+};
+
+template <typename Var_t, class Fitness_t, class Arg_t = void>
+struct MOFunctions23 {
+  HEU_REPEAT_FUNCTIONS(MOFunctions23, viennet)
+};
+
+template <typename Var_t, class Fitness_t>
+struct MOFunctions23<Var_t, Fitness_t, void> {
+ private:
+  static_assert((!array_traits<Var_t>::isFixedSize) || (array_traits<Var_t>::sizeCT == 2));
+  static_assert((!array_traits<Fitness_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT == 3));
+  static inline void assert4Size(const Var_t *_x) {
+    if constexpr (!array_traits<Var_t>::isFixedSize) {
+      assert(_x->size() == 2);
+    }
+  }
+
+  static inline void initializeFitnessSize(Fitness_t *f) {
+    if constexpr (!array_traits<Var_t>::isFixedSize) {
+      if constexpr (array_traits<Var_t>::isEigenClass) {
+        f->resize(3, 1);
+      } else {
+        f->resize(3);
+      }
+    }
+  }
+
+ public:
+  static inline void viennet(const Var_t *_x, Fitness_t *f) {
+    assert4Size(_x);
+    initializeFitnessSize(f);
+    const auto x = _x->operator[](0);
+    const auto y = _x->operator[](1);
+
+    const auto x2_plus_y2 = x * x + y * y;
+    f->operator[](0) = x2_plus_y2 / 2 + std::sin(x2_plus_y2);
+    f->operator[](1) = square(2 * x - 2 * y + 4) / 8 + square(x - y + 1) / 27 + 15;
+    f->operator[](2) = 1 / (x2_plus_y2 + 1) - 1.1 * std::exp(-x2_plus_y2);
   }
 };
 
@@ -158,7 +204,7 @@ struct MOFunctionsX2<Var_t, Fitness_t, void> {
   static_assert((!array_traits<Fitness_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT == 2));
   static_assert((!array_traits<Var_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT >= 1));
 
-  static inline void assert4Size(const Fitness_t *_x) {
+  static inline void assert4Size(const Fitness_t *f) {
     if constexpr (!array_traits<Fitness_t>::isFixedSize) {
       assert(f->size() == 2);
     }

@@ -3,8 +3,6 @@
 namespace heu {
 namespace internal {
 
-struct emptyStruct {};
-
 #define HEU_REPEAT_FUNCTIONS(className, functionName)                            \
   inline static void functionName(const Var_t *x, const Arg_t *, Fitness_t *f) { \
     className<Var_t, Fitness_t, void>::functionName(x, f);                       \
