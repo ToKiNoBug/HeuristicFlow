@@ -20,6 +20,10 @@ This file is part of HeuristicFlow.
 #ifndef HEU_GLOBAL_
 #define HEU_GLOBAL_
 
+#if __cplusplus < 201703L
+#error HeuristicFlow requires C++17 standard.
+#endif
+
 #include <Eigen/Dense>
 
 #include "src/Global/Threading.hpp"

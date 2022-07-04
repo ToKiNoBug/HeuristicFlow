@@ -81,10 +81,10 @@ class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t,
    *
    */
   void __impl_updatePopulation() {
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
+#ifdef HEU_HAS_OPENMP
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)
-#endif  //  EIGEN_HAS_OPENMP
+#endif  //  HEU_HAS_OPENMP
     for (int idx = 0; idx < (int)this->_population.size(); idx++) {
       Particle_t& i = this->_population[idx];
       const Scalar_t lFP = randD(), lFG = randD();

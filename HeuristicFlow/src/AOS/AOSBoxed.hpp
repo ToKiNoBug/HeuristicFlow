@@ -95,7 +95,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   size_t _earlyStopCounter;
 
   void __impl_computeFitness() {
-#ifdef EIGEN_HAS_OPENMP
+#ifdef HEU_HAS_OPENMP
     std::vector<Electron_t*> tasks;
     tasks.resize(0);
     tasks.reserve(_electrons.size());
@@ -105,7 +105,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       }
       tasks.emplace_back(&i);
     }
-    static const int32_t thN = Eigen::nbThreads();
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, tasks.size() / thN)
     for (int i = 0; i < tasks.size(); i++) {
       Electron_t* ptr = tasks[i];
@@ -124,7 +124,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
       i.isComputed = true;
     }
-#endif
+#endif  //  HEU_HAS_OPENMP
   }
 
  protected:

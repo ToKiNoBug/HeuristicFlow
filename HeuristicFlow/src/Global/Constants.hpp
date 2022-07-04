@@ -34,28 +34,28 @@ namespace internal {
  * \brief Positive infinity float
  *
  */
-const float pinfF = std::numeric_limits<float>::infinity();
+constexpr float pinfF = std::numeric_limits<float>::infinity();
 
 /**
  * \ingroup HEU_GLOBAL
  * \brief Positive infinity double
  *
  */
-const double pinfD = std::numeric_limits<double>::infinity();
+constexpr double pinfD = std::numeric_limits<double>::infinity();
 
 /**
  * \ingroup HEU_GLOBAL
  * \brief Negativev infinity float
  *
  */
-const float ninfF = -pinfF;
+constexpr float ninfF = -pinfF;
 
 /**
  * \ingroup HEU_GLOBAL
  * \brief Negative infinity double
  *
  */
-const double ninfD = -pinfD;
+constexpr double ninfD = -pinfD;
 
 }  //  namespace internal
 

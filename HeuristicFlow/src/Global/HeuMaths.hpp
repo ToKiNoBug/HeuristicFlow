@@ -38,11 +38,18 @@ namespace heu {
 
 */
 template <typename A>
-inline A square(A a) {
+inline A square(A a) noexcept {
   return a * a;
 }
 
-inline double sign(double x) {
+template <typename A>
+inline A sign(A x) noexcept {
+  if (x > 0) return 1;
+  if (x < 0) return -1;
+  return 0;
+}
+
+inline double sign(double x) noexcept {
   if (x > 0) return 1;
   if (x < 0) return -1;
   return 0;

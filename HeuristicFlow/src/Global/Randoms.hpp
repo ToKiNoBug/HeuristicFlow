@@ -38,16 +38,17 @@ namespace internal {
 #endif
 #endif  //#ifdef __CNUC__
 
+namespace {
+std::random_device rdv;
+}
+
 /**
  * \ingroup HEU_GLOBAL
  * \brief Internal global std::random device
  *
  * \return std::random_device& A reference to this static variable
  */
-inline std::random_device& global_random_device() {
-  static std::random_device rdv;
-  return rdv;
-}
+inline std::random_device& global_random_device() { return rdv; }
 /**
  * \ingroup HEU_GLOBAL
  * \brief Internal global std::mt19937 used as a high-performance

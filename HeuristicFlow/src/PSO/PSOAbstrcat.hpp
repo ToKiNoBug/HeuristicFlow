@@ -77,7 +77,8 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   };
 
   /**
-   * \brief Particle is a moveable point, it has its velocity and knows the best point it has ever reached.
+   * \brief Particle is a moveable point, it has its velocity and knows the best point it has ever
+   * reached.
    *
    * \note Particle is inherited from Point, since it's just a point with speed and pBst.
    */
@@ -196,7 +197,8 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   /**
    * \brief Set the range of position and velocity.
    *
-   * \note This function will shape the box to a square box. Non't call this if you need a non-square box.
+   * \note This function will shape the box to a square box. Non't call this if you need a
+   * non-square box.
    *
    * \param pMin Minium position value
    * \param pMax Maximum position value
@@ -213,15 +215,16 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   /**
    * \brief Initialize the whole population
    *
-   * This function reset the generation and failTimes to 0, and gBest to the first member of population.
+   * This function reset the generation and failTimes to 0, and gBest to the first member of
+   * population.
    *
    */
   void initializePop() {
     _population.resize(_option.populationSize);
 
     for (Particle& i : _population) {
-      PSOExecutor<Base_t::HasParameters>::doInitialize(this, &i.position, &i.velocity, &_posMin, &_posMax,
-                                                       &_velocityMax);
+      PSOExecutor<Base_t::HasParameters>::doInitialize(this, &i.position, &i.velocity, &_posMin,
+                                                       &_posMax, &_velocityMax);
 
       PSOExecutor<Base_t::HasParameters>::doFitness(this, &i.position, &i.fitness);
 
@@ -261,9 +264,11 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   /**
    * \brief run the algorithm
    *
-   * \tparam this_t Type of solver. This can be a PSOAbstract, or the solver type at the end of the inheriting chain.
+   * \tparam this_t Type of solver. This can be a PSOAbstract, or the solver type at the end of the
+   * inheriting chain.
    *
-   * __impl_run is designed to be a template function inorder to achieve compile polymorphism, kind of like CRTP
+   * __impl_run is designed to be a template function inorder to achieve compile polymorphism, kind
+   * of like CRTP
    *
    * \sa GABase::run
    */
@@ -323,8 +328,8 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * In default cases, this function will boost the fitness computation via multi-threading.
    */
   void __impl_computeAllFitness() {
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
+#ifdef HEU_HAS_OPENMP
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, _population.size() / thN)
     for (int i = 0; i < _population.size(); i++) {
       Particle* ptr = &_population[i];
@@ -340,26 +345,32 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   // reloaded by template parameters to fit all types of `Args_t`
   template <bool _HasParameters, class unused = void>
   struct PSOExecutor {
-    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin, const Var_t* pMax,
-                                    const Var_t* vMax) {
+    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
+                                    const Var_t* pMax, const Var_t* vMax) {
       s->runiFun(pos, velocity, pMin, pMax, vMax, &s->_arg);
     }
 
-    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) { s->runfFun(pos, &s->_arg, f); }
+    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) {
+      s->runfFun(pos, &s->_arg, f);
+    }
 
-    static_assert(Base_t::HasParameters == _HasParameters, "A wrong specialization of PSOExecuter is called");
+    static_assert(Base_t::HasParameters == _HasParameters,
+                  "A wrong specialization of PSOExecuter is called");
   };
 
   template <class unused>
   struct PSOExecutor<false, unused> {
-    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin, const Var_t* pMax,
-                                    const Var_t* vMax) {
+    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
+                                    const Var_t* pMax, const Var_t* vMax) {
       s->runiFun(pos, velocity, pMin, pMax, vMax);
     }
 
-    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) { s->runfFun(pos, f); }
+    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) {
+      s->runfFun(pos, f);
+    }
 
-    static_assert(Base_t::HasParameters == false, "A wrong specialization of PSOExecuter is called");
+    static_assert(Base_t::HasParameters == false,
+                  "A wrong specialization of PSOExecuter is called");
   };
 };
 
@@ -382,7 +393,8 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
  * \tparam _iFun_ Initialization function at compile time
  * \tparam _fFun_ Initialization function at compile time
  */
-template <class Var_t, class Fitness_t, class Arg_t, typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
+template <class Var_t, class Fitness_t, class Arg_t,
+          typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
 class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
     : public PSOAbstract<Var_t, Fitness_t, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_> {

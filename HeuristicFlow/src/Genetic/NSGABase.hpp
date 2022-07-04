@@ -44,12 +44,14 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene, class Args_t,
+template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene,
+          class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class NSGABase
+    : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
   using Base_t = MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
@@ -98,8 +100,8 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_
 
  protected:
   /**
-   * \brief A vector of infoUnitBase*. This vector is where NS-sorting will take place since copying swaping pointers
-   * is much faster than swaping structs.
+   * \brief A vector of infoUnitBase*. This vector is where NS-sorting will take place since copying
+   * swaping pointers is much faster than swaping structs.
    *
    */
   std::vector<infoUnitBase*> sortSpace;
@@ -130,15 +132,15 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_
    */
   void calculateDominatedNum() {
     const size_t popSizeBefore = sortSpace.size();
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
+#ifdef HEU_HAS_OPENMP
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, popSizeBefore / thN)
     for (int ed = 0; ed < popSizeBefore; ed++) {
       sortSpace[ed]->domainedByNum = 0;
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
-        sortSpace[ed]->domainedByNum +=
-            Pareto<ObjNum, fOpt>::isStrongDominate(&(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
+        sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
+            &(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
       }
     }
 
@@ -147,8 +149,8 @@ class NSGABase : public MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_
       sortSpace[ed]->domainedByNum = 0;
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
-        sortSpace[ed]->domainedByNum +=
-            Pareto<ObjNum, fOpt>::isStrongDominate(&(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
+        sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
+            &(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
       }
     }
 #endif

@@ -17,14 +17,57 @@ This file is part of HeuristicFlow.
 
 */
 
-#ifndef HEU_GLOBALS_HPP
-#define HEU_GLOBALS_HPP
+#ifndef HEU_THREADING_HPP
+#define HEU_THREADING_HPP
 
 #ifdef EIGEN_HAS_OPENMP
 #include <omp.h>
-#include <thread>
 #endif  //  EIGEN_HAS_OPENMP
+
+#include <thread>
 
 #include "InternalHeaderCheck.h"
 
-#endif  // HEU_GLOBALS_HPP
+namespace heu {
+namespace {
+int thNum = std::thread::hardware_concurrency();
+}
+
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Query the number of threads that will be used. The default value euqals to
+ * `std::thread::hardware_concurrency()`.
+ *
+ * \return int Number of threads that will be used.
+ */
+inline int threadNum() noexcept { return thNum; }
+
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Set the number of threads that will be used. It will cause a assertion failure if `_thN`
+ * is not a positive integer.
+ *
+ * \param _thN Number of threads that will be used.
+ */
+inline void setThreadNum(int _thN) {
+  assert(_thN > 0);
+  thNum = _thN;
+}
+
+// if HEU_NO_THREADS is defined, HEU_HAS_OPENMP won't be defined, preventing following algorithms to
+// apply multi-threading. Otherwise if Eigen has OpenMP, then HeuristicFlow will use it as well.
+#ifndef HEU_NO_THREADS
+
+#ifdef EIGEN_HAS_OPENMP
+
+#ifndef HEU_HAS_OPENMP
+#define HEU_HAS_OPENMP
+#endif  //  HEU_HAS_OPENMP
+
+#endif  //  EIGEN_HAS_OPENMP
+
+#endif  //  HEU_NO_THREADS
+
+}  // namespace heu
+
+#endif  // HEU_THREADING_HPP

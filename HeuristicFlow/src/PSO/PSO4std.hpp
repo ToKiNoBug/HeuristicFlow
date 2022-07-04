@@ -95,18 +95,19 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
    *
    */
   void __impl_updatePopulation() {
-#ifdef EIGEN_HAS_OPENMP
-    static const int32_t thN = Eigen::nbThreads();
+#ifdef HEU_HAS_OPENMP
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)
-#endif  //  EIGEN_HAS_OPENMP
+#endif  //  HEU_HAS_OPENMP
     for (int index = 0; index < this->_population.size(); index++) {
       Particle_t& i = this->_population[index];
       const double rndP = randD();
       const double rndG = randD();
       for (int idx = 0; idx < this->dimensions(); idx++) {
-        i.velocity[idx] = this->_option.inertiaFactor * i.velocity[idx] +
-                          this->_option.learnFactorP * rndP * (i.pBest.position[idx] - i.position[idx]) +
-                          this->_option.learnFactorG * rndG * (this->gBest.position[idx] - i.position[idx]);
+        i.velocity[idx] =
+            this->_option.inertiaFactor * i.velocity[idx] +
+            this->_option.learnFactorP * rndP * (i.pBest.position[idx] - i.position[idx]) +
+            this->_option.learnFactorG * rndG * (this->gBest.position[idx] - i.position[idx]);
         if (std::abs(i.velocity[idx]) > this->_velocityMax[idx]) {
           i.velocity[idx] = sign(i.velocity[idx]) * this->_velocityMax[idx];
         }
@@ -119,7 +120,8 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
 
  private:
   static_assert(!(std::is_scalar<Var_t>::value), "Var_t should be a non-scalar type");
-  static_assert(DIM != 0, "Template parameter DIM cannot be 0. For dynamic dims, use Eigen::Dynamic");
+  static_assert(DIM != 0,
+                "Template parameter DIM cannot be 0. For dynamic dims, use Eigen::Dynamic");
   static_assert(DIM > 0 || DIM == Eigen::Dynamic, "Invalid template parameter DIM");
   // static_assert(isEigenTypes == false, "Wrong specialization of PSO");
 };

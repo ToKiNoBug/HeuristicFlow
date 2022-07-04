@@ -49,18 +49,17 @@ namespace internal {
  *
  * This class maintance its GAOption as a member.It also implements
  *
- * \tparam Var_t Encoded solution type. For instance, when solving TSP problems, what we really want to solve is a
- * permulation to arrange order between nodes, but the permulation is encoded into a double array and decoded via
- * sorting. So in this instance, Var_t is assigned to std::vector<double> instead of an permulation type. You should
- * decode when calculating fitness value.
- * \tparam Fitness_t Type of fitness
- * \tparam Record Whether the solver records the changes of fitness value or not.
- * \tparam Args_t Extra custom parameters.
- * \tparam _iFun_ Function to initialize an individual in population. This function will be called only
- * when initializing. Use nullptr if you hope to determine it at runtime
- * \tparam _fFun_ Funtion to compute fitness for any individual. Use nullptr if you hope to determine it at runtime
- * \tparam _cFun_ Function to apply crossover. Use nullptr if you hope to determine it at runtime
- * \tparam _mFun_ Function to apply mutation. Use nullptr if you hope to determine it at runtime
+ * \tparam Var_t Encoded solution type. For instance, when solving TSP problems, what we really want
+ * to solve is a permulation to arrange order between nodes, but the permulation is encoded into a
+ * double array and decoded via sorting. So in this instance, Var_t is assigned to
+ * std::vector<double> instead of an permulation type. You should decode when calculating fitness
+ * value. \tparam Fitness_t Type of fitness \tparam Record Whether the solver records the changes of
+ * fitness value or not. \tparam Args_t Extra custom parameters. \tparam _iFun_ Function to
+ * initialize an individual in population. This function will be called only when initializing. Use
+ * nullptr if you hope to determine it at runtime \tparam _fFun_ Funtion to compute fitness for any
+ * individual. Use nullptr if you hope to determine it at runtime \tparam _cFun_ Function to apply
+ * crossover. Use nullptr if you hope to determine it at runtime \tparam _mFun_ Function to apply
+ * mutation. Use nullptr if you hope to determine it at runtime
  */
 template <typename Var_t, typename Fitness_t, RecordOption Record, class Gene, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
@@ -77,7 +76,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 
  protected:
 #if __cplusplus < 201703L
-  static constexpr bool shouldGeneAlignExplicitly = (sizeof(Var_t) % 16 == 0) || (sizeof(Fitness_t) % 16 == 0);
+  static constexpr bool shouldGeneAlignExplicitly =
+      (sizeof(Var_t) % 16 == 0) || (sizeof(Fitness_t) % 16 == 0);
 #else
   static constexpr bool shouldGeneAlignExplicitly = false;
 #endif
@@ -89,7 +89,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 
  protected:
   using poplist_t = typename std::conditional<shouldGeneAlignExplicitly,
-                                              std::list<Gene, Eigen::aligned_allocator<Gene>>, std::list<Gene>>::type;
+                                              std::list<Gene, Eigen::aligned_allocator<Gene>>,
+                                              std::list<Gene>>::type;
 
  public:
   /// Type of gene
@@ -151,15 +152,18 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   size_t _generation;  ///< Current generation
   size_t _failTimes;   ///< Current failtimes
 
-  inline void __impl_clearRecord() {}  ///< Nothing is need to do if the solver doesn't record fitnesses.
+  inline void __impl_clearRecord() {
+  }  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
   template <class this_t>
-  inline void __impl_recordFitness() {}  ///< Nothing is need to do if the solver doesn't record fitnesses.
+  inline void __impl_recordFitness() {
+  }  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
   /**
    * \brief Run the solver
    *
-   * \tparam this_t Type of a solver. This type is added to record fitness through some template tricks like CRTP.
+   * \tparam this_t Type of a solver. This type is added to record fitness through some template
+   * tricks like CRTP.
    */
   template <class this_t>
   void __impl_run() {
@@ -205,7 +209,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    *
    */
   void __impl_computeAllFitness() {
-#ifdef EIGEN_HAS_OPENMP
+#ifdef HEU_HAS_OPENMP
     std::vector<Gene *> tasks;
     tasks.resize(0);
     tasks.reserve(_population.size());
@@ -215,7 +219,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
       }
       tasks.emplace_back(&i);
     }
-    static const int32_t thN = Eigen::nbThreads();
+    static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, tasks.size() / thN)
     for (int i = 0; i < tasks.size(); i++) {
       Gene *ptr = tasks[i];
@@ -242,15 +246,16 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    *
    * Since selection differes a lot, this function can only be implemented by derived classes.
    *
-   * Usually the population will exceeds the population size, so this procedure erases relatively worse genes to ensure
-   * the size of population can be restored.
+   * Usually the population will exceeds the population size, so this procedure erases relatively
+   * worse genes to ensure the size of population can be restored.
    */
   // void select() = 0;
 
   /**
    * \brief Apply crossover.
    *
-   * Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to population.
+   * Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to
+   * population.
    */
   void __impl_crossover() {
     std::vector<GeneIt_t> crossoverQueue;
@@ -280,7 +285,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
       _population.emplace_back();
       Gene *childB = &_population.back();
 
-      GAExecutor<Base_t::HasParameters>::doCrossover(this, &a->self, &b->self, &childA->self, &childB->self);
+      GAExecutor<Base_t::HasParameters>::doCrossover(this, &a->self, &b->self, &childA->self,
+                                                     &childB->self);
 
       childA->setUncalculated();
       childB->setUncalculated();
@@ -288,7 +294,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   }
 
   /**
-   * \brief Apply mutation operation which slightly modify gene. The modified gene will add to the population.
+   * \brief Apply mutation operation which slightly modify gene. The modified gene will add to the
+   * population.
    */
   void __impl_mutate() {
     std::vector<GeneIt_t> mutateList;
@@ -300,7 +307,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     }
     for (auto src : mutateList) {
       this->_population.emplace_back();
-      GAExecutor<Base_t::HasParameters>::doMutation(this, &src->self, &this->_population.back().self);
+      GAExecutor<Base_t::HasParameters>::doMutation(this, &src->self,
+                                                    &this->_population.back().self);
       this->_population.back().setUncalculated();
     }
   }
@@ -311,14 +319,20 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   struct GAExecutor {
     inline static void doInitialization(GABase *s, Var_t *v) { s->runiFun(v, &s->_args); }
 
-    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) { s->runfFun(v, &s->_args, f); }
+    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) {
+      s->runfFun(v, &s->_args, f);
+    }
 
-    inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
+    inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1,
+                                   Var_t *c2) {
       s->runcFun(p1, p2, c1, c2, &s->_args);
     }
 
-    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) { s->runmFun(src, dst, &s->_args); }
-    static_assert(HasParameters == GABase::HasParameters, "struct GAExecutor actived with wrong template parameter.");
+    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) {
+      s->runmFun(src, dst, &s->_args);
+    }
+    static_assert(HasParameters == GABase::HasParameters,
+                  "struct GAExecutor actived with wrong template parameter.");
   };
 
   // Internal class to apply the four operation
@@ -328,13 +342,15 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
 
     inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) { s->runfFun(v, f); }
 
-    inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) {
+    inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1,
+                                   Var_t *c2) {
       s->runcFun(p1, p2, c1, c2);
     }
 
     inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) { s->runmFun(src, dst); }
 
-    static_assert(GABase::HasParameters == false, "struct GAExecutor actived with wrong template parameter.");
+    static_assert(GABase::HasParameters == false,
+                  "struct GAExecutor actived with wrong template parameter.");
   };
 };
 
@@ -356,7 +372,8 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  * \tparam RecordOption  Whether the solver records fitness changelog
  * \tparam Args_t  Type of other parameters.
  *
- * \note GABase with record is derived from GABase without record to avoid duplicated implementation.
+ * \note GABase with record is derived from GABase without record to avoid duplicated
+ * implementation.
  */
 template <typename Var_t, typename Fitness_t, class Gene, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::initializeFun _iFun_,
@@ -364,10 +381,13 @@ template <typename Var_t, typename Fitness_t, class Gene, class Args_t,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::mutateFun _mFun_>
 class GABase<Var_t, Fitness_t, RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>
-    : public GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+    : public GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_,
+                    _mFun_> {
  private:
-  using Base_t = GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
-  friend class GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t =
+      GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cFun_,
+                      _mFun_>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
