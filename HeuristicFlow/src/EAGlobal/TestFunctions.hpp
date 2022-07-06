@@ -51,15 +51,18 @@ struct SOFunctions
 
 template <typename Var_t, class Fitness_t, class Arg_t>
 struct MOFunctions
-    : public MOFunctionsXX<Var_t, Fitness_t, Arg_t>,
-      public std::conditional<sizeMayMatch<Var_t, 1>::value && sizeMayMatch<Fitness_t, 2>::value,
+    : public std::conditional<sizeMayMatch<Var_t, 1>::value && sizeMayMatch<Fitness_t, 2>::value,
                               MOFunctions12<Var_t, Fitness_t, Arg_t>, emptyStruct1>::type,
       public std::conditional<sizeMayMatch<Var_t, 2>::value && sizeMayMatch<Fitness_t, 2>::value,
                               MOFunctions22<Var_t, Fitness_t, Arg_t>, emptyStruct2>::type,
       public std::conditional<sizeMayMatch<Var_t, 2>::value && sizeMayMatch<Fitness_t, 3>::value,
                               MOFunctions23<Var_t, Fitness_t, Arg_t>, emptyStruct3>::type,
       public std::conditional<sizeMayMatch<Fitness_t, 2>::value,
-                              MOFunctionsX2<Var_t, Fitness_t, Arg_t>, emptyStruct4>::type {
+                              MOFunctionsX2<Var_t, Fitness_t, Arg_t>, emptyStruct4>::type,
+      public std::conditional<sizeMayMatchDTLZ1to7<Var_t, Fitness_t>::value,
+                              DTLZ1to7<Var_t, Fitness_t, Arg_t>, emptyStruct5>::type,
+      public std::conditional<sizeMayMatchDTLZ89<Var_t, Fitness_t>::value,
+                              DTLZ89<Var_t, Fitness_t, Arg_t>, emptyStruct5>::type {
   static_assert((!array_traits<Fitness_t>::isFixedSize) || (array_traits<Fitness_t>::sizeCT >= 2),
                 "The size of Fitness_t must be greater than 1.");
 };

@@ -23,61 +23,25 @@ This file is part of HeuristicFlow.
 using namespace Eigen;
 using namespace std;
 
-// DTLZ 7 is a testing function for many objective problems. Its Pareto frontier consists of many separated parts, which
-// examine the algorithm's ability to maintain the population is several niches.
-template <size_t M, size_t N>
-void DTLZ7(const Eigen::Array<double, N, 1>* x, Eigen::Array<double, M, 1>* f) {
-  static_assert(M >= 2, "actural objective amount mustn't be less than 2");
-  f->resize(M, 1);
-  auto xm = x->template bottomRows<N - M + 1>();
-  f->template topRows<M - 1>() = x->template topRows<M - 1>();
-  const double g = 1 + 9 * (xm.sum()) /
-                           // std::sqrt(1e-40+xm.square().sum())
-                           (N - M + 1);
-  auto fi = f->template topRows<M - 1>();
-  auto one_add_sum3pifi = 1 + (3 * M_PI * fi).sin();
-  const double h = M - (fi * one_add_sum3pifi / (1 + g)).sum();
-  f->operator[](M - 1) = (1 + g) * h;
-}
-
-// DTLZ1 is also provided here, it's PF is a continous hyperplane
-template <size_t M, size_t N>
-void DTLZ1(const Eigen::Array<double, N, 1>* x, Eigen::Array<double, M, 1>* f) {
-  f->resize(M, 1);
-  auto xm = x->template bottomRows<N - M + 1>();
-  double g = (xm - 0.5).square().sum() - (20 * M_PI * (xm - 0.5)).cos().sum();
-  g += N - M + 1;
-  g *= 100;
-
-  double accum = (1 + g) * 0.5;
-
-  int i = 0;
-  for (int obj = M - 1; obj > 0; obj--) {
-    f->operator[](obj) = accum * (1 - x->operator[](i));
-    accum *= x->operator[](i);
-    i++;
-  }
-  f->operator[](0) = x->template topRows<M - 1>().prod() * (1 + g) / 2;
-}
-
 void testNSGA3_DTLZ7() {
   // Dimension of decison variable
-  static const size_t N = 20;
-  // Number of objectives. DTLZ series are greatly extentable, you can simply edit the value of M and N to see how it
-  // behaves for higher dimensions.
-  static const size_t M = 6;
+  static constexpr size_t N = 5;
+  // Number of objectives. DTLZ series are greatly extentable, you can simply edit the value of M
+  // and N to see how it behaves for higher dimensions.
+  static constexpr size_t M = 3;
 
   // Note that NSGA3 supports only FITNESS_LESS_BETTER
   using solver_t = heu::NSGA3<Eigen::Array<double, N, 1>, M,
                               // FITNESS_LESS_BETTER,
-                              heu::DONT_RECORD_FITNESS, heu::DOUBLE_LAYER, void>;
+                              heu::DONT_RECORD_FITNESS, heu::SINGLE_LAYER, void>;
 
   using Var_t = Eigen::Array<double, N, 1>;
   // using Fitness_t = solver_t::Fitness_t;
 
   auto iFun = heu::GADefaults<Var_t, void, heu::ContainerOption::Eigen>::iFunNd<>;
 
-  auto cFun = heu::GADefaults<Var_t, void, heu::ContainerOption::Eigen>::cFunNd<heu::DivEncode<1, 10>::code>;
+  auto cFun = heu::GADefaults<Var_t, void,
+                              heu::ContainerOption::Eigen>::cFunNd<heu::DivEncode<1, 10>::code>;
 
   auto mFun = [](const Var_t* src, Var_t* v) {
     *v = *src;
@@ -103,11 +67,14 @@ void testNSGA3_DTLZ7() {
   solver_t solver;
   // solver.setObjectiveNum(M);
   solver.setiFun(iFun);
-  solver.setfFun(DTLZ7<M, N>);
+  // solver.setfFun(heu::testFunctions<Var_t, Eigen::Array<double, M, 1>>::template DTLZ4<>);
+  solver.setfFun(heu::testFunctions<Var_t, Eigen::Array<double, M, 1>>::DTLZ7);
+  //  solver.setfFun(DTLZ1<M, N>);
   solver.setcFun(cFun);
   solver.setmFun(mFun);
   solver.setOption(opt);
-  solver.setReferencePointPrecision(3, 4);
+  solver.setReferencePointPrecision(12);
+  // solver.setReferencePointPrecision(5, 7);
   cout << "RPCount=" << solver.referencePointCount() << endl;
   solver.initializePop();
   cout << "Population initialized." << endl;
@@ -117,7 +84,8 @@ void testNSGA3_DTLZ7() {
   solver.run();
   c = clock() - c;
 
-  cout << "solving finished in " << c << " ms with " << solver.generation() << " generations." << endl;
+  cout << "solving finished in " << c << " ms with " << solver.generation() << " generations."
+       << endl;
 
   cout << "PFV=[";
   for (const auto& i : solver.pfGenes()) {
@@ -126,16 +94,17 @@ void testNSGA3_DTLZ7() {
   cout << "];\n\n\n" << endl;
 }
 
-// This function goes through the whole high-dimensional searching space to find an accurate solution of PF. It's really
-// slow but you can find if the solution of NSGA3 is correct.
+// This function goes through the whole high-dimensional searching space to find an accurate
+// solution of PF. It's really slow but you can find if the solution of NSGA3 is correct.
 template <size_t M, size_t N, size_t precision>
-void searchPFfun(size_t nIdx, Eigen::Array<double, N, 1>* var, vector<pair<Eigen::Array<double, M, 1>, size_t>>* dst) {
+void searchPFfun(size_t nIdx, Eigen::Array<double, N, 1>* var,
+                 vector<pair<Eigen::Array<double, M, 1>, size_t>>* dst) {
   static_assert(precision >= 2, "You should assign at least 2 on a single dim");
   if (nIdx + 1 >= N) {
     Eigen::Array<double, M, 1> f;
     for (size_t i = 0; i <= precision; i++) {
       var->operator[](nIdx) = double(i) / precision;
-      DTLZ7<M, N>(var, &f);
+      heu::testFunctions<Eigen::Array<double, N, 1>, Eigen::Array<double, M, 1>>::DTLZ7(var, &f);
       dst->emplace_back(make_pair(f, 0ULL));
     }
     return;
