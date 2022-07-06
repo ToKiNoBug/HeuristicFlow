@@ -23,9 +23,4 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/EAGlobal)
 add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/SimpleMatrix)
 add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/AOS)
 
-#set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/../build-HeuristicFlow)
-#set(CMAKE_BINARY_DIR ${PROJECT_BINARY_DIR})
-
-#message("PROJECT_BINARY_DIR=" ${PROJECT_BINARY_DIR})
-#message("CMAKE_BINARY_DIR=" ${CMAKE_BINARY_DIR})
 
