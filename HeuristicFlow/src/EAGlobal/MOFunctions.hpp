@@ -233,7 +233,7 @@ struct MOFunctionsX2<Var_t, Fitness_t, void> {
 
   static inline void Kursawe(const Var_t *_x, Fitness_t *f) {
     assert4Size(f);
-    const int N = f->size();
+    const int N = int(f->size());
     typename array_traits<Var_t>::Scalar_t f1 = 0, f2 = 0;
     if constexpr (array_traits<Var_t>::isEigenClass) {
       if constexpr (array_traits<Var_t>::isFixedSize) {

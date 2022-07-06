@@ -100,7 +100,7 @@ class AOS : public internal::AOSBase<
         floatNumOfEachLayer[idx] = gaussianCurve<double>(idx + 1, 0, tempLayerNum / 6.0);
       }
       floatNumOfEachLayer /= floatNumOfEachLayer.sum();
-      floatNumOfEachLayer *= this->_electrons.size();
+      floatNumOfEachLayer *= double(this->_electrons.size());
       numOfEachLayer = floatNumOfEachLayer.round().cast<int>();
     }
 
@@ -110,7 +110,7 @@ class AOS : public internal::AOSBase<
 
     for (int& val : numOfEachLayer) {
       if (val > this->_electrons.size()) {
-        val = this->_electrons.size();
+        val = int(this->_electrons.size());
       }
     }
 

@@ -28,8 +28,8 @@ class counterScalar {
 int counterScalar::createdNum = 0;
 
 int main() {
-  constexpr int loopN = 1e4;
-  const int mallocMax = std::pow(2, 12);
+  constexpr int loopN = int(1e4);
+  const int mallocMax = int(std::pow(2, 12));
   auto vec = new heu::poolVector<counterScalar>;
   // auto vec = new std::vector<counterScalar>;
   //   heu::poolVector<counterScalar> vec;

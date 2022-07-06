@@ -198,7 +198,7 @@ struct SOFunctionsX<Var_t, Fitness_t, void> {
   static_assert(std::is_floating_point<Fitness_t>::value,
                 "Fitness_t must be a floating point number");
   inline static void rastrigin(const Var_t *x, Fitness_t *fitness) {
-    *fitness = 10 * x->size();
+    *fitness = 10.0 * x->size();
     for (auto xi : *x) {
       *fitness += square(xi) - 10 * std::cos(M_PI * 2 * xi);
     }

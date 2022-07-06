@@ -27,7 +27,7 @@ using namespace std;
 
 // this tests shows how to solve TSP problems with PSO
 void testTSP_PSO(const size_t N) {
-  static const size_t SpaceDim = 2;
+  static constexpr int SpaceDim = 2;
   // type of decision variable encoded in float
   using Var_t = Eigen::ArrayXd;
   //  type of args

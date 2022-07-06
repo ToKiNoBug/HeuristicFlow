@@ -52,7 +52,8 @@ void testTSP_SOGA(const uint32_t PointNum) {
 
   // typedef vector<permUnit> permulation;
   //       var,        less=better,    data src
-  heu::SOGA<vector<double>, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS, std::tuple<const vector<Point_t> *>>
+  heu::SOGA<vector<double>, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS,
+            std::tuple<const vector<Point_t> *>>
       algo;
   static const uint8_t dataIdx = 0;
   typedef tuple<const vector<Point_t> *> Args_t;
@@ -61,16 +62,14 @@ void testTSP_SOGA(const uint32_t PointNum) {
   // initialize function
 
   auto initializeFun = [](vector<double> *x, const Args_t *_args) {
-    const uint32_t permL = get<dataIdx>(*_args)->size();
+    const auto permL = get<dataIdx>(*_args)->size();
     x->resize(permL);
-    for (uint32_t i = 0; i < permL; i++) {
-      x->operator[](i) = heu::randD();
-    }
+    for (double &var : *x) var = heu::randD();
   };
 
   // calculate fitness
   auto calculateFun = [](const vector<double> *x, const Args_t *_args, double *f) {
-    const uint32_t permL = x->size();
+    const auto permL = x->size();
     vector<permUnit> perm(permL);
     for (uint32_t i = 0; i < permL; i++) {
       perm[i].first = x->operator[](i);
@@ -105,11 +104,12 @@ void testTSP_SOGA(const uint32_t PointNum) {
   }
 
   auto crossoverFun =
-      heu::GADefaults<vector<double>, Args_t, heu::ContainerOption::Std>::cFunXd<heu::DivCode::DivCode_Half>;
+      heu::GADefaults<vector<double>, Args_t,
+                      heu::ContainerOption::Std>::cFunXd<heu::DivCode::DivCode_Half>;
 
   auto mutateFun = [](const vector<double> *src, vector<double> *x, const Args_t *) {
     *x = *src;
-    const uint32_t permL = x->size();
+    const auto permL = x->size();
     if (heu::randD() < 0.5) {  // modify one element's value
       double &v = x->operator[](std::rand() % permL);
       v += heu::randD(-0.01, 0.01);
@@ -145,15 +145,16 @@ void testTSP_SOGA(const uint32_t PointNum) {
   std::clock_t c = std::clock();
   algo.run();
   c = std::clock() - c;
-  cout << "finished with " << algo.generation() << " generations and " << double(c) / CLOCKS_PER_SEC << " s\n";
+  cout << "finished with " << algo.generation() << " generations and " << double(c) / CLOCKS_PER_SEC
+       << " s\n";
   cout << "result fitness = " << algo.bestFitness() << endl;
 }
 
 int main() {
-  size_t NodeNum = 100;
+  int NodeNum = 100;
   cout << "Input node number : ";
   cin >> NodeNum;
   testTSP_SOGA(NodeNum);
-  system("pause");
+  // system("pause");
   return 0;
 }

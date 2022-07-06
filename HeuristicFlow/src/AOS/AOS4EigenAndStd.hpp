@@ -58,7 +58,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
       }
     }
 
-    this->_bindingState /= this->_electrons.size();
+    this->_bindingState /= double(this->_electrons.size());
     this->_bindingEnergy /= this->_electrons.size();
 
     if (prevBestPtr->energy == this->_atomBestPtr->energy) {
@@ -88,7 +88,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
         }
       }
 
-      layer.bindingState /= layer.size();
+      layer.bindingState /= double(layer.size());
       layer.bindingEnergy /= layer.size();
     }
   }
@@ -99,9 +99,9 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     Var_t alpha(parentState.rows(), parentState.cols()),
         beta(parentState.rows(), parentState.cols()), gamma(parentState.rows(), parentState.cols());
 
-    randD(alpha.data(), alpha.size());
-    randD(beta.data(), beta.size());
-    randD(gamma.data(), gamma.size());
+    randD(alpha.data(), int(alpha.size()));
+    randD(beta.data(), int(beta.size()));
+    randD(gamma.data(), int(gamma.size()));
 
     if (Base_t::template isBetter<fOpt>(parent.energy, layer.bindingEnergy)) {
       // E_i^k<BE^k
