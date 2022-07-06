@@ -10,7 +10,7 @@ As a template lib, HeuristicFlow is header only.
 
 Dependents: [libEigen](https://eigen.tuxfamily.org/) and **C++17** standard library.
 
-HeuristicFlow has been tested on MinGW(gcc 8.1.0 and gcc 12.1.0), Clang(14.0.4) and MSVC143. It will pass compiling in the first 2 compilers and will probably meet a compiler internal error if MSVC143 is used.
+HeuristicFlow has been tested on MinGW(gcc 8.1.0 and gcc 12.1.0), Clang(14.0.4) and MSVC(143). It works pretty well with MinGW and Clang, while may cause several warnings when with MSVC.
 
 namespace: `heu`
 
@@ -24,10 +24,10 @@ Modules:
 
 
 Implemented : 
-1. GA
-2. NSGA-II
-3. NSGA-III
-4. PSO
+1. GA(Genetic Algorithm)
+2. NSGA-II(Non-dominated Sorting Genetic Algorithm II)
+3. NSGA-III(Non-dominated Sorting Genetic Algorithm III)
+4. PSO(Particle Swarm Optimization)
 5. AOS(Atomic Orbit Search)
 
 Referenced Papers:
