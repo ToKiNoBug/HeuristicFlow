@@ -7,6 +7,8 @@
 
 #include "InternalHeaderCheck.h"
 
+#include <iostream>
+
 namespace heu {
 namespace internal {
 
@@ -663,7 +665,10 @@ struct DTLZ1to7<Var_t, Fitness_t, void> {
 };
 
 template <typename Var_t, class Fitness_t, class Arg_t = void>
-struct DTLZ89 {};
+struct DTLZ89 {
+  HEU_REPEAT_FUNCTIONS(DTLZ89, DTLZ8)
+  HEU_REPEAT_FUNCTIONS(DTLZ89, DTLZ9)
+};
 
 template <typename Var_t, class Fitness_t>
 struct DTLZ89<Var_t, Fitness_t, void> {
@@ -692,12 +697,163 @@ struct DTLZ89<Var_t, Fitness_t, void> {
   static constexpr bool isAllFixed =
       array_traits<Var_t>::isFixedSize && array_traits<Fitness_t>::isFixedSize;
 
+  template <int varIdx, int endIdx>
+  inline static scalar_t accumulateXi(const Var_t *x) noexcept {
+    if constexpr (varIdx < endIdx) {
+      return x->operator[](varIdx) + accumulateXi<varIdx + 1, endIdx>(x);
+    } else {
+      return x->operator[](endIdx);
+    }
+  }
+
+  inline static scalar_t accumulateXi(const Var_t *x, const int begIdx, const int endIdx) noexcept {
+    if constexpr (array_traits<Var_t>::isEigenClass) {
+      return x->segment(begIdx, endIdx - begIdx + 1).sum();
+    } else {
+      scalar_t sum = 0;
+      for (int idx = begIdx; idx <= endIdx; idx++) {
+        sum += x->operator[](idx);
+      }
+      return sum;
+    }
+  }
+
+  template <int objIdx>
+  inline static void computeFitness8(const Var_t *x, Fitness_t *f) noexcept {
+    static_assert(array_traits<Fitness_t>::isFixedSize);
+    constexpr int M = array_traits<Fitness_t>::sizeCT;
+    if constexpr (objIdx < M) {
+      if constexpr (array_traits<Var_t>::isFixedSize) {
+        constexpr int N = array_traits<Var_t>::sizeCT;
+        constexpr int begIdx = objIdx * N / M;
+        constexpr int tempEndIdx = (objIdx + 1) * N / M;
+        constexpr int endIdx = (tempEndIdx >= N) ? (N - 1) : (tempEndIdx);
+
+        f->operator[](objIdx) = accumulateXi<begIdx, endIdx>(x);
+
+      } else {
+        const int N = x->size();
+        const int begIdx = objIdx * N / M;
+        const int endIdx = std::min<int>((objIdx + 1) * N / M, N - 1);
+        f->operator[](objIdx) = accumulateXi(x, begIdx, endIdx);
+      }
+      computeFitness8<objIdx + 1>(x, f);
+    } else {
+      return;
+    }
+  }
+
+  inline static void computeFitness8(const Var_t *x, Fitness_t *f) noexcept {
+    // Here are two implementations for fixed and dynamic Fitness_t.
+    // For compile-time M, expand the 2-rank loop into 1-rank loop or 0-rank loop by templates.
+    // Use EIGEN_FORCED_INLINE as many possible.
+    // For runtime M, use the 2-rank loop.
+    if constexpr (array_traits<Fitness_t>::isFixedSize) {
+      computeFitness8<0>(x, f);
+    } else {
+      const int N = x->size();
+      const int M = f->size();
+      for (int objIdx = 0; objIdx < M; objIdx++) {
+        f->operator[](objIdx) =
+            accumulateXi(x, objIdx * N / M, std::min<int>((objIdx + 1) * N / M, N - 1));
+      }
+    }
+  }
+
+  template <int i, int j>  // 0<=i<j<=M-2
+  inline static scalar_t findMin2SumForDTLZ8(Fitness_t *f) noexcept {
+    static_assert(array_traits<Fitness_t>::isFixedSize);
+    constexpr int M = array_traits<Fitness_t>::sizeCT;
+    static_assert(i >= 0);
+    static_assert(j > i);
+
+    // the outer expansion adjust i from 0 to M-3
+    // and the inner expansion adjust j from i+1 to M-2
+    if constexpr (i < M - 3) {
+      if constexpr (j < M - 1) {
+        return std::min(f->operator[](i) + f->operator[](j), findMin2SumForDTLZ8<i, j + 1>(f));
+      } else {
+        return findMin2SumForDTLZ8<i + 1, i + 2>(f);
+      }
+    } else {
+      static_assert(i == M - 3, "Wrong in programming");
+      return f->operator[](i) + f->operator[](j);
+      // here i should be M-3
+    }
+  }
+
+  inline static scalar_t findMin2SumForDTLZ8(Fitness_t *f) noexcept {
+    if constexpr (array_traits<Fitness_t>::isFixedSize) {
+      return findMin2SumForDTLZ8<0, 1>(f);
+    } else {
+      const int M = f->size();
+      scalar_t result = pinfD;
+      for (int i = 0; i < M - 2; i++) {
+        for (int j = i + 1; j < M - 1; j++) {
+          result = std::min(result, f->operator[](i) + f->operator[](j));
+        }
+      }
+
+      return result;
+    }
+  }
+
  public:
   inline static void DTLZ8(const Var_t *x, Fitness_t *f) noexcept {
     assert4Size(x, f);
     const int N = int(x->size());
     const int M = int(f->size());
-#warning DTLZ8 and DTLZ9 hasn't been finished yet!
+    const int floor_N_div_M = N / M;
+
+    computeFitness8(x, f);
+
+    for (auto &val : *f) {
+      val /= floor_N_div_M;
+    }
+
+    Fitness_t g;
+    if constexpr (!array_traits<Fitness_t>::isFixedSize) {
+      if constexpr (array_traits<Fitness_t>::isEigenClass) {
+        g.resize(f->size(), 1);  // Eigen::ArrayX
+      } else {
+        g.resize(f->size());  // std::vector
+      }
+    }
+
+    for (int objIdx = 0; objIdx < M - 1; objIdx++) {
+      g[objIdx] = f->operator[](M - 1) + 4 * f->operator[](objIdx) - 1;
+    }
+
+    g[M - 1] = 2 * f->operator[](M - 1) + findMin2SumForDTLZ8(f) - 1;
+
+    for (int objIdx = 0; objIdx < M; objIdx++) {
+      if (g[objIdx] < 0) {
+        f->operator[](objIdx) += 1e3 + (-g[objIdx]);
+      }
+    }
+  }
+
+  inline static void DTLZ9(const Var_t *x, Fitness_t *f) noexcept {
+    assert4Size(x, f);
+
+    const int N = int(x->size());
+    const int M = int(f->size());
+
+    for (int objIdx = 0; objIdx < M; objIdx++) {
+      f->operator[](objIdx) = 0;
+      for (int varIdx = objIdx * N / M; varIdx <= std::min<int>(N, (objIdx + 1) * N / M);
+           varIdx++) {
+        f->operator[](objIdx) += std::pow(x->operator[](varIdx), 0.1);
+      }
+    }
+    // apply penlties
+    for (int objIdx = 0; objIdx < M - 1; objIdx++) {
+      auto gOfObjIdx = square(f->operator[](M)) + square(f->operator[](objIdx)) - 1;
+
+      if (gOfObjIdx < 0) {
+        f->operator[](objIdx) += 1e3 + (-gOfObjIdx);
+      }
+    }
   }
 };
 

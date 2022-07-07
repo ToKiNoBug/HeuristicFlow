@@ -36,28 +36,28 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
                 "Fitness_t must be a floating point number");
   static_assert((!array_traits<Var_t>::isFixedSize) || (array_traits<Var_t>::sizeCT == 2),
                 "2 testing functions require a 2-d array");
-  inline static void assert4Size(const Var_t *_x) {
+  inline static void assert4Size(const Var_t *_x) noexcept {
     if constexpr (!array_traits<Var_t>::isFixedSize) {
       assert(_x->size() == 2);
     }
   }
 
  public:
-  inline static void ackley(const Var_t *_x, Fitness_t *f) {
+  inline static void ackley(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     auto x = _x->operator[](0), y = _x->operator[](1);
     *f = -20 * std::exp(-0.2 * std::sqrt(0.5 * (x * x + y * y))) -
          std::exp(0.5 * (std::cos(M_2_PI * x) + std::cos(M_2_PI * y))) + 20 + M_E;
   }
 
-  inline static void beale(const Var_t *_x, Fitness_t *f) {
+  inline static void beale(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = square(1.5 - x + x * y) + square(2.25 - x + x * y * y) + square(2.625 - x + x * y * y * y);
   }
 
-  inline static void GoldsteinPrice(const Var_t *_x, Fitness_t *f) {
+  inline static void GoldsteinPrice(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -68,28 +68,28 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
     *f = part1 * part2;
   }
 
-  inline static void booth(const Var_t *_x, Fitness_t *f) {
+  inline static void booth(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = square(x + 2 * y - 7) + square(2 * x + y - 5);
   }
 
-  inline static void bukin(const Var_t *_x, Fitness_t *f) {
+  inline static void bukin(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = 100 * std::sqrt(std::abs(y - 0.01 * x * x)) + 0.01 * std::abs(x + 10);
   }
 
-  inline static void matyas(const Var_t *_x, Fitness_t *f) {
+  inline static void matyas(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = 0.26 * (x * x + y * y) - 0.48 * x * y;
   }
 
-  inline static void levy(const Var_t *_x, Fitness_t *f) {
+  inline static void levy(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -97,28 +97,28 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
          square(y - 1) * (1 + square(std::sin(2 * M_PI * y)));
   }
 
-  inline static void himmelblau(const Var_t *_x, Fitness_t *f) {
+  inline static void himmelblau(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = square(x * x + y - 11) + square(x + y * y - 7);
   }
 
-  inline static void threeHumpCamel(const Var_t *_x, Fitness_t *f) {
+  inline static void threeHumpCamel(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = 2 * x * x - 1.05 * std::pow(x, 4) + std::pow(x, 6) / 6 + x * y + y * y;
   }
 
-  inline static void easom(const Var_t *_x, Fitness_t *f) {
+  inline static void easom(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
     *f = -std::cos(x) * std::cos(y) * std::exp(-square(x - M_PI) - square(y - M_PI));
   }
 
-  inline static void crossInTray(const Var_t *_x, Fitness_t *f) {
+  inline static void crossInTray(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -133,7 +133,7 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
                             0.1);
   }
 
-  inline static void eggHolder(const Var_t *_x, Fitness_t *f) {
+  inline static void eggHolder(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -143,7 +143,7 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
          x * std::sin(std::sqrt(std::abs(x - y_plus_47)));
   }
 
-  inline static void holderTable(const Var_t *_x, Fitness_t *f) {
+  inline static void holderTable(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -156,7 +156,7 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
                            ));
   }
 
-  inline static void McCormick(const Var_t *_x, Fitness_t *f) {
+  inline static void McCormick(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -164,7 +164,7 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
     *f = std::sin(x + y) + square(x - y) - 1.5 * x + 2.5 * y + 1;
   }
 
-  inline static void schaffer2(const Var_t *_x, Fitness_t *f) {
+  inline static void schaffer2(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -172,7 +172,7 @@ struct SOFunctions2<Var_t, Fitness_t, void> {
     *f = 0.5 + (square(std::sin(x * x - y * y) - 0.5)) / square(1 + 0.001 * (x * x + y * y));
   }
 
-  inline static void schaffer4(const Var_t *_x, Fitness_t *f) {
+  inline static void schaffer4(const Var_t *_x, Fitness_t *f) noexcept {
     assert4Size(_x);
     const auto x = _x->operator[](0);
     const auto y = _x->operator[](1);
@@ -197,14 +197,14 @@ template <typename Var_t, class Fitness_t>
 struct SOFunctionsX<Var_t, Fitness_t, void> {
   static_assert(std::is_floating_point<Fitness_t>::value,
                 "Fitness_t must be a floating point number");
-  inline static void rastrigin(const Var_t *x, Fitness_t *fitness) {
+  inline static void rastrigin(const Var_t *x, Fitness_t *fitness) noexcept {
     *fitness = 10.0 * x->size();
     for (auto xi : *x) {
       *fitness += square(xi) - 10 * std::cos(M_PI * 2 * xi);
     }
   }
 
-  inline static void sphere(const Var_t *x, Fitness_t *f) {
+  inline static void sphere(const Var_t *x, Fitness_t *f) noexcept {
     if constexpr (array_traits<Var_t>::isEigenClass) {
       *f = (x->array()).square().sum();
     } else {
@@ -217,7 +217,7 @@ struct SOFunctionsX<Var_t, Fitness_t, void> {
     }
   }
 
-  inline static void rosenbrock(const Var_t *x, Fitness_t *f) {
+  inline static void rosenbrock(const Var_t *x, Fitness_t *f) noexcept {
     if constexpr (array_traits<Var_t>::isEigenClass) {
       auto square_1_minus_x_top = (1 - x->topRows(x->size() - 1)).square().sum();
       auto minusSquare = (x->topRows(x->size() - 1) - x->bottomRows(x->size() - 1)).square().sum();
@@ -232,7 +232,7 @@ struct SOFunctionsX<Var_t, Fitness_t, void> {
     }
   }
 
-  inline static void styblinskiTang(const Var_t *x, Fitness_t *f) {
+  inline static void styblinskiTang(const Var_t *x, Fitness_t *f) noexcept {
     if constexpr (array_traits<Var_t>::isEigenClass) {
       auto arr = x->array();
       *f = (arr.pow(4) - 16 * arr.square() + 5 * arr).sum();

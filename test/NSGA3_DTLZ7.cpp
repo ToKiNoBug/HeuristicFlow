@@ -25,7 +25,7 @@ using namespace std;
 
 void testNSGA3_DTLZ7() {
   // Dimension of decison variable
-  static constexpr size_t N = 5;
+  static constexpr size_t N = 30;
   // Number of objectives. DTLZ series are greatly extentable, you can simply edit the value of M
   // and N to see how it behaves for higher dimensions.
   static constexpr size_t M = 3;
@@ -47,7 +47,7 @@ void testNSGA3_DTLZ7() {
     *v = *src;
     const size_t idx = heu::randIdx(v->size());
     double& p = v->operator[](idx);
-    p += 0.5 * heu::randD(-1, 1);
+    p += 0.4 * heu::randD(-1, 1);
     p = std::min(p, 1.0);
     p = std::max(p, 0.0);
   };
