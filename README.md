@@ -23,12 +23,51 @@ Modules:
 6. AOS
 
 
-Implemented : 
+Implemented Algorithms: 
 1. GA(Genetic Algorithm)
 2. NSGA-II(Non-dominated Sorting Genetic Algorithm II)
 3. NSGA-III(Non-dominated Sorting Genetic Algorithm III)
 4. PSO(Particle Swarm Optimization)
 5. AOS(Atomic Orbit Search)
+
+Implemented Testing Functions:
+- Single-objective:
+  - Ackley
+  - Beale
+  - GoldSteinPrice
+  - Booth
+  - Bukin
+  - Matyas
+  - Levy
+  - Himmelblau
+  - Easom
+  - Cross in tray
+  - Egg holder
+  - Holder table
+  - McCormick
+  - Schaffer2
+  - Schaffer4
+  - Rastrigin
+  - Sphere
+  - Rosenbrock
+  - Styblinski - Tang
+- Multi-objectives:
+  - Schaffer1
+  - Schaffer2
+  - Binh and Korn
+  - Changkong Hamies
+  - Poloni
+  - Viennet
+  - FonsecaFleming
+  - Kursawe
+  - DTLZ1
+  - DTLZ2
+  - DTLZ3
+  - DTLZ4
+  - DTLZ5
+  - DTLZ6
+  - DTLZ7
+  - DTLZ8
 
 Referenced Papers:
 1. AOS<br>
