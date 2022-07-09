@@ -22,6 +22,9 @@ This file is part of HeuristicFlow.
 
 #include "src/EAGlobal/Pareto.hpp"
 #include "src/EAGlobal/BoxInterface.hpp"
+#include "src/EAGlobal/testFunctionsCommon.hpp"
+#include "src/EAGlobal/SOFunctions.hpp"
+#include "src/EAGlobal/MOFunctions.hpp"
 #include "src/EAGlobal/TestFunctions.hpp"
 
 /**
