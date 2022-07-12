@@ -221,7 +221,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     }
     static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, tasks.size() / thN)
-    for (int i = 0; i < tasks.size(); i++) {
+    for (int i = 0; i < int(tasks.size()); i++) {
       Gene *ptr = tasks[i];
 
       GAExecutor<Base_t::HasParameters>::doFitness(this, &ptr->self, &ptr->_Fitness);
