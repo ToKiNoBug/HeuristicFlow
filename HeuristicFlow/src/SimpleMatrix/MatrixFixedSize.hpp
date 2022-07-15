@@ -39,7 +39,8 @@ namespace heu {
 template <class Scalar_t, size_t Rows, size_t Cols>
 class MatrixFixedSize {
  protected:
-  using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t, const Scalar_t &>::type;
+  using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t,
+                                           const Scalar_t &>::type;
 
  public:
   /**
@@ -89,7 +90,9 @@ class MatrixFixedSize {
 
   inline const Scalar_t &operator[](size_t n) const noexcept { return array[n]; }
 
-  inline const Scalar_t &operator()(size_t r, size_t c) const noexcept { return array[Rows * c + r]; }
+  inline const Scalar_t &operator()(size_t r, size_t c) const noexcept {
+    return array[Rows * c + r];
+  }
 
   inline Scalar_t &operator()(size_t n) noexcept { return array[n]; }
 
@@ -101,13 +104,13 @@ class MatrixFixedSize {
 
   inline const Scalar_t *data() const noexcept { return array.data(); }
 
-  inline static void resize(size_t _r, size_t _c) {
+  inline static void resize(size_t _r, size_t _c) noexcept {
     assert(_r == Rows);
     assert(_c == Cols);
   }
 
   /// Deep copy
-  const MatrixFixedSize &operator=(const MatrixFixedSize &src) {
+  const MatrixFixedSize &operator=(const MatrixFixedSize &src) noexcept {
     for (size_t i = 0; i < size(); i++) {
       array[i] = src.array[i];
     }

@@ -49,7 +49,7 @@ class MatrixMap {
 
   ~MatrixMap() = default;
 
-  void deepCopyTo(MatrixMap *dst) const {
+  void deepCopyTo(MatrixMap *dst) const noexcept {
     dst->r = r;
     dst->c = c;
     for (size_t i = 0; i < size(); i++) {
@@ -80,19 +80,19 @@ class MatrixMap {
     c = _c;
   }
 
-  inline Scalar_t &operator()(size_t i) { return p[i]; }
+  inline Scalar_t &operator()(size_t i) noexcept { return p[i]; }
 
-  inline Scalar_t &operator[](size_t i) { return p[i]; }
+  inline Scalar_t &operator[](size_t i) noexcept { return p[i]; }
 
-  inline Scalar_t &operator()(size_t _r, size_t _c) { return p[r * _c + _r]; }
+  inline Scalar_t &operator()(size_t _r, size_t _c) noexcept { return p[r * _c + _r]; }
 
-  inline const Scalar_t &operator()(size_t i) const { return p[i]; }
+  inline const Scalar_t &operator()(size_t i) const noexcept { return p[i]; }
 
-  inline const Scalar_t &operator[](size_t i) const { return p[i]; }
+  inline const Scalar_t &operator[](size_t i) const noexcept { return p[i]; }
 
-  inline const Scalar_t &operator()(size_t _r, size_t _c) const { return p[r * _c + _r]; }
+  inline const Scalar_t &operator()(size_t _r, size_t _c) const noexcept { return p[r * _c + _r]; }
 
-  inline void fill(fast_t src) {
+  inline void fill(fast_t src) noexcept {
     for (auto &i : *this) {
       i = src;
     }
