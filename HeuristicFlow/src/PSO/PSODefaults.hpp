@@ -29,7 +29,8 @@ namespace internal {
 template <typename Var_t, bool isVarEigenTypes>
 struct __impl_PSODefaults {
   // Candidate function for initialization
-  inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
+  inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax,
+                               const Var_t *) noexcept {
     for (int idx = 0; idx < xMin->size(); idx++) {
       x->operator[](idx) = randD(xMin->operator[](idx), xMax->operator[](idx));
       v->operator[](idx) = 0;
@@ -40,7 +41,8 @@ struct __impl_PSODefaults {
 template <typename Var_t>
 struct __impl_PSODefaults<Var_t, true> {
   // Candidate function for initialization
-  inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax, const Var_t *) {
+  inline static void impl_iFun(Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax,
+                               const Var_t *) noexcept {
     x->setRandom(xMin->size(), 1);
     (*x) *= (*xMax - *xMin) / 2;
     (*x) += (*xMin + *xMax) / 2;
@@ -77,9 +79,10 @@ struct PSODefaults {
    *
    * \sa PSODefaults<Var_t, isVarEigenTypes, void>::iFun
    */
-  inline static void iFun(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax, const Var_t *vMax,
-                          const Args_t *) {
-    internal::__impl_PSODefaults<Var_t, isVarEigenTypes>::impl_iFun(pos, velocity, pMin, pMax, vMax);
+  inline static void iFun(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
+                          const Var_t *vMax, const Args_t *) noexcept {
+    internal::__impl_PSODefaults<Var_t, isVarEigenTypes>::impl_iFun(pos, velocity, pMin, pMax,
+                                                                    vMax);
   }
 };
 
@@ -106,8 +109,10 @@ struct PSODefaults<Var_t, isVarEigenTypes, void> {
    *
    * \sa PSODefaults::iFun
    */
-  inline static void iFun(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax, const Var_t *vMax) {
-    internal::__impl_PSODefaults<Var_t, isVarEigenTypes>::impl_iFun(pos, velocity, pMin, pMax, vMax);
+  inline static void iFun(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
+                          const Var_t *vMax) noexcept {
+    internal::__impl_PSODefaults<Var_t, isVarEigenTypes>::impl_iFun(pos, velocity, pMin, pMax,
+                                                                    vMax);
   }
 };
 

@@ -115,8 +115,8 @@ class PSO : public std::conditional<
                                  RecordOpt, Arg_t, _iFun_, _fFun_>>::type;
 
  public:
-  PSO(){};
-  ~PSO(){};
+  PSO() = default;
+  ~PSO() = default;
 
   HEU_RELOAD_MEMBERFUCTION_RUN
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
@@ -126,7 +126,7 @@ class PSO : public std::conditional<
    *
    * \return double The best fitness to be recorded
    */
-  double bestFitness() const { return this->gBest.fitness; }
+  inline double bestFitness() const noexcept { return this->gBest.fitness; }
 };
 }  // namespace heu
 

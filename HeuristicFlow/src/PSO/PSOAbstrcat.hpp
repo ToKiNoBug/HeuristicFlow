@@ -60,7 +60,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   using Base_t = PSOParameterPack<Var_t, Fitness_t, Arg_t>;
 
  public:
-  ~PSOAbstract() {}
+  ~PSOAbstract() = default;
   HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t)
   using Scalar_t = typename toElement<Var_t>::type;
 
@@ -96,21 +96,21 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    *
    * \param opt Option of PSO solver
    */
-  inline void setOption(const PSOOption& opt) { _option = opt; }
+  inline void setOption(const PSOOption& opt) noexcept { _option = opt; }
 
   /**
    * \brief Get the option object
    *
    * \return const PSOOption& A const-ref to the option object
    */
-  inline const PSOOption& option() const { return _option; }
+  inline const PSOOption& option() const noexcept { return _option; }
 
   /**
    * \brief Get the generation.
    *
    * \return size_t generation
    */
-  inline size_t generation() const { return _generation; }
+  inline size_t generation() const noexcept { return _generation; }
 
   /**
    * \brief Get the fail times.
@@ -119,35 +119,35 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    *
    * \return size_t fail times.
    */
-  inline size_t failTimes() const { return _failTimes; }
+  inline size_t failTimes() const noexcept { return _failTimes; }
 
   /**
    * \brief Get the minimun postion
    *
    * \return const Var_t& Minimum position
    */
-  inline const Var_t& posMin() const { return _posMin; }
+  inline const Var_t& posMin() const noexcept { return _posMin; }
 
   /**
    * \brief Get the minimun postion
    *
    * \return Var_t& Minimum position
    */
-  inline Var_t& posMin() { return _posMin; }
+  inline Var_t& posMin() noexcept { return _posMin; }
 
   /**
    * \brief Get the maximum position
    *
    * \return const Var_t& Maximum position
    */
-  inline const Var_t& posMax() const { return _posMax; }
+  inline const Var_t& posMax() const noexcept { return _posMax; }
 
   /**
    * \brief Get the maximum position
    *
    * \return Var_t& Maximum position
    */
-  inline Var_t& posMax() { return _posMax; }
+  inline Var_t& posMax() noexcept { return _posMax; }
 
   /**
    * \brief Get the maximum velocity
@@ -156,7 +156,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    *
    * \return const Var_t& Maximum velocity
    */
-  inline const Var_t& velocityMax() const { return _velocityMax; }
+  inline const Var_t& velocityMax() const noexcept { return _velocityMax; }
 
   /**
    * \brief Get the maximum velocity
@@ -165,21 +165,21 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    *
    * \return Var_t& Maximum velocity
    */
-  inline Var_t& velocityMax() { return _velocityMax; }
+  inline Var_t& velocityMax() noexcept { return _velocityMax; }
 
   /**
    * \brief Get the population
    *
    * \return const std::vector<Particle>& A constant reference to the population
    */
-  inline const std::vector<Particle>& population() const { return _population; }
+  inline const std::vector<Particle>& population() const noexcept { return _population; }
 
   /**
    * \brief Get the global best solution that PSO has ever found.
    *
    * \return const Point& A const-ref to gBest.
    */
-  inline const Point& globalBest() const { return gBest; }
+  inline const Point& globalBest() const noexcept { return gBest; }
 
   /**
    * \brief Set the range of position and velocity
@@ -188,7 +188,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \param pMax Max val of position
    * \param vMax Max val of velocity
    */
-  inline void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax) {
+  inline void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax) noexcept {
     _posMin = pMin;
     _posMax = pMax;
     _velocityMax = vMax;
@@ -204,7 +204,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \param pMax Maximum position value
    * \param vMax Maximum velocity absolute value
    */
-  inline void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax) {
+  inline void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax) noexcept {
     for (int i = 0; i < this->_posMin.size(); i++) {
       this->_posMin[i] = pMin;
       this->_posMax[i] = pMax;
@@ -219,7 +219,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * population.
    *
    */
-  void initializePop() {
+  void initializePop() noexcept {
     _population.resize(_option.populationSize);
 
     for (Particle& i : _population) {
@@ -273,7 +273,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \sa GABase::run
    */
   template <class this_t = PSOAbstract>
-  void __impl_run() {
+  void __impl_run() noexcept {
     _generation = 0;
     _failTimes = 0;
 
@@ -313,21 +313,21 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \brief Record fitness for non-recording solvers.
    * This function is useless here but it will be reloaded for PSOAbstract with recording.
    */
-  inline void __impl_clearRecord() {}
+  inline void __impl_clearRecord() noexcept {}
 
   /**
    * \brief Record fitness for non-recording solvers.
    * This function is useless here but it will be reloaded for PSOAbstract with recording.
    */
   template <class this_t>
-  inline void __impl_recordFitness() {}
+  inline void __impl_recordFitness() noexcept {}
 
   /**
    * \brief Compute fitness for the whole population
    *
    * In default cases, this function will boost the fitness computation via multi-threading.
    */
-  void __impl_computeAllFitness() {
+  void __impl_computeAllFitness() noexcept {
 #ifdef HEU_HAS_OPENMP
     static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, _population.size() / thN)
@@ -346,11 +346,11 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   template <bool _HasParameters, class unused = void>
   struct PSOExecutor {
     inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
-                                    const Var_t* pMax, const Var_t* vMax) {
+                                    const Var_t* pMax, const Var_t* vMax) noexcept {
       s->runiFun(pos, velocity, pMin, pMax, vMax, &s->_arg);
     }
 
-    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) {
+    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) noexcept {
       s->runfFun(pos, &s->_arg, f);
     }
 
@@ -361,11 +361,11 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   template <class unused>
   struct PSOExecutor<false, unused> {
     inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
-                                    const Var_t* pMax, const Var_t* vMax) {
+                                    const Var_t* pMax, const Var_t* vMax) noexcept {
       s->runiFun(pos, velocity, pMin, pMax, vMax);
     }
 
-    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) {
+    inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) noexcept {
       s->runfFun(pos, f);
     }
 
@@ -402,7 +402,7 @@ class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
   friend Base_t;
 
  public:
-  ~PSOAbstract() {}
+  ~PSOAbstract() = default;
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
   /**
@@ -410,7 +410,7 @@ class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
    *
    * \return const std::vector<Fitness_t>& The fitness record.
    */
-  const std::vector<Fitness_t>& record() const { return _record; }
+  const std::vector<Fitness_t>& record() const noexcept { return _record; }
 
  protected:
   /// The fitness record
@@ -422,7 +422,7 @@ class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
    * \sa PSOAbstract::__impl_clearRecord
    *
    */
-  inline void __impl_clearRecord() {
+  inline void __impl_clearRecord() noexcept {
     _record.clear();
     _record.reserve(this->_option.maxGeneration + 1);
   }
@@ -434,7 +434,7 @@ class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
    *
    */
   template <class this_t>
-  inline void __impl_recordFitness() {
+  inline void __impl_recordFitness() noexcept {
     _record.emplace_back(static_cast<this_t*>(this)->bestFitness());
   }
 };

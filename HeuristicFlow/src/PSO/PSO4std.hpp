@@ -39,8 +39,8 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
   using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
 
  public:
-  PSO4std() {}
-  ~PSO4std() {}
+  PSO4std() = default;
+  ~PSO4std() = default;
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
   friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
 
@@ -56,7 +56,7 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
    * \return true A is better than B
    * \return false A is not better than B
    */
-  inline static bool isBetterThan(double a, double b) {
+  inline static bool isBetterThan(double a, double b) noexcept {
     if (FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
       return a > b;
     } else {
@@ -68,7 +68,7 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
    * \brief Update gBest and pBest
    *
    */
-  void __impl_updatePGBest() {
+  void __impl_updatePGBest() noexcept {
     // gBest for current generation
     Point_t* curGBest = &this->_population.front().pBest;
 
@@ -94,7 +94,7 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
    * \brief Update the position and velocity of all particles
    *
    */
-  void __impl_updatePopulation() {
+  void __impl_updatePopulation() noexcept {
 #ifdef HEU_HAS_OPENMP
     static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)

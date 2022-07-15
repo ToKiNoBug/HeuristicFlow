@@ -43,7 +43,7 @@ class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t,
   friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
 
  protected:
-  static bool isBetterThan(double a, double b) {
+  static bool isBetterThan(double a, double b) noexcept {
     if (FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
       return a > b;
     } else {
@@ -55,7 +55,7 @@ class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t,
    * \brief Update the value of pBest and gBest
    *
    */
-  void __impl_updatePGBest() {
+  void __impl_updatePGBest() noexcept {
     Point_t* curGBest = &this->_population.front().pBest;
 
     for (Particle_t& i : this->_population) {
@@ -80,7 +80,7 @@ class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t,
    * \brief Update the position and velocity of each particle
    *
    */
-  void __impl_updatePopulation() {
+  void __impl_updatePopulation() noexcept {
 #ifdef HEU_HAS_OPENMP
     static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, this->_population.size() / thN)

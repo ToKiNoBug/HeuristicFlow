@@ -46,7 +46,7 @@ HEU_MAKE_FUNAREA(fFun, PSO)
 template <class Var_t, class Fitness_t, class Arg_t = void>
 class PSOParameterPack {
  public:
-  ~PSOParameterPack() {}
+  ~PSOParameterPack() = default;
   /// A alias of `Args_t`
   using Args_t = Arg_t;
 
@@ -89,14 +89,14 @@ class PSOParameterPack {
    *
    * \param a Value of args.
    */
-  void setArgs(const Arg_t &a) { _arg = a; }
+  inline void setArgs(const Arg_t &a) noexcept { _arg = a; }
 
   /**
    * \brief Get the args object.
    *
    * \return const Arg_t& A const-reference to args.
    */
-  const Arg_t &args() const { return _arg; }
+  inline const Arg_t &args() const noexcept { return _arg; }
 
   /**
    * \brief This static member denotes that `Args_t` is not `void`.
@@ -126,7 +126,7 @@ class PSOParameterPack {
 template <class Var_t, class Fitness_t>
 class PSOParameterPack<Var_t, Fitness_t, void> {
  public:
-  ~PSOParameterPack() {}
+  ~PSOParameterPack() = default;
   using Args_t = void;
 
   using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,

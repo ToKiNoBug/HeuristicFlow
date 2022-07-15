@@ -45,7 +45,8 @@ namespace internal {
  * \tparam _iFun_
  * \tparam _fFun_
  *
- * \sa internal::PSOBase<Var_t,Eigen::Dynamic,Fitness_t,Record,Arg_t,_iFun_,_fFun_> for specialization for dynamic-dims.
+ * \sa internal::PSOBase<Var_t,Eigen::Dynamic,Fitness_t,Record,Arg_t,_iFun_,_fFun_> for
+ * specialization for dynamic-dims.
  */
 template <class Var_t, int DIM, class Fitness_t, RecordOption Record, class Arg_t,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
@@ -54,7 +55,7 @@ class PSOBase : public PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFu
   using Base_t = PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFun_>;
 
  public:
-  ~PSOBase() {}
+  ~PSOBase() = default;
 
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
@@ -63,7 +64,7 @@ class PSOBase : public PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFu
    *
    * \return constexpr int Dimensions at compile time
    */
-  constexpr int dimensions() const { return DIM; }
+  constexpr int dimensions() const noexcept { return DIM; }
 
  protected:
   /// Compile time dimensions
@@ -94,17 +95,18 @@ class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
   using Base_t = PSOAbstract<Var_t, Fitness_t, Record, Arg_t, _iFun_, _fFun_>;
 
  public:
-  ~PSOBase() {}
+  ~PSOBase() = default;
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
 
   /**
    * \brief Get dimensions at runtime
    *
-   * Runtime assertion will fail if the size of `this->_posMin`, `this->_posMax` and `this->_velocityMax` doesn't match.
+   * Runtime assertion will fail if the size of `this->_posMin`, `this->_posMax` and
+   * `this->_velocityMax` doesn't match.
    *
    * \return int Dimensions
    */
-  inline int dimensions() const {
+  inline int dimensions() const noexcept {
     assert(this->_posMin.size() == this->_posMax.size());
     assert(this->_posMax.size() == this->_velocityMax.size());
     return this->_posMin.size();
@@ -116,7 +118,7 @@ class PSOBase<Var_t, Eigen::Dynamic, Fitness_t, Record, Arg_t, _iFun_, _fFun_>
    * This function resizes `this->_posMin`, `this->_posMax` and `this->_velocityMax` to d.
    * \param d Dimension
    */
-  inline void setDimensions(int d) {
+  inline void setDimensions(int d) noexcept {
     this->_posMin.resize(d);
     this->_posMax.resize(d);
     this->_velocityMax.resize(d);
