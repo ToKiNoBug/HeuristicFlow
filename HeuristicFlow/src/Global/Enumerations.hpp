@@ -30,13 +30,14 @@ namespace heu {
  * \ingroup HEU_GLOBAL
  * \brief Whether to record trainning curve of not
  *
- * If `RECORD_FITNESS` is assigned to a solver, a specialization of its internal base class will be activated resulting
- * in an extra member `std::vector<Fitness_t> _record`. In that conditon, the solver will record the best fitness of
- * each generation when it's running.
+ * If `RECORD_FITNESS` is assigned to a solver, a specialization of its internal base class will be
+ * activated resulting in an extra member `std::vector<Fitness_t> _record`. In that conditon, the
+ * solver will record the best fitness of each generation when it's running.
  *
  */
 enum RecordOption : uint8_t {
-  RECORD_FITNESS = true,       ///< The solver will record fitness values of every generation when running
+  RECORD_FITNESS =
+      true,  ///< The solver will record fitness values of every generation when running
   DONT_RECORD_FITNESS = false  ///< The solver won't record fitness value.
 };
 
@@ -47,7 +48,7 @@ enum RecordOption : uint8_t {
  * \param r The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(RecordOption r) {
+inline const char* Enum2String(RecordOption r) noexcept {
   switch (r) {
     case RECORD_FITNESS:
       return "RECORD_FITNESS";
@@ -60,8 +61,8 @@ inline const char* Enum2String(RecordOption r) {
  * \ingroup HEU_GLOBAL
  * \brief Optimization direction
  *
- * It's vital to tell which direction is better. If `FITNESS_LESS_BETTER` is assigned, a solver will tries the find the
- * minimum value and vise versa.
+ * It's vital to tell which direction is better. If `FITNESS_LESS_BETTER` is assigned, a solver will
+ * tries the find the minimum value and vise versa.
  */
 enum FitnessOption : uint8_t {
   FITNESS_LESS_BETTER = false,    ///< Less fitness value is better
@@ -75,7 +76,7 @@ enum FitnessOption : uint8_t {
  * \param f The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(FitnessOption f) {
+inline const char* Enum2String(FitnessOption f) noexcept {
   switch (f) {
     case FITNESS_LESS_BETTER:
       return "FITNESS_LESS_BETTER";
@@ -111,7 +112,7 @@ enum ContainerOption {
  * \param e The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(ContainerOption e) {
+inline const char* Enum2String(ContainerOption e) noexcept {
   switch (e) {
     case Std:
       return "C++ std vector/array";
@@ -144,7 +145,7 @@ enum BoxShape {
  * \param b The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(BoxShape b) {
+inline const char* Enum2String(BoxShape b) noexcept {
   switch (b) {
     case RECTANGLE_BOX:
       return "Non-square box";
@@ -176,7 +177,7 @@ enum EncodeType {
  * \param e The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(EncodeType e) {
+inline const char* Enum2String(EncodeType e) noexcept {
   switch (e) {
     case Real:
       return "Real encoding";

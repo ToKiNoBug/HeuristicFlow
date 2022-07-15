@@ -47,8 +47,8 @@ namespace heu {
     template <void (*_fun)(a...)>                                                                 \
     class funBodyCT {                                                                             \
      public:                                                                                      \
-      inline constexpr funPtr_t funFlag() const { return _fun; }                                  \
-      inline void run##funFlag(a... _a) const { _fun(_a...); }                                    \
+      inline constexpr funPtr_t funFlag() const noexcept { return _fun; }                         \
+      inline void run##funFlag(a... _a) const noexcept { _fun(_a...); }                           \
       static constexpr funPtr_t funFlag##AtCompileTime = _fun;                                    \
                                                                                                   \
      private:                                                                                     \
@@ -58,8 +58,8 @@ namespace heu {
     class funBodyRT {                                                                             \
      public:                                                                                      \
       funBodyRT() { _funPtr = nullptr; }                                                          \
-      inline funPtr_t funFlag() const { return _funPtr; }                                         \
-      inline void run##funFlag(a... _a) const { _funPtr(_a...); }                                 \
+      inline funPtr_t funFlag() const noexcept { return _funPtr; }                                \
+      inline void run##funFlag(a... _a) const noexcept { _funPtr(_a...); }                        \
       inline void set##funFlag(funPtr_t __) { _funPtr = __; }                                     \
       static constexpr funPtr_t funFlag##AtCompileTime = nullptr;                                 \
                                                                                                   \

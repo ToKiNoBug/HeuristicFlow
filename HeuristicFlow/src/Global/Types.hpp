@@ -78,7 +78,7 @@ template <int _ObjNum>
 struct heu_initializeSize {
  public:
   template <typename A>
-  inline static void resize(A* v, size_t sz) {
+  inline static void resize(A* v, size_t sz) noexcept {
     assert(v->size() == sz);
   }
 };
@@ -87,7 +87,7 @@ template <>
 struct heu_initializeSize<Eigen::Dynamic> {
  public:
   template <typename A>
-  inline static void resize(A* v, size_t sz) {
+  inline static void resize(A* v, size_t sz) noexcept {
     v->resize(sz);
   }
 };

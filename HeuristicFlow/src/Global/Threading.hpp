@@ -29,9 +29,10 @@ This file is part of HeuristicFlow.
 #include "InternalHeaderCheck.h"
 
 namespace heu {
+
 namespace {
 int thNum = std::thread::hardware_concurrency();
-}
+}  //  unnamed namespace
 
 /**
  * \ingroup HEU_GLOBAL
@@ -49,7 +50,7 @@ inline int threadNum() noexcept { return thNum; }
  *
  * \param _thN Number of threads that will be used.
  */
-inline void setThreadNum(int _thN) {
+inline void setThreadNum(int _thN) noexcept {
   assert(_thN > 0);
   thNum = _thN;
 }

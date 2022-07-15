@@ -48,7 +48,7 @@ std::random_device rdv;
  *
  * \return std::random_device& A reference to this static variable
  */
-inline std::random_device& global_random_device() { return rdv; }
+inline std::random_device& global_random_device() noexcept { return rdv; }
 /**
  * \ingroup HEU_GLOBAL
  * \brief Internal global std::mt19937 used as a high-performance
@@ -56,7 +56,7 @@ inline std::random_device& global_random_device() { return rdv; }
  *
  * \return std::mt19937& A reference to this instance.
  */
-inline std::mt19937& global_mt19937() {
+inline std::mt19937& global_mt19937() noexcept {
 #ifdef HEU_std_random_device_NOT_RELIABLE
   // Use a hash value of system clock as the random seed
   static auto now = std::chrono::system_clock::now();
@@ -78,12 +78,12 @@ inline std::mt19937& global_mt19937() {
  *
  * \return double random number
  */
-inline double randD() {
+inline double randD() noexcept {
   static std::uniform_real_distribution<double> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
 
-inline void randD(double* dst, const int num) {
+inline void randD(double* dst, const int num) noexcept {
   for (int i = 0; i < num; i++) {
     dst[i] = randD();
   }
@@ -97,9 +97,11 @@ inline void randD(double* dst, const int num) {
  * \param max Maximum value
  * \return double random number
  */
-inline double randD(const double min, const double max) { return (max - min) * randD() + min; }
+inline double randD(const double min, const double max) noexcept {
+  return (max - min) * randD() + min;
+}
 
-inline void randD(double* dst, const int num, const double min, const double max) {
+inline void randD(double* dst, const int num, const double min, const double max) noexcept {
   for (int i = 0; i < num; i++) {
     dst[i] = randD(min, max);
   }
@@ -111,7 +113,7 @@ inline void randD(double* dst, const int num, const double min, const double max
  *
  * \return double random number
  */
-inline float randF() {
+inline float randF() noexcept {
   static std::uniform_real_distribution<float> rnd(0, 1);
   return rnd(internal::global_mt19937());
 }
@@ -125,7 +127,7 @@ inline float randF() {
  * \return int_t Random index in range [0,size-1]
  */
 template <typename int_t>
-inline int_t randIdx(int_t size) {
+inline int_t randIdx(int_t size) noexcept {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
   return int_t(randF() * size);
 }
@@ -140,19 +142,19 @@ inline int_t randIdx(int_t size) {
  * \return int_t Random index in range [min,max_plus_1 -1]
  */
 template <typename int_t>
-inline int_t randIdx(int_t min, int_t max_plus_1) {
+inline int_t randIdx(int_t min, int_t max_plus_1) noexcept {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
   return int_t((max_plus_1 - min) * randF() + min);
 }
 
-inline double normD() {
+inline double normD() noexcept {
   static std::normal_distribution<double> norm(0.0, 1.0);
   return norm(internal::global_mt19937());
 }
 
-inline double normD(double mu, double sigma) { return normD() * sigma + mu; }
+inline double normD(double mu, double sigma) noexcept { return normD() * sigma + mu; }
 
-inline float normF() {
+inline float normF() noexcept {
   static std::normal_distribution<float> norm(0.0f, 1.0f);
   return norm(internal::global_mt19937());
 }

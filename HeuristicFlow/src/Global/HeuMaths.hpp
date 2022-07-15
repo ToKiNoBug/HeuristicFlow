@@ -64,7 +64,7 @@ inline double sign(double x) noexcept {
  * \return num_t Value of n!
  */
 template <typename num_t>
-inline num_t fractorial(num_t n) {
+inline num_t fractorial(num_t n) noexcept {
   if (n > num_t(1))
     return n * fractorial(n - 1);
   else
@@ -82,7 +82,7 @@ inline num_t fractorial(num_t n) {
  * \return num_t Value of C^K_N.
  */
 template <typename num_t>
-inline num_t NchooseK(num_t N, num_t K) {
+inline num_t NchooseK(num_t N, num_t K) noexcept {
   return fractorial<num_t>(N) / (fractorial<num_t>(K) * fractorial<num_t>(N - K));
 }
 /*
@@ -147,28 +147,28 @@ namespace internal {
 
 // Function to implement minimum for multiple inputs
 template <typename T>
-inline T imp_min(T a, T b) {
+inline T imp_min(T a, T b) noexcept {
   if (a >= b) return b;
   return a;
 }
 
 // Function to implement minimum for multiple inputs
 template <typename T, typename U, class... Args_t>
-inline T imp_min(T a, U b, Args_t... args) {
+inline T imp_min(T a, U b, Args_t... args) noexcept {
   static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
   return imp_min(imp_min(a, b), args...);
 }
 
 // Function to implement maximum for multiple inputs
 template <typename T>
-inline T imp_max(T a, T b) {
+inline T imp_max(T a, T b) noexcept {
   if (a <= b) return b;
   return a;
 }
 
 // Function to implement maximum for multiple inputs
 template <typename T, typename U, class... Args_t>
-inline T imp_max(T a, U b, Args_t... args) {
+inline T imp_max(T a, U b, Args_t... args) noexcept {
   static_assert(std::is_same<T, U>::value, "All parameters must be of same types");
   return imp_max(imp_max(a, b), args...);
 }
@@ -186,7 +186,7 @@ inline T imp_max(T a, U b, Args_t... args) {
  * \return T The minimum value
  */
 template <typename T, class... Args_t>
-inline T min(T a, Args_t... args) {
+inline T min(T a, Args_t... args) noexcept {
   return internal::imp_min(a, args...);
 }
 
@@ -201,7 +201,7 @@ inline T min(T a, Args_t... args) {
  * \return T The maximum value
  */
 template <typename T, class... Args_t>
-inline T max(T a, Args_t... args) {
+inline T max(T a, Args_t... args) noexcept {
   return internal::imp_max(a, args...);
 }
 

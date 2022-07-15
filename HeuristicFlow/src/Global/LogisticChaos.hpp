@@ -61,7 +61,7 @@ class LogisticChaos {
    *
    * \return double Next value.
    */
-  double operator()() {
+  inline double operator()() noexcept {
     _value *= miu * (1 - _value);
     return _value;
   }
@@ -71,7 +71,7 @@ class LogisticChaos {
    *
    * \return double Current value.
    */
-  double value() const { return _value; }
+  inline double value() const noexcept { return _value; }
 
   /**
    * \brief Generate a chaotic sequence at given address.
@@ -81,7 +81,7 @@ class LogisticChaos {
    *
    * \note Becareful of memory leaking!
    */
-  void makeSequence(double *dst, size_t L) {
+  inline void makeSequence(double *dst, size_t L) noexcept {
     if (L <= 0) return;
     dst[0] = operator()();
     for (size_t i = 1; i < L; i++) {
@@ -95,7 +95,7 @@ class LogisticChaos {
    *
    * \param It Times of iterations.
    */
-  void iterate(size_t It) {
+  inline void iterate(size_t It) noexcept {
     for (size_t i = 0; i < It; i++) {
       _value *= miu * (1 - _value);
     }
