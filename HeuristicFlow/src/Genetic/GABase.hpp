@@ -20,7 +20,6 @@ This file is part of HeuristicFlow.
 #ifndef HEU_GABASE_H
 #define HEU_GABASE_H
 
-#include <tuple>
 #include <vector>
 #include <list>
 #include <cmath>

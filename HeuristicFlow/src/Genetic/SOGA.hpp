@@ -22,6 +22,7 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "GABase.hpp"
+#include "SOGASelecters.hpp"
 #include "DefaultGeneType.hpp"
 
 namespace heu {
@@ -106,32 +107,45 @@ template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER,
           typename internal::GAAbstract<Var_t, double, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::mutateFun _mFun_ = nullptr>
 class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
-                                     Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+                                     Args_t, _iFun_, _fFun_, _cFun_, _mFun_>,
+             public internal::SOGASelector<SelectMethod::RouletteWheel> {
  private:
   using Base_t = internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
                                   Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
   friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS,
                                 internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_, _fFun_,
                                 _cFun_, _mFun_>;
+  friend class internal::SOGASelector<SelectMethod::RouletteWheel>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
   SOGA() = default;
   ~SOGA() = default;
 
+  HEU_RELOAD_MEMBERFUCTION_RUN
+
+  static constexpr FitnessOption FitnessOpt = fOpt;
+
+  /**
+   * \brief Get the best gene
+   *
+   * \return const Gene_t& The best gene
+   */
+  inline const Gene_t& bestGene() const noexcept { return *_bestGene; }
+
   /**
    * \brief Get the fitness value of best gene
    *
    * \return Fitness_t Best fitness
    */
-  inline double bestFitness() const noexcept { return _eliteIt->_Fitness; }
+  inline double bestFitness() const noexcept { return _bestGene->_Fitness; }
 
   /**
    * \brief Get result (Var_t).
    *
    * \return const Var_t& The decision variable of the elite gene.
    */
-  inline const Var_t& result() const noexcept { return _eliteIt->self; }
+  inline const Var_t& result() const noexcept { return _bestGene->self; }
 
   /**
    * \brief Initialize the population and assign the first gene to be the elite.
@@ -139,14 +153,11 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    */
   inline void initializePop() noexcept {
     Base_t::initializePop();
-    this->_eliteIt = this->_population.begin();
+    _bestGene = this->_population.begin();
   }
 
-  HEU_RELOAD_MEMBERFUCTION_RUN
-
  protected:
-  GeneIt_t _eliteIt;  ///< Iterator the the elite
-
+  GeneIt_t _bestGene;  ///< Iterator the the elite
   /**
    * \brief Returns whether A is better than B
    *
@@ -162,6 +173,25 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
       return A < B;
   }
 
+  static inline bool GeneItCompareFun(const GeneIt_t& a, const GeneIt_t& b) noexcept {
+    return isBetter(a->_Fitness, b->_Fitness);
+  }
+
+  inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt,
+                                         const double prevFitess) noexcept {
+    if (!isBetter(newBestGeneIt->_Fitness, prevFitess)) {
+      this->_failTimes++;
+      _bestGene = newBestGeneIt;
+    } else {
+      this->_failTimes = 0;
+      _bestGene = newBestGeneIt;
+    }
+  }
+
+  inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt) noexcept {
+    updateFailTimesAndBestGene(newBestGeneIt, this->_bestGene->_Fitness);
+  }
+
   /**
    * \brief Simple select implementation.
    *
@@ -170,7 +200,9 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    * will be assigned to be elite.
    *
    */
-  void __impl_select() noexcept {
+  inline void __impl_select() noexcept {
+    this->template __impl___impl_select<SOGA>();
+    /*
     const double prevEliteFitness = _eliteIt->_Fitness;
     std::vector<GeneIt_t> iterators;
     iterators.clear();
@@ -189,15 +221,9 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
     }
 
     GeneIt_t curBest = iterators.front();
-    if (!isBetter(curBest->_Fitness, prevEliteFitness)) {
-      this->_failTimes++;
-      _eliteIt = curBest;
-    } else {
-      this->_failTimes = 0;
-      _eliteIt = curBest;
-    }
 
     this->_population.emplace_back(*_eliteIt);
+    */
   }
 };
 

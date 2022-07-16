@@ -188,6 +188,25 @@ inline const char* Enum2String(EncodeType e) noexcept {
   }
 }
 
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Methods of selection in GA
+ *
+ * \note Many selection methods have requirements to the fitness value.
+ */
+enum SelectMethod {
+  RouletteWheel,        ///< Requirements: fitness values are of similiar magnitude
+  Tournament,           ///< Requirements: No
+  Truncation,           ///< Requirements: No
+  MonteCarlo,           ///< Requirements: No
+  Probability,          ///< Requirements:
+  LinearRank,           ///< Requirements:
+  ExponentialRank,      ///< Requirements:
+  Boltzmann,            ///< Requirements:
+  StochasticUniversal,  ///< Requirements:
+  Elite                 ///< Elitism + the touletteWheel method. Requirements:
+};
+
 }  //    namespace heu
 
 #endif  // HEU_ENUMERATIONS_HPP
