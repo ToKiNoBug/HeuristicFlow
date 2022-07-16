@@ -38,8 +38,8 @@ HEU_MAKE_FUNAREA(cFun, GA)
  * \class GAAbstract
  * \brief Internal base class.
  *
- * This class defines function pointer types of the four operator(initialization, computing fitness, crossover and
- * mutation)
+ * This class defines function pointer types of the four operator(initialization, computing fitness,
+ * crossover and mutation)
  *
  * \tparam Var_t Type of decision variable
  * \tparam Fitness_t Type of fitness
@@ -48,7 +48,7 @@ HEU_MAKE_FUNAREA(cFun, GA)
 template <typename Var_t, typename Fitness_t, class Args_t>
 class GAAbstract {
  public:
-  ~GAAbstract(){};
+  ~GAAbstract() = default;
   /// Function to initialize Var
   using initializeFun = void (*)(Var_t *, const Args_t *);
   /// Function to calculate fitness for Var
@@ -76,7 +76,8 @@ class GAAbstract {
    * \tparam f Fitness function ptr.
    */
   template <fitnessFun f>
-  using fFunBody = typename fFunArea_GA<const Var_t *, const Args_t *, Fitness_t *>::template funBody<f>;
+  using fFunBody =
+      typename fFunArea_GA<const Var_t *, const Args_t *, Fitness_t *>::template funBody<f>;
 
   /**
    * \class cFunBody
@@ -85,8 +86,8 @@ class GAAbstract {
    * \tparam c Crossover function ptr.
    */
   template <crossoverFun c>
-  using cFunBody =
-      typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *, const Args_t *>::template funBody<c>;
+  using cFunBody = typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *,
+                                        const Args_t *>::template funBody<c>;
 
   /**
    * \class mFunBody
@@ -95,11 +96,18 @@ class GAAbstract {
    * \tparam m Mutation function ptr.
    */
   template <mutateFun m>
-  using mFunBody = typename mFunArea_GA<const Var_t *, Var_t *, const Args_t *>::template funBody<m>;
+  using mFunBody =
+      typename mFunArea_GA<const Var_t *, Var_t *, const Args_t *>::template funBody<m>;
 
-  const Args_t &args() const { return _args; }  ///< Const reference to the other parameters
+  inline Args_t &args() noexcept { return _args; }
 
-  void setArgs(const Args_t &a) { _args = a; }  ///< Set the value of other parameters
+  inline const Args_t &args() const noexcept {
+    return _args;
+  }  ///< Const reference to the other parameters
+
+  inline void setArgs(const Args_t &a) noexcept {
+    _args = a;
+  }  ///< Set the value of other parameters
 
   static const bool HasParameters = true;  ///< This member denotes that this Args_t is not void
 
@@ -111,7 +119,7 @@ class GAAbstract {
 template <typename Var_t, typename Fitness_t>
 class GAAbstract<Var_t, Fitness_t, void> {
  public:
-  ~GAAbstract(){};
+  ~GAAbstract() = default;
 
   /// Function to initialize Var
   using initializeFun = void (*)(Var_t *);
@@ -131,7 +139,8 @@ class GAAbstract<Var_t, Fitness_t, void> {
   using fFunBody = typename fFunArea_GA<const Var_t *, Fitness_t *>::template funBody<f>;
 
   template <crossoverFun c>
-  using cFunBody = typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *>::template funBody<c>;
+  using cFunBody =
+      typename cFunArea_GA<const Var_t *, const Var_t *, Var_t *, Var_t *>::template funBody<c>;
 
   template <mutateFun m>
   using mFunBody = typename mFunArea_GA<const Var_t *, Var_t *>::template funBody<m>;

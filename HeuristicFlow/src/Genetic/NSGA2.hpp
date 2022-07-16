@@ -32,8 +32,8 @@ namespace heu {
  * \brief NSGA2 MOGA solver. Suitable for not too many objectives.
  *
  * This class implemented the NSGA-II algorithm.\n
- * NSGA-II is a template for multi-objective genetic algorithm based on Pareto optimality. It selects by nondomainance
- * sorting.
+ * NSGA-II is a template for multi-objective genetic algorithm based on Pareto optimality. It
+ * selects by nondomainance sorting.
  *
  * \sa NSGA2::select for this special procedure.
  *
@@ -53,42 +53,49 @@ namespace heu {
  *
  * ## APIs that MOGA solvers have:
  * - `void paretoFront(std::vector<Fitness_t>& front) const` get pareto front of fitness values.
- * - `void paretoFront(std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const` get pareto front of
- * decision variables and fitness values.
- * - `const std::unordered_set<const Gene*>& pfGenes() const` returns a const reference to the PF hash set.
+ * - `void paretoFront(std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const` get
+ * pareto front of decision variables and fitness values.
+ * - `const std::unordered_set<const Gene*>& pfGenes() const` returns a const reference to the PF
+ * hash set.
  * - `size_t objectiveNum() const` get the number of objectives.
  *
  * ## APIs that MOGA with dynamic objective numbers have:
  * - `void setObjectiveNum(int _objNum)` set the objective number.
  *
  */
-template <typename Var_t, int ObjNum, FitnessOption fOpt = FITNESS_LESS_BETTER, RecordOption rOpt = DONT_RECORD_FITNESS,
-          class Args_t = void,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_ = nullptr>
-class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
-                                        internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t, _iFun_,
-                                        _fFun_, _cFun_, _mFun_> {
-  using Base_t =
-      internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
-                         Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+template <typename Var_t, int ObjNum, FitnessOption fOpt = FITNESS_LESS_BETTER,
+          RecordOption rOpt = DONT_RECORD_FITNESS, class Args_t = void,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>,
+                                        Args_t>::initializeFun _iFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun
+              _fFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>,
+                                        Args_t>::crossoverFun _cFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun
+              _mFun_ = nullptr>
+class NSGA2
+    : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
+                                internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+                                Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+  using Base_t = internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
+                                    internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+                                    Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  private:
  public:
   NSGA2(){};
   ~NSGA2(){};
   HEU_MAKE_NSGABASE_TYPES(Base_t)
-  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS, internal::DefaultGene_t<Var_t, Fitness_t>,
-                                Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS,
+                                internal::DefaultGene_t<Var_t, Fitness_t>, Args_t, _iFun_, _fFun_,
+                                _cFun_, _mFun_>;
 
   /**
-   * \brief This struct is used to store nondomainance sorting-related informations in select operation. A pointer to
-   * this struct, infoUnit2*, has access to every information to a gene.
+   * \brief This struct is used to store nondomainance sorting-related informations in select
+   * operation. A pointer to this struct, infoUnit2*, has access to every information to a gene.
    *
-   * There's several sorting by according to different attribute, thus a vector of infoUnit2* is widely used when
-   * sorting.
+   * There's several sorting by according to different attribute, thus a vector of infoUnit2* is
+   * widely used when sorting.
    *
    */
   struct infoUnit2 : public infoUnitBase_t {
@@ -104,17 +111,19 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
 
  protected:
   /**
-   * \brief Sort according to infoUnitBase::domainedByNum in an acsending order. This sorting step will seperate the
-   * whole population into several pareto layers.
+   * \brief Sort according to infoUnitBase::domainedByNum in an acsending order. This sorting step
+   * will seperate the whole population into several pareto layers.
    *
    * \param A
    * \param B
    * \return true A's congestion is greater than B
    * \return false A's congestion is not greater than B
    */
-  static bool compareByCongestion(const infoUnitBase_t *A, const infoUnitBase_t *B) {
+  inline static bool compareByCongestion(const infoUnitBase_t *A,
+                                         const infoUnitBase_t *B) noexcept {
     if (A == B) return false;
-    return (static_cast<const infoUnit2 *>(A)->congestion) > (static_cast<const infoUnit2 *>(B)->congestion);
+    return (static_cast<const infoUnit2 *>(A)->congestion) >
+           (static_cast<const infoUnit2 *>(B)->congestion);
   }
 
   /**
@@ -126,11 +135,11 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
    * \return true objIdx's fitness of A is greater than B.
    * \return false objIdx's fitness of A is not greater than B.
    *
-   * \note This procedure actually has no relationship with template parameter fOpt, because sorting as fitness is
-   * simply used to compute congestion.
+   * \note This procedure actually has no relationship with template parameter fOpt, because sorting
+   * as fitness is simply used to compute congestion.
    */
   template <int64_t objIdx>
-  static bool compareByFitness(const infoUnitBase_t *A, const infoUnitBase_t *B) {
+  inline static bool compareByFitness(const infoUnitBase_t *A, const infoUnitBase_t *B) noexcept {
     static_assert(objIdx >= 0, "Invalid comparison flag");
     if (A == B) return false;
     /// compare by fitness on single objective
@@ -142,41 +151,56 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
    *
    * This is the core of NSGA2.
    *
-   * Simply put, the whole population is divided into several non-dominated layers, relatively front layers will be
-   * selected. Usually there will be a layer that can't be selected entirely, we must select some and eliminate the
-   * rest. To achieve this, we compute congestion so that genes will greater congestion are more likely to be selected.
+   * Simply put, the whole population is divided into several non-dominated layers, relatively front
+   layers will be
+   * selected. Usually there will be a layer that can't be selected entirely, we must select some
+   and eliminate the
+   * rest. To achieve this, we compute congestion so that genes will greater congestion are more
+   likely to be selected.
    * That's how NSGA2 maintain variety in the PF.
    *
-   * Besides, as the algorithm running, it's common to see that the whole population after selection are all members in
+   * Besides, as the algorithm running, it's common to see that the whole population after selection
+   are all members in
    * PF. Don't worry, NSGA2 works well with that condition.
    *
    * In detail, this function applies non-dominated sorting in following steps:
-   * 1. Make a `std::vector` of `infoUnit2` named `pop` that each element corresponds to an element in
+   * 1. Make a `std::vector` of `infoUnit2` named `pop` that each element corresponds to an element
+   in
    * population(`std::list<Gene>`).
    * 2. Fill `this->sortSpace` (std::list<infoUnitBase*) with pointer to each member in `pop`.
    * 3. Compute `infoUnit::domainedByNum` for `pop`.
    * 4. Sort elements in `this->sortSpace` according to `infoUnitBase::domainedByNum`.
-   * 5. Divide the whole population into several nondominated layers. This function is implemented in `NSGABase`, and
-   * the result is stored in `this->pfLayers`. For better performance, each `std::vector<infoUnit *>` will reserve space
+   * 5. Divide the whole population into several nondominated layers. This function is implemented
+   in `NSGABase`, and
+   * the result is stored in `this->pfLayers`. For better performance, each `std::vector<infoUnit
+   *>` will reserve space
    * for the whole population. Here we use vector since sorting might happen in a single layer.
-   * 6. Make a `std::unordered_set` of `infoUnit2 *` named `selected` to store all selected genes. Insert the Pareto
-   * frontier and each layers into `selected` until a layer can't be completedly inserted(I name this layer *K*).
-   * Congestion are used to select several genes in *K*. Besides, there is a possible that a layer is completed inserted
-   * and size of `selected` equals to user assigned population size. In that condition, jump directly to step 10.
+   * 6. Make a `std::unordered_set` of `infoUnit2 *` named `selected` to store all selected genes.
+   Insert the Pareto
+   * frontier and each layers into `selected` until a layer can't be completedly inserted(I name
+   this layer *K*).
+   * Congestion are used to select several genes in *K*. Besides, there is a possible that a layer
+   is completed inserted
+   * and size of `selected` equals to user assigned population size. In that condition, jump
+   directly to step 10.
    * 7. Sort the whole population according to every objective values to compute the congestion.
-   * 8. Sort elements in *K* by its congestion in descend order. Elements with greater congestion have less index.
-   * 9. Inserts each element in *K* into `selected` (by index order) until size of `selected` equals to user assigned
+   * 8. Sort elements in *K* by its congestion in descend order. Elements with greater congestion
+   have less index.
+   * 9. Inserts each element in *K* into `selected` (by index order) until size of `selected` equals
+   to user assigned
    * population size(`GABase::_option.populationSize`).
    * 10. Go through the whole population and erase if a gene doesn't exist in `selected`.
 
 
-   * Every sorting steps use `std::sort` and different comparision function are used to sort according to different
+   * Every sorting steps use `std::sort` and different comparision function are used to sort
+   according to different
    * attributes of a gene.
    *
    */
-  void __impl_select() {
+  void __impl_select() noexcept {
     using cmpFun_t = bool (*)(const infoUnitBase_t *, const infoUnitBase_t *);
-    static const size_t objCapacity = (ObjNum == Eigen::Dynamic) ? (HEU_MAX_RUNTIME_OBJNUM) : ObjNum;
+    static const size_t objCapacity =
+        (ObjNum == Eigen::Dynamic) ? (HEU_MAX_RUNTIME_OBJNUM) : ObjNum;
     static const std::array<cmpFun_t, objCapacity> fitnessCmpFuns = expand<0, objCapacity - 1>();
 
     const size_t popSizeBefore = this->_population.size();
@@ -203,7 +227,8 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
 
     const size_t PFSize = this->pfLayers.front().size();
     if (PFSize <= this->_option.populationSize)
-      this->updatePF((const infoUnitBase_t **)(this->pfLayers.front().data()), this->pfLayers.front().size());
+      this->updatePF((const infoUnitBase_t **)(this->pfLayers.front().data()),
+                     this->pfLayers.front().size());
 
     std::unordered_set<infoUnit2 *> selected;
     selected.reserve(this->_option.populationSize);
@@ -229,11 +254,12 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
     if (needCongestion) {
       for (size_t objIdx = 0; objIdx < this->objectiveNum(); objIdx++) {
         std::sort((infoUnit2 **)(this->sortSpace.data()),
-                  (infoUnit2 **)(this->sortSpace.data() + this->sortSpace.size()), fitnessCmpFuns[objIdx]);
+                  (infoUnit2 **)(this->sortSpace.data() + this->sortSpace.size()),
+                  fitnessCmpFuns[objIdx]);
 
-        const double scale =
-            std::abs(this->sortSpace.front()->fitnessCache[objIdx] - this->sortSpace.back()->fitnessCache[objIdx]) +
-            1e-10;
+        const double scale = std::abs(this->sortSpace.front()->fitnessCache[objIdx] -
+                                      this->sortSpace.back()->fitnessCache[objIdx]) +
+                             1e-10;
 
         static_cast<infoUnit2 *>(this->sortSpace.front())->congestion = internal::pinfD;
         static_cast<infoUnit2 *>(this->sortSpace.back())->congestion = internal::pinfD;
@@ -249,7 +275,8 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
 
       // sort by congestion in the undetermined set
       std::sort((infoUnit2 **)(this->pfLayers.front().data()),
-                (infoUnit2 **)(this->pfLayers.front().data() + this->pfLayers.front().size()), compareByCongestion);
+                (infoUnit2 **)(this->pfLayers.front().data() + this->pfLayers.front().size()),
+                compareByCongestion);
 
       size_t idx = 0;
       while (selected.size() < this->_option.populationSize) {
@@ -286,7 +313,7 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
 
   template <int64_t cur, int64_t max>
   struct expandStruct {
-    static void expand(fun_t *dst) {
+    inline static void expand(fun_t *dst) noexcept {
       *dst = compareByFitness<cur>;
       expandStruct<cur + 1, max>::expand(dst + 1);
     }
@@ -294,11 +321,11 @@ class NSGA2 : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
 
   template <int64_t max>
   struct expandStruct<max, max> {
-    static void expand(fun_t *dst) { *dst = compareByFitness<max>; }
+    inline static void expand(fun_t *dst) noexcept { *dst = compareByFitness<max>; }
   };
 
   template <int64_t beg, int64_t end>
-  std::array<fun_t, end - beg + 1> expand() {
+  inline std::array<fun_t, end - beg + 1> expand() noexcept {
     std::array<fun_t, end - beg + 1> funs;
     expandStruct<beg, end>::expand(funs.data());
     return funs;

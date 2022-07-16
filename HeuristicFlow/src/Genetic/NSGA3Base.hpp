@@ -29,16 +29,18 @@ namespace heu {
  * \ingroup HEU_GENETIC
  * \brief Different options of reference points.
  *
- * Here's two ways to generate reference points: the Das and Dennis' systematic approach generates a single layer, while
- * Deb and Jain’s method(based on the previous method) generates two layers of RS.
+ * Here's two ways to generate reference points: the Das and Dennis' systematic approach generates a
+ * single layer, while Deb and Jain’s method(based on the previous method) generates two layers of
+ * RS.
  *
- * The first method places RPs on a M-1 dim hyperplane (where M is the number of objectives) equally inclined on all
- * axes and has a intercept of 1 to all objectives. This method requires relatively higher precision and generates great
- * numbers of RPs for high-dimensional MO problems. This is detrimental to preformance.
+ * The first method places RPs on a M-1 dim hyperplane (where M is the number of objectives) equally
+ * inclined on all axes and has a intercept of 1 to all objectives. This method requires relatively
+ * higher precision and generates great numbers of RPs for high-dimensional MO problems. This is
+ * detrimental to preformance.
  *
- * While the Deb and Jain’s method adds a inner hyperplane(inside layer) whose intercept has smaller value than the
- * boundary layer(normalized hyperplane). Then the algorithm places RPs on two layers with relatively small precision.
- * It works with much fewer RPs.
+ * While the Deb and Jain’s method adds a inner hyperplane(inside layer) whose intercept has smaller
+ * value than the boundary layer(normalized hyperplane). Then the algorithm places RPs on two layers
+ * with relatively small precision. It works with much fewer RPs.
  */
 enum ReferencePointOption {
   SINGLE_LAYER,  ///< Das and Dennis' method
@@ -66,16 +68,18 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, RecordOption rOpt, ReferencePointOption rpOpt, class Gene, class Args_t,
+template <typename Var_t, int ObjNum, RecordOption rOpt, ReferencePointOption rpOpt, class Gene,
+          class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class NSGA3Base
+    : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
   using Base_t = NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  ~NSGA3Base() {}
+  ~NSGA3Base() = default;
   HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
   /**
@@ -85,7 +89,7 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_
    *
    * \return size_t Precision
    */
-  size_t referencePointPrecision() const { return _precision; }
+  size_t referencePointPrecision() const noexcept { return _precision; }
 
   /**
    * \brief Set the Reference Point Precision object
@@ -94,14 +98,16 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_
    *
    * \param p Precison value, not less than 2.
    */
-  void setReferencePointPrecision(size_t p) { _precision = p; }
+  void setReferencePointPrecision(size_t p) noexcept { _precision = p; }
 
   /**
    * \brief Get the number of RPs
    *
    * \return size_t Number of RPs
    */
-  size_t referencePointCount() const { return NchooseK(_precision + this->objectiveNum() - 1, _precision); }
+  size_t referencePointCount() const noexcept {
+    return NchooseK(_precision + this->objectiveNum() - 1, _precision);
+  }
 
  protected:
   size_t _precision;  ///< Precision of RPs in single layer. Only exists when rpOpt==SINGLE_LAYER
@@ -111,7 +117,7 @@ class NSGA3Base : public NSGA3Abstract<Var_t, ObjNum, rOpt, Gene, Args_t, _iFun_
    *
    * This function is reloaded with different rpOpt.
    */
-  void makeReferencePoses() {
+  void makeReferencePoses() noexcept {
     this->referencePoses.resize(this->objectiveNum(), referencePointCount());
     std::vector<Fitness_t> rfP;
     this->computeReferencePointPoses(this->objectiveNum(), _precision, &rfP);
@@ -159,7 +165,7 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_,
     _innerPrecision = 3;
     _outerPrecision = 4;
   };
-  ~NSGA3Base() {}
+  ~NSGA3Base() = default;
 
   /**
    * \brief Get the precison of inner layer
@@ -168,7 +174,7 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_,
    *
    * \return size_t Precision of inner layer
    */
-  size_t innerPrecision() const { return _innerPrecision; }
+  inline size_t innerPrecision() const noexcept { return _innerPrecision; }
 
   /**
    * \brief Get the precison of outer layer
@@ -177,7 +183,7 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_,
    *
    * \return size_t Precision of outer layer
    */
-  size_t outerPrecision() const { return _outerPrecision; }
+  inline size_t outerPrecision() const noexcept { return _outerPrecision; }
 
   /**
    * \brief Set the precison of inner and outer layers
@@ -187,14 +193,14 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_,
    * \param i Inner layer precision
    * \param o Outer layer precision
    */
-  void setReferencePointPrecision(size_t i, size_t o) {
+  inline void setReferencePointPrecision(size_t i, size_t o) noexcept {
     assert(i >= 2);
     assert(o >= 2);
     _innerPrecision = i;
     _outerPrecision = o;
   }
 
-  size_t referencePointCount() const {
+  inline size_t referencePointCount() const noexcept {
     return NchooseK(_innerPrecision + this->objectiveNum() - 1, _innerPrecision) +
            NchooseK(_outerPrecision + this->objectiveNum() - 1, _outerPrecision);
   }
@@ -203,7 +209,7 @@ class NSGA3Base<Var_t, ObjNum, rOpt, DOUBLE_LAYER, Gene, Args_t, _iFun_, _fFun_,
   size_t _innerPrecision;  ///< Precision of inner layer
   size_t _outerPrecision;  ///< Precision of outer layer
 
-  void makeReferencePoses() {
+  void makeReferencePoses() noexcept {
     this->referencePoses.resize(this->objectiveNum(), referencePointCount());
     std::vector<Fitness_t> irfP, orfP;
     std::shuffle(irfP.begin(), irfP.end(), global_mt19937());

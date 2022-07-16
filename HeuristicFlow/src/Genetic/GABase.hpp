@@ -85,7 +85,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  public:
   HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
-  ~GABase() {}
+  ~GABase() = default;
 
  protected:
   using poplist_t = typename std::conditional<shouldGeneAlignExplicitly,
@@ -102,20 +102,20 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    *
    * \param o GAOption
    */
-  inline void setOption(const GAOption &o) { _option = o; }
+  inline void setOption(const GAOption &o) noexcept { _option = o; }
 
   /**
    * \brief Get the option object
    *
    * \return const GAOption& Const reference to _option
    */
-  inline const GAOption &option() const { return _option; }
+  inline const GAOption &option() const noexcept { return _option; }
 
   /**
    * \brief Initialize the whole population
    *
    */
-  void initializePop() {
+  void initializePop() noexcept {
     _population.resize(_option.populationSize);
     for (auto &i : _population) {
       GAExecutor<Base_t::HasParameters>::doInitialization(this, &i.self);
@@ -129,21 +129,21 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    *
    * \return const std::list<Gene>& Const reference the the population
    */
-  inline const poplist_t &population() const { return _population; }
+  inline const poplist_t &population() const noexcept { return _population; }
 
   /**
    * \brief Get the population that has been used.
    *
    * \return size_t generation
    */
-  inline size_t generation() const { return _generation; }
+  inline size_t generation() const noexcept { return _generation; }
 
   /**
    * \brief Get the current fail times
    *
    * \return size_t fail times
    */
-  inline size_t failTimes() const { return _failTimes; }
+  inline size_t failTimes() const noexcept { return _failTimes; }
 
  protected:
   poplist_t _population;  ///< Population stored in list
@@ -152,11 +152,11 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   size_t _generation;  ///< Current generation
   size_t _failTimes;   ///< Current failtimes
 
-  inline void __impl_clearRecord() {
+  inline void __impl_clearRecord() noexcept {
   }  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
   template <class this_t>
-  inline void __impl_recordFitness() {
+  inline void __impl_recordFitness() noexcept {
   }  ///< Nothing is need to do if the solver doesn't record fitnesses.
 
   /**
@@ -166,7 +166,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * tricks like CRTP.
    */
   template <class this_t>
-  void __impl_run() {
+  void __impl_run() noexcept {
     _generation = 0;
     _failTimes = 0;
     static_cast<this_t *>(this)->__impl_clearRecord();
@@ -208,7 +208,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * If OpenMP is used, this process will be parallelized.
    *
    */
-  void __impl_computeAllFitness() {
+  void __impl_computeAllFitness() noexcept {
 #ifdef HEU_HAS_OPENMP
     std::vector<Gene *> tasks;
     tasks.resize(0);
@@ -257,7 +257,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * Apply crossover operation which let randomly 2 gene born 2 more new one. They will be added to
    * population.
    */
-  void __impl_crossover() {
+  void __impl_crossover() noexcept {
     std::vector<GeneIt_t> crossoverQueue;
     crossoverQueue.clear();
     crossoverQueue.reserve(_population.size());
@@ -297,7 +297,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
    * \brief Apply mutation operation which slightly modify gene. The modified gene will add to the
    * population.
    */
-  void __impl_mutate() {
+  void __impl_mutate() noexcept {
     std::vector<GeneIt_t> mutateList;
     mutateList.reserve(size_t(this->_population.size() * this->_option.mutateProb * 2));
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
@@ -317,18 +317,18 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   // Internal class to apply the four operation
   template <bool HasParameters, class unused = void>
   struct GAExecutor {
-    inline static void doInitialization(GABase *s, Var_t *v) { s->runiFun(v, &s->_args); }
+    inline static void doInitialization(GABase *s, Var_t *v) noexcept { s->runiFun(v, &s->_args); }
 
-    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) {
+    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) noexcept {
       s->runfFun(v, &s->_args, f);
     }
 
     inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1,
-                                   Var_t *c2) {
+                                   Var_t *c2) noexcept {
       s->runcFun(p1, p2, c1, c2, &s->_args);
     }
 
-    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) {
+    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) noexcept {
       s->runmFun(src, dst, &s->_args);
     }
     static_assert(HasParameters == GABase::HasParameters,
@@ -338,16 +338,20 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   // Internal class to apply the four operation
   template <class unused>
   struct GAExecutor<false, unused> {
-    inline static void doInitialization(GABase *s, Var_t *v) { s->runiFun(v); }
+    inline static void doInitialization(GABase *s, Var_t *v) noexcept { s->runiFun(v); }
 
-    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) { s->runfFun(v, f); }
+    inline static void doFitness(GABase *s, const Var_t *v, Fitness_t *f) noexcept {
+      s->runfFun(v, f);
+    }
 
     inline static void doCrossover(GABase *s, const Var_t *p1, const Var_t *p2, Var_t *c1,
-                                   Var_t *c2) {
+                                   Var_t *c2) noexcept {
       s->runcFun(p1, p2, c1, c2);
     }
 
-    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) { s->runmFun(src, dst); }
+    inline static void doMutation(GABase *s, const Var_t *src, Var_t *dst) noexcept {
+      s->runmFun(src, dst);
+    }
 
     static_assert(GABase::HasParameters == false,
                   "struct GAExecutor actived with wrong template parameter.");
@@ -392,7 +396,7 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cF
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
 
-  ~GABase() {}
+  ~GABase() noexcept {}
 
   /// best fitness
 
@@ -403,7 +407,7 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cF
    *
    * \return const std::vector<Fitness_t> & Const reference to the record.
    */
-  const std::vector<Fitness_t> &record() const { return _record; }
+  const std::vector<Fitness_t> &record() const noexcept { return _record; }
 
  protected:
   /**
@@ -413,13 +417,13 @@ class GABase<Var_t, Fitness_t, RECORD_FITNESS, Gene, Args_t, _iFun_, _fFun_, _cF
    */
   std::vector<Fitness_t> _record;
 
-  inline void __impl_clearRecord() {
+  inline void __impl_clearRecord() noexcept {
     _record.clear();
     _record.reserve(this->_option.maxGenerations + 1);
   }
 
   template <class this_t>
-  inline void __impl_recordFitness() {
+  inline void __impl_recordFitness() noexcept {
     _record.emplace_back(static_cast<this_t *>(this)->bestFitness());
   }
 };

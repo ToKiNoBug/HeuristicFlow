@@ -32,7 +32,8 @@ namespace heu {
 
 /**
  * \ingroup HEU_GENETIC
- * \brief NSGA3 is the thrid Nondominated Sorting Genetic Algorithm. It's suitable for many objective problems.
+ * \brief NSGA3 is the thrid Nondominated Sorting Genetic Algorithm. It's suitable for many
+ * objective problems.
  *
  * NSGA3 uses many reference points to maintain a diverse and uniform PF.
  * \sa internal::NSGA3Abstract::select for this special procedure.
@@ -54,8 +55,8 @@ namespace heu {
  * \sa NSGA2 for APIs that all MOGA solvers have
  *
  * ## APIs that all NSGA3 solvers have:
- * - `const RefMat_t& referencePoints() const` returns a matrix of reference points. Each coloumn is the coordinate of a
- * RP. (Here RP refers to the word reference point)
+ * - `const RefMat_t& referencePoints() const` returns a matrix of reference points. Each coloumn is
+ * the coordinate of a RP. (Here RP refers to the word reference point)
  * - `size_t referencePointCount() const` number of reference points according to the RP precision.
  *
  *
@@ -67,34 +68,41 @@ namespace heu {
  * ## APIs that NSGA2 solvers using double-layer RPs have:
  * - `size_t innerPrecision() const` returns the precision of inner layer RP.
  * - `size_t outerPrecision() const` returns the precision of outer layer RP.
- * - `void setReferencePointPrecision(size_t i, size_t o)` set the precison of inner and outer layer.
+ * - `void setReferencePointPrecision(size_t i, size_t o)` set the precison of inner and outer
+ * layer.
  *
- * \note When using NSGA3 solvers, is strongly recommended to set the precision explicitly before initializing the
- * population. Don't rely on the default value!
+ * \note When using NSGA3 solvers, is strongly recommended to set the precision explicitly before
+ * initializing the population. Don't rely on the default value!
  */
 template <typename Var_t, int ObjNum, RecordOption rOpt = DONT_RECORD_FITNESS,
           ReferencePointOption rpOpt = ReferencePointOption::SINGLE_LAYER, class Args_t = void,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_ = nullptr,
-          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_ = nullptr>
-class NSGA3 : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
-                                         internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t,
-                                         _iFun_, _fFun_, _cFun_, _mFun_> {
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>,
+                                        Args_t>::initializeFun _iFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun
+              _fFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>,
+                                        Args_t>::crossoverFun _cFun_ = nullptr,
+          typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun
+              _mFun_ = nullptr>
+class NSGA3
+    : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
+                                 internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+                                 Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
   using Base_t =
-      internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
-                          Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+      internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
+                          internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t,
+                          _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  NSGA3() {}
-  ~NSGA3() {}
+  NSGA3() = default;
+  ~NSGA3() = default;
   HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)
 
   /**
    * \brief
    *
    */
-  void initializePop() {
+  inline void initializePop() noexcept {
     this->makeReferencePoses();
     Base_t::initializePop();
   }

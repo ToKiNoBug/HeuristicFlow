@@ -80,7 +80,7 @@ class MOGABase
       MOGAAbstract<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  ~MOGABase() {}
+  ~MOGABase() = default;
   HEU_MAKE_GABASE_TYPES(Base_t)
 
   /**
@@ -88,7 +88,7 @@ class MOGABase
    *
    * \return constexpr size_t Numbers of objecvites at compile time.
    */
-  constexpr int objectiveNum() const { return ObjNum; }
+  constexpr int objectiveNum() const noexcept { return ObjNum; }
 };
 
 /**
@@ -124,14 +124,14 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, 
                       _mFun_>;
 
   MOGABase() { _objectiveNum = 0; }
-  ~MOGABase() {}
+  ~MOGABase() = default;
 
   /**
    * \brief Return the value of objecvites
    *
    * \return int Number of objectives.
    */
-  inline int objectiveNum() const { return _objectiveNum; }
+  inline int objectiveNum() const noexcept { return _objectiveNum; }
 
   /**
    * \brief Set the Objective Num object
@@ -142,14 +142,14 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, 
    *
    * \param _objNum Number of objectives
    */
-  inline void setObjectiveNum(int _objNum) {
+  inline void setObjectiveNum(int _objNum) noexcept {
     assert(_objNum > 1);
     assert(_objNum <= HEU_MAX_RUNTIME_OBJNUM);
     _objectiveNum = _objNum;
   }
 
  protected:
-  inline void __impl_computeAllFitness() {
+  inline void __impl_computeAllFitness() noexcept {
     for (Gene_t& g : this->_population) {
       if (!g.isCalculated()) {
         g._Fitness.resize(objectiveNum(), 1);

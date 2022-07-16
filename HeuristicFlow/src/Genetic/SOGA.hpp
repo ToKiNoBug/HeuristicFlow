@@ -32,42 +32,40 @@ namespace heu {
  * \brief Single-object genetic solver.
  *
  * \tparam Var_t  Type of decisition variable.
- * \tparam fOpt Whether greater fitness value means better. SOGA will always try to find the best, so it's vital to
- * tell SOGA which direction is right.
- * \tparam Record  Whether the solver records fitness changelog.
- * \tparam Args_t  Type of other parameters.
- * \tparam _iFun_ Function to initialize an individual in population. This function will be called only when
- * initializing. Use nullptr if you hope to determine it at runtime. nullptr as default value.
- * \tparam _fFun_ Funtion to compute fitness for any
- * individual. Use nullptr if you hope to determine it at runtime. nullptr as default value.
- * \tparam _cFun_ Function to apply crossover. Use
+ * \tparam fOpt Whether greater fitness value means better. SOGA will always try to find the best,
+ * so it's vital to tell SOGA which direction is right. \tparam Record  Whether the solver records
+ * fitness changelog. \tparam Args_t  Type of other parameters. \tparam _iFun_ Function to
+ * initialize an individual in population. This function will be called only when initializing. Use
+ * nullptr if you hope to determine it at runtime. nullptr as default value. \tparam _fFun_ Funtion
+ * to compute fitness for any individual. Use nullptr if you hope to determine it at runtime.
+ * nullptr as default value. \tparam _cFun_ Function to apply crossover. Use nullptr if you hope to
+ * determine it at runtime. nullptr as default value. \tparam _mFun_ Function to apply mutation. Use
  * nullptr if you hope to determine it at runtime. nullptr as default value.
- * \tparam _mFun_ Function to apply mutation. Use nullptr if you hope to
- * determine it at runtime. nullptr as default value.
  *
  *
- * \note `Arg_t` is a pseudo-global variable for solvers. It's not global variables because it's stored as a member of
- * solver, thus if in some special conditions you have to run multiple solvers, each solver has its own gloabl
- * variable. It can be any type about the problem you are solving. For constrainted problems, it can be a box-constraint
- * type; for TSP problems, it can be the distance matrix; and even for GA-BP or PSO-BP, it can be your data set. If you
- * don't need it, use `void` and it will disapper.
+ * \note `Arg_t` is a pseudo-global variable for solvers. It's not global variables because it's
+ * stored as a member of solver, thus if in some special conditions you have to run multiple
+ * solvers, each solver has its own gloabl variable. It can be any type about the problem you are
+ * solving. For constrainted problems, it can be a box-constraint type; for TSP problems, it can be
+ * the distance matrix; and even for GA-BP or PSO-BP, it can be your data set. If you don't need it,
+ * use `void` and it will disapper.
  *
  * Usually there are five main procedures in GA :
  * 1. initialization : Filling all decision variables in the population with random initial values.
  * 2. computing fitness : Go through the whole population and compute each's fitness value.
- * 3. selection : Eliminate some relatively bad inidividual sothat the size of population can decline to
- * `populationSize` assigned in the `GAOption`.
- * 4. crossover Randomly pick individuals in pairs as parents and create pairs of child inidividuals. The childern will
- * be inserted into the original population.
- * 5. mutation Randomly pick individuals and change their values slightly. This procedure doesn't change the value
- * inplace, but insert the modified value into the population.
+ * 3. selection : Eliminate some relatively bad inidividual sothat the size of population can
+ * decline to `populationSize` assigned in the `GAOption`.
+ * 4. crossover Randomly pick individuals in pairs as parents and create pairs of child
+ * inidividuals. The childern will be inserted into the original population.
+ * 5. mutation Randomly pick individuals and change their values slightly. This procedure doesn't
+ * change the value inplace, but insert the modified value into the population.
  *
- * The 1,2,4,5 each corresponds to a function representively, called initialization function(iFun), fitness
- * function(fFun), crossover function(cFun), mutation function(mFun). These functions can be assigned either at compile
- * time or runtime.
+ * The 1,2,4,5 each corresponds to a function representively, called initialization function(iFun),
+ * fitness function(fFun), crossover function(cFun), mutation function(mFun). These functions can be
+ * assigned either at compile time or runtime.
  *
- * APIs of SOGA are implemented sperately in many internal base classes, and they are organized through public
- * inheriting.
+ * APIs of SOGA are implemented sperately in many internal base classes, and they are organized
+ * through public inheriting.
  *
  * ## APIs that **all** genetic solvers have:
  * - `void setOption(const GAOption&)` sets the option of solver.
@@ -101,43 +99,45 @@ namespace heu {
  *
  * \sa GAOption NSGA2 NSGA3
  */
-template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER, RecordOption Record = DONT_RECORD_FITNESS,
-          class Args_t = void, typename internal::GAAbstract<Var_t, double, Args_t>::initializeFun _iFun_ = nullptr,
+template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER,
+          RecordOption Record = DONT_RECORD_FITNESS, class Args_t = void,
+          typename internal::GAAbstract<Var_t, double, Args_t>::initializeFun _iFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::fitnessFun _fFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::mutateFun _mFun_ = nullptr>
-class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_,
-                                     _fFun_, _cFun_, _mFun_> {
+class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
+                                     Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_, _fFun_,
-                                  _cFun_, _mFun_>;
-  friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS, internal::DefaultGene_t<Var_t, double>, Args_t,
-                                _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
+                                  Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS,
+                                internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_, _fFun_,
+                                _cFun_, _mFun_>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
-  SOGA() {}
-  ~SOGA() {}
+  SOGA() = default;
+  ~SOGA() = default;
 
   /**
    * \brief Get the fitness value of best gene
    *
    * \return Fitness_t Best fitness
    */
-  double bestFitness() const { return _eliteIt->_Fitness; }
+  inline double bestFitness() const noexcept { return _eliteIt->_Fitness; }
 
   /**
    * \brief Get result (Var_t).
    *
    * \return const Var_t& The decision variable of the elite gene.
    */
-  inline const Var_t& result() const { return _eliteIt->self; }
+  inline const Var_t& result() const noexcept { return _eliteIt->self; }
 
   /**
    * \brief Initialize the population and assign the first gene to be the elite.
    *
    */
-  void initializePop() {
+  inline void initializePop() noexcept {
     Base_t::initializePop();
     this->_eliteIt = this->_population.begin();
   }
@@ -155,22 +155,22 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    * \return true A is better than B
    * \return false A is worse than or equals to B
    */
-  static inline bool isBetter(double A, double B) {
-    if (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
+  static inline bool isBetter(double A, double B) noexcept {
+    if constexpr (fOpt == FitnessOption::FITNESS_GREATER_BETTER)
       return A > B;
-    }
-    return A < B;
+    else
+      return A < B;
   }
 
   /**
    * \brief Simple select implementation.
    *
-   * This function sorts the whole population with their fitness, and numbers of original populationSize genes will be
-   * reserved. The rest will be eliminated.
-   * The best gene in population will be assigned to be elite.
+   * This function sorts the whole population with their fitness, and numbers of original
+   * populationSize genes will be reserved. The rest will be eliminated. The best gene in population
+   * will be assigned to be elite.
    *
    */
-  void __impl_select() {
+  void __impl_select() noexcept {
     const double prevEliteFitness = _eliteIt->_Fitness;
     std::vector<GeneIt_t> iterators;
     iterators.clear();

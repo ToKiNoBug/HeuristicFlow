@@ -56,7 +56,7 @@ class NSGABase
   using Base_t = MOGABase<Var_t, ObjNum, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
-  ~NSGABase() {}
+  ~NSGABase() = default;
   HEU_MAKE_GABASE_TYPES(Base_t)
   using Fitness_t = typename Base_t::Fitness_t;
 
@@ -92,7 +92,7 @@ class NSGABase
    * \brief Reimplemented
    *
    */
-  void initializePop() {
+  inline void initializePop() noexcept {
     sortSpace.clear();
     sortSpace.reserve(2 * this->_option.populationSize);
     Base_t::initializePop();
@@ -120,7 +120,7 @@ class NSGABase
    * \return true A is dominated by less genes than B
    * \return false A is dominated by more or equal genes than B
    */
-  static bool sortByDominatedNum(const infoUnitBase* A, const infoUnitBase* B) {
+  inline static bool sortByDominatedNum(const infoUnitBase* A, const infoUnitBase* B) noexcept {
     return (A->domainedByNum) < (B->domainedByNum);
   }
 
@@ -130,7 +130,7 @@ class NSGABase
    * \brief Function to calculate infoUnitBase::domainedByNum of a population.
    *
    */
-  void calculateDominatedNum() {
+  void calculateDominatedNum() noexcept {
     const size_t popSizeBefore = sortSpace.size();
 #ifdef HEU_HAS_OPENMP
     static const int32_t thN = threadNum();
@@ -161,7 +161,7 @@ class NSGABase
    * \brief Divide the sorted population (is sortSpace) into a few non-dominated layers.
    *
    */
-  void divideLayers() {
+  void divideLayers() noexcept {
     std::sort(sortSpace.begin(), sortSpace.end(), sortByDominatedNum);
     pfLayers.clear();
     const size_t popSizeBef = sortSpace.size();
@@ -180,7 +180,7 @@ class NSGABase
    * \brief Update the pareto front
    *
    */
-  void updatePF(const infoUnitBase** pfs, const size_t curFrontSize) {
+  void updatePF(const infoUnitBase** pfs, const size_t curFrontSize) noexcept {
     this->_pfGenes.clear();
     for (size_t i = 0; i < curFrontSize; i++) {
       this->_pfGenes.emplace(&*(pfs[i]->iterator));

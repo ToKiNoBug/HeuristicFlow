@@ -50,20 +50,22 @@ namespace internal {
  * \tparam _cFun_
  * \tparam _mFun_
  */
-template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene, class Args_t,
+template <typename Var_t, int ObjNum, FitnessOption fOpt, RecordOption rOpt, class Gene,
+          class Args_t,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::initializeFun _iFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun _mFun_>
-class MOGAAbstract
-    : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
+class MOGAAbstract : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t,
+                                   _iFun_, _fFun_, _cFun_, _mFun_> {
  private:
-  using Base_t = GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
+  using Base_t = GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt, Gene, Args_t, _iFun_, _fFun_,
+                        _cFun_, _mFun_>;
   static_assert(ObjNum > 0 || ObjNum == Eigen::Dynamic, "Invalid template parameter Dim");
   static_assert(ObjNum != 1, "You assigend 1 objective in multi-objective problems");
 
  public:
-  ~MOGAAbstract(){};
+  ~MOGAAbstract() = default;
   HEU_MAKE_GABASE_TYPES(Base_t)
 
   /**
@@ -79,7 +81,7 @@ class MOGAAbstract
    *
    * \param front vector of fitness.
    */
-  inline void paretoFront(std::vector<Fitness_t>& front) const {
+  inline void paretoFront(std::vector<Fitness_t>& front) const noexcept {
     front.clear();
     front.reserve(_pfGenes.size());
     for (const Gene* i : _pfGenes) {
@@ -89,12 +91,13 @@ class MOGAAbstract
   }
 
   /**
-   * \brief Get Pareto front consists of a vector of std::pair<const Var_t*,const Fitness_t*>. It provides both
-   * solution(Var_t) and objective value(Fitness_t).
+   * \brief Get Pareto front consists of a vector of std::pair<const Var_t*,const Fitness_t*>. It
+   * provides both solution(Var_t) and objective value(Fitness_t).
    *
    * \param front vector of Var and fitness.
    */
-  inline void paretoFront(std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const {
+  inline void paretoFront(
+      std::vector<std::pair<const Var_t*, const Fitness_t*>>& front) const noexcept {
     front.clear();
     front.reserve(_pfGenes.size());
     for (const Gene* i : _pfGenes) {
@@ -107,13 +110,13 @@ class MOGAAbstract
    *
    * \return const std::unordered_set<const Gene*>& A const reference to PF.
    */
-  inline const std::unordered_set<const Gene*>& pfGenes() const { return _pfGenes; }
+  inline const std::unordered_set<const Gene*>& pfGenes() const noexcept { return _pfGenes; }
 
   /**
    * \brief This function is reimplemented to resize the PF.
    *
    */
-  inline void initializePop() {
+  inline void initializePop() noexcept {
     this->_pfGenes.clear();
     this->_pfGenes.reserve(this->_option.populationSize * 2);
     Base_t::initializePop();
@@ -122,13 +125,14 @@ class MOGAAbstract
   /**
    * \brief Compute ideal point
    *
-   * An ideal point is a fitness whose componment of each objecvite is the minimium value of the whole population.
+   * An ideal point is a fitness whose componment of each objecvite is the minimium value of the
+   * whole population.
    *
    * \note The corresponding decision variable of the ideal point usually doesn't exist.
    *
    * \return Fitness_t ideal point
    */
-  Fitness_t bestFitness() const {
+  Fitness_t bestFitness() const noexcept {
     Fitness_t best = this->_population.front()._Fitness;
     for (const Gene& i : this->_population) {
       if (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
@@ -150,14 +154,14 @@ class MOGAAbstract
    *
    * Genes are sorted by their address, and each hash of address are sumed up by xor.
    *
-   * This method works because elitisim strategy is applied. Actually the value of a gene won't change once it's
-   * initialized(created during initialization, crossover or mutation). And a gene will never be simply copied. Thus
-   * hashing the address is fast and it works.
+   * This method works because elitisim strategy is applied. Actually the value of a gene won't
+   * change once it's initialized(created during initialization, crossover or mutation). And a gene
+   * will never be simply copied. Thus hashing the address is fast and it works.
    *
    * \return size_t The checksum of PF
    */
   /*
-  size_t makePFCheckSum() const {
+  size_t makePFCheckSum() const noexcept {
     std::vector<const Gene*> pfvec;
     pfvec.reserve(_pfGenes.size());
     for (auto i : _pfGenes) {
