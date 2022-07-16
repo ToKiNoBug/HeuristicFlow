@@ -28,8 +28,9 @@ using namespace std;
 // to find the global minimum point.
 void testAckley_withRecord() {
   using args_t = heu::BoxNdS<2, heu::Std>;
+  constexpr heu::SelectMethod sm = heu::Tournament;
 
-  using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS,
+  using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, sm,
                              args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>,
                              nullptr, heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
                              heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun_d<>>;
@@ -40,6 +41,10 @@ void testAckley_withRecord() {
   opt.maxFailTimes =
       50;  // The solver will end if it hasn't been finding a better solution for 50 generations.
   opt.maxGenerations = 100;
+
+  if constexpr (sm == heu::SelectMethod::Tournament) {
+    algo.setTournamentSize(3);
+  }
 
   algo.setOption(opt);
 
@@ -84,6 +89,6 @@ void testAckley_withRecord() {
 
 int main() {
   testAckley_withRecord();
-  system("pause");
+  // system("pause");
   return 0;
 }

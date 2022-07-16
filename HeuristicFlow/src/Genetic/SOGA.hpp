@@ -101,21 +101,22 @@ namespace heu {
  * \sa GAOption NSGA2 NSGA3
  */
 template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER,
-          RecordOption Record = DONT_RECORD_FITNESS, class Args_t = void,
+          RecordOption Record = DONT_RECORD_FITNESS,
+          SelectMethod selectMethod = SelectMethod::RouletteWheel, class Args_t = void,
           typename internal::GAAbstract<Var_t, double, Args_t>::initializeFun _iFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::fitnessFun _fFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::crossoverFun _cFun_ = nullptr,
           typename internal::GAAbstract<Var_t, double, Args_t>::mutateFun _mFun_ = nullptr>
 class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
                                      Args_t, _iFun_, _fFun_, _cFun_, _mFun_>,
-             public internal::SOGASelector<SelectMethod::RouletteWheel> {
+             public internal::SOGASelector<selectMethod> {
  private:
   using Base_t = internal::GABase<Var_t, double, Record, internal::DefaultGene_t<Var_t, double>,
                                   Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
   friend class internal::GABase<Var_t, double, DONT_RECORD_FITNESS,
                                 internal::DefaultGene_t<Var_t, double>, Args_t, _iFun_, _fFun_,
                                 _cFun_, _mFun_>;
-  friend class internal::SOGASelector<SelectMethod::RouletteWheel>;
+  friend class internal::SOGASelector<selectMethod>;
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)

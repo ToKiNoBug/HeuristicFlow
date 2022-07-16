@@ -1,9 +1,11 @@
 #ifndef HEU_SOGASELECTORS_HPP
 #define HEU_SOGASELECTORS_HPP
 
+#include <unordered_map>
+
 #include "GABase.hpp"
 
-#include <unordered_map>
+#include <iostream>
 
 namespace heu {
 namespace internal {
@@ -58,7 +60,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
      * this hashmap will be erased from the linked list `_population`
      */
 
-    std::list<std::pair<GeneIt_t, double> >
+    std::list<std::pair<GeneIt_t, double>>
         eliminatedGenes;  // Use the iterator as first and processed fitness as second
 
     // number of candidates that need to be eliminated.
@@ -138,6 +140,108 @@ class SOGASelector<SelectMethod::RouletteWheel> {
     }
 
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(bestGeneIt, previousBestFitness);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::Tournament> {
+ public:
+  SOGASelector() { _tournamentSize = 3; }
+
+  inline int& tournamentSize() noexcept { return _tournamentSize; }
+  inline int tournamentSize() const noexcept { return _tournamentSize; };
+
+  inline void setTournamentSize(int TS) noexcept {
+    const bool tournament_size_should_be_greater_than_or_euqal_to_2 = TS >= 2;
+    assert(tournament_size_should_be_greater_than_or_euqal_to_2);
+    _tournamentSize = TS;
+  }
+
+ protected:
+  int _tournamentSize;
+
+ protected:
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t);
+
+    const int prevPopSize = static_cast<this_t*>(this)->_population.size();
+
+    // the left _tournamentSize th elements are to be considered to be inside the tournament, while
+    // the rest are outsize the tournament
+    std::vector<Gene_t*> tournamentSpace(0);
+    tournamentSpace.reserve(prevPopSize);
+
+    std::unordered_map<Gene_t*, int, std::hash<void*>> selectCounter;
+    selectCounter.reserve(prevPopSize);
+
+    // fill tournamentSpace and selectCounter
+    for (Gene_t& it : static_cast<this_t*>(this)->_population) {
+      tournamentSpace.emplace_back(&it);
+      selectCounter.emplace(&it, 0);
+    }
+
+    std::shuffle(tournamentSpace.begin(), tournamentSpace.end(), global_mt19937());
+
+    // apply tournament selection
+    for (int playTimes = 0; playTimes < static_cast<this_t*>(this)->_option.populationSize;
+         playTimes++) {
+      // std::cout << "tournamentSpace.size() = " << tournamentSpace.size() << std::endl;
+      //   find the best gene inside the tournament
+      Gene_t* bestGenePtr = tournamentSpace.front();
+      for (int idx = 1; idx < _tournamentSize; idx++) {
+        if (this_t::isBetter(tournamentSpace[idx]->_Fitness, bestGenePtr->_Fitness)) {
+          bestGenePtr = tournamentSpace[idx];
+        }
+      }
+
+      selectCounter[bestGenePtr]++;
+
+      // pick three new candidates into the tournament
+      for (int idxA = 0; idxA < _tournamentSize; idxA++) {
+        const int idxB = randIdx(_tournamentSize, prevPopSize);
+        std::swap<Gene_t*>(tournamentSpace[idxA], tournamentSpace[idxB]);
+      }
+    }
+
+    const double prevBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+
+    // erase eliminated genes from population and selectCounter
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end();) {
+      if (selectCounter[&*it] <= 0) {
+        // This gene is not selected for even once. It is eliminated.
+        selectCounter.erase(&*it);
+        it = static_cast<this_t*>(this)->_population.erase(it);
+        continue;
+      }
+
+      selectCounter[&*it]--;
+      ++it;
+    }
+
+    // Now all eliminated genes are erased, and genes that are selected repeatedly hasn't been
+    // copied.
+
+    GeneIt_t curBestGene = static_cast<this_t*>(this)->_population.begin();
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      if (this_t::isBetter(it->_Fitness, curBestGene->_Fitness)) {
+        curBestGene = it;
+      }
+    }
+
+    for (auto& pair : selectCounter) {
+      while (pair.second > 0) {
+        // copy if a gene is selected for more than once
+        static_cast<this_t*>(this)->_population.emplace_back(*pair.first);
+        pair.second--;
+      }
+    }
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, prevBestFitness);
+
+    // exit(114514);
   }
 };
 

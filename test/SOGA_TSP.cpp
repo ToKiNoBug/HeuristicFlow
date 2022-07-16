@@ -52,7 +52,7 @@ void testTSP_SOGA(const uint32_t PointNum) {
 
   // typedef vector<permUnit> permulation;
   //       var,        less=better,    data src
-  heu::SOGA<vector<double>, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS,
+  heu::SOGA<vector<double>, heu::FITNESS_LESS_BETTER, heu::DONT_RECORD_FITNESS, heu::Tournament,
             std::tuple<const vector<Point_t> *>>
       algo;
   static const uint8_t dataIdx = 0;
