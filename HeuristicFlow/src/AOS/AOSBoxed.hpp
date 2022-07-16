@@ -70,15 +70,15 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
 
   inline void setOption(const AOSOption& _opt) noexcept { _option = _opt; }
 
-  inline const Electron_t& bestElectron() const { return *_atomBestPtr; }
+  inline const Electron_t& bestElectron() const noexcept { return *_atomBestPtr; }
 
-  inline const Var_t& bindingState() const { return _bindingState; }
+  inline const Var_t& bindingState() const noexcept { return _bindingState; }
 
-  inline FastFitness_t bindingEnergy() const { return _bindingEnergy; }
+  inline FastFitness_t bindingEnergy() const noexcept { return _bindingEnergy; }
 
-  inline const std::list<Electron_t>& electrons() const { return _electrons; };
+  inline const std::list<Electron_t>& electrons() const noexcept { return _electrons; };
 
-  inline const std::vector<Layer>& layers() const { return _layers; };
+  inline const std::vector<Layer>& layers() const noexcept { return _layers; };
 
   inline size_t generation() const noexcept { return _generation; }
 
@@ -94,7 +94,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
   size_t _generation;
   size_t _earlyStopCounter;
 
-  void __impl_computeFitness() {
+  void __impl_computeFitness() noexcept {
 #ifdef HEU_HAS_OPENMP
     std::vector<Electron_t*> tasks;
     tasks.resize(0);
@@ -130,7 +130,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
  protected:
   template <bool hasParameter = Base_t::hasParameters, typename unused = void>
   struct AOSExecutor {
-    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
+    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) noexcept {
       if constexpr (AOSParameterPack<Var_t, Fitness_t,
                                      Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
@@ -153,14 +153,14 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       }
     }
 
-    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) {
+    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) noexcept {
       solver->runfFun(v, &solver->arg(), f);
     }
   };
 
   template <typename unused>
   struct AOSExecutor<false, unused> {
-    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) {
+    static inline void doInitiailization(const AOSBoxed* solver, Var_t* v) noexcept {
       if constexpr (AOSParameterPack<Var_t, Fitness_t,
                                      Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
@@ -183,7 +183,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       }
     }
 
-    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) {
+    static inline void doFitness(const AOSBoxed* solver, const Var_t* v, Fitness_t* f) noexcept {
       solver->runfFun(v, f);
     }
   };

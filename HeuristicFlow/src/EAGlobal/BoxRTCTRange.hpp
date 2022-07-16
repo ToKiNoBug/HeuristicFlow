@@ -52,26 +52,33 @@ class BoxDynamicRange {
  public:
   using Var_t = Container<Scalar_t, Size, DVO>;  ///< Type of decision variable
   static const constexpr bool isBox = true;      ///< Denotes this class to be a box-constriant
-  static const constexpr char Flag[] = "Non-square box with runtime range.";  ///< Box type in string
-  static const constexpr BoxShape Shape = BoxShape::RECTANGLE_BOX;            ///< Box type
+  static const constexpr char Flag[] =
+      "Non-square box with runtime range.";                         ///< Box type in string
+  static const constexpr BoxShape Shape = BoxShape::RECTANGLE_BOX;  ///< Box type
 
-  inline Var_t& min() { return _minV; }  ///< Get a non-const reference to minimum vector
+  inline Var_t& min() noexcept { return _minV; }  ///< Get a non-const reference to minimum vector
 
-  inline Var_t& max() { return _maxV; }  ///< Get a non-const reference to mmaximum vector
+  inline Var_t& max() noexcept { return _maxV; }  ///< Get a non-const reference to mmaximum vector
 
-  inline const Var_t& min() const { return _minV; }  ///< Get a const reference to minimum vector
+  inline const Var_t& min() const noexcept {
+    return _minV;
+  }  ///< Get a const reference to minimum vector
 
-  inline const Var_t& max() const { return _maxV; }  ///< Get a const reference to minimum vector
+  inline const Var_t& max() const noexcept {
+    return _maxV;
+  }  ///< Get a const reference to minimum vector
 
-  inline void setMin(const Var_t _m) { _minV = _m; }  ///< Set the minimum vector
+  inline void setMin(const Var_t _m) noexcept { _minV = _m; }  ///< Set the minimum vector
 
-  inline void setMax(const Var_t _m) { _maxV = _m; }  ///< Set the maximum vector
+  inline void setMax(const Var_t _m) noexcept { _maxV = _m; }  ///< Set the maximum vector
 
-  inline Scalar_t applyConstraint(const Scalar_t val, const int idx) const {
+  inline Scalar_t applyConstraint(const Scalar_t val, const int idx) const noexcept {
     return std::min(_maxV[idx], std::max(_minV[idx], val));
   }
 
-  inline void applyConstraint(Scalar_t* val, const int idx) const { *val = applyConstraint(*val, idx); }
+  inline void applyConstraint(Scalar_t* val, const int idx) const noexcept {
+    *val = applyConstraint(*val, idx);
+  }
 
  protected:
   Var_t _minV;  ///< This member exists when it's non-square box
@@ -96,28 +103,34 @@ class BoxDynamicRange {
 template <typename Scalar_t, int Size, ContainerOption DVO>
 class BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
  public:
-  using Var_t = Container<Scalar_t, Size, DVO>;                           ///< Type of decision variable
-  static const constexpr bool isBox = true;                               ///< Denotes this class to be a box-constriant
+  using Var_t = Container<Scalar_t, Size, DVO>;  ///< Type of decision variable
+  static const constexpr bool isBox = true;      ///< Denotes this class to be a box-constriant
   static const constexpr char Flag[] = "Square box with runtime range.";  ///< Box type in string
   static const constexpr BoxShape Shape = BoxShape::SQUARE_BOX;           ///< Box type
 
-  inline Scalar_t min() const { return _minS; }  ///< Minimum value for each dim
+  inline Scalar_t min() const noexcept { return _minS; }  ///< Minimum value for each dim
 
-  inline Scalar_t max() const { return _maxS; }  ///< Maximum value for each dim
+  inline Scalar_t max() const noexcept { return _maxS; }  ///< Maximum value for each dim
 
-  inline Scalar_t& min() { return _minS; }  ///< Non-const reference to maximum value for each dim
+  inline Scalar_t& min() noexcept {
+    return _minS;
+  }  ///< Non-const reference to maximum value for each dim
 
-  inline Scalar_t& max() { return _maxS; }  ///< Non-const reference to minimum value for each dim
+  inline Scalar_t& max() noexcept {
+    return _maxS;
+  }  ///< Non-const reference to minimum value for each dim
 
-  inline void setMin(Scalar_t s) { _minS = s; }  ///< Set maximum value for each dim
+  inline void setMin(Scalar_t s) noexcept { _minS = s; }  ///< Set maximum value for each dim
 
-  inline void setMax(Scalar_t s) { _maxS = s; }  ///< Set minimum value for each dim
+  inline void setMax(Scalar_t s) noexcept { _maxS = s; }  ///< Set minimum value for each dim
 
-  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const {
+  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const noexcept {
     return std::min(_maxS, std::max(_minS, val));
   }
 
-  inline void applyConstraint(Scalar_t* val, const int idx = -1) const { *val = applyConstraint(*val, idx); }
+  inline void applyConstraint(Scalar_t* val, const int idx = -1) const noexcept {
+    *val = applyConstraint(*val, idx);
+  }
 
  protected:
   Scalar_t _minS;  ///< This member exists when it's a runtime square box
@@ -132,7 +145,8 @@ class BoxDynamicRange<Scalar_t, Size, BoxShape::SQUARE_BOX, DVO> {
  * \return Sclar_t for integers, and DivCode for floating-point numbers.
  */
 template <typename Scalar_t>
-using TemplateVal_t = typename std::conditional<std::is_floating_point<Scalar_t>::value, DivCode, Scalar_t>::type;
+using TemplateVal_t =
+    typename std::conditional<std::is_floating_point<Scalar_t>::value, DivCode, Scalar_t>::type;
 
 /**
  * \ingroup CXX14_METAHEURISTIC
@@ -149,28 +163,31 @@ template <typename Scalar_t, TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar
 class BoxFixedRange {
  public:
   static const constexpr bool isBox = true;  ///< Denotes this class to be a box-constriant
-  static const constexpr char Flag[] = "Square box with compile-time range";  ///< Box type in string
-  static const constexpr BoxShape Shape = BoxShape::SQUARE_BOX;               ///< Box type
+  static const constexpr char Flag[] =
+      "Square box with compile-time range";                      ///< Box type in string
+  static const constexpr BoxShape Shape = BoxShape::SQUARE_BOX;  ///< Box type
 
   /**
    * \brief Minimum value that is fixed at compile time.
    *
    * \return constexpr Scalar_t Minimum value
    */
-  inline constexpr Scalar_t min() const { return Decoder<isFloatPoint>::minCT; }
+  inline constexpr Scalar_t min() const noexcept { return Decoder<isFloatPoint>::minCT; }
 
   /**
    * \brief Maximum value that is fixed at compile time.
    *
    * \return constexpr Scalar_t Maximum value
    */
-  inline constexpr Scalar_t max() const { return Decoder<isFloatPoint>::maxCT; }
+  inline constexpr Scalar_t max() const noexcept { return Decoder<isFloatPoint>::maxCT; }
 
-  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const {
+  inline Scalar_t applyConstraint(const Scalar_t val, const int = -1) const noexcept {
     return std::min(max(), std::max(min(), val));
   }
 
-  inline void applyConstraint(Scalar_t* val, const int idx = -1) const { *val = applyConstraint(*val, idx); }
+  inline void applyConstraint(Scalar_t* val, const int idx = -1) const noexcept {
+    *val = applyConstraint(*val, idx);
+  }
 
  private:
   static const constexpr bool isFloatPoint = std::is_floating_point<Scalar_t>::value;

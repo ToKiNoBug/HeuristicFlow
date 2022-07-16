@@ -73,7 +73,10 @@ template <typename Var_t, class Fitness_t = double, class Arg_t = void>
 struct testFunctions
     : public std::conditional<std::is_floating_point<Fitness_t>::value,
                               internal::SOFunctions<Var_t, Fitness_t, Arg_t>,
-                              internal::MOFunctions<Var_t, Fitness_t, Arg_t>>::type {};
+                              internal::MOFunctions<Var_t, Fitness_t, Arg_t>>::type {
+  testFunctions() = delete;
+  ~testFunctions() = delete;
+};
 
 }  //  namespace heu
 #endif

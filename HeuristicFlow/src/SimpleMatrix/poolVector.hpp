@@ -86,7 +86,7 @@ class poolVector {
     assert(idx < _size);
     return _data[idx];
   }
-  inline const Scalar_t& operator[](const size_t idx) const {
+  inline const Scalar_t& operator[](const size_t idx) const noexcept {
     assert(idx < _size);
     return _data[idx];
   }
@@ -95,7 +95,7 @@ class poolVector {
     assert(idx < _size);
     return _data[idx];
   }
-  inline const Scalar_t& operator()(const size_t idx) const {
+  inline const Scalar_t& operator()(const size_t idx) const noexcept {
     assert(idx < _size);
     return _data[idx];
   }
@@ -104,7 +104,7 @@ class poolVector {
     assert(idx < _size);
     return _data[idx];
   }
-  inline const Scalar_t& at(const size_t idx) const {
+  inline const Scalar_t& at(const size_t idx) const noexcept {
     assert(idx < _size);
     return _data[idx];
   }
@@ -118,7 +118,7 @@ class poolVector {
     assert(_size > 0);
     return _data[0];
   }
-  const Scalar_t& front() const {
+  const Scalar_t& front() const noexcept {
     assert(_size > 0);
     return _data[0];
   }
@@ -126,7 +126,7 @@ class poolVector {
     assert(_size > 0);
     return _data[_size - 1];
   }
-  const Scalar_t& back() const {
+  const Scalar_t& back() const noexcept {
     assert(_size > 0);
     return _data[_size - 1];
   }

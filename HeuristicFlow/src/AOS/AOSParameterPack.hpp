@@ -59,9 +59,9 @@ class AOSParameterPack {
   Arg_t _arg;
 
  public:
-  const Arg_t &arg() const { return _arg; }
-  Arg_t &arg() { return _arg; }
-  void setArg(const Arg_t &_a) { _arg = _a; }
+  inline const Arg_t &arg() const noexcept { return _arg; }
+  inline Arg_t &arg() noexcept { return _arg; }
+  inline void setArg(const Arg_t &_a) noexcept { _arg = _a; }
 };
 
 template <typename Var_t, class Fitness_t>

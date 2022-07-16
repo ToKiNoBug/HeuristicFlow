@@ -46,7 +46,8 @@ template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, bool isF
           TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT>
 class RealBoxBase : public BoxDims<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, MaxCT> {
  private:
-  static_assert(std::is_floating_point<Scalar_t>::value, "Scalar_t must be a floating point number");
+  static_assert(std::is_floating_point<Scalar_t>::value,
+                "Scalar_t must be a floating point number");
   static_assert(Dim > 0 || Dim == Eigen::Dynamic, "Invalid template parameter Dim");
 
  public:
@@ -70,11 +71,15 @@ struct learnRateBody {
   Var_t _learnRate;  ///< Valueu of learn rate, a scalar if squarebox and vector for non-square box
 
  public:
-  inline Var_t& learnRate() { return _learnRate; }  ///< Non-const reference to _learnRate
+  inline Var_t& learnRate() noexcept { return _learnRate; }  ///< Non-const reference to _learnRate
 
-  inline const Var_t& learnRate() const { return _learnRate; }  ///< Const reference to learnRate
+  inline const Var_t& learnRate() const noexcept {
+    return _learnRate;
+  }  ///< Const reference to learnRate
 
-  inline void setLearnRate(const Var_t& v) { _learnRate = v; }  ///< Change the value of learn rate
+  inline void setLearnRate(const Var_t& v) noexcept {
+    _learnRate = v;
+  }  ///< Change the value of learn rate
 };
 
 /**
@@ -101,7 +106,9 @@ class RealBox : public RealBoxBase<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, 
   static const constexpr Scalar_t learnRateCT = DivDecode<LearnRateCT>::real;
 
  public:
-  inline constexpr Scalar_t learnRate() const { return learnRateCT; }  ///< Learn rate at compile time
+  inline constexpr Scalar_t learnRate() const noexcept {
+    return learnRateCT;
+  }  ///< Learn rate at compile time
 };
 
 /**
@@ -120,12 +127,13 @@ class RealBox : public RealBoxBase<Scalar_t, Dim, DVO, BS, isFixedRange, MinCT, 
  * \tparam MaxCT Meaningless for this specialization
  * \tparam LearnRateCT Meaningless for this specialization
  */
-template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS, TemplateVal_t<Scalar_t> MinCT,
-          TemplateVal_t<Scalar_t> MaxCT, TemplateVal_t<Scalar_t> LearnRateCT>
+template <typename Scalar_t, int Dim, ContainerOption DVO, BoxShape BS,
+          TemplateVal_t<Scalar_t> MinCT, TemplateVal_t<Scalar_t> MaxCT,
+          TemplateVal_t<Scalar_t> LearnRateCT>
 class RealBox<Scalar_t, Dim, DVO, BS, false, MinCT, MaxCT, LearnRateCT>
     : public RealBoxBase<Scalar_t, Dim, DVO, BS, false, MinCT, MaxCT>,
-      public learnRateBody<
-          typename std::conditional<BS == BoxShape::RECTANGLE_BOX, Container<Scalar_t, Dim, DVO>, Scalar_t>::type> {};
+      public learnRateBody<typename std::conditional<
+          BS == BoxShape::RECTANGLE_BOX, Container<Scalar_t, Dim, DVO>, Scalar_t>::type> {};
 
 }  // namespace internal
 

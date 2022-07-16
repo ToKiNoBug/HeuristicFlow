@@ -71,7 +71,7 @@ class AOS : public internal::AOSBase<
     }
   }
 
-  void __impl_selectAndMakeLayers() {
+  void __impl_selectAndMakeLayers() noexcept {
     std::vector<ElectronIt_t> elecSortSpace;
     elecSortSpace.reserve(this->_electrons.size());
 

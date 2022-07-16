@@ -43,7 +43,7 @@ class AOSBase
  public:
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 
-  void initializePop() {
+  void initializePop() noexcept {
     this->_layers.clear();
 
     {
@@ -83,7 +83,7 @@ class AOSBase
   }
 
   template <class this_t>
-  inline void __impl_updateElectrons() {
+  inline void __impl_updateElectrons() noexcept {
     for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
       Layer_t& curLayer = this->_layers[layerIdx];
       for (Electron_t* elecPtr : this->_layers[layerIdx]) {
@@ -102,7 +102,7 @@ class AOSBase
   }
 
   template <class this_t>
-  void __impl_run() {
+  void __impl_run() noexcept {
     while (true) {
       static_cast<this_t*>(this)->__impl_computeFitness();
 
@@ -145,7 +145,7 @@ class AOSBase<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, Electron, fOpt,
 
   const std::vector<Fitness_t>& record() const noexcept { return _record; }
 
-  inline void initializePop() {
+  inline void initializePop() noexcept {
     Base_t::initializePop();
     _record.clear();
     _record.reserve(this->_option.maxGeneration + 1);
@@ -154,7 +154,7 @@ class AOSBase<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, Electron, fOpt,
  protected:
   std::vector<Fitness_t> _record;
 
-  inline void __impl_recordFitness() { _record.emplace_back(this->_atomBestPtr->energy); }
+  inline void __impl_recordFitness() noexcept { _record.emplace_back(this->_atomBestPtr->energy); }
 };
 
 }  // namespace internal

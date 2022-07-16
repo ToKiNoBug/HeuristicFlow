@@ -37,7 +37,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 
  protected:
-  void __impl_computeAtomBSBELE() {
+  void __impl_computeAtomBSBELE() noexcept {
     auto prevBestPtr = this->_atomBestPtr;
     this->_bindingState.setZero(this->_electrons.front().state.rows(),
                                 this->_electrons.front().state.cols());
@@ -68,7 +68,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
   }
 
-  void __impl_computeLayerBSBELE() {
+  void __impl_computeLayerBSBELE() noexcept {
     for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
       Layer_t& layer = this->_layers[layerIdx];
       layer.bindingState = layer.front()->state;
@@ -94,7 +94,7 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
   }
 
   void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, const int layerIdx,
-                                 Electron_t* child) const {
+                                 Electron_t* child) const noexcept {
     const Var_t& parentState = parent.state;
     Var_t alpha(parentState.rows(), parentState.cols()),
         beta(parentState.rows(), parentState.cols()), gamma(parentState.rows(), parentState.cols());
@@ -119,7 +119,8 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
   }
 
-  inline void __impl2_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+  inline void __impl2_applyNonPhotonEffect(const Electron& parent,
+                                           Electron_t* child) const noexcept {
     child->state =
         parent.state + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
 
@@ -140,7 +141,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 
  protected:
-  void __impl_computeAtomBSBELE() {
+  void __impl_computeAtomBSBELE() noexcept {
     auto prevBestPtr = this->_atomBestPtr;
     this->_bindingState = this->_electrons.front().state;
     for (auto& val : this->_bindingState) {
@@ -181,7 +182,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
   }
 
-  void __impl_computeLayerBSBELE() {
+  void __impl_computeLayerBSBELE() noexcept {
     for (int layerIdx = 0; layerIdx < this->_layers.size(); layerIdx++) {
       Layer_t& layer = this->_layers[layerIdx];
       layer.bindingState = layer.front()->state;
@@ -216,7 +217,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
   }
 
   void __impl2_applyPhotonEffect(const Electron_t& parent, const Layer_t& layer, const int layerIdx,
-                                 Electron_t* child) const {
+                                 Electron_t* child) const noexcept {
     const Var_t& parentState = parent.state;
 
     Var_t alpha, beta, gamma;
@@ -254,7 +255,8 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
   }
 
-  inline void __impl2_applyNonPhotonEffect(const Electron& parent, Electron_t* child) const {
+  inline void __impl2_applyNonPhotonEffect(const Electron& parent,
+                                           Electron_t* child) const noexcept {
     /*
     child->state =
         parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
