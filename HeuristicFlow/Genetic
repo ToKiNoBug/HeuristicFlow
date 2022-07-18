@@ -21,7 +21,9 @@ This file is part of HeuristicFlow.
 #define HEU_GENETIC_
 
 #include "src/Genetic/GAOption.hpp"
+#include "src/Genetic/DefaultGeneType.hpp"
 #include "src/Genetic/GABase.hpp"
+#include "src/Genetic/SOGASelecters.hpp"
 #include "src/Genetic/SOGA.hpp"
 #include "src/Genetic/MOGAAbstract.hpp"
 #include "src/Genetic/MOGABase.hpp"

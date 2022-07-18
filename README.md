@@ -24,7 +24,7 @@ Modules:
 
 
 Implemented Algorithms: 
-1. GA(Genetic Algorithm)
+1. SOGA(Single Objective Genetic Algorithm)
 2. NSGA-II(Non-dominated Sorting Genetic Algorithm II)
 3. NSGA-III(Non-dominated Sorting Genetic Algorithm III)
 4. PSO(Particle Swarm Optimization)
