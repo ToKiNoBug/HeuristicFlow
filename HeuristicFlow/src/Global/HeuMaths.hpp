@@ -83,7 +83,10 @@ inline num_t fractorial(num_t n) noexcept {
  */
 template <typename num_t>
 inline num_t NchooseK(num_t N, num_t K) noexcept {
-  return fractorial<num_t>(N) / (fractorial<num_t>(K) * fractorial<num_t>(N - K));
+  if (K * 2 > N) {
+    return NchooseK<num_t>(N, N - K);
+  } else
+    return fractorial<num_t>(N) / (fractorial<num_t>(K) * fractorial<num_t>(N - K));
 }
 /*
 namespace internal

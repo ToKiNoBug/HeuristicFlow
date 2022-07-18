@@ -178,6 +178,17 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
     return isBetter(a->_Fitness, b->_Fitness);
   }
 
+  GeneIt_t findCurrentBestGene() noexcept {
+    GeneIt_t gIt = this->_population.begin();
+    for (GeneIt_t it = this->_population.begin(); it != this->_population.end(); ++it) {
+      if (GeneItCompareFun(it, gIt)) {
+        gIt = it;
+      }
+    }
+
+    return gIt;
+  }
+
   inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt,
                                          const double prevFitess) noexcept {
     if (!isBetter(newBestGeneIt->_Fitness, prevFitess)) {

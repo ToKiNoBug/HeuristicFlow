@@ -71,6 +71,11 @@ class SOGASelector<SelectMethod::RouletteWheel> {
     // eliminated
     const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
 
+    if (eliminateNum <= 0) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+      return;
+    }
     // eliminatedGenes.reserve(static_cast<this_t*>(this)->_population.size());
 
     // fill eliminatedGenes
@@ -85,6 +90,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
     }
 
     // erase all selected candidates from eliminatedGenes
+
     while (eliminatedGenes.size() > eliminateNum) {
       double minFitness = eliminatedGenes.front().second;
       double processedFitnessSum = 0;
@@ -100,7 +106,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
       }
 
       // erase a solution from eliminatedGenes by its fitness
-      if (processedFitnessSum > 1e-10) {
+      if (processedFitnessSum > 0) {
         double r = randD(0, processedFitnessSum);
         for (auto it = eliminatedGenes.begin(); it != eliminatedGenes.end(); ++it) {
           r -= it->second;
@@ -131,15 +137,8 @@ class SOGASelector<SelectMethod::RouletteWheel> {
       static_cast<this_t*>(this)->_population.erase(pair.first);
     }
 
-    GeneIt_t bestGeneIt = static_cast<this_t*>(this)->_population.begin();
-    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
-         it != static_cast<this_t*>(this)->_population.end(); ++it) {
-      if (this_t::isBetter(it->_Fitness, bestGeneIt->_Fitness)) {
-        bestGeneIt = it;
-      }
-    }
-
-    static_cast<this_t*>(this)->updateFailTimesAndBestGene(bestGeneIt, previousBestFitness);
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
   }
 };
 
@@ -172,6 +171,13 @@ class SOGASelector<SelectMethod::Tournament> {
     }
 
     const int prevPopSize = static_cast<this_t*>(this)->_population.size();
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+
+    if (prevPopSize <= static_cast<this_t*>(this)->_option.populationSize) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+      return;
+    }
 
     // the left _tournamentSize th elements are to be considered to be inside the tournament, while
     // the rest are outsize the tournament
@@ -209,8 +215,6 @@ class SOGASelector<SelectMethod::Tournament> {
       }
     }
 
-    const double prevBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
-
     // erase eliminated genes from population and selectCounter
     for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
          it != static_cast<this_t*>(this)->_population.end();) {
@@ -226,7 +230,7 @@ class SOGASelector<SelectMethod::Tournament> {
     }
 
     // Now all eliminated genes are erased, and genes that are selected repeatedly hasn't been
-    // copied.
+    // copied. Searching at now will be slightly faster.
 
     GeneIt_t curBestGene = static_cast<this_t*>(this)->_population.begin();
     for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
@@ -244,7 +248,7 @@ class SOGASelector<SelectMethod::Tournament> {
       }
     }
 
-    static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, prevBestFitness);
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, previousBestFitness);
 
     // exit(114514);
   }
@@ -259,9 +263,15 @@ class SOGASelector<SelectMethod::MonteCarlo> {
   template <class this_t>
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t);
-    const double prevBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
     const int popSizeBeforeSelection = static_cast<this_t*>(this)->_population.size();
+
+    if (popSizeBeforeSelection <= static_cast<this_t*>(this)->_option.populationSize) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+      return;
+    }
 
     std::vector<GeneIt_t> iterators(0);
     iterators.reserve(popSizeBeforeSelection);
@@ -279,16 +289,107 @@ class SOGASelector<SelectMethod::MonteCarlo> {
       static_cast<this_t*>(this)->_population.erase(iterators[idx]);
     }
 
-    GeneIt_t curBestGene = static_cast<this_t*>(this)->_population.begin();
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
+};
 
-    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
-         it != static_cast<this_t*>(this)->_population.end(); ++it) {
-      if (this_t::isBetter(it->_Fitness, curBestGene->_Fitness)) {
-        curBestGene = it;
+template <>
+class SOGASelector<SelectMethod::Probability> {
+ protected:
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+
+    std::list<std::pair<GeneIt_t, double>>
+        eliminatedGenes;  // Use the iterator as first and processed fitness as second
+    const int prevPopSize = static_cast<this_t*>(this)->_population.size();
+    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    // number of candidates that need to be eliminated.
+    const int eliminateNum = prevPopSize - K;
+
+    // A cache to store the best fitness value in the previous generator cause the best gene may be
+    // eliminated
+    const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
+
+    if (eliminateNum <= 0) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+      return;
+    }
+    // assert(eliminateNum > 0);
+
+    // fill fitness value and  Compute the probability in the RouttleWheel method
+
+    {
+      double minFitness = pinfD;
+      for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+           it != static_cast<this_t*>(this)->_population.end(); ++it) {
+        // If fitness option is FITNESS_LESS_BETTER, take the inverse value
+        if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
+          eliminatedGenes.emplace_back(std::make_pair(it, it->_Fitness));
+        } else {
+          eliminatedGenes.emplace_back(std::make_pair(it, -it->_Fitness));
+        }
+
+        minFitness = std::min(eliminatedGenes.back().second, minFitness);
+      }
+
+      //
+      double fitnessSum = 0;
+      for (auto& pair : eliminatedGenes) {
+        pair.second -= minFitness;
+        fitnessSum += pair.second;
+      }
+
+      //
+      if (fitnessSum <= 0) {
+        for (auto& pair : eliminatedGenes) {
+          pair.second = 1.0 / prevPopSize;
+        }
+      } else {
+        for (auto& pair : eliminatedGenes) {
+          pair.second /= fitnessSum;
+        }
       }
     }
 
-    static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, prevBestFitness);
+    // constexpr double NChooseK = 1;
+    const double NChooseK = ::heu::NchooseK<double>(prevPopSize, K);
+    // assert(!std::isnan(NChooseK));
+
+    double newProbSum = 0;
+    for (auto& pair : eliminatedGenes) {
+      pair.second =
+          NChooseK * std::pow(pair.second, K) * std::pow(1.0 - pair.second, prevPopSize - K);
+      newProbSum += pair.second;
+    }
+
+    // assert(false);
+    while (eliminatedGenes.size() > eliminateNum) {
+      double r = randD(0.0, newProbSum);
+      for (auto it = eliminatedGenes.begin(); it != eliminatedGenes.end(); ++it) {
+        r -= it->second;
+        if (r <= 0) {
+          newProbSum -= it->second;
+          eliminatedGenes.erase(it);
+          break;
+        }
+      }
+
+      if (r > 0) {
+        newProbSum -= eliminatedGenes.back().second;
+        eliminatedGenes.pop_back();
+      }
+    }
+
+    // erase all eliminated candidates from the linked list
+    for (auto& pair : eliminatedGenes) {
+      static_cast<this_t*>(this)->_population.erase(pair.first);
+    }
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
   }
 };
 
