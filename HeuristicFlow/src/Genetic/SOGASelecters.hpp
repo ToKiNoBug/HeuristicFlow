@@ -515,7 +515,66 @@ class SOGASelector<SelectMethod::ExponentialRank> {
   double _exponetialSelectBase;
 
   template <class this_t>
-  void __impl___impl_select() noexcept {}
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+
+    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
+
+    if (popSizeBeforeSelect <= K) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene());
+      return;
+    }
+
+    std::vector<GeneIt_t> sortSpace(0);
+    sortSpace.reserve(popSizeBeforeSelect);
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      sortSpace.emplace_back(it);
+    }
+
+    std::sort(sortSpace.begin(), sortSpace.end(), this_t::GeneItCompareFun);
+
+    const double c_minus_1_div_c_pow_N_minus_1 =
+        (_exponetialSelectBase - 1) / (std::pow(_exponetialSelectBase, popSizeBeforeSelect) - 1);
+
+    std::list<std::pair<GeneIt_t, double>> eliminateSpace;
+    for (int idx = 0; idx < sortSpace.size(); idx++) {
+      eliminateSpace.emplace_back(std::make_pair(
+          sortSpace[idx],
+
+          c_minus_1_div_c_pow_N_minus_1 * std::pow(_exponetialSelectBase, idx)
+
+              ));
+    }
+
+    double rMax = 1.0;
+    while (eliminateSpace.size() > popSizeBeforeSelect - K) {
+      double r = randD(0, rMax);
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
+        r -= it->second;
+        if (r <= 0) {
+          rMax -= it->second;
+          eliminateSpace.erase(it);
+          break;
+        }
+      }
+
+      if (r > 0) {
+        rMax -= eliminateSpace.back().second;
+        eliminateSpace.pop_back();
+      }
+    }
+
+    for (auto& pair : eliminateSpace) {
+      static_cast<this_t*>(this)->_population.erase(pair.first);
+    }
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
 };
 
 }  // namespace internal
