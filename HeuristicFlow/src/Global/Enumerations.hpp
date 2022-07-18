@@ -48,7 +48,7 @@ enum RecordOption : uint8_t {
  * \param r The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(RecordOption r) noexcept {
+inline const char* Enum2String(const RecordOption r) noexcept {
   switch (r) {
     case RECORD_FITNESS:
       return "RECORD_FITNESS";
@@ -76,7 +76,7 @@ enum FitnessOption : uint8_t {
  * \param f The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(FitnessOption f) noexcept {
+inline const char* Enum2String(const FitnessOption f) noexcept {
   switch (f) {
     case FITNESS_LESS_BETTER:
       return "FITNESS_LESS_BETTER";
@@ -112,7 +112,7 @@ enum ContainerOption {
  * \param e The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(ContainerOption e) noexcept {
+inline const char* Enum2String(const ContainerOption e) noexcept {
   switch (e) {
     case Std:
       return "C++ std vector/array";
@@ -145,7 +145,7 @@ enum BoxShape {
  * \param b The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(BoxShape b) noexcept {
+inline const char* Enum2String(const BoxShape b) noexcept {
   switch (b) {
     case RECTANGLE_BOX:
       return "Non-square box";
@@ -177,7 +177,7 @@ enum EncodeType {
  * \param e The enum value
  * \return const char* Name of the value.
  */
-inline const char* Enum2String(EncodeType e) noexcept {
+inline const char* Enum2String(const EncodeType e) noexcept {
   switch (e) {
     case Real:
       return "Real encoding";
@@ -190,11 +190,11 @@ inline const char* Enum2String(EncodeType e) noexcept {
 
 /**
  * \ingroup HEU_GLOBAL
- * \brief Methods of selection in GA
+ * \brief Methods of selection in SOGA
  *
  * \note Many selection methods have requirements to the fitness value.
  */
-enum SelectMethod {
+enum SelectMethod : uint32_t {
   RouletteWheel,        ///< Requirements: fitness values are of similiar magnitude
   Tournament,           ///< Requirements: No
   Truncation,           ///< Requirements: No
@@ -207,6 +207,33 @@ enum SelectMethod {
   EliteReserved,        ///< Elitism + the RouletteWheel method. Requirements:
   RunTimeSelectMethod   ///< The selection method is determined at runtime
 };
+
+inline const char* Enum2String(const SelectMethod sm) noexcept {
+  switch (sm) {
+    case RouletteWheel:
+      return "RouletteWheel";
+    case Tournament:
+      return "Tournament";
+    case Truncation:
+      return "Truncation";
+    case MonteCarlo:
+      return "MonteCarlo";
+    case Probability:
+      return "Probability";
+    case LinearRank:
+      return "LinearRank";
+    case ExponentialRank:
+      return "ExponentialRank";
+    case Boltzmann:
+      return "Boltzmann";
+    case StochasticUniversal:
+      return "StochasticUniversal";
+    case EliteReserved:
+      return "EliteReserved";
+    default:
+      return "RunTimeSelectMethod";
+  }
+}
 
 }  //    namespace heu
 
