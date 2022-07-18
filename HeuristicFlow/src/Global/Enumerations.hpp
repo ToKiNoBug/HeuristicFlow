@@ -192,20 +192,139 @@ inline const char* Enum2String(const EncodeType e) noexcept {
  * \ingroup HEU_GLOBAL
  * \brief Methods of selection in SOGA
  *
- * \note Many selection methods have requirements to the fitness value.
+ * \note In documents of every method, N refers to the population size BEFORE selection, and K
+ * refers to the user-assigned population size (population size AFTER selection). In each select
+ * procedure, K genes must be selected from N genes to form the next generation, while the rest N-K
+ * genes will be eliminated.
+ *
  */
 enum SelectMethod : uint32_t {
-  RouletteWheel,        ///< Requirements: fitness values are of similiar magnitude
-  Tournament,           ///< Requirements: No
-  Truncation,           ///< Requirements: No
-  MonteCarlo,           ///< Requirements: No
-  Probability,          ///< Requirements:
-  LinearRank,           ///< Requirements:
-  ExponentialRank,      ///< Requirements:
-  Boltzmann,            ///< Requirements:
-  StochasticUniversal,  ///< Requirements:
-  EliteReserved,        ///< Elitism + the RouletteWheel method. Requirements:
-  RunTimeSelectMethod   ///< The selection method is determined at runtime
+  /**
+   * \brief The most traditional strategy in GA. The probability a gene to be selected is in
+   * proportion to its fitness.
+   *
+   * This method requires fitness values to be of similiar magnitude.
+   *
+   * \note Usually this strategy requires that the fitness value should always be greater than 0,
+   * and a greater fitness value must symbolize a better gene. In the exact implementation, fitness
+   * values are firstly inversed if a less fitness value means better(no operation otherwise), and
+   * then subtracted with the minimum fitness value.
+   *
+   *
+   */
+  RouletteWheel,
+
+  /**
+   * \brief The tournament method picks 2 or 3 genes into the "tournament" randomly and select the
+   * best one in the "tournament". This process will be repeated many times until the selection
+   * finished.
+   *
+   * This method has no requirement to the fitness value.
+   *
+   * \note Since all genes in the tournament will be put back into the population after a unit
+   * selection, genes may be cpoied for several times.
+   *
+   * \note This method has a parameter: the tournament size. Its default value is 3. A greater value
+   * gives more change of survival for worse genes, which harms the convergence ability but may
+   * prevent the solver from being pre-matured.
+   */
+  Tournament,
+
+  /**
+   * \brief The truncation method sort the whole population by fitness value, and the first K genes
+   * will be selected, while the rest are eliminated.
+   *
+   * This method has no requirement to the fitness value.
+   *
+   * \note In previous versions, SOGA has only one selection method, which is tournament actually.
+   * This method usually can't work pretty well even with the simplist testing fucntion.
+   *
+   */
+  Truncation,
+
+  /**
+   * \brief The Monte Carlo method select genes purly stochastically. It is neither searching for
+   * better nor worse, but ramdonly.
+   *
+   * This method has no requirement to the fitness value.
+   *
+   * \note The method is not used for solving problems, but to compare with other methods.
+   */
+  MonteCarlo,
+
+  /**
+   * \brief The probability selection method is a variant of RouletteWheel. In this method, the
+   * probability p (refers the the probability of being selected) in RouletteWheel is mapped to
+   * p^K*(1-p)^(N-K), and the probability of being selected is in proportion with this mapped
+   * probability.
+   *
+   * This method requires fitness values to be of similiar magnitude.
+   *
+   */
+  Probability,
+
+  /**
+   * \brief The LinearRank method sorts the whole population, and then evaluates probability values
+   * by ranks of genes. The best and worst genes' probabilities of being selected are assigned by
+   * users (usually 0.8 and 0.2 respectively). Probabilities of the rest genes are computed
+   * linearly.
+   *
+   * This method has no requirement to fitness values.
+   *
+   * \note This method has 2 parameters, which are best and worsts' probabilities of being selected.
+   * It must be in range [0,1], and the best must have greater chance of being selected than the
+   * worst.
+   *
+   */
+  LinearRank,
+
+  /**
+   * \brief The ExponentialRank method works like LinearRank, but probability are evaluated by
+   * exponential function. Given a base number c, and the i-th best gene's probability is in
+   * proportion with c^idx. If you hope the fitness value to be greater, c should be a positive
+   * number, vise versa. c=0 means that all genes have same chance to be selected, no matter how
+   * good they are.
+   *
+   *
+   * This method has no requirement to fitness values.
+   *
+   * \note This method introducted one parameter: the exponential base number c.   *
+   */
+  ExponentialRank,
+
+  /**
+   * \brief The Boltzmann method works by exponential function. The probability of a gene is in
+   * proportion with exp(b*f), where b is the selection strength and f is the fitness value.
+   *
+   * \note This method introduced one parameter: the selection strength b. For maximum problems, b
+   * should be positive, while for minimize problems, b should be a negative number.
+   */
+  Boltzmann,
+
+  /**
+   * \brief The SUS(Stochastic Universal Selection) method is a simplification of RouletteWheel. In
+   * the RouletteWheel method, the population will be traversed for at least K times, while SUS
+   * needs only constant times. It runs faster.
+   *
+   * This method requires fitness values to be of similiar magnitude.
+   */
+  StochasticUniversal,
+
+  /**
+   * \brief The EliteReserved method applies elitisim to the RouletteWheel method. Several best
+   * genes will be selected before the roulette wheel process, which ensures congvergence. This
+   * method is proved to be able to converge, which makes it the default choice.
+   *
+   */
+  EliteReserved,
+
+  /**
+   * \brief This value indicates that the selection method is determined at runtime. SOGA with this
+   * parameter will inherit all 10 selection methods in above, and you can choose which method to
+   * use at runtime.
+   *
+   */
+  RunTimeSelectMethod  ///< The selection method is determined at runtime
 };
 
 inline const char* Enum2String(const SelectMethod sm) noexcept {

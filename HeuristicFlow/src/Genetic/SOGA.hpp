@@ -85,6 +85,7 @@ namespace heu {
  * - `fitnessFun fFun() const` returns the fitness function.
  * - `crossoverFun cFun() const` returns the crossover function.
  * - `mutateFun mFun() const` returns the mutation function.
+ * - 'SelectMethod selectMethod() const' returns the selection method.
  *
  *
  * ## APIs that all genetic solvers whose `Args_t` is not `void` have:
@@ -98,7 +99,7 @@ namespace heu {
  * ## APIs that SOGA solvers have:
  * - `const Var_t& result() const` returns a const-reference the the final result decision variable.
  *
- * \sa GAOption NSGA2 NSGA3
+ * \sa GAOption NSGA2 NSGA3 SelectMethod
  */
 template <typename Var_t, FitnessOption fOpt = FITNESS_LESS_BETTER,
           RecordOption Record = DONT_RECORD_FITNESS,

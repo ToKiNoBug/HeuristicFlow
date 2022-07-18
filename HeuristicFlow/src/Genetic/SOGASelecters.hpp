@@ -26,6 +26,16 @@ This file is part of HeuristicFlow.
 
 namespace heu {
 namespace internal {
+
+/**
+ * \ingroup HEU_GENETIC
+ * \class SOGASelector
+ * \brief This class implement 10 different selection operators for SOGA. All kinds of selection
+ * methods are listed in the enumeration type ``SelectMethod`.
+ *
+ * \tparam sm The selection method.
+ */
+
 template <SelectMethod sm>
 class SOGASelector {
   // static_assert(false);
