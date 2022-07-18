@@ -354,9 +354,9 @@ class SOGASelector<SelectMethod::Probability> {
       }
     }
 
-    // constexpr double NChooseK = 1;
-    const double NChooseK = ::heu::NchooseK<double>(prevPopSize, K);
-    // assert(!std::isnan(NChooseK));
+    constexpr double NChooseK = 1e100;
+    // const double NChooseK = ::heu::NchooseK<double>(prevPopSize, K);
+    //  assert(!std::isnan(NChooseK));
 
     double newProbSum = 0;
     for (auto& pair : eliminatedGenes) {
@@ -391,6 +391,131 @@ class SOGASelector<SelectMethod::Probability> {
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(
         static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
   }
+};
+
+template <>
+class SOGASelector<SelectMethod::LinearRank> {
+ public:
+  SOGASelector() {
+    _bestSelectProbability = 0.9;
+    _worstSelectProbabilty = 0.1;
+  }
+
+  inline double bestSelectProbability() const noexcept { return _bestSelectProbability; }
+
+  inline double worstSelectProbabilty() const noexcept { return _worstSelectProbabilty; }
+
+  inline void setSelectProbability(double worstGeneSelectProbabilty,
+                                   double bestGeneSelectProbability) noexcept {
+    const bool worst_gene_select_probability_should_be_less_than_the_best_gene_select_probability =
+        worstGeneSelectProbabilty < bestGeneSelectProbability;
+    assert(worst_gene_select_probability_should_be_less_than_the_best_gene_select_probability);
+
+    const bool probability_should_be_greater_or_equal_to_0 =
+        worstGeneSelectProbabilty >= 0 && bestGeneSelectProbability >= 0;
+
+    assert(probability_should_be_greater_or_equal_to_0);
+
+    const bool probability_should_be_less_or_equal_to_1 =
+        worstGeneSelectProbabilty <= 1 && bestGeneSelectProbability <= 1;
+    assert(probability_should_be_less_or_equal_to_1);
+
+    _bestSelectProbability = bestGeneSelectProbability;
+    _worstSelectProbabilty = worstGeneSelectProbabilty;
+  }
+
+ protected:
+  double _worstSelectProbabilty;
+  double _bestSelectProbability;
+
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+
+    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
+
+    if (popSizeBeforeSelect <= K) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene());
+      return;
+    }
+
+    std::vector<GeneIt_t> sortSpace(0);
+    sortSpace.reserve(popSizeBeforeSelect);
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      sortSpace.emplace_back(it);
+    }
+
+    std::sort(sortSpace.begin(), sortSpace.end(), this_t::GeneItCompareFun);
+
+    const double nNegitive = _worstSelectProbabilty * popSizeBeforeSelect;
+    const double nPositive = _bestSelectProbability * popSizeBeforeSelect;
+
+    std::list<std::pair<GeneIt_t, double>> eliminateSpace;
+    for (int idx = 0; idx < sortSpace.size(); idx++) {
+      eliminateSpace.emplace_back(std::make_pair(
+          sortSpace[idx],
+
+          (nNegitive +
+           (nPositive - nNegitive) * (popSizeBeforeSelect - idx - 1) / (popSizeBeforeSelect - 1)) /
+              popSizeBeforeSelect
+
+          ));
+    }
+
+    double rMax = 1.0;
+    while (eliminateSpace.size() > popSizeBeforeSelect - K) {
+      double r = randD(0, rMax);
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
+        r -= it->second;
+        if (r <= 0) {
+          rMax -= it->second;
+          eliminateSpace.erase(it);
+          break;
+        }
+      }
+
+      if (r > 0) {
+        rMax -= eliminateSpace.back().second;
+        eliminateSpace.pop_back();
+      }
+    }
+
+    for (auto& pair : eliminateSpace) {
+      static_cast<this_t*>(this)->_population.erase(pair.first);
+    }
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::ExponentialRank> {
+ public:
+  SOGASelector() { _exponetialSelectBase = 0.8; }
+
+  inline double exponetialSelectBase() const noexcept { return _exponetialSelectBase; }
+
+  inline void setExponetialSelectBase(double _c) noexcept {
+    const bool the_base_number_for_exponential_rank_selection_should_be_greater_or_equal_to_0 =
+        _c >= 0;
+    assert(the_base_number_for_exponential_rank_selection_should_be_greater_or_equal_to_0);
+
+    const bool the_base_number_for_exponential_rank_selection_should_be_less_than_1 = _c < 1;
+    assert(the_base_number_for_exponential_rank_selection_should_be_less_than_1);
+
+    _exponetialSelectBase = _c;
+  }
+
+ protected:
+  double _exponetialSelectBase;
+
+  template <class this_t>
+  void __impl___impl_select() noexcept {}
 };
 
 }  // namespace internal
