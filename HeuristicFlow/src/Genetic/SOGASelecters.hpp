@@ -5,8 +5,6 @@
 
 #include "GABase.hpp"
 
-#include <iostream>
-
 namespace heu {
 namespace internal {
 template <SelectMethod sm>
@@ -14,8 +12,13 @@ class SOGASelector {
   // static_assert(false);
 };
 
+template <SelectMethod sm>
+class SOGAInheriter;
+
 template <>
 class SOGASelector<SelectMethod::Truncation> {
+  friend class SOGAInheriter<SelectMethod::Truncation>;
+
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -45,6 +48,8 @@ class SOGASelector<SelectMethod::Truncation> {
 
 template <>
 class SOGASelector<SelectMethod::RouletteWheel> {
+  friend class SOGAInheriter<SelectMethod::RouletteWheel>;
+
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -137,6 +142,8 @@ class SOGASelector<SelectMethod::RouletteWheel> {
 
 template <>
 class SOGASelector<SelectMethod::Tournament> {
+  friend class SOGAInheriter<SelectMethod::Tournament>;
+
  public:
   SOGASelector() { _tournamentSize = 3; }
 
@@ -249,6 +256,8 @@ class SOGASelector<SelectMethod::Tournament> {
 
 template <>
 class SOGASelector<SelectMethod::MonteCarlo> {
+  friend class SOGAInheriter<SelectMethod::MonteCarlo>;
+
  public:
   SOGASelector() = default;
 
@@ -289,6 +298,8 @@ class SOGASelector<SelectMethod::MonteCarlo> {
 
 template <>
 class SOGASelector<SelectMethod::Probability> {
+  friend class SOGAInheriter<SelectMethod::Probability>;
+
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -385,6 +396,8 @@ class SOGASelector<SelectMethod::Probability> {
 
 template <>
 class SOGASelector<SelectMethod::LinearRank> {
+  friend class SOGAInheriter<SelectMethod::LinearRank>;
+
  public:
   SOGASelector() {
     _linearSelectBestProbability = 0.9;
@@ -486,6 +499,8 @@ class SOGASelector<SelectMethod::LinearRank> {
 
 template <>
 class SOGASelector<SelectMethod::ExponentialRank> {
+  friend class SOGAInheriter<SelectMethod::ExponentialRank>;
+
  public:
   SOGASelector() { _exponetialSelectBase = 0.8; }
 
@@ -568,6 +583,8 @@ class SOGASelector<SelectMethod::ExponentialRank> {
 
 template <>
 class SOGASelector<SelectMethod::Boltzmann> {
+  friend class SOGAInheriter<SelectMethod::Boltzmann>;
+
  public:
   inline double boltzmannSelectStrength() noexcept { return _boltzmannSelectStrength; }
 
@@ -636,6 +653,8 @@ class SOGASelector<SelectMethod::Boltzmann> {
 
 template <>
 class SOGASelector<SelectMethod::StochasticUniversal> {
+  friend class SOGAInheriter<SelectMethod::StochasticUniversal>;
+
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -734,6 +753,8 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
 
 template <>
 class SOGASelector<SelectMethod::EliteReserved> {
+  friend class SOGAInheriter<SelectMethod::EliteReserved>;
+
  public:
   SOGASelector() { _eliteNum = 1; }
 
@@ -826,12 +847,25 @@ class SOGASelector<SelectMethod::EliteReserved> {
   }
 };
 
-namespace {
-
 template <SelectMethod sm>
-class SOGAInheriter : public SOGAInheriter<SelectMethod(int(sm) + 1)>::type {
+class SOGAInheriter : public SOGAInheriter<SelectMethod((int)(sm) + 1)> {
+  using next = SOGAInheriter<SelectMethod((int)(sm) + 1)>;
+
  public:
-  using type = SOGASelector<sm>;
+  struct type : public SOGASelector<sm>, public next::type {};
+
+  template <class this_t>
+  inline static void __impl___impl___impl_select(type* solver, const SelectMethod _sm) noexcept {
+    if constexpr (sm + 1 >= SelectMethod::RunTimeSelectMethod) {
+      static_cast<SOGASelector<sm>*>(solver)->template __impl___impl_select<this_t>();
+    } else {
+      if (_sm == sm) {
+        static_cast<SOGASelector<sm>*>(solver)->template __impl___impl_select<this_t>();
+      } else {
+        next::template __impl___impl___impl_select<this_t>(solver, _sm);
+      }
+    }
+  }
 };
 
 template <>
@@ -840,13 +874,12 @@ class SOGAInheriter<SelectMethod::RunTimeSelectMethod> {
   struct type {};
 };
 
-}  // namespace
-
 template <>
-class SOGASelector<SelectMethod::RunTimeSelectMethod> {
+class SOGASelector<SelectMethod::RunTimeSelectMethod>
+    : public SOGAInheriter<SelectMethod(0)>::type {
  public:
   SOGASelector() { _selectMethod = SelectMethod::EliteReserved; }
-
+  using someType = SOGAInheriter<SelectMethod(0)>;
   inline SelectMethod selectMethod() const noexcept { return _selectMethod; }
 
   inline void setSelectMethod(SelectMethod _sm) noexcept {
@@ -872,6 +905,12 @@ class SOGASelector<SelectMethod::RunTimeSelectMethod> {
 
  protected:
   SelectMethod _selectMethod;
+
+  template <class this_t>
+  inline void __impl___impl_select() noexcept {
+    SOGAInheriter<SelectMethod(0)>::template __impl___impl___impl_select<this_t>(this,
+                                                                                 _selectMethod);
+  }
 };
 
 }  // namespace internal

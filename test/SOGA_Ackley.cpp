@@ -27,14 +27,18 @@ using namespace std;
 // but its global minimum point is [0,0] and corresponding value is 0. A good solver should be able
 // to find the global minimum point.
 void testAckley_withRecord() {
+  HEU_DISPLINE
   using args_t = heu::BoxNdS<2, heu::Std>;
-  constexpr heu::SelectMethod sm = heu::SelectMethod::EliteReserved;
+  constexpr heu::SelectMethod sm = heu::SelectMethod::RunTimeSelectMethod;
 
+  HEU_DISPLINE
   using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, sm,
                              args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>,
                              nullptr, heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
                              heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun_d<>>;
   solver_t algo;
+
+  HEU_DISPLINE
 
   heu::GAOption opt;
   opt.populationSize = 50;
@@ -42,25 +46,26 @@ void testAckley_withRecord() {
       50;  // The solver will end if it hasn't been finding a better solution for 50 generations.
   opt.maxGenerations = 100;
 
-  if constexpr (sm == heu::SelectMethod::Tournament) {
-    // algo.setTournamentSize(3);
-  }
+  HEU_DISPLINE
 
-  if constexpr (sm == heu::SelectMethod::LinearRank) {
-    // algo.setLinearSelectProbability(0.2, 0.8);
-  }
+  algo.setSelectMethod(heu::SelectMethod::ExponentialRank);
 
-  if constexpr (sm == heu::SelectMethod::ExponentialRank) {
-    // algo.setExponetialSelectBase(0.8);
-  }
+  // if constexpr (sm == heu::SelectMethod::Tournament)
+  algo.setTournamentSize(3);
 
-  if constexpr (sm == heu::SelectMethod::Boltzmann) {
-    // algo.setBoltzmannSelectStrength(-10);
-  }
+  // if constexpr (sm == heu::SelectMethod::LinearRank)
+  algo.setLinearSelectProbability(0.2, 0.8);
 
-  if constexpr (sm == heu::SelectMethod::EliteReserved) {
-    algo.setEliteNum(3);
-  }
+  // if constexpr (sm == heu::SelectMethod::ExponentialRank)
+  algo.setExponetialSelectBase(0.8);
+
+  // if constexpr (sm == heu::SelectMethod::Boltzmann)
+  algo.setBoltzmannSelectStrength(-10);
+
+  // if constexpr (sm == heu::SelectMethod::EliteReserved)
+  algo.setEliteNum(3);
+
+  HEU_DISPLINE
 
   algo.setOption(opt);
 
@@ -72,6 +77,7 @@ void testAckley_withRecord() {
     algo.setArgs(args);
   }
 
+  HEU_DISPLINE
   algo.setfFun(
       // Ackely function
       heu::testFunctions<array<double, 2>, double, args_t>::ackley
@@ -86,11 +92,13 @@ void testAckley_withRecord() {
 
   algo.initializePop();
 
+  HEU_DISPLINE
   std::clock_t t = std::clock();
   algo.run();
   t = std::clock() - t;
   // cout<<algo.bestFitness();
 
+  HEU_DISPLINE
   cout << "Solving spend " << algo.generation() << " generations in " << double(t) / CLOCKS_PER_SEC
        << " sec\n";
   cout << "Result = [" << algo.result()[0] << " , " << algo.result()[1] << "]\n";
@@ -104,6 +112,8 @@ void testAckley_withRecord() {
 }
 
 int main() {
+  cout << "rua!" << endl;
+  HEU_DISPLINE
   testAckley_withRecord();
   // system("pause");
   return 0;

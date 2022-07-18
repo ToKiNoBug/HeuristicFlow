@@ -251,6 +251,15 @@ constexpr T min_v = minmax<T, vals...>::min;
 template <typename T, T... vals>
 constexpr T max_v = minmax<T, vals...>::max;
 
+static_assert(
+    ::heu::template max_v<
+        SelectMethod, SelectMethod::Boltzmann, SelectMethod::EliteReserved,
+        SelectMethod::ExponentialRank, SelectMethod::LinearRank, SelectMethod::MonteCarlo,
+        SelectMethod::Probability, SelectMethod::RouletteWheel, SelectMethod::RunTimeSelectMethod,
+        SelectMethod::StochasticUniversal, SelectMethod::Tournament, SelectMethod::Truncation> ==
+        SelectMethod::RunTimeSelectMethod,
+    "SelectMethod::RunTimeSelectMethod must be the greatest value in all values");
+
 }  //    namespace heu
 
 #endif  // HEU_Maths_HPP
