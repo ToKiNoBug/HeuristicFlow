@@ -165,6 +165,12 @@ class SOGASelector<SelectMethod::Tournament> {
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t);
 
+    {
+      const bool tournament_size_should_be_less_than_the_population_size =
+          _tournamentSize < static_cast<this_t*>(this)->_option.populationSize;
+      assert(tournament_size_should_be_less_than_the_population_size);
+    }
+
     const int prevPopSize = static_cast<this_t*>(this)->_population.size();
 
     // the left _tournamentSize th elements are to be considered to be inside the tournament, while
@@ -186,7 +192,6 @@ class SOGASelector<SelectMethod::Tournament> {
     // apply tournament selection
     for (int playTimes = 0; playTimes < static_cast<this_t*>(this)->_option.populationSize;
          playTimes++) {
-      // std::cout << "tournamentSpace.size() = " << tournamentSpace.size() << std::endl;
       //   find the best gene inside the tournament
       Gene_t* bestGenePtr = tournamentSpace.front();
       for (int idx = 1; idx < _tournamentSize; idx++) {
@@ -242,6 +247,48 @@ class SOGASelector<SelectMethod::Tournament> {
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, prevBestFitness);
 
     // exit(114514);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::MonteCarlo> {
+ public:
+  SOGASelector() = default;
+
+ protected:
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t);
+    const double prevBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+
+    const int popSizeBeforeSelection = static_cast<this_t*>(this)->_population.size();
+
+    std::vector<GeneIt_t> iterators(0);
+    iterators.reserve(popSizeBeforeSelection);
+
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      iterators.emplace_back(it);
+    }
+
+    std::shuffle(iterators.begin(), iterators.end(), global_mt19937());
+
+    const int eliminateNum =
+        popSizeBeforeSelection - static_cast<this_t*>(this)->_option.populationSize;
+    for (int idx = 0; idx < eliminateNum; idx++) {
+      static_cast<this_t*>(this)->_population.erase(iterators[idx]);
+    }
+
+    GeneIt_t curBestGene = static_cast<this_t*>(this)->_population.begin();
+
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      if (this_t::isBetter(it->_Fitness, curBestGene->_Fitness)) {
+        curBestGene = it;
+      }
+    }
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(curBestGene, prevBestFitness);
   }
 };
 

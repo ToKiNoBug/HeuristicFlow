@@ -189,6 +189,10 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
     }
   }
 
+  /**
+   * \brief Call this function only when you are sure that `_bestGene` will always be vaild AFTER
+   * the selection.
+   */
   inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt) noexcept {
     updateFailTimesAndBestGene(newBestGeneIt, this->_bestGene->_Fitness);
   }
