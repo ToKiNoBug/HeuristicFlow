@@ -73,23 +73,13 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
  private:
   using Base_t = GAAbstract<Var_t, Fitness_t, Args_t>;
 
- protected:
-#if __cplusplus < 201703L
-  static constexpr bool shouldGeneAlignExplicitly =
-      (sizeof(Var_t) % 16 == 0) || (sizeof(Fitness_t) % 16 == 0);
-#else
-  static constexpr bool shouldGeneAlignExplicitly = false;
-#endif
-
  public:
   HEU_MAKE_GAABSTRACT_TYPES(Base_t)
 
   ~GABase() = default;
 
  protected:
-  using poplist_t = typename std::conditional<shouldGeneAlignExplicitly,
-                                              std::list<Gene, Eigen::aligned_allocator<Gene>>,
-                                              std::list<Gene>>::type;
+  using poplist_t = std::list<Gene>;
 
  public:
   /// Type of gene

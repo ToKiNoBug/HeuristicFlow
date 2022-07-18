@@ -69,8 +69,8 @@ class SOGASelector<SelectMethod::RouletteWheel> {
         eliminateSpace;  // Use the iterator as first and processed fitness as second
 
     // number of candidates that need to be eliminated.
-    const int eliminateNum = static_cast<this_t*>(this)->_population.size() -
-                             static_cast<this_t*>(this)->_option.populationSize;
+    const int eliminateNum = int(static_cast<this_t*>(this)->_population.size() -
+                                 static_cast<this_t*>(this)->_option.populationSize);
 
     // A cache to store the best fitness value in the previous generator cause the best gene may be
     // eliminated
@@ -103,7 +103,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
 
     // erase all selected candidates from eliminateSpace
 
-    while (eliminateSpace.size() > eliminateNum) {
+    while (int(eliminateSpace.size()) > eliminateNum) {
       // erase a solution from eliminateSpace by its fitness
       if (processedFitnessSum > 0) {
         double r = randD(0, processedFitnessSum);
@@ -123,7 +123,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
 
       } else {
         // select stochastically
-        const int sizeBeforeErasement = eliminateSpace.size();
+        const int sizeBeforeErasement = int(eliminateSpace.size());
         for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
           if (randIdx(sizeBeforeErasement) == 0) {
             eliminateSpace.erase(it);
@@ -166,14 +166,14 @@ class SOGASelector<SelectMethod::Tournament> {
 
     {
       const bool tournament_size_should_be_less_than_the_population_size =
-          _tournamentSize < static_cast<this_t*>(this)->_option.populationSize;
+          _tournamentSize < int(static_cast<this_t*>(this)->_option.populationSize);
       assert(tournament_size_should_be_less_than_the_population_size);
     }
 
-    const int prevPopSize = static_cast<this_t*>(this)->_population.size();
+    const int prevPopSize = int(static_cast<this_t*>(this)->_population.size());
     const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
-    if (prevPopSize <= static_cast<this_t*>(this)->_option.populationSize) {
+    if (prevPopSize <= int(static_cast<this_t*>(this)->_option.populationSize)) {
       static_cast<this_t*>(this)->updateFailTimesAndBestGene(
           static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
       return;
@@ -196,7 +196,7 @@ class SOGASelector<SelectMethod::Tournament> {
     std::shuffle(tournamentSpace.begin(), tournamentSpace.end(), global_mt19937());
 
     // apply tournament selection
-    for (int playTimes = 0; playTimes < static_cast<this_t*>(this)->_option.populationSize;
+    for (int playTimes = 0; playTimes < int(static_cast<this_t*>(this)->_option.populationSize);
          playTimes++) {
       //   find the best gene inside the tournament
       Gene_t* bestGenePtr = tournamentSpace.front();
@@ -267,9 +267,9 @@ class SOGASelector<SelectMethod::MonteCarlo> {
     HEU_MAKE_GABASE_TYPES(this_t);
     const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
-    const int popSizeBeforeSelection = static_cast<this_t*>(this)->_population.size();
+    const int popSizeBeforeSelection = int(static_cast<this_t*>(this)->_population.size());
 
-    if (popSizeBeforeSelection <= static_cast<this_t*>(this)->_option.populationSize) {
+    if (popSizeBeforeSelection <= int(static_cast<this_t*>(this)->_option.populationSize)) {
       static_cast<this_t*>(this)->updateFailTimesAndBestGene(
           static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
       return;
@@ -286,7 +286,7 @@ class SOGASelector<SelectMethod::MonteCarlo> {
     std::shuffle(iterators.begin(), iterators.end(), global_mt19937());
 
     const int eliminateNum =
-        popSizeBeforeSelection - static_cast<this_t*>(this)->_option.populationSize;
+        popSizeBeforeSelection - int(static_cast<this_t*>(this)->_option.populationSize);
     for (int idx = 0; idx < eliminateNum; idx++) {
       static_cast<this_t*>(this)->_population.erase(iterators[idx]);
     }
@@ -307,8 +307,8 @@ class SOGASelector<SelectMethod::Probability> {
 
     std::list<std::pair<GeneIt_t, double>>
         eliminateSpace;  // Use the iterator as first and processed fitness as second
-    const int prevPopSize = static_cast<this_t*>(this)->_population.size();
-    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    const int prevPopSize = int(static_cast<this_t*>(this)->_population.size());
+    const int K = int(static_cast<this_t*>(this)->_option.populationSize);
     // number of candidates that need to be eliminated.
     const int eliminateNum = prevPopSize - K;
 
@@ -370,7 +370,7 @@ class SOGASelector<SelectMethod::Probability> {
     }
 
     // assert(false);
-    while (eliminateSpace.size() > eliminateNum) {
+    while (int(eliminateSpace.size()) > eliminateNum) {
       double r = randD(0.0, newProbSum);
       for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
         r -= it->second;
@@ -438,8 +438,8 @@ class SOGASelector<SelectMethod::LinearRank> {
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t)
 
-    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
-    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
+    const int K = int(static_cast<this_t*>(this)->_option.populationSize);
     const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
 
     if (popSizeBeforeSelect <= K) {
@@ -461,7 +461,7 @@ class SOGASelector<SelectMethod::LinearRank> {
     const double nPositive = _linearSelectBestProbability * popSizeBeforeSelect;
 
     std::list<std::pair<GeneIt_t, double>> eliminateSpace;
-    for (int idx = 0; idx < sortSpace.size(); idx++) {
+    for (int idx = 0; idx < int(sortSpace.size()); idx++) {
       eliminateSpace.emplace_back(std::make_pair(
           sortSpace[idx],
 
@@ -473,7 +473,7 @@ class SOGASelector<SelectMethod::LinearRank> {
     }
 
     double rMax = 1.0;
-    while (eliminateSpace.size() > popSizeBeforeSelect - K) {
+    while (int(eliminateSpace.size()) > popSizeBeforeSelect - K) {
       double r = randD(0, rMax);
       for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
         r -= it->second;
@@ -524,8 +524,8 @@ class SOGASelector<SelectMethod::ExponentialRank> {
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t)
 
-    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
-    const int K = static_cast<this_t*>(this)->_option.populationSize;
+    const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
+    const int K = int(static_cast<this_t*>(this)->_option.populationSize);
     const double previousBestFitness = static_cast<this_t*>(this)->bestFitness();
 
     if (popSizeBeforeSelect <= K) {
@@ -547,7 +547,7 @@ class SOGASelector<SelectMethod::ExponentialRank> {
         (_exponetialSelectBase - 1) / (std::pow(_exponetialSelectBase, popSizeBeforeSelect) - 1);
 
     std::list<std::pair<GeneIt_t, double>> eliminateSpace;
-    for (int idx = 0; idx < sortSpace.size(); idx++) {
+    for (int idx = 0; idx < int(sortSpace.size()); idx++) {
       eliminateSpace.emplace_back(std::make_pair(
           sortSpace[idx],
 
@@ -557,7 +557,7 @@ class SOGASelector<SelectMethod::ExponentialRank> {
     }
 
     double rMax = 1.0;
-    while (eliminateSpace.size() > popSizeBeforeSelect - K) {
+    while (int(eliminateSpace.size()) > popSizeBeforeSelect - K) {
       double r = randD(0, rMax);
       for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
         r -= it->second;
@@ -599,12 +599,12 @@ class SOGASelector<SelectMethod::Boltzmann> {
 
     // static_cast<this_t*>(this)
 
-    const int previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
-    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+    const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
 
     const int eliminateNum =
-        popSizeBeforeSelect - static_cast<this_t*>(this)->_option.populationSize;
+        popSizeBeforeSelect - int(static_cast<this_t*>(this)->_option.populationSize);
 
     if (eliminateNum <= 0) {
       static_cast<this_t*>(this)->updateFailTimesAndBestGene(
@@ -626,7 +626,7 @@ class SOGASelector<SelectMethod::Boltzmann> {
       rMax += pair.second;  //  the sum of probability may not be 1.
     }
 
-    while (eliminateSpace.size() > eliminateNum) {
+    while (int(eliminateSpace.size()) > eliminateNum) {
       double r = randD(0, rMax);
 
       for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
@@ -660,12 +660,12 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t)
 
-    const int previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
-    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+    const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
 
     const int eliminateNum =
-        popSizeBeforeSelect - static_cast<this_t*>(this)->_option.populationSize;
+        popSizeBeforeSelect - int(static_cast<this_t*>(this)->_option.populationSize);
 
     if (eliminateNum <= 0) {
       static_cast<this_t*>(this)->updateFailTimesAndBestGene(
@@ -737,7 +737,7 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
         }
       }
 
-      while (eliminateSpace.size() > eliminateNum) {
+      while (int(eliminateSpace.size()) > eliminateNum) {
         //  This rarely happens, but we must ensure
         //  the size of population keep unchanged in each generation
         eliminateSpace.pop_back();
@@ -771,8 +771,8 @@ class SOGASelector<SelectMethod::EliteReserved> {
   template <class this_t>
   void __impl___impl_select() noexcept {
     HEU_MAKE_GABASE_TYPES(this_t)
-    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
-    const int popSizeAfterSelect = static_cast<this_t*>(this)->_option.populationSize;
+    const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
+    const int popSizeAfterSelect = int(static_cast<this_t*>(this)->_option.populationSize);
     const int eliminateNum = popSizeBeforeSelect - popSizeAfterSelect;
 
     if (eliminateNum <= 0) {
@@ -795,7 +795,7 @@ class SOGASelector<SelectMethod::EliteReserved> {
 
       std::sort(sortSpace.begin(), sortSpace.end(), this_t::GeneItCompareFun);
 
-      for (int idx = _eliteNum; idx < sortSpace.size(); idx++) {
+      for (int idx = _eliteNum; idx < int(sortSpace.size()); idx++) {
         if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER)
           eliminateSpace.emplace_back(sortSpace[idx], sortSpace[idx]->_Fitness);
         else
@@ -813,8 +813,8 @@ class SOGASelector<SelectMethod::EliteReserved> {
     }
 
     if (rMax <= 0) {  //  erase randomly
-      while (eliminateSpace.size() > eliminateNum) {
-        const int curEliminateSpaceSize = eliminateSpace.size();
+      while (int(eliminateSpace.size()) > eliminateNum) {
+        const int curEliminateSpaceSize = int(eliminateSpace.size());
         for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
           if (randD() * curEliminateSpaceSize <= 1) {
             eliminateSpace.erase(it);
@@ -823,7 +823,7 @@ class SOGASelector<SelectMethod::EliteReserved> {
         }
       }
     } else {
-      while (eliminateSpace.size() > eliminateNum) {
+      while (int(eliminateSpace.size()) > eliminateNum) {
         double r = randD(0, rMax);
 
         for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
