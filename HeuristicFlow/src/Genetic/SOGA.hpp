@@ -120,7 +120,11 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
 
  public:
   HEU_MAKE_GABASE_TYPES(Base_t)
-  SOGA() = default;
+  SOGA() {
+    if constexpr (selectMethod == SelectMethod::Boltzmann) {
+      this->_boltzmannSelectStrength = 10 * (fOpt == FITNESS_LESS_BETTER ? -1 : 1);
+    }
+  }
   ~SOGA() = default;
 
   HEU_RELOAD_MEMBERFUCTION_RUN
@@ -189,6 +193,13 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
     return gIt;
   }
 
+  inline void applyErasement(const std::list<std::pair<GeneIt_t, double>>& eraseList) noexcept {
+    // erase all eliminated candidates from the linked list
+    for (auto& pair : eraseList) {
+      this->_population.erase(pair.first);
+    }
+  }
+
   inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt,
                                          const double prevFitess) noexcept {
     if (!isBetter(newBestGeneIt->_Fitness, prevFitess)) {
@@ -216,31 +227,7 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    * will be assigned to be elite.
    *
    */
-  inline void __impl_select() noexcept {
-    this->template __impl___impl_select<SOGA>();
-    /*
-    const double prevEliteFitness = _eliteIt->_Fitness;
-    std::vector<GeneIt_t> iterators;
-    iterators.clear();
-    iterators.reserve(this->_population.size());
-    auto GeneItCmp = [](GeneIt_t a, GeneIt_t b) { return isBetter(a->_Fitness, b->_Fitness); };
-
-    for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
-      iterators.emplace_back(it);
-    }
-
-    std::sort(iterators.begin(), iterators.end(), GeneItCmp);
-
-    while (this->_population.size() > this->_option.populationSize) {
-      this->_population.erase(iterators.back());
-      iterators.pop_back();
-    }
-
-    GeneIt_t curBest = iterators.front();
-
-    this->_population.emplace_back(*_eliteIt);
-    */
-  }
+  inline void __impl_select() noexcept { this->template __impl___impl_select<SOGA>(); }
 };
 
 }  //    namespace heu

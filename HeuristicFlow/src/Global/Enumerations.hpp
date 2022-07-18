@@ -204,7 +204,7 @@ enum SelectMethod {
   ExponentialRank,      ///< Requirements:
   Boltzmann,            ///< Requirements:
   StochasticUniversal,  ///< Requirements:
-  Elite                 ///< Elitism + the touletteWheel method. Requirements:
+  EliteReserved         ///< Elitism + the RouletteWheel method. Requirements:
 };
 
 }  //    namespace heu

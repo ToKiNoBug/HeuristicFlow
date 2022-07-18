@@ -51,17 +51,17 @@ class SOGASelector<SelectMethod::RouletteWheel> {
     HEU_MAKE_GABASE_TYPES(this_t)
 
     /*
-     * In this function, the linked list `eliminatedGenes` stores all candidates to be eliminated.
+     * In this function, the linked list `eliminateSpace` stores all candidates to be eliminated.
      * At first it has all candidates, and as the loop running, we erase a candidate from
-     * `eliminatedGenes` where stores candidates waiting to be eliminated, symbolizing this
+     * `eliminateSpace` where stores candidates waiting to be eliminated, symbolizing this
      * candidate is selected.
      *
-     * When the size of `eliminatedGenes` equals to eliminate num, all candidates inside
+     * When the size of `eliminateSpace` equals to eliminate num, all candidates inside
      * this hashmap will be erased from the linked list `_population`
      */
 
     std::list<std::pair<GeneIt_t, double>>
-        eliminatedGenes;  // Use the iterator as first and processed fitness as second
+        eliminateSpace;  // Use the iterator as first and processed fitness as second
 
     // number of candidates that need to be eliminated.
     const int eliminateNum = static_cast<this_t*>(this)->_population.size() -
@@ -76,66 +76,59 @@ class SOGASelector<SelectMethod::RouletteWheel> {
           static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
       return;
     }
-    // eliminatedGenes.reserve(static_cast<this_t*>(this)->_population.size());
-
-    // fill eliminatedGenes
+    // eliminateSpace.reserve(static_cast<this_t*>(this)->_population.size());
+    double minFitness = pinfD;
+    // fill eliminateSpace and compute the min fitness
     for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
          it != static_cast<this_t*>(this)->_population.end(); ++it) {
       // If fitness option is FITNESS_LESS_BETTER, take the inverse value
       if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-        eliminatedGenes.emplace_back(std::make_pair(it, it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
       } else {
-        eliminatedGenes.emplace_back(std::make_pair(it, -it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
       }
+      minFitness = std::min(minFitness, eliminateSpace.back().second);
     }
 
-    // erase all selected candidates from eliminatedGenes
+    double processedFitnessSum = 0;
+    for (auto& pair : eliminateSpace) {
+      pair.second -= minFitness;
+      processedFitnessSum += pair.second;
+    }
 
-    while (eliminatedGenes.size() > eliminateNum) {
-      double minFitness = eliminatedGenes.front().second;
-      double processedFitnessSum = 0;
-      // find the worst fitness
-      for (auto& pair : eliminatedGenes) {
-        minFitness = std::min(minFitness, pair.second);
-      }
+    // erase all selected candidates from eliminateSpace
 
-      // update and compute the sum of processed fitness
-      for (auto& pair : eliminatedGenes) {
-        pair.second -= minFitness;
-        processedFitnessSum += pair.second;
-      }
-
-      // erase a solution from eliminatedGenes by its fitness
+    while (eliminateSpace.size() > eliminateNum) {
+      // erase a solution from eliminateSpace by its fitness
       if (processedFitnessSum > 0) {
         double r = randD(0, processedFitnessSum);
-        for (auto it = eliminatedGenes.begin(); it != eliminatedGenes.end(); ++it) {
+        for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
           r -= it->second;
           if (r <= 0) {
-            eliminatedGenes.erase(it);
+            processedFitnessSum -= it->second;
+            eliminateSpace.erase(it);
             break;
           }
         }
 
         if (r > 0) {  // unlikely
-          eliminatedGenes.pop_back();
+          processedFitnessSum -= eliminateSpace.back().second;
+          eliminateSpace.pop_back();
         }
 
       } else {
         // select stochastically
-        const int sizeBeforeErasement = eliminatedGenes.size();
-        for (auto it = eliminatedGenes.begin(); it != eliminatedGenes.end(); ++it) {
+        const int sizeBeforeErasement = eliminateSpace.size();
+        for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
           if (randIdx(sizeBeforeErasement) == 0) {
-            eliminatedGenes.erase(it);
+            eliminateSpace.erase(it);
             break;
           }
         }
       }
     }
 
-    // erase all eliminated candidates from the linked list
-    for (auto& pair : eliminatedGenes) {
-      static_cast<this_t*>(this)->_population.erase(pair.first);
-    }
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
 
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(
         static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
@@ -302,7 +295,7 @@ class SOGASelector<SelectMethod::Probability> {
     HEU_MAKE_GABASE_TYPES(this_t)
 
     std::list<std::pair<GeneIt_t, double>>
-        eliminatedGenes;  // Use the iterator as first and processed fitness as second
+        eliminateSpace;  // Use the iterator as first and processed fitness as second
     const int prevPopSize = static_cast<this_t*>(this)->_population.size();
     const int K = static_cast<this_t*>(this)->_option.populationSize;
     // number of candidates that need to be eliminated.
@@ -327,28 +320,28 @@ class SOGASelector<SelectMethod::Probability> {
            it != static_cast<this_t*>(this)->_population.end(); ++it) {
         // If fitness option is FITNESS_LESS_BETTER, take the inverse value
         if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-          eliminatedGenes.emplace_back(std::make_pair(it, it->_Fitness));
+          eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
         } else {
-          eliminatedGenes.emplace_back(std::make_pair(it, -it->_Fitness));
+          eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
         }
 
-        minFitness = std::min(eliminatedGenes.back().second, minFitness);
+        minFitness = std::min(eliminateSpace.back().second, minFitness);
       }
 
       //
       double fitnessSum = 0;
-      for (auto& pair : eliminatedGenes) {
+      for (auto& pair : eliminateSpace) {
         pair.second -= minFitness;
         fitnessSum += pair.second;
       }
 
       //
       if (fitnessSum <= 0) {
-        for (auto& pair : eliminatedGenes) {
+        for (auto& pair : eliminateSpace) {
           pair.second = 1.0 / prevPopSize;
         }
       } else {
-        for (auto& pair : eliminatedGenes) {
+        for (auto& pair : eliminateSpace) {
           pair.second /= fitnessSum;
         }
       }
@@ -359,34 +352,31 @@ class SOGASelector<SelectMethod::Probability> {
     //  assert(!std::isnan(NChooseK));
 
     double newProbSum = 0;
-    for (auto& pair : eliminatedGenes) {
+    for (auto& pair : eliminateSpace) {
       pair.second =
           NChooseK * std::pow(pair.second, K) * std::pow(1.0 - pair.second, prevPopSize - K);
       newProbSum += pair.second;
     }
 
     // assert(false);
-    while (eliminatedGenes.size() > eliminateNum) {
+    while (eliminateSpace.size() > eliminateNum) {
       double r = randD(0.0, newProbSum);
-      for (auto it = eliminatedGenes.begin(); it != eliminatedGenes.end(); ++it) {
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
         r -= it->second;
         if (r <= 0) {
           newProbSum -= it->second;
-          eliminatedGenes.erase(it);
+          eliminateSpace.erase(it);
           break;
         }
       }
 
       if (r > 0) {
-        newProbSum -= eliminatedGenes.back().second;
-        eliminatedGenes.pop_back();
+        newProbSum -= eliminateSpace.back().second;
+        eliminateSpace.pop_back();
       }
     }
 
-    // erase all eliminated candidates from the linked list
-    for (auto& pair : eliminatedGenes) {
-      static_cast<this_t*>(this)->_population.erase(pair.first);
-    }
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
 
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(
         static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
@@ -397,36 +387,39 @@ template <>
 class SOGASelector<SelectMethod::LinearRank> {
  public:
   SOGASelector() {
-    _bestSelectProbability = 0.9;
-    _worstSelectProbabilty = 0.1;
+    _linearSelectBestProbability = 0.9;
+    _linearSelectWrostProbability = 0.1;
   }
 
-  inline double bestSelectProbability() const noexcept { return _bestSelectProbability; }
+  inline double linearSelectBestProbability() const noexcept {
+    return _linearSelectBestProbability;
+  }
 
-  inline double worstSelectProbabilty() const noexcept { return _worstSelectProbabilty; }
+  inline double linearSelectWrostProbability() const noexcept {
+    return _linearSelectWrostProbability;
+  }
 
-  inline void setSelectProbability(double worstGeneSelectProbabilty,
-                                   double bestGeneSelectProbability) noexcept {
+  inline void setLinearSelectProbability(double worstProbabilty, double bestProbability) noexcept {
     const bool worst_gene_select_probability_should_be_less_than_the_best_gene_select_probability =
-        worstGeneSelectProbabilty < bestGeneSelectProbability;
+        worstProbabilty < bestProbability;
     assert(worst_gene_select_probability_should_be_less_than_the_best_gene_select_probability);
 
     const bool probability_should_be_greater_or_equal_to_0 =
-        worstGeneSelectProbabilty >= 0 && bestGeneSelectProbability >= 0;
+        worstProbabilty >= 0 && bestProbability >= 0;
 
     assert(probability_should_be_greater_or_equal_to_0);
 
     const bool probability_should_be_less_or_equal_to_1 =
-        worstGeneSelectProbabilty <= 1 && bestGeneSelectProbability <= 1;
+        worstProbabilty <= 1 && bestProbability <= 1;
     assert(probability_should_be_less_or_equal_to_1);
 
-    _bestSelectProbability = bestGeneSelectProbability;
-    _worstSelectProbabilty = worstGeneSelectProbabilty;
+    _linearSelectBestProbability = bestProbability;
+    _linearSelectWrostProbability = worstProbabilty;
   }
 
  protected:
-  double _worstSelectProbabilty;
-  double _bestSelectProbability;
+  double _linearSelectWrostProbability;
+  double _linearSelectBestProbability;
 
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -451,8 +444,8 @@ class SOGASelector<SelectMethod::LinearRank> {
 
     std::sort(sortSpace.begin(), sortSpace.end(), this_t::GeneItCompareFun);
 
-    const double nNegitive = _worstSelectProbabilty * popSizeBeforeSelect;
-    const double nPositive = _bestSelectProbability * popSizeBeforeSelect;
+    const double nNegitive = _linearSelectWrostProbability * popSizeBeforeSelect;
+    const double nPositive = _linearSelectBestProbability * popSizeBeforeSelect;
 
     std::list<std::pair<GeneIt_t, double>> eliminateSpace;
     for (int idx = 0; idx < sortSpace.size(); idx++) {
@@ -484,9 +477,7 @@ class SOGASelector<SelectMethod::LinearRank> {
       }
     }
 
-    for (auto& pair : eliminateSpace) {
-      static_cast<this_t*>(this)->_population.erase(pair.first);
-    }
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
 
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(
         static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
@@ -568,12 +559,270 @@ class SOGASelector<SelectMethod::ExponentialRank> {
       }
     }
 
-    for (auto& pair : eliminateSpace) {
-      static_cast<this_t*>(this)->_population.erase(pair.first);
-    }
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
 
     static_cast<this_t*>(this)->updateFailTimesAndBestGene(
         static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::Boltzmann> {
+ public:
+  inline double boltzmannSelectStrength() noexcept { return _boltzmannSelectStrength; }
+
+  inline void setBoltzmannSelectStrength(double b) noexcept { _boltzmannSelectStrength = b; }
+
+ protected:
+  double _boltzmannSelectStrength;
+
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+
+    // static_cast<this_t*>(this)
+
+    const int previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+
+    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+
+    const int eliminateNum =
+        popSizeBeforeSelect - static_cast<this_t*>(this)->_option.populationSize;
+
+    if (eliminateNum <= 0) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene());
+      return;
+    }
+
+    std::list<std::pair<GeneIt_t, double>> eliminateSpace;
+    // double Z = 0;    //Z is erased because probability normalization is not guaranteed.
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      eliminateSpace.emplace_back(it, it->_Fitness);
+      // Z += std::exp(it->_Fitness);
+    }
+
+    double rMax = 0;  // the sum of "probability"
+    for (auto& pair : eliminateSpace) {
+      pair.second = std::exp(_boltzmannSelectStrength * pair.second);
+      rMax += pair.second;  //  the sum of probability may not be 1.
+    }
+
+    while (eliminateSpace.size() > eliminateNum) {
+      double r = randD(0, rMax);
+
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
+        r -= it->second;
+        if (r <= 0) {
+          rMax -= it->second;
+          eliminateSpace.erase(it);
+          break;
+        }
+      }
+
+      if (r > 0) {
+        rMax -= eliminateSpace.back().second;
+        eliminateSpace.pop_back();
+      }
+    }
+
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::StochasticUniversal> {
+ protected:
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+
+    const int previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+
+    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+
+    const int eliminateNum =
+        popSizeBeforeSelect - static_cast<this_t*>(this)->_option.populationSize;
+
+    if (eliminateNum <= 0) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene());
+      return;
+    }
+
+    std::list<std::pair<GeneIt_t, double>> eliminateSpace;
+
+    double minFitness = pinfD;
+
+    for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+         it != static_cast<this_t*>(this)->_population.end(); ++it) {
+      // If fitness option is FITNESS_LESS_BETTER, take the inverse value
+      if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
+        eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
+      } else {
+        eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
+      }
+
+      minFitness = std::min(minFitness, eliminateSpace.back().second);
+    }
+
+    double fitnessSum = 0;
+    for (auto& pair : eliminateSpace) {
+      pair.second -= minFitness;
+
+      fitnessSum += pair.second;
+    }
+
+    if (fitnessSum <= 0) {  //  unlikely
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end();) {
+        if (randD() * static_cast<this_t*>(this)->_option.populationSize <= popSizeBeforeSelect) {
+          it = eliminateSpace.erase(it);
+        } else {
+          ++it;
+        }
+      }
+    } else {
+      const double pointerInterval =
+          fitnessSum / static_cast<this_t*>(this)->_option.populationSize;
+      /*
+      const double begPosition = randD(0, pointerInterval);
+
+      double passedFitnessSum = begPositon;
+      auto it = eliminateSpace.begin();
+      for (int pointerIdx = 0; pointerIdx < static_cast<this_t*>(this)->_option.populationSize;
+           pointerIdx++) {
+        if (it == eliminateSpace.end()) break;  //  Theoritically this won't happen
+
+        while (passedFitnessSum < (pointerIdx + 1) * pointerInterval) {
+          passedFitnessSum += it->second;
+          ++it;
+        }
+        it = eliminateSpace.erase(it);
+      */
+
+      // While paving throught eliminateSpace, accumulate the fitness. Everytime when the sum is
+      // greater of equal to the interval, erase the current element (selected)
+      double fitnessCounter = randD(0, pointerInterval);
+      for (auto it = eliminateSpace.begin(); it != eliminateSpace.end();) {
+        fitnessCounter += it->second;
+
+        if (fitnessCounter >= pointerInterval) {
+          fitnessCounter -= pointerInterval;
+          it = eliminateSpace.erase(it);
+        } else {
+          ++it;
+        }
+      }
+
+      while (eliminateSpace.size() > eliminateNum) {
+        //  This rarely happens, but we must ensure
+        //  the size of population keep unchanged in each generation
+        eliminateSpace.pop_back();
+      }
+    }
+
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
+
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene(), previousBestFitness);
+  }
+};
+
+template <>
+class SOGASelector<SelectMethod::EliteReserved> {
+ public:
+  SOGASelector() { _eliteNum = 1; }
+
+  inline int eliteNum() const noexcept { return _eliteNum; }
+
+  inline void setEliteNum(int eliteNum) noexcept {
+    assert(eliteNum >= 1);
+    _eliteNum = eliteNum;
+  }
+
+ protected:
+  int _eliteNum;
+
+  template <class this_t>
+  void __impl___impl_select() noexcept {
+    HEU_MAKE_GABASE_TYPES(this_t)
+    const int popSizeBeforeSelect = static_cast<this_t*>(this)->_population.size();
+    const int popSizeAfterSelect = static_cast<this_t*>(this)->_option.populationSize;
+    const int eliminateNum = popSizeBeforeSelect - popSizeAfterSelect;
+
+    if (eliminateNum <= 0) {
+      static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+          static_cast<this_t*>(this)->findCurrentBestGene());
+      return;
+    }
+
+    std::list<std::pair<GeneIt_t, double>> eliminateSpace;
+    double minFitness = pinfD;
+    {
+      std::vector<GeneIt_t> sortSpace(0);
+
+      sortSpace.reserve(popSizeBeforeSelect);
+
+      for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
+           it != static_cast<this_t*>(this)->_population.end(); ++it) {
+        sortSpace.emplace_back(it);
+      }
+
+      std::sort(sortSpace.begin(), sortSpace.end(), this_t::GeneItCompareFun);
+
+      for (int idx = _eliteNum; idx < sortSpace.size(); idx++) {
+        if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER)
+          eliminateSpace.emplace_back(sortSpace[idx], sortSpace[idx]->_Fitness);
+        else
+          eliminateSpace.emplace_back(sortSpace[idx], -sortSpace[idx]->_Fitness);
+
+        minFitness = std::min(minFitness, eliminateSpace.back().second);
+      }
+    }
+
+    double rMax = 0;
+
+    for (auto& pair : eliminateSpace) {
+      pair.second -= minFitness;
+      rMax += pair.second;
+    }
+
+    if (rMax <= 0) {  //  erase randomly
+      while (eliminateSpace.size() > eliminateNum) {
+        const int curEliminateSpaceSize = eliminateSpace.size();
+        for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
+          if (randD() * curEliminateSpaceSize <= 1) {
+            eliminateSpace.erase(it);
+            break;
+          }
+        }
+      }
+    } else {
+      while (eliminateSpace.size() > eliminateNum) {
+        double r = randD(0, rMax);
+
+        for (auto it = eliminateSpace.begin(); it != eliminateSpace.end(); ++it) {
+          r -= it->second;
+          if (r <= 0) {
+            rMax -= it->second;
+            eliminateSpace.erase(it);
+            break;
+          }
+        }
+        if (r > 0) {  //  unlikely
+          rMax -= eliminateSpace.back().second;
+          eliminateSpace.pop_back();
+        }
+      }
+    }
+
+    static_cast<this_t*>(this)->applyErasement(eliminateSpace);
+    static_cast<this_t*>(this)->updateFailTimesAndBestGene(
+        static_cast<this_t*>(this)->findCurrentBestGene());
   }
 };
 
