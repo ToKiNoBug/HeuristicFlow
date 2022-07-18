@@ -26,7 +26,7 @@ using namespace std;
 #include <algorithm>
 
 // this tests shows how to solve TSP problems with PSO
-void testTSP_PSO(const size_t N) {
+void testTSP_PSO(const int N) {
   static constexpr int SpaceDim = 2;
   // type of decision variable encoded in float
   using Var_t = Eigen::ArrayXd;
@@ -128,7 +128,7 @@ void testTSP_PSO(const size_t N) {
 }
 
 int main() {
-  size_t NodeNum = 100;
+  int NodeNum = 100;
   cout << "Input node number : ";
   cin >> NodeNum;
   testTSP_PSO(NodeNum);
