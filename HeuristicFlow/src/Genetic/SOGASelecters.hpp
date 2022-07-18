@@ -69,6 +69,11 @@ template <>
 class SOGASelector<SelectMethod::RouletteWheel> {
   friend class SOGAInheriter<SelectMethod::RouletteWheel>;
 
+ public:
+  inline constexpr SelectMethod selectMethod() const noexcept {
+    return SelectMethod::RouletteWheel;
+  }
+
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
@@ -162,6 +167,9 @@ class SOGASelector<SelectMethod::RouletteWheel> {
 template <>
 class SOGASelector<SelectMethod::Tournament> {
   friend class SOGAInheriter<SelectMethod::Tournament>;
+
+ public:
+  inline constexpr SelectMethod selectMethod() const noexcept { return SelectMethod::Tournament; }
 
  public:
   SOGASelector() { _tournamentSize = 3; }
@@ -278,7 +286,7 @@ class SOGASelector<SelectMethod::MonteCarlo> {
   friend class SOGAInheriter<SelectMethod::MonteCarlo>;
 
  public:
-  SOGASelector() = default;
+  inline constexpr SelectMethod selectMethod() const noexcept { return SelectMethod::MonteCarlo; }
 
  protected:
   template <class this_t>
@@ -318,6 +326,9 @@ class SOGASelector<SelectMethod::MonteCarlo> {
 template <>
 class SOGASelector<SelectMethod::Probability> {
   friend class SOGAInheriter<SelectMethod::Probability>;
+
+ public:
+  inline constexpr SelectMethod selectMethod() const noexcept { return SelectMethod::Probability; }
 
  protected:
   template <class this_t>
@@ -423,6 +434,8 @@ class SOGASelector<SelectMethod::LinearRank> {
     _linearSelectWrostProbability = 0.1;
   }
 
+  inline constexpr SelectMethod selectMethod() const noexcept { return SelectMethod::LinearRank; }
+
   inline double linearSelectBestProbability() const noexcept {
     return _linearSelectBestProbability;
   }
@@ -523,6 +536,10 @@ class SOGASelector<SelectMethod::ExponentialRank> {
  public:
   SOGASelector() { _exponetialSelectBase = 0.8; }
 
+  inline constexpr SelectMethod selectMethod() const noexcept {
+    return SelectMethod::ExponentialRank;
+  }
+
   inline double exponetialSelectBase() const noexcept { return _exponetialSelectBase; }
 
   inline void setExponetialSelectBase(double _c) noexcept {
@@ -605,6 +622,8 @@ class SOGASelector<SelectMethod::Boltzmann> {
   friend class SOGAInheriter<SelectMethod::Boltzmann>;
 
  public:
+  inline constexpr SelectMethod selectMethod() const noexcept { return SelectMethod::Boltzmann; }
+
   inline double boltzmannSelectStrength() noexcept { return _boltzmannSelectStrength; }
 
   inline void setBoltzmannSelectStrength(double b) noexcept { _boltzmannSelectStrength = b; }
@@ -776,6 +795,10 @@ class SOGASelector<SelectMethod::EliteReserved> {
 
  public:
   SOGASelector() { _eliteNum = 1; }
+
+  inline constexpr SelectMethod selectMethod() const noexcept {
+    return SelectMethod::EliteReserved;
+  }
 
   inline int eliteNum() const noexcept { return _eliteNum; }
 
