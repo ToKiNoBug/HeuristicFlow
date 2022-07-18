@@ -28,6 +28,7 @@ add_executable(Boxes boxes.cpp)
 add_executable(poolVector poolVector.cpp)
 add_executable(AOS_Rastrigin AOS_Rastrigin.cpp)
 add_executable(testFunctions testFunctions.cpp)
+add_executable(MinMaxCompileTime MinMaxCompileTime.cpp)
 
 find_package(OpenMP)
 

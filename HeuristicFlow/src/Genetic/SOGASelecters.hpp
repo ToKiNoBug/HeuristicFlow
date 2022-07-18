@@ -826,6 +826,54 @@ class SOGASelector<SelectMethod::EliteReserved> {
   }
 };
 
+namespace {
+
+template <SelectMethod sm>
+class SOGAInheriter : public SOGAInheriter<SelectMethod(int(sm) + 1)>::type {
+ public:
+  using type = SOGASelector<sm>;
+};
+
+template <>
+class SOGAInheriter<SelectMethod::RunTimeSelectMethod> {
+ public:
+  struct type {};
+};
+
+}  // namespace
+
+template <>
+class SOGASelector<SelectMethod::RunTimeSelectMethod> {
+ public:
+  SOGASelector() { _selectMethod = SelectMethod::EliteReserved; }
+
+  inline SelectMethod selectMethod() const noexcept { return _selectMethod; }
+
+  inline void setSelectMethod(SelectMethod _sm) noexcept {
+    switch (_sm) {
+      case SelectMethod::Boltzmann:
+      case SelectMethod::EliteReserved:
+      case SelectMethod::ExponentialRank:
+      case SelectMethod::LinearRank:
+      case SelectMethod::MonteCarlo:
+      case SelectMethod::Probability:
+      case SelectMethod::RouletteWheel:
+      case SelectMethod::StochasticUniversal:
+      case SelectMethod::Tournament:
+      case SelectMethod::Truncation:
+        _selectMethod = _sm;
+        break;
+      default:
+        const bool invalid_select_method = false;
+        assert(invalid_select_method);
+        break;
+    }
+  }
+
+ protected:
+  SelectMethod _selectMethod;
+};
+
 }  // namespace internal
 }  // namespace heu
 

@@ -215,6 +215,42 @@ inline scalar_t gaussianCurve(const scalar_t x, const scalar_t mu = 0.0,
          std::exp(-heu::square(x - mu) / (2 * heu::square(sigma)));
 }
 
+namespace {
+
+template <typename T, T val, T... vals>
+struct _impl_minmax {
+  static constexpr T min =
+      (val < _impl_minmax<T, vals...>::min) ? (val) : (_impl_minmax<T, vals...>::min);
+  static constexpr T max =
+      (val > _impl_minmax<T, vals...>::max) ? (val) : (_impl_minmax<T, vals...>::max);
+};
+
+template <typename T, T A, T B>
+struct _impl_minmax<T, A, B> {
+  static constexpr T min = (A > B) ? (B) : (A);
+  static constexpr T max = (A < B) ? (B) : (A);
+};
+
+template <typename T, T val>
+struct _impl_minmax<T, val> {
+  static constexpr T min = val;
+  static constexpr T max = val;
+};
+
+}  // namespace
+
+template <typename T, T... vals>
+struct minmax {
+  static constexpr T min = _impl_minmax<T, vals...>::min;
+  static constexpr T max = _impl_minmax<T, vals...>::max;
+};
+
+template <typename T, T... vals>
+constexpr T min_v = minmax<T, vals...>::min;
+
+template <typename T, T... vals>
+constexpr T max_v = minmax<T, vals...>::max;
+
 }  //    namespace heu
 
 #endif  // HEU_Maths_HPP
