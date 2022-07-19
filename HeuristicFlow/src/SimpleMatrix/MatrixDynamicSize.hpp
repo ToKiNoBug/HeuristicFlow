@@ -66,14 +66,15 @@ class MatrixDynamicSize {
    * \param r
    * \param c
    */
-  MatrixDynamicSize(size_t r, size_t c) noexcept {
+  MatrixDynamicSize(int r, int c) noexcept {
     rowNum = r;
     colNum = c;
     _capacity = r * c;
     dataPtr = alloc().allocate(_capacity);
     if constexpr (isClass)
-      for (size_t i = 0; i < _capacity; i++) {
-        alloc().construct(dataPtr + i);
+      for (int i = 0; i < _capacity; i++) {
+        // alloc().construct(dataPtr + i);
+        dataPtr[i] = Scalar_t();
       }
   }
 
@@ -84,9 +85,21 @@ class MatrixDynamicSize {
    */
   explicit MatrixDynamicSize(const MatrixDynamicSize &src) noexcept {
     resize(src.rowNum, src.colNum);
-    for (size_t i = 0; i < size(); i++) {
+    for (int i = 0; i < size(); i++) {
       dataPtr[i] = src.dataPtr[i];
     }
+  }
+
+  explicit MatrixDynamicSize(MatrixDynamicSize &&src) noexcept {
+    dataPtr = src.dataPtr;
+    rowNum = src.rowNum;
+    colNum = src.colNum;
+    _capacity = src._capacity;
+
+    src.dataPtr = nullptr;
+    src.rowNum = 0;
+    src.colNum = 0;
+    src._capacity = 0;
   }
 
   /// Deep copy
@@ -99,8 +112,12 @@ class MatrixDynamicSize {
    */
   const MatrixDynamicSize &operator=(const MatrixDynamicSize &src) noexcept {
     resize(src.rowNum, src.colNum);
-    for (size_t i = 0; i < size(); i++) {
-      dataPtr[i] = src.dataPtr[i];
+    for (int i = 0; i < size(); i++) {
+      if constexpr (isClass) {
+        dataPtr[i] = src.dataPtr[i];
+      } else {
+        memcpy(dataPtr, src, sizeof(Scalar_t) * src.size());
+      }
     }
     return *this;
   }
@@ -111,11 +128,13 @@ class MatrixDynamicSize {
    */
   ~MatrixDynamicSize() {
     if (dataPtr != nullptr) {
-      alloc().deallocate(dataPtr, _capacity);
       if constexpr (isClass)
-        for (size_t i = 0; i < _capacity; i++) {
-          alloc().destroy(dataPtr + i);
+        for (int i = 0; i < _capacity; i++) {
+          (dataPtr + i)->~Scalar_t();
+          // alloc().destroy(dataPtr + i);
         }
+
+      alloc().deallocate(dataPtr, _capacity);
     }
   };
 
@@ -159,7 +178,7 @@ class MatrixDynamicSize {
    * \brief Number of elements. Same as that in STL
    *
    */
-  inline size_t size() const noexcept { return rowNum * colNum; }
+  inline int size() const noexcept { return rowNum * colNum; }
 
   /**
    * \brief To reserve some space. Same as that in std::vector
@@ -168,22 +187,18 @@ class MatrixDynamicSize {
    *
    * \param s Size to be reserved
    */
-  void reserve(size_t s) noexcept {
+  void reserve(int s) noexcept {
     if (_capacity <= s) return;
 
-    if constexpr (isClass)
-      for (size_t i = 0; i < _capacity; i++) {
-        alloc().destroy(dataPtr + i);
-      }
+    Scalar_t *newPtr = alloc().allocate(s);
+
+    memcpy(newPtr, dataPtr, sizeof(Scalar_t) * _capacity);
+
     alloc().deallocate(dataPtr, _capacity);
 
-    dataPtr = alloc().allocate(s);
     _capacity = s;
-    if constexpr (isClass) {
-      for (size_t i = 0; i < _capacity; i++) {
-        alloc().construct(dataPtr + i);
-      }
-    }
+
+    dataPtr = newPtr;
   }
 
   /**
@@ -192,13 +207,14 @@ class MatrixDynamicSize {
    * \param r New row numbers
    * \param c New coloumn numbers
    */
-  void resize(size_t r, size_t c) noexcept {
+  void resize(int r, int c) noexcept {
     if (r * c != size()) {
       if (r * c > _capacity) {
         if (dataPtr != nullptr) {
           if constexpr (isClass)
-            for (size_t i = 0; i < _capacity; i++) {
-              alloc().destroy(dataPtr + i);
+            for (int i = 0; i < _capacity; i++) {
+              // alloc().destroy(dataPtr + i);
+              (dataPtr + i)->~Scalar_t();
             }
           alloc().deallocate(dataPtr, _capacity);
         }
@@ -207,8 +223,9 @@ class MatrixDynamicSize {
         _capacity = r * c;
 
         if constexpr (isClass)
-          for (size_t i = 0; i < _capacity; i++) {
-            alloc().construct(dataPtr + i);
+          for (int i = 0; i < _capacity; i++) {
+            // alloc().construct(dataPtr + i);
+            dataPtr[i] = Scalar_t();
           }
       }
     }
@@ -220,50 +237,48 @@ class MatrixDynamicSize {
   /**
    * \brief Same API to eigen's matrices
    */
-  inline size_t rows() const noexcept { return rowNum; }
+  inline int rows() const noexcept { return rowNum; }
 
   /**
    * \brief Same API to eigen's matrices
    */
-  inline size_t cols() const noexcept { return colNum; }
+  inline int cols() const noexcept { return colNum; }
 
   /**
    * \brief Same API to std::vector
    *
    */
-  inline size_t capacity() const noexcept { return _capacity; }
+  inline int capacity() const noexcept { return _capacity; }
 
   /**
    * \brief Same API to std::vector
    */
-  inline const Scalar_t &operator[](size_t n) const noexcept { return dataPtr[n]; }
+  inline const Scalar_t &operator[](int n) const noexcept { return dataPtr[n]; }
 
   /**
    * \brief Same API to eigen's matrices
    */
-  inline const Scalar_t &operator()(size_t n) const noexcept { return dataPtr[n]; }
+  inline const Scalar_t &operator()(int n) const noexcept { return dataPtr[n]; }
 
   /**
    * \brief Same API to eigen's matrices
    */
-  inline const Scalar_t &operator()(size_t r, size_t c) const noexcept {
-    return dataPtr[rowNum * c + r];
-  }
+  inline const Scalar_t &operator()(int r, int c) const noexcept { return dataPtr[rowNum * c + r]; }
 
   /**
    * \brief Same API to std::vector
    */
-  inline Scalar_t &operator[](size_t n) noexcept { return dataPtr[n]; }
+  inline Scalar_t &operator[](int n) noexcept { return dataPtr[n]; }
 
   /**
    * \brief Same API to eigen's matrices
    */
-  inline Scalar_t &operator()(size_t n) noexcept { return dataPtr[n]; }
+  inline Scalar_t &operator()(int n) noexcept { return dataPtr[n]; }
 
   /**
    * \brief Same API to eigen's matrices
    */
-  inline Scalar_t &operator()(size_t r, size_t c) noexcept { return dataPtr[rowNum * c + r]; }
+  inline Scalar_t &operator()(int r, int c) noexcept { return dataPtr[rowNum * c + r]; }
 
   /**
    * \brief Same API to std::vector
@@ -290,9 +305,9 @@ class MatrixDynamicSize {
 
  protected:
   Scalar_t *dataPtr;
-  size_t rowNum;
-  size_t colNum;
-  size_t _capacity;
+  int rowNum;
+  int colNum;
+  int _capacity;
 
  private:
   static constexpr bool isClass = std::is_class<Scalar_t>::value;
