@@ -3,15 +3,12 @@
 
 #include <type_traits>
 
+#include "InternalHeaderCheck.h"
+
 namespace heu {
 template <class Derived>
 class MatrixBase {
- public:
-  const Derived& operator=(const MatrixBase& src) noexcept {
-    static_cast<Derived&>(*this) = static_cast<Derived&>(src);
-    return *this;
-  }
-
+ protected:
   template <class DerivedB>
   Derived& operator=(const DerivedB& src) noexcept {
     static_assert(std::is_same_v<typename Derived::Scalar_t, typename DerivedB::Scalar_t>,
@@ -24,7 +21,7 @@ class MatrixBase {
                       "You mixed different sizes of matrices");
       } else {
         assert(Derived::rowsAtCompileTime == src.rows());
-        assert(Derived::rowsAtCompileTime == src.cols());
+        assert(Derived::colsAtCompileTime == src.cols());
       }
     } else {
       static_cast<Derived&>(*this).resize(src.rows(), src.cols());

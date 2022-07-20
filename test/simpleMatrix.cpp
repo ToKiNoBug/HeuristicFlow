@@ -16,10 +16,12 @@ int main() {
   cout << "mat34(0,0) = " << mat34(0, 0) << endl;
   cout << "matXX(0,0) = " << matXX(0, 0) << endl;
 
-  matXX = mat34;
+  // matXX = mat34;
+  mat34 = matXX;
 
   cout << "After Copying : " << endl;
   cout << "mat34(0,0) = " << mat34(0, 0) << endl;
   cout << "matXX(0,0) = " << matXX(0, 0) << endl;
+
   return 0;
 }
