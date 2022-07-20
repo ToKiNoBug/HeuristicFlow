@@ -26,6 +26,8 @@ This file is part of Heuristic.
 
 #include "InternalHeaderCheck.h"
 
+#include "MatrixBase.hpp"
+
 namespace heu {
 
 /**
@@ -36,8 +38,11 @@ namespace heu {
  * \tparam Rows Row number
  * \tparam Cols Coloumn number
  */
-template <class Scalar_t, size_t Rows, size_t Cols>
-class MatrixFixedSize {
+template <class Scalar, size_t Rows, size_t Cols>
+class MatrixFixedSize : public MatrixBase<MatrixFixedSize<Scalar, Rows, Cols>> {
+ public:
+  using Scalar_t = Scalar;
+
  protected:
   using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t,
                                            const Scalar_t &>::type;
@@ -67,8 +72,12 @@ class MatrixFixedSize {
    * \param src Source of copying
    */
   explicit MatrixFixedSize(const MatrixFixedSize &src) {
-    for (size_t i = 0; i < size(); i++) {
-      array[i] = src.array[i];
+    if constexpr (isClass) {
+      for (size_t i = 0; i < size(); i++) {
+        array[i] = src.array[i];
+      }
+    } else {
+      memcpy(array.data(), src.array.data(), sizeof(Scalar_t) * size());
     }
   }
 
@@ -109,12 +118,19 @@ class MatrixFixedSize {
     assert(_c == Cols);
   }
 
-  /// Deep copy
-  const MatrixFixedSize &operator=(const MatrixFixedSize &src) noexcept {
+  //  operator= for same type
+  MatrixFixedSize &operator=(const MatrixFixedSize &src) noexcept {
     for (size_t i = 0; i < size(); i++) {
       array[i] = src.array[i];
     }
     return *this;
+  }
+
+  //  operator= for different type
+  template <class DerivedB>
+  inline MatrixFixedSize &operator=(const MatrixBase<DerivedB> &src) noexcept {
+    return MatrixBase<MatrixFixedSize>::template operator=
+        <DerivedB>(static_cast<const DerivedB &>(src));
   }
 
   inline void fill(fast_t src) noexcept {
@@ -122,8 +138,10 @@ class MatrixFixedSize {
       i = src;
     }
   }
-
-  static const bool isFixedSize = true;
+  static constexpr bool isClass = std::is_class<Scalar_t>::value;
+  static constexpr bool isFixedSize = true;
+  static constexpr int rowsAtCompileTime = Rows;
+  static constexpr int colsAtCompileTime = Cols;
 
  protected:
   std::array<Scalar_t, Rows * Cols> array;

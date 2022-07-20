@@ -23,9 +23,12 @@ This file is part of Heuristic.
 namespace heu {
 
 #include "InternalHeaderCheck.h"
+#include "MatrixBase.hpp"
 
-template <typename Scalar_t>
-class MatrixMap {
+template <typename Scalar>
+class MatrixMap : public MatrixBase<MatrixMap<Scalar>> {
+  using Scalar_t = Scalar;
+
  protected:
   using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t,
                                            const Scalar_t &>::type;
@@ -55,6 +58,17 @@ class MatrixMap {
     for (size_t i = 0; i < size(); i++) {
       dst->operator()(i) = operator()(i);
     }
+  }
+
+  inline MatrixMap &operator=(const MatrixMap &src) noexcept {
+    src.deepCopyTo(this);
+    return *this;
+  }
+
+  template <class DerivedB>
+  inline MatrixMap &operator=(const MatrixBase<DerivedB> &src) noexcept {
+    return MatrixBase<MatrixMap<Scalar>>::template operator=
+        <DerivedB>(static_cast<const DerivedB &>(src));
   }
 
   inline size_t rows() const noexcept { return r; }

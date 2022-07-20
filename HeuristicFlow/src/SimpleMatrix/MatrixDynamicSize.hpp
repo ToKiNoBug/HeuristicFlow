@@ -26,6 +26,8 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 
+#include "MatrixBase.hpp"
+
 namespace heu {
 /// col-major matrix with basic types only
 
@@ -42,8 +44,11 @@ namespace heu {
  * \tparam Scalar_t Type of element
  * \tparam allocator_t Type of allocator
  */
-template <class Scalar_t, class allocator_t = std::allocator<Scalar_t>>
-class MatrixDynamicSize {
+template <class Scalar, class allocator_t = std::allocator<Scalar>>
+class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_t>> {
+ public:
+  using Scalar_t = Scalar;
+
  protected:
   using fast_t = typename std::conditional<sizeof(Scalar_t) <= 3 * sizeof(void *), Scalar_t,
                                            const Scalar_t &>::type;
@@ -102,26 +107,6 @@ class MatrixDynamicSize {
     src._capacity = 0;
   }
 
-  /// Deep copy
-
-  /**
-   * \brief Deep copy operator
-   *
-   * \param src Source of copying
-   * \return const MatrixDynamicSize& A const ref to *this
-   */
-  const MatrixDynamicSize &operator=(const MatrixDynamicSize &src) noexcept {
-    resize(src.rowNum, src.colNum);
-    for (int i = 0; i < size(); i++) {
-      if constexpr (isClass) {
-        dataPtr[i] = src.dataPtr[i];
-      } else {
-        memcpy(dataPtr, src, sizeof(Scalar_t) * src.size());
-      }
-    }
-    return *this;
-  }
-
   /**
    * \brief Destroy the Matrix Dynamic Size object and all its elements
    *
@@ -137,6 +122,32 @@ class MatrixDynamicSize {
       alloc().deallocate(dataPtr, _capacity);
     }
   };
+
+  /// Deep copy
+
+  /**
+   * \brief Deep copy operator
+   *
+   * \param src Source of copying
+   * \return const MatrixDynamicSize& A const ref to *this
+   */
+  MatrixDynamicSize &operator=(const MatrixDynamicSize &src) noexcept {
+    resize(src.rowNum, src.colNum);
+    for (int i = 0; i < size(); i++) {
+      if constexpr (isClass) {
+        dataPtr[i] = src.dataPtr[i];
+      } else {
+        memcpy(dataPtr, src, sizeof(Scalar_t) * src.size());
+      }
+    }
+    return *this;
+  }
+
+  template <class DerivedB>
+  inline MatrixDynamicSize &operator=(const MatrixBase<DerivedB> &src) noexcept {
+    return MatrixBase<MatrixDynamicSize>::template operator=
+        <DerivedB>(static_cast<const DerivedB &>(src));
+  }
 
   /**
    * \brief Type of non-const iterator
@@ -301,7 +312,10 @@ class MatrixDynamicSize {
     }
   }
 
+  static constexpr bool isClass = std::is_class<Scalar_t>::value;
   static const bool isFixedSize = false;
+  static constexpr int rowsAtCompileTime = Eigen::Dynamic;
+  static constexpr int colsAtCompileTime = Eigen::Dynamic;
 
  protected:
   Scalar_t *dataPtr;
@@ -310,8 +324,6 @@ class MatrixDynamicSize {
   int _capacity;
 
  private:
-  static constexpr bool isClass = std::is_class<Scalar_t>::value;
-
   inline static allocator_t &alloc() noexcept {
     static allocator_t alloctor;
     return alloctor;

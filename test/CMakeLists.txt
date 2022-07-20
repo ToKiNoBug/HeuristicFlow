@@ -28,6 +28,7 @@ add_executable(Boxes boxes.cpp)
 add_executable(AOS_Rastrigin AOS_Rastrigin.cpp)
 add_executable(testFunctions testFunctions.cpp)
 add_executable(MinMaxCompileTime MinMaxCompileTime.cpp)
+add_executable(SimpleMatrix simpleMatrix.cpp)
 
 find_package(OpenMP)
 
