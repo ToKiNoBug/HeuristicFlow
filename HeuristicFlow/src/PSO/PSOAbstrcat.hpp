@@ -299,6 +299,41 @@ Var_t _velocityMax;
 #endif
   }
 
+ private:
+  static void defaultInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity) noexcept {
+    if constexpr (!array_traits<Var_t>::isFixedSize) {
+      if constexpr (array_traits<Var_t>::isEigenClass) {
+        // resize for Eigen matrices
+        if constexpr (array_traits<Var_t>::isMatrix) {
+          pos->setZero(s->boxRows(), s->boxCols());
+          velocity->setZero(s->boxRows(), s->boxCols());
+        } else if constexpr (array_traits<Var_t>::isColVector) {
+          pos->setZero(s->dimensions(), 1);
+          velocity->setZero(s->dimensions(), 1);
+        } else {  // must be row vector
+          pos->setZero(1, s->dimensions());
+          velocity->setZero(1, s->dimensions());
+        }
+
+      } else {
+        // resize for std vectors
+        pos->resize(s->dimensions());
+        velocity->resize(s->dimensions());
+      }
+    }
+    // evulate
+    for (int idx = 0; idx < s->dimensions(); idx++) {
+      at(*velocity, idx) = 0;
+      if constexpr (BS == BoxShape::SQUARE_BOX) {
+        at(*pos, idx) = randD(s->posMin(), s->posMax());
+
+      } else {
+        at(*pos, idx) = randD(s->posMin()[idx], s->posMax()[idx]);
+      }
+    }
+  }
+
+ protected:
   // reloaded by template parameters to fit all types of `Args_t`
   template <bool _HasParameters, class unused = void>
   struct PSOExecutor {
@@ -306,7 +341,7 @@ Var_t _velocityMax;
       if constexpr (_iFun_ ==
                     PSOParameterPack<Var_t, Fitness_t,
                                      Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled) {
-        PSOExecutor<false, unused>::doInitiailize(s, pos, velocity);
+        defaultInitialize(s, pos, velocity);
       } else {
         s->runiFun(pos, velocity, &s->_arg);
       }
@@ -326,36 +361,7 @@ Var_t _velocityMax;
       if constexpr (_iFun_ ==
                     PSOParameterPack<Var_t, Fitness_t,
                                      Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled) {
-        if constexpr (!array_traits<Var_t>::isFixedSize) {
-          if constexpr (array_traits<Var_t>::isEigenClass) {
-            // resize for Eigen matrices
-            if constexpr (array_traits<Var_t>::isMatrix) {
-              pos->setZero(s->boxRows(), s->boxCols());
-              velocity->setZero(s->boxRows(), s->boxCols());
-            } else if constexpr (array_traits<Var_t>::isColVector) {
-              pos->setZero(s->dimensions(), 1);
-              velocity->setZero(s->dimensions(), 1);
-            } else {  // must be row vector
-              pos->setZero(1, s->dimensions());
-              velocity->setZero(1, s->dimensions());
-            }
-
-          } else {
-            // resize for std vectors
-            pos->resize(s->dimensions());
-            velocity->resize(s->dimensions());
-          }
-        }
-        // evulate
-        for (int idx = 0; idx < s->dimensions(); idx++) {
-          at(*velocity, idx) = 0;
-          if constexpr (BS == BoxShape::SQUARE_BOX) {
-            at(*pos, idx) = randD(s->posMin(), s->posMax());
-
-          } else {
-            at(*pos, idx) = randD(s->posMin()[idx], s->posMax()[idx]);
-          }
-        }
+        defaultInitialize(s, pos, velocity);
       } else {
         s->runiFun(pos, velocity);
       }

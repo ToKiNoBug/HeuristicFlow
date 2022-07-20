@@ -33,8 +33,8 @@ void testTSP_PSO(const int N) {
   //  type of args
   using DistanceMat_t = Eigen::ArrayXXd;
   //  type of solver
-  using Solver_t = heu::PSO<Eigen::ArrayXd, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS,
-                            DistanceMat_t, heu::PSODefaults<Var_t, true, DistanceMat_t>::iFun>;
+  using Solver_t = heu::PSO<Eigen::ArrayXd, heu::BoxShape::SQUARE_BOX, heu::FITNESS_LESS_BETTER,
+                            heu::RECORD_FITNESS, DistanceMat_t>;
 
   using Args_t = Solver_t::Args_t;
 
@@ -91,7 +91,8 @@ void testTSP_PSO(const int N) {
   solver.setDimensions(N);
 
   // Set posMin,posMax and velocityMax
-  solver.setPVRange(0, 1, 0.5);
+  solver.setRange(0, 1);
+  solver.setMaxVelocity(0.5);
 
   solver.setfFun(fFun);
   solver.setOption(opt);
