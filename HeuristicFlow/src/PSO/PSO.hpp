@@ -43,34 +43,29 @@ namespace internal {}  //  namespace internal
  * All default value for template parameters are listed in braces
  *
  * \tparam Var_t Type of decision variable.
- * \tparam DIM Dimensional of Var_t
+ * \tparam BS The shape of box-constraint of your PSO solver.
  * \tparam FitnessOpt Trainning direction (FITNESS_LESS_BETTER)
  * \tparam RecordOpt Record trainning curve or not. (DONT_RECORD_FITNESS)
  * \tparam Arg_t Pseudo-global other args stored in the solver. (void)
- * \tparam _iFun_ Initialization function at compile time (nullptr)
  * \tparam _fFun_ Fitness function at compile time (nullptr)
+ * \tparam _iFun_ Initialization function at compile time (A internal default initializer).
  *
  * \sa SOGA for the meanning of `Arg_t`
- *
- * \note This class implements PSO for the condition that `isEigenTypes` is `false`.
+ * \sa BoxShape
  *
  * PSO solvers have different APIs for different template parameters.
  *
  * ## These APIs are common:
  * - `void setOption(const PSOOption&)` to set the option of a PSO solver.
- * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of
- * posMin, posMax, and velocityMax.
- * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it
- * shapes the box into a square box.
  * - `void initializePop()` to initialize the whole population.
  * - `void run()` to run the PSO algorithm.
  * - `double bestFitness() const` returns the best fitness value.
  * - `const PSOOption& option() const` returns a const-ref to the PSOOption object.
  * - `size_t generation() const` returns the generations that the solver has spend.
  * - `size_t failTimes() const` returns the failtimes for current population.
- * - `const Var_t& posMin() const` returns a const-ref to the minimum value of positoin.
- * - `const Var_t& posMax() const` returns a const-ref to the maximum value of position.
- * - `const Var_t& velocityMax() const` returns a const-ref to the maximum value of the abstract
+ * - `const auto & posMin() const` returns a const-ref to the minimum value of positoin.
+ * - `const auto & posMax() const` returns a const-ref to the maximum value of position.
+ * - `const auto& velocityMax() const` returns a const-ref to the maximum value of the abstract
  * value of velocity.
  * - `const std::vector<Particle>& population() const` returns a const-ref to the population.
  * - `const Point& globalBest() const` returns a const-ref to the best solution that has ever found.
@@ -80,7 +75,20 @@ namespace internal {}  //  namespace internal
  * - `typename solver_t::fFun_t` is the type of fitness function.
  * - `iFun_t iFun() const` returns the initialization function.
  * - `fFun_t fFun() const` returns the fitness function.
+ * - `int dimensions() const` returns the num of dimensions.
  *
+ *
+ * ## These APIs exist when BS is SQUARE_BOX :
+ * - `void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax)` to set the value of
+ * posMin, posMax, and velocityMax.
+ * - `void setRange(const Var_t & pMin, const Var_t & pMax)`
+ * - `void setMaxVelocity(const Var_t & maxVelocity)`
+ *
+ * ### Otherwise it will be :
+ * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it
+ * shapes the box into a square box.
+ * - `void setRange(const Scalar_t & pMin, const Scalar_t & pMax)`
+ * - `void setMaxVelocity(const Scalar_t & maxVelocity)`
  *
  * ## These APIs exist when `Args_t` is not `void` :
  * - `const Arg_t &args() const` returns a const-ref to args in the solver.
@@ -93,8 +101,18 @@ namespace internal {}  //  namespace internal
  * ## These APIs exist when template parameter `_fFun_` is `nullptr` :
  * - `setfFun(fFun_t)` sets the fitness function.
  *
- * ## These APIs exist when template parameter `ObjNum` is `Eigen::Dynamic` :
- * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to d.
+ *
+ * ## These APIs exist when `Var_t` CAN BE A MATRIX :
+ * - `int boxRows() const` return the rows of posMin, posMax and velocityMax.
+ * - `int boxCols() const` return the cols of posMin, posMax and velocityMax.
+ *
+ * ## These APIs exist when `Var_t` has a dynamic size AND CAN BE A MATRIX :
+ * - `void setDimensions(int r,int c)` set the size of posMin, posMax and velocityMax to (r,c).
+ *
+ * ## These APIs exist when `Var_t` has a dynamic size AND CAN NOT BE A MATRIX :
+ * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to (d,1).
+ *
+ *
  *
  */
 template <typename Var_t, BoxShape BS = BoxShape::RECTANGLE_BOX,
