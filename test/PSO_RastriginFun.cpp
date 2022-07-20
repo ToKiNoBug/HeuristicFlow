@@ -22,17 +22,18 @@ This file is part of HeuristicFlow.
 #include <iostream>
 #include <ctime>
 using namespace Eigen;
-using namespace std;
+// using namespace std;
+using namespace heu;
 
 using std::cout, std::endl;
 
 // Test NSGA2 with rastrigin function
 void testRastriginFun() {
-  static const size_t N = 20;
-  using solver_t =
-      heu::PSO<Eigen::Array<double, N, 1>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS>;
-
+  static constexpr size_t N = 20;
   using Var_t = Eigen::Array<double, N, 1>;
+
+  using solver_t = heu::PSO<Var_t, BoxShape::SQUARE_BOX, heu::FITNESS_LESS_BETTER,
+                            heu::RECORD_FITNESS, void, heu::testFunctions<Var_t>::rastrigin>;
 
   heu::PSOOption opt;
   opt.populationSize = 400;
@@ -45,21 +46,9 @@ void testRastriginFun() {
 
   solver_t solver;
 
-  solver_t::iFun_t iFun = [](Var_t *x, Var_t *v, const Var_t *xMin, const Var_t *xMax,
-                             const Var_t *) {
-    for (size_t i = 0; i < N; i++) {
-      x->operator[](i) = heu::randD(xMin->operator[](i), xMax->operator[](i));
-      v->operator[](i) = 0;
-    }
-  };
-
-  solver_t::fFun_t fFun = heu::testFunctions<Var_t>::rastrigin;
-
-  solver.setPVRange(-5.12, 5.12, 0.1);
-
-  solver.setiFun(iFun);
-
-  solver.setfFun(fFun);
+  solver.setRange(-5.12, 5.12);
+  solver.posMax() = 5.12;  //  you can also set the min and max pos in this way
+  solver.setMaxVelocity(0.1);
 
   solver.setOption(opt);
 

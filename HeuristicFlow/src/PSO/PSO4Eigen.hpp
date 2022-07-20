@@ -26,21 +26,23 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "PSOOption.hpp"
-#include "PSOBase.hpp"
+#include "PSOAbstrcat.hpp"
+//#include "PSOBase.hpp"
 
 namespace heu {
 
 namespace internal {
 // Partial specilization for PSO using Eigen's fix-sized Array
-template <typename Var_t, int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
-          typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
+template <typename Var_t, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
+          BoxShape BS, typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_>
-class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_> {
-  using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
+class PSO4Eigen
+    : public internal::PSOAbstract<Var_t, double, RecordOpt, Arg_t, BS, _iFun_, _fFun_> {
+  using Base_t = internal::PSOAbstract<Var_t, double, RecordOpt, Arg_t, BS, _iFun_, _fFun_>;
 
  public:
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
-  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
+  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, BS, _iFun_, _fFun_>;
 
  protected:
   static bool isBetterThan(double a, double b) noexcept {
@@ -91,19 +93,20 @@ class PSO4Eigen : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t,
       i.velocity = this->_option.inertiaFactor * i.velocity +
                    this->_option.learnFactorP * lFP * (i.pBest.position - i.position) +
                    this->_option.learnFactorG * lFG * (this->gBest.position - i.position);
-
-      i.velocity = i.velocity.min(this->_velocityMax);
-      i.velocity = i.velocity.max(-this->_velocityMax);
+      this->applyConstraint4Velocity(&i.velocity);
+      /*
+        i.velocity = i.velocity.min(this->_velocityMax);
+        i.velocity = i.velocity.max(-this->_velocityMax);
+        */
 
       i.position += i.velocity;
 
-      i.position = i.position.min(this->_posMax);
-      i.position = i.position.max(this->_posMin);
+      this->applyConstraint4Position(&i.position);
+      /*
+    i.position = i.position.min(this->_posMax);
+    i.position = i.position.max(this->_posMin);*/
     }
   }
-
- private:
-  static_assert(DIM > 0 || DIM == Eigen::Dynamic, "Invalid template parameter DIM");
 };
 
 }  //  namespace internal

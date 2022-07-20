@@ -26,26 +26,23 @@ This file is part of HeuristicFlow.
 
 #include "InternalHeaderCheck.h"
 #include "PSOOption.hpp"
-#include "PSOBase.hpp"
+#include "PSOAbstrcat.hpp"
 
 namespace heu {
 
 namespace internal {
 
-template <typename Var_t, int DIM, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
-          typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
+template <typename Var_t, FitnessOption FitnessOpt, RecordOption RecordOpt, class Arg_t,
+          BoxShape BS, typename internal::PSOParameterPack<Var_t, double, Arg_t>::iFun_t _iFun_,
           typename internal::PSOParameterPack<Var_t, double, Arg_t>::fFun_t _fFun_>
-class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_> {
-  using Base_t = internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _iFun_, _fFun_>;
+class PSO4std : public internal::PSOAbstract<Var_t, double, RecordOpt, Arg_t, BS, _iFun_, _fFun_> {
+  using Base_t = internal::PSOAbstract<Var_t, double, RecordOpt, Arg_t, BS, _iFun_, _fFun_>;
 
  public:
   PSO4std() = default;
   ~PSO4std() = default;
   HEU_MAKE_PSOABSTRACT_TYPES(Base_t)
-  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
-
-  static constexpr ContainerOption Flag =
-      (std::is_same<Var_t, stdVecD_t<DIM>>::value) ? ContainerOption::Std : ContainerOption::Custom;
+  friend class internal::PSOAbstract<Var_t, double, DONT_RECORD_FITNESS, Arg_t, BS, _iFun_, _fFun_>;
 
  protected:
   /**
@@ -120,9 +117,6 @@ class PSO4std : public internal::PSOBase<Var_t, DIM, double, RecordOpt, Arg_t, _
 
  private:
   static_assert(!(std::is_scalar<Var_t>::value), "Var_t should be a non-scalar type");
-  static_assert(DIM != 0,
-                "Template parameter DIM cannot be 0. For dynamic dims, use Eigen::Dynamic");
-  static_assert(DIM > 0 || DIM == Eigen::Dynamic, "Invalid template parameter DIM");
   // static_assert(isEigenTypes == false, "Wrong specialization of PSO");
 };
 

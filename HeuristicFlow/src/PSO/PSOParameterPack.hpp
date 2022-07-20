@@ -63,8 +63,7 @@ class PSOParameterPack {
    * \param pMax Maximum position
    * \param vMax Maximum velocity (Maximum absolute value of velocity)
    */
-  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
-                          const Var_t *vMax, const Args_t *);
+  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Args_t *);
 
   /**
    * \brief Type of fitness function
@@ -77,12 +76,20 @@ class PSOParameterPack {
   using fFun_t = void (*)(const Var_t *pos, const Args_t *, Fitness_t *f);
 
   template <iFun_t _i>
-  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *,
-                                         const Var_t *, const Args_t *>::template funBody<_i>;
+  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Args_t *>::template funBody<_i>;
 
   template <fFun_t _i>
   using fFunBody =
       typename fFunArea_PSO<const Var_t *, const Args_t *, Fitness_t *>::template funBody<_i>;
+
+  static inline void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *, Var_t *,
+                                                                    const Args_t *) noexcept {
+    constexpr bool
+        You_think_you_called_the_default_initialize_function_of_PSO_but_it_is_reserved_as_a_symbol =
+            false;
+    assert(
+        You_think_you_called_the_default_initialize_function_of_PSO_but_it_is_reserved_as_a_symbol);
+  }
 
   /**
    * \brief Set the Args object
@@ -102,7 +109,7 @@ class PSOParameterPack {
    * \brief This static member denotes that `Args_t` is not `void`.
    *
    */
-  static const bool HasParameters = true;
+  static constexpr bool HasParameters = true;
 
  protected:
   /**
@@ -129,18 +136,24 @@ class PSOParameterPack<Var_t, Fitness_t, void> {
   ~PSOParameterPack() = default;
   using Args_t = void;
 
-  using iFun_t = void (*)(Var_t *pos, Var_t *velocity, const Var_t *pMin, const Var_t *pMax,
-                          const Var_t *vMax);
+  using iFun_t = void (*)(Var_t *pos, Var_t *velocity);
   using fFun_t = void (*)(const Var_t *, Fitness_t *);
 
   template <iFun_t _i>
-  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *, const Var_t *, const Var_t *,
-                                         const Var_t *>::template funBody<_i>;
+  using iFunBody = typename iFunArea_PSO<Var_t *, Var_t *>::template funBody<_i>;
 
   template <fFun_t _i>
   using fFunBody = typename fFunArea_PSO<const Var_t *, Fitness_t *>::template funBody<_i>;
 
-  static const bool HasParameters = false;
+  static inline void defaultInitializeFunctionThatShouldNotBeCalled(Var_t *, Var_t *) noexcept {
+    constexpr bool
+        You_think_you_called_the_default_initialize_function_of_PSO_but_it_is_reserved_as_a_symbol =
+            false;
+    assert(
+        You_think_you_called_the_default_initialize_function_of_PSO_but_it_is_reserved_as_a_symbol);
+  }
+
+  static constexpr bool HasParameters = false;
 };
 
 #define HEU_MAKE_PSOPARAMETERPACK_TYPES(Base_t) \

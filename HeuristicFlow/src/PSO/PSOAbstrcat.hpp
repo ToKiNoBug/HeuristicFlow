@@ -28,6 +28,7 @@ This file is part of HeuristicFlow.
 #include <HeuristicFlow/Global>
 #include "PSOOption.hpp"
 #include "PSOParameterPack.hpp"
+#include "BoxWithVelocity.hpp"
 
 namespace heu {
 
@@ -51,12 +52,13 @@ namespace internal {
  *
  * \sa GABase It's counterpart in Genetic module.
  */
-template <class Var_t, class Fitness_t, RecordOption Record, class Arg_t,
+template <class Var_t, class Fitness_t, RecordOption Record, class Arg_t, BoxShape BS,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
 class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
                     public PSOParameterPack<Var_t, Fitness_t, Arg_t>::template iFunBody<_iFun_>,
-                    public PSOParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_> {
+                    public PSOParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_>,
+                    public Box4PSO<Var_t, BS> {
   using Base_t = PSOParameterPack<Var_t, Fitness_t, Arg_t>;
 
  public:
@@ -122,52 +124,6 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   inline size_t failTimes() const noexcept { return _failTimes; }
 
   /**
-   * \brief Get the minimun postion
-   *
-   * \return const Var_t& Minimum position
-   */
-  inline const Var_t& posMin() const noexcept { return _posMin; }
-
-  /**
-   * \brief Get the minimun postion
-   *
-   * \return Var_t& Minimum position
-   */
-  inline Var_t& posMin() noexcept { return _posMin; }
-
-  /**
-   * \brief Get the maximum position
-   *
-   * \return const Var_t& Maximum position
-   */
-  inline const Var_t& posMax() const noexcept { return _posMax; }
-
-  /**
-   * \brief Get the maximum position
-   *
-   * \return Var_t& Maximum position
-   */
-  inline Var_t& posMax() noexcept { return _posMax; }
-
-  /**
-   * \brief Get the maximum velocity
-   *
-   * \note Max velocity means the maximum absolute value of velocity.
-   *
-   * \return const Var_t& Maximum velocity
-   */
-  inline const Var_t& velocityMax() const noexcept { return _velocityMax; }
-
-  /**
-   * \brief Get the maximum velocity
-   *
-   * \note Max velocity means the maximum absolute value of velocity.
-   *
-   * \return Var_t& Maximum velocity
-   */
-  inline Var_t& velocityMax() noexcept { return _velocityMax; }
-
-  /**
    * \brief Get the population
    *
    * \return const std::vector<Particle>& A constant reference to the population
@@ -181,20 +137,20 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    */
   inline const Point& globalBest() const noexcept { return gBest; }
 
-  /**
+  /*
    * \brief Set the range of position and velocity
    *
    * \param pMin Min val of position
    * \param pMax Max val of position
    * \param vMax Max val of velocity
-   */
+
   inline void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax) noexcept {
     _posMin = pMin;
     _posMax = pMax;
     _velocityMax = vMax;
-  }
+  }*/
 
-  /**
+  /*
    * \brief Set the range of position and velocity.
    *
    * \note This function will shape the box to a square box. Non't call this if you need a
@@ -203,14 +159,14 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
    * \param pMin Minium position value
    * \param pMax Maximum position value
    * \param vMax Maximum velocity absolute value
-   */
+
   inline void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax) noexcept {
     for (int i = 0; i < this->_posMin.size(); i++) {
       this->_posMin[i] = pMin;
       this->_posMax[i] = pMax;
       this->_velocityMax[i] = vMax;
     }
-  }
+  }*/
 
   /**
    * \brief Initialize the whole population
@@ -223,8 +179,7 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
     _population.resize(_option.populationSize);
 
     for (Particle& i : _population) {
-      PSOExecutor<Base_t::HasParameters>::doInitialize(this, &i.position, &i.velocity, &_posMin,
-                                                       &_posMax, &_velocityMax);
+      PSOExecutor<Base_t::HasParameters>::doInitialize(this, &i.position, &i.velocity);
 
       PSOExecutor<Base_t::HasParameters>::doFitness(this, &i.position, &i.fitness);
 
@@ -246,14 +201,16 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   /// failtimes
   size_t _failTimes;
 
-  /// Minimum position
-  Var_t _posMin;
+  /*
+/// Minimum position
+Var_t _posMin;
 
-  /// Maximum position
-  Var_t _posMax;
+/// Maximum position
+Var_t _posMax;
 
-  /// Maximum velocity (absolute value)
-  Var_t _velocityMax;
+/// Maximum velocity (absolute value)
+Var_t _velocityMax;
+*/
 
   /// All partiles in a vector
   std::vector<Particle> _population;
@@ -345,9 +302,14 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
   // reloaded by template parameters to fit all types of `Args_t`
   template <bool _HasParameters, class unused = void>
   struct PSOExecutor {
-    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
-                                    const Var_t* pMax, const Var_t* vMax) noexcept {
-      s->runiFun(pos, velocity, pMin, pMax, vMax, &s->_arg);
+    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity) noexcept {
+      if constexpr (_iFun_ ==
+                    PSOParameterPack<Var_t, Fitness_t,
+                                     Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled) {
+        PSOExecutor<false, unused>::doInitiailize(s, pos, velocity);
+      } else {
+        s->runiFun(pos, velocity, &s->_arg);
+      }
     }
 
     inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) noexcept {
@@ -360,9 +322,43 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
 
   template <class unused>
   struct PSOExecutor<false, unused> {
-    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity, const Var_t* pMin,
-                                    const Var_t* pMax, const Var_t* vMax) noexcept {
-      s->runiFun(pos, velocity, pMin, pMax, vMax);
+    inline static void doInitialize(PSOAbstract* s, Var_t* pos, Var_t* velocity) noexcept {
+      if constexpr (_iFun_ ==
+                    PSOParameterPack<Var_t, Fitness_t,
+                                     Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled) {
+        if constexpr (!array_traits<Var_t>::isFixedSize) {
+          if constexpr (array_traits<Var_t>::isEigenClass) {
+            // resize for Eigen matrices
+            if constexpr (array_traits<Var_t>::isMatrix) {
+              pos->setZero(s->boxRows(), s->boxCols());
+              velocity->setZero(s->boxRows(), s->boxCols());
+            } else if constexpr (array_traits<Var_t>::isColVector) {
+              pos->setZero(s->dimensions(), 1);
+              velocity->setZero(s->dimensions(), 1);
+            } else {  // must be row vector
+              pos->setZero(1, s->dimensions());
+              velocity->setZero(1, s->dimensions());
+            }
+
+          } else {
+            // resize for std vectors
+            pos->resize(s->dimensions());
+            velocity->resize(s->dimensions());
+          }
+        }
+        // evulate
+        for (int idx = 0; idx < s->dimensions(); idx++) {
+          at(*velocity, idx) = 0;
+          if constexpr (BS == BoxShape::SQUARE_BOX) {
+            at(*pos, idx) = randD(s->posMin(), s->posMax());
+
+          } else {
+            at(*pos, idx) = randD(s->posMin()[idx], s->posMax()[idx]);
+          }
+        }
+      } else {
+        s->runiFun(pos, velocity);
+      }
     }
 
     inline static void doFitness(PSOAbstract* s, const Var_t* pos, Fitness_t* f) noexcept {
@@ -393,12 +389,12 @@ class PSOAbstract : public PSOParameterPack<Var_t, Fitness_t, Arg_t>,
  * \tparam _iFun_ Initialization function at compile time
  * \tparam _fFun_ Initialization function at compile time
  */
-template <class Var_t, class Fitness_t, class Arg_t,
+template <class Var_t, class Fitness_t, class Arg_t, BoxShape BS,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename PSOParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_>
-class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, _iFun_, _fFun_>
-    : public PSOAbstract<Var_t, Fitness_t, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_> {
-  using Base_t = PSOAbstract<Var_t, Fitness_t, DONT_RECORD_FITNESS, Arg_t, _iFun_, _fFun_>;
+class PSOAbstract<Var_t, Fitness_t, RECORD_FITNESS, Arg_t, BS, _iFun_, _fFun_>
+    : public PSOAbstract<Var_t, Fitness_t, DONT_RECORD_FITNESS, Arg_t, BS, _iFun_, _fFun_> {
+  using Base_t = PSOAbstract<Var_t, Fitness_t, DONT_RECORD_FITNESS, Arg_t, BS, _iFun_, _fFun_>;
   friend Base_t;
 
  public:

@@ -128,6 +128,8 @@ namespace internal {
 template <class T>
 struct getEigenClassSizeCT {
   static constexpr int value = T::SizeAtCompileTime;
+  static constexpr int rowsCT = T::RowsAtCompileTime;
+  static constexpr int colsCT = T::ColsAtCompileTime;
   static_assert(isEigenClass<T>::value, "T must be a Eigen class!");
 };
 
@@ -135,6 +137,8 @@ struct getEigenClassSizeCT {
 template <class T>
 struct stdArraySizeCT {
   static constexpr int value = sizeof(T) / sizeof(typename toElement<T>::type);
+  static constexpr int rowsCT = value;
+  static constexpr int colsCT = 1;
 };
 
 // get the compile-time size of a std::array / std::vector
@@ -146,17 +150,23 @@ struct getStdVectorOrArraySizeCT {
 
  public:
   static constexpr int value = (isSizeFixed) ? (stdArraySizeCT<T>::value) : (Eigen::Dynamic);
+  static constexpr int rowsCT = value;
+  static constexpr int colsCT = 1;
 };
 
 template <class T, bool isTEigenClass>
 struct getSizeCTOfAnyVector_v {
   // here implements when isTEigenClass==true
   static constexpr int value = getEigenClassSizeCT<T>::value;
+  static constexpr int rowsCT = getEigenClassSizeCT<T>::rowsCT;
+  static constexpr int colsCT = getEigenClassSizeCT<T>::colsCT;
 };
 
 template <class T>
 struct getSizeCTOfAnyVector_v<T, false> {
   static constexpr int value = getStdVectorOrArraySizeCT<T>::value;
+  static constexpr int rowsCT = getStdVectorOrArraySizeCT<T>::rowsCT;
+  static constexpr int colsCT = getStdVectorOrArraySizeCT<T>::colsCT;
 };
 
 // get the compile-time size of a std vector /std array / eigen class
@@ -164,6 +174,8 @@ template <class T>
 struct getSizeCTOfAnyVector {
   static constexpr bool isTEigenClass = isEigenClass<T>::value;
   static constexpr int value = getSizeCTOfAnyVector_v<T, isTEigenClass>::value;
+  static constexpr int rowsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::rowsCT;
+  static constexpr int colsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::colsCT;
 };
 }  // namespace internal
 
@@ -174,7 +186,15 @@ struct array_traits {
   static constexpr ContainerOption containerType =
       (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
   static constexpr int sizeCT = internal::getSizeCTOfAnyVector<T>::value;
+  static constexpr int rowsCT = internal::getSizeCTOfAnyVector<T>::rowsCT;
+  static constexpr int colsCT = internal::getSizeCTOfAnyVector<T>::colsCT;
   static constexpr bool isFixedSize = (sizeCT != Eigen::Dynamic);
+
+  static constexpr bool isRowVector = rowsCT == 1;
+  static constexpr bool isColVector = colsCT == 1;
+  static constexpr bool isVector = (isRowVector) || (isColVector);
+
+  static constexpr bool isMatrix = (!isRowVector) && (!isColVector);
 };
 
 template <class T, int size>
@@ -182,6 +202,24 @@ struct sizeMayMatch {
   static constexpr bool value =
       (!array_traits<T>::isFixedSize) || (array_traits<T>::sizeCT == size);
 };
+
+template <class Var_t>
+typename array_traits<Var_t>::Scalar_t& at(Var_t& v, const int idx) {
+  if constexpr (array_traits<Var_t>::isEigenClass) {
+    return v(idx);
+  } else {
+    return v[idx];
+  }
+}
+
+template <class Var_t>
+typename array_traits<Var_t>::Scalar_t at(const Var_t& v, const int idx) {
+  if constexpr (array_traits<Var_t>::isEigenClass) {
+    return v(idx);
+  } else {
+    return v[idx];
+  }
+}
 
 }  //   namespace heu
 
