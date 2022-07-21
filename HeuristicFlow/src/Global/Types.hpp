@@ -31,29 +31,31 @@ This file is part of HeuristicFlow.
 
 namespace heu {
 
-/**
+/*
  * \ingroup HEU_GLOBAL
  * \brief C++ std container for fixed and dynamic sizes.
- *
+
  * Use std::vector for dynamic size and std::array as fixed size.
  *
  * \tparam scalar_t Type of element
  * \tparam Dim Size at compile time. Use Eigen::Dynamic for dynamic size.
- */
+
 template <typename scalar_t, int Dim>
 using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
                                                std::array<scalar_t, size_t(Dim)> >::type;
+*/
 
-/**
+/*
  * \ingroup HEU_GLOBAL
  * \brief C++ std container of double.
  *
  * \tparam Size Number of element. Use Eigen::Dynamic for dynamic size.
- */
+
 template <int Size>
 using stdVecD_t = stdContainer<double, Size>;
+*/
 
-/**
+/*
  * \ingroup HEU_GLOBAL
  * \brief Container for different types, sizes and scalar types.
  *
@@ -63,14 +65,45 @@ using stdVecD_t = stdContainer<double, Size>;
  * Use ContainerOption::Eigen for Eigen::Array<scalar_t,Size,1> and
  * other enum values for stdContainer<scalar_t,Size>.
  *
- */
+
 template <typename scalar_t, int Size, ContainerOption DVO>
 using Container =
     typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
                               Eigen::Array<scalar_t, Size, 1> >::type;
-
+ */
 // template<ContainerOption dvo,size_t Dim>
 // using FitnessVec_t= Container<double,Dim,dvo>;
+
+#if __cplusplus >= 202002L
+template <class T>
+concept isVector = requires(T vec, int idx) {
+  {vec[idx]};
+  {vec.size()};
+  {vec.data()};
+};
+
+template <class T>
+concept EigenClass = requires(T mat, int r, int c, T matB) {
+  isVector<T>;
+  {mat(r)};
+  {mat(r, c)};
+  {mat.rows()};
+  {mat.cols()};
+  {mat.array()};
+  {mat = matB};
+  {mat += 1};
+  {mat.setZero()};
+  {mat.array() + matB.array()};
+  {mat.array() - matB.array()};
+  {mat.array() * matB.array()};
+  {mat.array() / matB.array()};
+  {mat.minCoeff()};
+  {mat.maxCoeff()};
+  {mat.minCoeff(&r)};
+  {mat.maxCoeff(&r, &c)};
+};
+
+#endif  //  #if __cplusplus >=202002L
 
 namespace internal {
 
@@ -94,7 +127,9 @@ struct heu_initializeSize<Eigen::Dynamic> {
 
 }  //    namespace internal
 
-/**
+namespace {
+
+/*
  * \ingroup HEU_GLOBAL
  * \brief Get the type of element from a type of vector/matrix
  *
@@ -106,7 +141,7 @@ struct toElement {
   using type = typename std::decay<decltype(Vec_t()[0])>::type;
 };
 
-/**
+/*
  * \ingroup HEU_GLOBAL
  * \brief Determine whether T is a Eigen class
  *
@@ -118,11 +153,13 @@ struct toElement {
  */
 template <typename T>
 struct isEigenClass {
+#if __cplusplus >= 202002L
+  static constexpr bool value = ::heu::template EigenClass<T>;
+#else
   static constexpr bool value =
       std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
+#endif  //#if __cplusplus >= 202002L
 };
-
-namespace internal {
 
 // get the compile-time size of a eigen class
 template <class T>
@@ -177,17 +214,21 @@ struct getSizeCTOfAnyVector {
   static constexpr int rowsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::rowsCT;
   static constexpr int colsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::colsCT;
 };
-}  // namespace internal
+}  // namespace
 
 template <class T>
 struct array_traits {
   using Scalar_t = typename toElement<T>::type;
+#if __cplusplus >= 202002L
+  static constexpr bool isEigenClass = ::heu::template EigenClass<T>;
+#else
   static constexpr bool isEigenClass = ::heu::template isEigenClass<T>::value;
+#endif  //#if __cplusplus >= 202002L
   static constexpr ContainerOption containerType =
       (isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
-  static constexpr int sizeCT = internal::getSizeCTOfAnyVector<T>::value;
-  static constexpr int rowsCT = internal::getSizeCTOfAnyVector<T>::rowsCT;
-  static constexpr int colsCT = internal::getSizeCTOfAnyVector<T>::colsCT;
+  static constexpr int sizeCT = getSizeCTOfAnyVector<T>::value;
+  static constexpr int rowsCT = getSizeCTOfAnyVector<T>::rowsCT;
+  static constexpr int colsCT = getSizeCTOfAnyVector<T>::colsCT;
   static constexpr bool isFixedSize = (sizeCT != Eigen::Dynamic);
 
   static constexpr bool isRowVector = rowsCT == 1;

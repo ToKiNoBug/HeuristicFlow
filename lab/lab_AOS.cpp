@@ -94,7 +94,7 @@ class Layer : public std::vector<Electron*> {
         LEidx = idx;
       }
     }
-    bindingState /= this->size();
+    bindingState /= double(this->size());
     bindingEnergy /= this->size();
   };
 };

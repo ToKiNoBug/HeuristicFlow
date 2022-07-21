@@ -50,6 +50,7 @@ namespace internal {}  //  namespace internal
  * \tparam _fFun_ Fitness function at compile time (nullptr)
  * \tparam _iFun_ Initialization function at compile time (A internal default initializer).
  *
+ * \sa PSOOption
  * \sa SOGA for the meanning of `Arg_t`
  * \sa BoxShape
  *
@@ -75,7 +76,6 @@ namespace internal {}  //  namespace internal
  * - `typename solver_t::fFun_t` is the type of fitness function.
  * - `iFun_t iFun() const` returns the initialization function.
  * - `fFun_t fFun() const` returns the fitness function.
- * - `int dimensions() const` returns the num of dimensions.
  *
  *
  * ## These APIs exist when BS is SQUARE_BOX :
@@ -85,14 +85,14 @@ namespace internal {}  //  namespace internal
  * - `void setMaxVelocity(const Var_t & maxVelocity)`
  *
  * ### Otherwise it will be :
- * - `void setPVRange(Scalar_t pMin, Scalar_t pMax, Scalar_t vMax)` will also set these value but it
- * shapes the box into a square box.
- * - `void setRange(const Scalar_t & pMin, const Scalar_t & pMax)`
- * - `void setMaxVelocity(const Scalar_t & maxVelocity)`
+ * - `void setPVRange(const Scalar_t pMin, const Scalar_t pMax,const Scalar_t vMax)` to set the
+ * value of posMin, posMax, and velocityMax.
+ * - `void setRange(const Scalar_t  pMin, const Scalar_t  pMax)`
+ * - `void setMaxVelocity(const Scalar_t  maxVelocity)`
  *
  * ## These APIs exist when `Args_t` is not `void` :
  * - `const Arg_t &args() const` returns a const-ref to args in the solver.
- * - `void setArgs(const Arg_t &)` set the value of args.
+ * - `void setArgs(const Arg_t &)` sets the value of args.
  *
  *
  * ## These APIs exist when template parameter `_iFun_` is `nullptr` :
@@ -102,15 +102,15 @@ namespace internal {}  //  namespace internal
  * - `setfFun(fFun_t)` sets the fitness function.
  *
  *
- * ## These APIs exist when `Var_t` CAN BE A MATRIX :
+ * ## These APIs exist when `Var_t` CAN be a matrix :
  * - `int boxRows() const` return the rows of posMin, posMax and velocityMax.
  * - `int boxCols() const` return the cols of posMin, posMax and velocityMax.
  *
- * ## These APIs exist when `Var_t` has a dynamic size AND CAN BE A MATRIX :
- * - `void setDimensions(int r,int c)` set the size of posMin, posMax and velocityMax to (r,c).
+ * ## These APIs exist when `Var_t` has a dynamic size AND CAN be a matrix :
+ * - `void setDimensions(int r,int c)` sets the size of posMin, posMax and velocityMax to (r,c).
  *
- * ## These APIs exist when `Var_t` has a dynamic size AND CAN NOT BE A MATRIX :
- * - `void setDimensions(int d)` set the size of posMin, posMax and velocityMax to (d,1).
+ * ## These APIs exist when `Var_t` has a dynamic size AND MUST be a vector :
+ * - `void setDimensions(int d)` sets the size of posMin, posMax and velocityMax to (d,1).
  *
  *
  *

@@ -28,4 +28,10 @@ This file is part of HeuristicFlow.
 #define HEU_DISPLINE \
   ::std::cout << "File : " << __FILE__ << " , Line : " << __LINE__ << ::std::endl;
 
+#ifdef __cplusplus
+#define HEU_CPP_STANDARD __cplusplus
+#else
+#define HEU_CPP_STANDARD _MSC_VER
+#endif
+
 #endif  //  HEU_MACROS_HPP

@@ -26,7 +26,7 @@ This file is part of HeuristicFlow.
 #include "InternalHeaderCheck.h"
 
 namespace heu {
-namespace internal {
+namespace {
 
 template <class Var_t>
 class SquareBox4PSO {
@@ -42,19 +42,30 @@ class SquareBox4PSO {
 
   inline Scalar_t posMax() const noexcept { return _posMaxS; }
 
+  inline Scalar_t posMin(const int) const noexcept { return _posMinS; }
+
+  inline Scalar_t posMax(const int) const noexcept { return _posMinS; }
+
   inline void setRange(const Scalar_t min, const Scalar_t max) noexcept {
     assert(min < max);
     _posMinS = min;
     _posMaxS = max;
   }
 
-  inline Scalar_t& maxVelocity() noexcept { return _posMaxVelocityS; }
+  inline void setPVRange(const Scalar_t pMin, const Scalar_t pMax, const Scalar_t vMax) noexcept {
+    setRange(pMin, pMax);
+    setMaxVelocity(vMax);
+  }
 
-  inline Scalar_t maxVelocity() const noexcept { return _posMaxVelocityS; }
+  inline Scalar_t& maxVelocity() noexcept { return _maxVelocityS; }
+
+  inline Scalar_t maxVelocity() const noexcept { return _maxVelocityS; }
+
+  inline Scalar_t maxVelocity(const int) const noexcept { return _maxVelocityS; }
 
   inline void setMaxVelocity(const Scalar_t __posMaxVelocity) noexcept {
     assert(__posMaxVelocity > 0);
-    _posMaxVelocityS = __posMaxVelocity;
+    _maxVelocityS = __posMaxVelocity;
   }
 
   inline void applyConstraint4Position(Var_t* p) const noexcept {
@@ -66,15 +77,15 @@ class SquareBox4PSO {
 
   inline void applyConstraint4Velocity(Var_t* v) const noexcept {
     for (int idx = 0; idx < v->size(); idx++) {
-      at(*v, idx) = std::min(at(*v, idx), _posMaxVelocityS);
-      at(*v, idx) = std::max(at(*v, idx), -_posMaxVelocityS);
+      at(*v, idx) = std::min(at(*v, idx), _maxVelocityS);
+      at(*v, idx) = std::max(at(*v, idx), -_maxVelocityS);
     }
   }
 
  private:
   Scalar_t _posMinS;
   Scalar_t _posMaxS;
-  Scalar_t _posMaxVelocityS;
+  Scalar_t _maxVelocityS;
 };
 
 template <class Var_t>
@@ -87,9 +98,13 @@ class NonsquareBox4PSO {
 
   inline const Var_t& posMin() const noexcept { return _posMinV; }
 
+  inline Scalar_t posMin(const int idx) const noexcept { return at(_posMinV, idx); }
+
   inline Var_t& posMax() noexcept { return _posMaxV; }
 
   inline const Var_t& posMax() const noexcept { return _posMaxV; }
+
+  inline Scalar_t posMax(const int idx) const noexcept { return at(_posMaxV, idx); }
 
   inline void setRange(const Var_t& _min, const Var_t& _max) noexcept {
     if constexpr (!array_traits<Var_t>::isSizeFixed) {
@@ -108,9 +123,11 @@ class NonsquareBox4PSO {
     _posMaxV = _max;
   }
 
-  inline Var_t& maxVelocity() noexcept { return _posMaxVelocityV; }
+  inline Var_t& maxVelocity() noexcept { return _maxVelocityV; }
 
-  inline const Var_t& maxVelocity() const noexcept { return _posMaxVelocityV; }
+  inline const Var_t& maxVelocity() const noexcept { return _maxVelocityV; }
+
+  inline Scalar_t maxVelocity(const int idx) const noexcept { return at(_maxVelocityV, idx); }
 
   inline void setMaxVelocity(const Var_t& __posMaxVelocity) noexcept {
     if constexpr (array_traits<Var_t>::isEigenClass) {
@@ -121,7 +138,12 @@ class NonsquareBox4PSO {
       }
     }
 
-    _posMaxVelocityV = __posMaxVelocity;
+    _maxVelocityV = __posMaxVelocity;
+  }
+
+  inline void setPVRange(const Var_t& pMin, const Var_t& pMax, const Var_t& vMax) noexcept {
+    setRange(pMin, pMax);
+    setMaxVelocity(vMax);
   }
 
   inline void applyConstraint4Position(Var_t* p) const noexcept {
@@ -133,15 +155,15 @@ class NonsquareBox4PSO {
 
   inline void applyConstraint4Velocity(Var_t* v) const noexcept {
     for (int idx = 0; idx < v->size(); idx++) {
-      at(*v, idx) = std::min(at(*v, idx), at(_posMaxVelocityV, idx));
-      at(*v, idx) = std::max(at(*v, idx), -at(_posMaxVelocityV, idx));
+      at(*v, idx) = std::min(at(*v, idx), at(_maxVelocityV, idx));
+      at(*v, idx) = std::max(at(*v, idx), -at(_maxVelocityV, idx));
     }
   }
 
  private:
   Var_t _posMinV;
   Var_t _posMaxV;
-  Var_t _posMaxVelocityV;
+  Var_t _maxVelocityV;
 };
 
 template <class Var_t>
@@ -298,19 +320,18 @@ class NonSquareBoxDynamicDim4PSO
   }
 };
 
-}  // namespace internal
+}  // namespace
 
 template <class Var_t, BoxShape BS>
 class Box4PSO
     : public std::conditional<
           BS == BoxShape::SQUARE_BOX,
-          typename std::conditional<array_traits<Var_t>::isFixedSize,
-                                    internal::SquareBoxConstDim4PSO<Var_t>,
-                                    internal::SquareBoxDynamicDim4PSO<Var_t>>::type,
+          typename std::conditional<array_traits<Var_t>::isFixedSize, SquareBoxConstDim4PSO<Var_t>,
+                                    SquareBoxDynamicDim4PSO<Var_t>>::type,
 
           typename std::conditional<array_traits<Var_t>::isFixedSize,
-                                    internal::NonSquareBoxConstDim4PSO<Var_t>,
-                                    internal::NonSquareBoxDynamicDim4PSO<Var_t>>::type>::type
+                                    NonSquareBoxConstDim4PSO<Var_t>,
+                                    NonSquareBoxDynamicDim4PSO<Var_t>>::type>::type
 
 {};
 
