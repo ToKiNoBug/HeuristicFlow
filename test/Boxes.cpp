@@ -23,15 +23,18 @@ This file is part of HeuristicFlow.
 using namespace Eigen;
 using namespace std;
 
-#warning Box constraint has been written, but learn rate hasn't been finished yet
+using heu::BoxShape;
 
 // this example shows how to use box-constraint types
 void test_Box() {
   //[0,1]^50, mutate step = 0.02
 
-  heu::DiscretBox<Eigen::Array4d, heu::BoxShape::SQUARE_BOX> box0;
+  cout << "Testing Box1 : box4dS" << endl;
+
+  heu::ContinousBox<Eigen::Array4d, heu::BoxShape::SQUARE_BOX> box0;
 
   box0.setRange(0, 1);
+  box0.setDelta(0.6);
   box0.min();
 
   cout << box0.dimensions() << endl;
@@ -39,20 +42,96 @@ void test_Box() {
   cout << "sizeof(box0) = " << sizeof(box0)
        << endl;  // every thing about this boxes are known at compile time, so its size is 1
   Eigen::Array4d v;
+  v.fill(0.5);
+  cout << "v before constraint : \n" << v.transpose() << endl;
   box0.applyConstraint(&v);
 
+  cout << "v after constraint : \n" << v.transpose() << endl;
+
+  box0.applyDelta(&v);
+
+  cout << "v after delta : \n" << v.transpose() << endl;
+
+  cout << "\n\n\n\n\nTesting Box1 : boxXiS" << endl;
+
+  // Dynamic dim square integer box
+  heu::DiscretBox<std::vector<int>, BoxShape::SQUARE_BOX> box1;
+
+  box1.setDimensions(20);
+
+  box1.setRange(-3, 4);
+
+  std::vector<int> a;
+
+  box1.initialize(&a);
+
+  cout << "initialized : =[";
+  for (int i : a) {
+    cout << i << ',';
+  }
+  cout << "\b]" << endl;
+
+  cout << "\n\n\n\n\nTesting Box2 : boxXXfNS" << endl;
+  // Dynamic non-square mat flaot box
+  heu::ContinousBox<Eigen::ArrayXXf, heu::BoxShape::RECTANGLE_BOX> box2;
+
+  box2.setDimensions(3, 6);
+
+  box2.min().fill(-2);
+
+  box2.max().fill(6);
+
+  for (int idx = 0; idx < box2.dimensions(); idx++) {
+    box2.min()(idx) -= (idx % 5);
+    box2.max()(idx) += (idx % 5);
+  }
+
+  box2.delta() = (box2.max() - box2.min()) / 10;
+
+  cout << "box2 shape : [" << box2.boxRows() << " , " << box2.boxCols() << "]" << endl;
+
+  cout << "box2.min() = \n" << box2.min() << endl;
+  cout << "box2.max() = \n" << box2.max() << endl;
+  cout << "box2.delta() = \n" << box2.delta() << endl;
+
+  decltype(box2)::Var_t mat2;
+
+  box2.initialize(&mat2);
+
+  cout << "initialized : \n" << mat2 << endl;
+
+  box2.applyConstraint(&mat2);
+  box2.applyDelta(&mat2);
+
+  cout << " mat after delta : \n" << mat2 << endl;
+
+  cout << "\n\n\n\n\nTesting Box3 : box10b" << endl;
+  // 10 dimensional binary box
+
+  heu::DiscretBox<std::array<bool, 10>> box3;
+
+  cout << "sizeof box10b = " << sizeof(box3) << endl;
+
+  std::array<bool, 10> b;
+
+  box3.initialize(&b);
+
+  cout << "Intialized : [";
+  for (bool i : b) {
+    cout << i << ',';
+  }
+  cout << "\b];" << endl;
+
+  box3.applyDelta(&b);
+
+  cout << "After delta : [";
+  for (bool i : b) {
+    cout << i << ',';
+  }
+  cout << "\b];" << endl;
+
   /*
-// Dynamic dim non-suqare box
-heu::BoxXdN<heu::ContainerOption::Eigen> box;
-
-// Set the min and max by its non-const-ref to max and min members.
-box.max().setConstant(50, 1, 1.0);
-box.min().setConstant(50, 1, 0.0);
-
-*/
-
-  /*
-    // 10 dimensional binary box
+    //
     heu::BoxNb<10> BNb;
     // Dynamic dimensional binary box
     heu::BoxXb<> BXb;
