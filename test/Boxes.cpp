@@ -129,29 +129,6 @@ void test_Box() {
     cout << i << ',';
   }
   cout << "\b];" << endl;
-
-  /*
-    //
-    heu::BoxNb<10> BNb;
-    // Dynamic dimensional binary box
-    heu::BoxXb<> BXb;
-
-    BXb.setDimensions(400);
-
-    BNb.max();
-    BNb.min();
-
-    BXb.max();
-    BXb.min();
-
-    cout << BNb.dimensions();
-    cout << BXb.dimensions();
-
-    cout << "sizeof BNb=" << sizeof(BNb)
-         << endl;  // Every information of BNb is fixed at compile time so its size is 1
-    cout << "sizeof BXb=" << sizeof(BXb)
-         << endl;  // BXb 's dimensions is known at runtime so its size is 8 (size_t)
-         */
 }
 
 int main() {

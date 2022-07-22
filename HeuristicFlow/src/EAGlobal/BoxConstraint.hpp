@@ -1,9 +1,11 @@
-#ifndef HEU_FINITEBOXES_HPP
-#define HEU_FINITEBOXES_HPP
+#ifndef HEU_BOXCONSTRAINT_HPP
+#define HEU_BOXCONSTRAINT_HPP
 
-#include <algorithm>
+#include <limits>
 #include <type_traits>
 #include "../../Global"
+
+#include "SizeBody4BoxConstraint.hpp"
 
 namespace heu {
 
@@ -117,19 +119,21 @@ class SquareBoxConstDimVec
           !std::is_same_v<bool, typename array_traits<Var>::Scalar_t>,
           std::conditional_t<!std::is_same_v<bool, typename array_traits<Var>::Scalar_t>,
                              SquareBoxCore<Var>, BooleanBoxCore<Var>>,
-          BooleanBoxCore<Var>> {
+          BooleanBoxCore<Var>>,
+      public internal::SquareBoxSizeBody<Var> {
  public:
   using Var_t = Var;
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
   using BoxBase_t = BoxBase<SquareBoxConstDimVec<Var>, Var>;
   static_assert(array_traits<Var_t>::isFixedSize);
   static_assert(array_traits<Var_t>::isVector);
+  /*
+    inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
 
-  inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
+    inline void initializeSize(Var_t*) const noexcept {}
 
-  inline void initializeSize(Var_t*) const noexcept {}
-
- private:
+   private:
+   */
 };
 
 template <class Var>
@@ -137,7 +141,8 @@ class SquareBoxConstDimMat
     : public BoxBase<SquareBoxConstDimMat<Var>, Var>,
       public MatBoxBase<SquareBoxConstDimMat<Var>, Var>,
       public std::conditional_t<!std::is_same_v<bool, typename array_traits<Var>::Scalar_t>,
-                                SquareBoxCore<Var>, BooleanBoxCore<Var>> {
+                                SquareBoxCore<Var>, BooleanBoxCore<Var>>,
+      public internal::SquareBoxSizeBody<Var> {
  public:
   using Var_t = Var;
   using BoxBase_t = BoxBase<SquareBoxConstDimMat<Var>, Var>;
@@ -146,41 +151,43 @@ class SquareBoxConstDimMat
   static_assert(!array_traits<Var_t>::isVector);
 
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+  /*
+    inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
 
-  inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
+    inline constexpr int boxRows() const noexcept { return array_traits<Var_t>::rowsCT; }
 
-  inline constexpr int boxRows() const noexcept { return array_traits<Var_t>::rowsCT; }
+    inline constexpr int boxCols() const noexcept { return array_traits<Var_t>::colsCT; }
 
-  inline constexpr int boxCols() const noexcept { return array_traits<Var_t>::colsCT; }
-
-  inline void initializeSize(Var_t*) const noexcept {}
+    inline void initializeSize(Var_t*) const noexcept {}
+    */
 };
 
 template <class Var>
 class SquareBoxDynamicDimVec
     : public BoxBase<SquareBoxDynamicDimVec<Var>, Var>,
       public std::conditional_t<!std::is_same_v<bool, typename array_traits<Var>::Scalar_t>,
-                                SquareBoxCore<Var>, BooleanBoxCore<Var>> {
+                                SquareBoxCore<Var>, BooleanBoxCore<Var>>,
+      public internal::SquareBoxSizeBody<Var> {
  public:
   using Var_t = Var;
   using BoxBase_t = BoxBase<SquareBoxConstDimVec<Var>, Var>;
   static_assert(!array_traits<Var_t>::isFixedSize);
   static_assert(array_traits<Var_t>::isVector);
+  /*
+    inline int dimensions() const noexcept { return _dimensions; }
 
-  inline int dimensions() const noexcept { return _dimensions; }
+    inline void setDimensions(const int dim) noexcept {
+      assert(dim > 0);
+      _dimensions = dim;
+    }
 
-  inline void setDimensions(const int dim) noexcept {
-    assert(dim > 0);
-    _dimensions = dim;
-  }
+    inline void initializeSize(Var_t* v) const noexcept {
+      assert(_dimensions > 0);
+      v->resize(_dimensions);
+    }
 
-  inline void initializeSize(Var_t* v) const noexcept {
-    assert(_dimensions > 0);
-    v->resize(_dimensions);
-  }
-
- private:
-  int _dimensions;
+   private:
+    int _dimensions;*/
 };
 
 template <class Var>
@@ -188,7 +195,8 @@ class SquareBoxDynamicDimMat
     : public BoxBase<SquareBoxDynamicDimMat<Var>, Var>,
       public MatBoxBase<SquareBoxDynamicDimMat<Var>, Var>,
       public std::conditional_t<!std::is_same_v<bool, typename array_traits<Var>::Scalar_t>,
-                                SquareBoxCore<Var>, BooleanBoxCore<Var>> {
+                                SquareBoxCore<Var>, BooleanBoxCore<Var>>,
+      public internal::SquareBoxSizeBody<Var> {
  public:
   using Var_t = Var;
   using BoxBase_t = BoxBase<SquareBoxDynamicDimMat<Var>, Var>;
@@ -493,6 +501,54 @@ class ContinousBox : public std::conditional_t<array_traits<Var>::isVector,
   }
 };
 
+namespace {
+
+template <class Var_t>
+class GuassianBoxCore {
+ public:
+  using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+  static_assert(std::is_floating_point_v<Scalar_t>,
+                "Infinite box requries that type of element must be floating point numbers");
+
+  inline constexpr Scalar_t min() const { return -std::numeric_limits<Scalar_t>::infinity(); }
+  inline constexpr Scalar_t min(const int) const {
+    return -std::numeric_limits<Scalar_t>::infinity();
+  }
+  inline constexpr Scalar_t max() const { return std::numeric_limits<Scalar_t>::infinity(); }
+  inline constexpr Scalar_t max(const int) const {
+    return std::numeric_limits<Scalar_t>::infinity();
+  }
+
+  inline Scalar_t& mean() noexcept { return _meanS; }
+  inline Scalar_t mean() const noexcept { return _meanS; }
+
+  inline Scalar_t& variance() noexcept { return _varianceS; }
+  inline Scalar_t variance() const noexcept { return _varianceS; }
+
+ private:
+  Scalar_t _meanS;
+  Scalar_t _varianceS;
+};
+
+}  // namespace
+
+template <class Var>
+class GaussianBox : public GuassianBoxCore<Var>, public internal::SquareBoxSizeBody<Var> {
+ public:
+  static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
+  using Var_t = Var;
+  using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+  inline void initialize(Var_t* v) const noexcept {
+    this->initializeSize(v);
+
+    for (Scalar_t& val : *v) {
+#warning !
+    }
+  }
+
+ protected:
+};
+
 }  // namespace heu
 
-#endif  //  HEU_FINITEBOXES_HPP
+#endif  //  HEU_BOXCONSTRAINT_HPP

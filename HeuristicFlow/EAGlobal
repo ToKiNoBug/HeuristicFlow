@@ -23,7 +23,8 @@ This file is part of HeuristicFlow.
 #include "src/EAGlobal/Pareto.hpp"
 
 //#include "src/EAGlobal/BoxConstraints.hpp"
-#include "src/EAGlobal/CRTPBox.hpp"
+#include "src/EAGlobal/SizeBody4BoxConstraint.hpp"
+#include "src/EAGlobal/BoxConstraint.hpp"
 //#include "src/EAGlobal/BoxInterface.hpp"
 #include "src/EAGlobal/testFunctionsCommon.hpp"
 #include "src/EAGlobal/SOFunctions.hpp"
