@@ -4,7 +4,7 @@
 
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/TokiNoBug/HeuristicFlow?style=plastic) ![GitHub](https://img.shields.io/github/license/TokiNoBug/HeuristicFlow?style=plastic)
 
-C++ template class lib for several optimization algorithms, like GA, NSGA2,NSGA3,PSO,etc.
+C++ template class lib for several optimization algorithms, like GA, NSGA2, NSGA3, PSO, AOS, etc.
 
 As a template lib, HeuristicFlow is header only.
 
@@ -24,7 +24,7 @@ Modules:
 
 
 Implemented Algorithms: 
-1. SOGA(Single Objective Genetic Algorithm)
+1. SOGA(Single Objective Genetic Algorithm, 10 selection method implemented)
 2. NSGA-II(Non-dominated Sorting Genetic Algorithm II)
 3. NSGA-III(Non-dominated Sorting Genetic Algorithm III)
 4. PSO(Particle Swarm Optimization)
@@ -81,3 +81,4 @@ Referenced Papers:
 Waiting to be implemented :
 1. GravitySearchAlgorithm
 2. BigFloodAlgorithm
+
