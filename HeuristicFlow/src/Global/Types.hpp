@@ -31,7 +31,7 @@ This file is part of HeuristicFlow.
 
 namespace heu {
 
-/*
+/**
  * \ingroup HEU_GLOBAL
  * \brief C++ std container for fixed and dynamic sizes.
 
@@ -39,11 +39,10 @@ namespace heu {
  *
  * \tparam scalar_t Type of element
  * \tparam Dim Size at compile time. Use Eigen::Dynamic for dynamic size.
-
+*/
 template <typename scalar_t, int Dim>
 using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
                                                std::array<scalar_t, size_t(Dim)> >::type;
-*/
 
 /*
  * \ingroup HEU_GLOBAL
@@ -145,8 +144,8 @@ struct toElement {
  * \ingroup HEU_GLOBAL
  * \brief Determine whether T is a Eigen class
  *
- * \note A class that publicaly inherits from Eigen class is also taken as Eigen class, cause it has
- * Eigen APIs.
+ * \note A class that publicaly inherits from Eigen class is also taken as Eigen class, cause it
+ * has Eigen APIs.
  *
  * \tparam T Type of vector/matrix
  * \return value Whether T is a Eigen class.

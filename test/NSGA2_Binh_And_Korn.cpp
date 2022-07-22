@@ -42,18 +42,18 @@ void testNSGA2_Binh_and_Korn() {
   // 0<=x_0<=5,  0<=x_1<=3
 
   // this function requires 0<=x<=5 and 0<=y<=3. Use a non-square constraint to present it.
-  using args_t = heu::BoxNdN<2, heu::ContainerOption::Std>;
+  using args_t = heu::ContinousBox<std::array<double, 2>, heu::BoxShape::RECTANGLE_BOX>;
 
   // the type of solver
   using solver_t = heu::NSGA2<
       std::array<double, 2>, 2, heu::FITNESS_LESS_BETTER, heu::RecordOption::DONT_RECORD_FITNESS,
       args_t,
-      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::iFunNd,  // initializatoin functon
+      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::iFun,  // initializatoin functon
       nullptr,  // the fitness function can be assigned at runtime if nullptr is used
       heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::cFunNd<>,  // otherwise the function
                                                                            // must be assigned in
                                                                            // the template
-      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::mFun_d>;   // This is suitable for
+      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::mFun>;     // This is suitable for
                                                                            // iFun, fFun, cFun and
                                                                            // mFun.
 
@@ -74,9 +74,8 @@ void testNSGA2_Binh_and_Korn() {
 
   {  // Set the box constraint
     args_t box;
-    box.setMin({0, 0});
-    box.setMax({5, 3});
-    box.setLearnRate({0.05, 0.03});
+    box.setRange({0, 0}, {5, 3});
+    box.setDelta({0.05, 0.03});
     algo.setArgs(box);
   }
 
@@ -114,6 +113,6 @@ void testNSGA2_Binh_and_Korn() {
 int main() {
   testNSGA2_Binh_and_Korn();
 
-  system("pause");
+  // system("pause");
   return 0;
 }

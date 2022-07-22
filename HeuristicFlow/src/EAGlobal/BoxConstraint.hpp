@@ -93,10 +93,10 @@ class SquareBoxCore {
   inline Scalar_t max() const noexcept { return _maxS; }
   inline Scalar_t max(const int) const noexcept { return _maxS; }
 
-  inline void setRange(const Scalar_t __min, const Scalar_t __max) noexcept {
-    assert(__min < __max);
-    _minS = __min;
-    _maxS = __max;
+  inline void setRange(const Scalar_t _min_, const Scalar_t _max_) noexcept {
+    assert(_min_ < _max_);
+    _minS = _min_;
+    _maxS = _max_;
   }
 
  private:
@@ -228,10 +228,10 @@ class NonSquareBoxCore {
   inline const Var_t& max() const noexcept { return _maxV; }
   inline Scalar_t max(const int idx) const noexcept { return at(_maxV, idx); }
 
-  inline void setRange(const Var_t& __min, const Var_t& __max) const noexcept {
-    assert(__min.size() == __max.size());
-    _minV = __min;
-    _maxV = __max;
+  inline void setRange(const Var_t& _min_, const Var_t& _max_) noexcept {
+    assert(_min_.size() == _max_.size());
+    _minV = _min_;
+    _maxV = _max_;
   }
 
  private:
@@ -400,7 +400,7 @@ using NonSquareBox_t = std::conditional_t<
  * - `Scalar_t & max() ` Returns a non-const reference to the upper bound.
  * - `Scalar_t min() const ` Returns the lower boundary.
  * - `Scalar_t max() const ` Returns the upper boundary.
- * - `void setRange(const Scalar_t __min,const Scalar_t __max)` Set the lower and upper boundaries.
+ * - `void setRange(const Scalar_t _min_,const Scalar_t _max_)` Set the lower and upper boundaries.
  * Mention that the upper bound must be greater than the lower bound.
  *
  * ## These only exists when the box is NOT a square box:
@@ -408,7 +408,7 @@ using NonSquareBox_t = std::conditional_t<
  * - `Var & max() ` Returns a non-const reference to the upper bound.
  * - `const Var & min() const ` Returns a constant reference to the lower boundary.
  * - `const Var & max() const ` Returns a constant reference to the upper boundary.
- * - `void setRange(const Var & __min,const Var & __max)` Set the lower and upper boundaries.
+ * - `void setRange(const Var & _min_,const Var & _max_)` Set the lower and upper boundaries.
  * Mention that the upper bound must be greater than the lower bound.
  *
  *
