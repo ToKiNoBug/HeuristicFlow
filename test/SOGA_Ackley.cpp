@@ -27,13 +27,13 @@ using namespace std;
 // but its global minimum point is [0,0] and corresponding value is 0. A good solver should be able
 // to find the global minimum point.
 void testAckley_withRecord() {
-  using args_t = heu::BoxNdS<2, heu::Std>;
+  using args_t = heu::ContinousBox<array<double, 2>, heu::BoxShape::SQUARE_BOX>;
   constexpr heu::SelectMethod sm = heu::SelectMethod::RunTimeSelectMethod;
 
   using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, sm,
-                             args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFunNd<>,
+                             args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFun,
                              nullptr, heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
-                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun_d<>>;
+                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun>;
   solver_t algo;
 
   heu::GAOption opt;
@@ -76,9 +76,8 @@ void testAckley_withRecord() {
 
   {
     args_t args;
-    args.setMin(-5);
-    args.setMax(5);
-    args.setLearnRate(0.05);
+    args.setRange(-5, 5);
+    args.setDelta(0.05);
     algo.setArgs(args);
   }
 

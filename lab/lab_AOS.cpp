@@ -113,7 +113,7 @@ class labAOS {
     electrons.resize(electronNum);
     for (auto& elec : electrons) {
       elec.setUncomputed();
-      heu::randD(elec.state.data(), elec.state.size(), varMin, varMax);
+      heu::randD(elec.state.data(), int(elec.state.size()), varMin, varMax);
     }
     atom.resize(electronNum);
     for (auto& layer : atom) {
@@ -173,7 +173,7 @@ class labAOS {
     }
 
     bindingEnergy /= electrons.size();
-    bindingState /= electrons.size();
+    bindingState /= double(electrons.size());
   }
   void makeLayers() {
     std::vector<std::list<Electron>::iterator> elecSortSpace;
@@ -199,11 +199,11 @@ class labAOS {
     numOfEachLayer.setZero();
 
     for (int idx = 0; idx < layerNum; idx++) {
-      numOfEachLayer[idx] = gaussianCurve(idx + 1, 0, layerNum / 6);
+      numOfEachLayer[idx] = gaussianCurve(idx + 1, 0, layerNum / 6.0);
     }
 
     numOfEachLayer /= numOfEachLayer.sum();
-    numOfEachLayer *= electrons.size();
+    numOfEachLayer *= int(electrons.size());
     Eigen::ArrayXi intNumOfEachLayer = numOfEachLayer.round().cast<int>();
 
     for (int idx = 1; idx < intNumOfEachLayer.size(); idx++) {
@@ -211,7 +211,7 @@ class labAOS {
     }
 
     for (auto& val : intNumOfEachLayer) {
-      if (val > electrons.size()) val = electrons.size();
+      if (val > electrons.size()) val = int(electrons.size());
     }
 
     atom.resize(layerNum);
@@ -265,9 +265,9 @@ class labAOS {
                    Electron* newElec) {
     Eigen::Array2d alpha, beta, gamma;
 
-    heu::randD(alpha.data(), alpha.size());
-    heu::randD(beta.data(), beta.size());
-    heu::randD(gamma.data(), gamma.size());
+    heu::randD(alpha.data(), int(alpha.size()));
+    heu::randD(beta.data(), int(beta.size()));
+    heu::randD(gamma.data(), int(gamma.size()));
 
     if (prevElec.energy >= layer.bindingEnergy) {
       auto deltaX = alpha * (beta * this->lowestEnergyIterator->state - gamma * this->bindingState);
@@ -281,7 +281,7 @@ class labAOS {
 
   void applyNonPhoton(const Electron& prevElec, Electron* newElec) {
     Eigen::Array2d rand;
-    heu::randD(rand.data(), rand.size(), 0, 1);
+    heu::randD(rand.data(), int(rand.size()), 0, 1);
     newElec->state = prevElec.state + rand;
     newElec->setUncomputed();
   }

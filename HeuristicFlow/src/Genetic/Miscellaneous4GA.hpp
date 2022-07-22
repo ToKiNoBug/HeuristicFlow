@@ -111,8 +111,8 @@ struct imp_GADefaults_DVO<Var_t, ContainerOption::Eigen> {
  * \note All iFun and mFun requires `Args_t` to be (or inherit from) a box-constraint type.
  * Otherwise static assertion will fail.
  *
- * \note To avoid static assertion failuer with non-box constraint types of `Args_t`, all iFun and
- * mFun have a unused parameter to stop unnecessary template instatiation. For example, when using
+ * \note To avoid static assertion failuer with non-box constraint types of `Args_t`, some functions
+ * have a unused parameter to stop unnecessary template instatiation. For example, when using
  * `iFunNd`, use `iFunNd<>`. Don't miss the template braces if this static member function is a
  * templated one.
  *
@@ -132,19 +132,6 @@ struct GADefaults {
   struct RealBoxOp {
     static_assert(Args_t::Shape == BoxShape::RECTANGLE_BOX, "Wrong specialization");
     // non-square box
-    inline static void imp_doiFunNd(Var_t *v, const Args_t *box) noexcept {
-      for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randD(box->min()[idx], box->max()[idx]);
-      }
-    }
-
-    inline static void imp_domFund_single(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
-      *v = *src;
-      size_t idx = randIdx(v->size());
-      v->operator[](idx) += randD(-1, 1) * box->learnRate()[idx];
-      v->operator[](idx) = std::max(v->operator[](idx), box->min()[idx]);
-      v->operator[](idx) = std::min(v->operator[](idx), box->max()[idx]);
-    }
 
    private:
   };
@@ -152,31 +139,12 @@ struct GADefaults {
   template <typename unused>
   struct RealBoxOp<BoxShape::SQUARE_BOX, unused> {
     // square box
-    inline static void imp_doiFunNd(Var_t *v, const Args_t *box) noexcept {
-      for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randD(box->min(), box->max());
-      }
-    }
-
-    inline static void imp_domFund_single(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
-      *v = *src;
-      size_t idx = randIdx(v->size());
-      v->operator[](idx) += randD(-1, 1) * box->learnRate();
-      v->operator[](idx) = std::max(v->operator[](idx), box->min());
-      v->operator[](idx) = std::min(v->operator[](idx), box->max());
-    }
   };
 
   template <BoxShape BS, typename unused = void>
   struct SymBoxOp  //  non-square box
   {
     using scalar_t = typename toElement<Var_t>::type;
-
-    inline static void imp_doiFunNs(Var_t *v, const Args_t *box) noexcept {
-      for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min()[idx], scalar_t(box->max()[idx] + 1));
-      }
-    }
 
     inline static void imp_domFunNs(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
       *v = *src;
@@ -196,12 +164,6 @@ struct GADefaults {
   struct SymBoxOp<BoxShape::SQUARE_BOX, unused> {
     using scalar_t = typename toElement<Var_t>::type;
 
-    inline static void imp_doiFunNs(Var_t *v, const Args_t *box) noexcept {
-      for (size_t idx = 0; idx < v->size(); idx++) {
-        v->operator[](idx) = randIdx(box->min(), scalar_t(box->max() + 1));
-      }
-    }
-
     inline static void imp_domFunNs(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
       *v = *src;
       const size_t idx = randIdx(v->size());
@@ -218,104 +180,15 @@ struct GADefaults {
 
  public:
   /**
-   * \brief Default initialize function for fixed-sized real vectors
+   * \brief Univerial initialize function.
    *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note Since initialization knows the range, this function requires `Args_t` to be (or derived
-   * from) a real box-constraint.
+   * \note This function requires `Args_t` to be (or derived from) a box-constraint.
    *
    * \param v pointer of Var_t
-   * \param box Pointer to the real box constraint
+   * \param box Pointer to the box constraint
+   *
    */
-  template <typename unused = void>
-  inline static void iFunNd(Var_t *v, const Args_t *box) noexcept {
-    static_assert(Args_t::isBox, "Default iFun requires Args_t to be a box constriant");
-    static_assert(Args_t::Encoding == EncodeType::Real, "iFunNd requires real number encoding");
-    static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value,
-                  "Box and Var_t types must be same");
-
-    RealBoxOp<Args_t::Shape>::imp_doiFunNd(v, box);
-  }
-
-  /**
-   * \brief Default initialize function for runtime-sized real vectors
-   *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note Since initialization knows the range, this function requires `Args_t` to be (or derived
-   * from) a real box-constraint.
-   *
-   * \param v pointer of Var_t
-   * \param box Pointer to the real box constraint
-   *
-   * \sa iFunNd
-   */
-  template <typename unused = void>
-  inline static void iFunXd(Var_t *v, const Args_t *box) noexcept {
-    v->resize(box->dimensions());
-    iFunNd<unused>(v, box);
-  }
-
-  /**
-   * \brief
-   *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
-   *
-   * \param v pointer of Var_t
-   * \param box Pointer to the boolean box constraint
-   *
-   * \sa iFunXb For dynamic-sized initialization
-   */
-  template <typename unused = void>
-  inline static void iFunNb(Var_t *v, const Args_t *box) noexcept {
-    static_assert(Args_t::isBox, "Default iFun requires Args_t to be a box constriant");
-    static_assert(Args_t::Encoding == EncodeType::Binary, "iFunNb requires binary box");
-    static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value,
-                  "Box and Var_t types must be same");
-    for (size_t idx = 0; idx < v->size(); idx++) {
-      v->operator[](idx) = bool(randD() >= 0.5);
-    }
-  }
-
-  /**
-   * \brief Default initialize function for dynamic-sized boolean vectors
-   *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
-   *
-   * \param v pointer of Var_t
-   * \param box Pointer to the boolean box constraint
-   *
-   * \sa iFunNb For fixed-sized initialization
-   */
-  template <typename unused = void>
-  inline static void iFunXb(Var_t *v, const Args_t *box) noexcept {
-    v->resize(box->dimensions());
-    iFunNb<unused>(v, box);
-  }
-
-  template <typename unused = void>
-  inline static void iFunNs(Var_t *v, const Args_t *box) noexcept {
-    static_assert(Args_t::isBox, "Default iFun requires Args_t to be a box constriant");
-    static_assert(Args_t::Encoding == EncodeType::Symbolic, "iFunNs requires symbolic box");
-    static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value,
-                  "Box and Var_t types must be same");
-    SymBoxOp<Args_t::Shape>::imp_doiFunNs(v, box);
-  }
-
-  template <typename unused = void>
-  inline static void iFunXs(Var_t *v, const Args_t *box) noexcept {
-    v->resize(box->dimensions());
-    iFunNs<unused>(v, box);
-  }
+  inline static void iFun(Var_t *v, const Args_t *box) noexcept { box->initialize(v); }
 
   /**
    * \brief Default crossover function for fixed-size float/double array/vector
@@ -429,50 +302,9 @@ struct GADefaults {
     GADefaults<Var_t, void, dvo>::template cFunRandXs<posCode>(p1, p2, c1, c2);
   }
 
-  /**
-   * \brief Default mutate function for real vectors (fixed and runtime size)
-   *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note Since mutation requires to know the range and learning rate(mutation step), so this
-   * function requires `Args_t` to be (or derived from) a real box-constraint.
-   *
-   * \param src The gene before mutation
-   * \param v The gene after mutation
-   * \param box The box constraint
-   */
-  template <typename unused = void>
-  inline static void mFun_d(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
-    static_assert(Args_t::isBox, "Default mFun requires Args_t to be a box constriant");
-    static_assert(Args_t::Encoding == EncodeType::Real, "mFun_d requires real box");
-    static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value,
-                  "Box and Var_t types must be same");
-
-    RealBoxOp<Args_t::Shape>::imp_domFund_single(src, v, box);
-  }
-
-  /**
-   * \brief Default mutate function for binary vectors (fixed and runtime size)
-   *
-   * \tparam unused unused template parameter is introduced to avoid static assertion failuer when
-   * non-box Args_t is used.
-   *
-   * \note This function requires `Args_t` to be (or derived from) a boolean box-constraint.
-   *
-   * \param src The gene before mutation
-   * \param v The gene after mutation
-   * \param box The box constraint
-   */
-  template <typename unused = void>
-  inline static void mFun_b(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
-    static_assert(Args_t::isBox, "Default mFun requires Args_t to be a box constriant");
-    static_assert(Args_t::Encoding == EncodeType::Binary, "mFun_b requires binary box");
-    static_assert(std::is_same<typename Args_t::Var_t, Var_t>::value,
-                  "Box and Var_t types must be same");
+  inline static void mFun(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
     *v = *src;
-    size_t idx = randIdx(v->size());
-    v->operator[](idx) = !v->operator[](idx);
+    box->applyDelta(v);
   }
 
   /**
@@ -514,8 +346,8 @@ struct GADefaults<Var_t, void, dvo> {
    */
   template <DivCode _min = DivEncode<0, 1>::code, DivCode _max = DivEncode<1, 1>::code>
   inline static void iFunNd(Var_t *p) noexcept {
-    static const double min = DivDecode<_min>::real;
-    static const double max = DivDecode<_max>::real;
+    static constexpr double min = DivDecode<_min>::real;
+    static constexpr double max = DivDecode<_max>::real;
     // static const constexpr bool isValid=(max>min);
     // static_assert(isValid,"Max should be greater than min");
 
