@@ -129,6 +129,26 @@ void test_Box() {
     cout << i << ',';
   }
   cout << "\b];" << endl;
+
+  cout << "\n\n\n\n\nTesting Box4 : inf boxXXf" << endl;
+  heu::GaussianBox<Eigen::ArrayXXd> box4;
+
+  box4.setDimensions(3, 4);
+  box4.setMu(10);
+  box4.setSigma(1e8);
+  box4.setDelta(1e7);
+
+  Eigen::ArrayXXd mat4;
+
+  box4.initialize(&mat4);
+
+  // mat4.matrix().determinant();
+
+  cout << "initialized : \n" << mat4 << endl;
+
+  box4.applyDelta(&mat4);
+
+  cout << "after delta : \n" << mat4 << endl;
 }
 
 int main() {

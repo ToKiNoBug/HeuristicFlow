@@ -504,7 +504,7 @@ class ContinousBox : public std::conditional_t<array_traits<Var>::isVector,
 namespace {
 
 template <class Var_t>
-class GuassianBoxCore {
+class GuassianBoxCore : public SquareBoxDeltaCore<Var_t> {
  public:
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
   static_assert(std::is_floating_point_v<Scalar_t>,
@@ -514,20 +514,33 @@ class GuassianBoxCore {
   inline constexpr Scalar_t min(const int) const {
     return -std::numeric_limits<Scalar_t>::infinity();
   }
+  inline constexpr Scalar_t min(const int, const int) const {
+    return -std::numeric_limits<Scalar_t>::infinity();
+  }
   inline constexpr Scalar_t max() const { return std::numeric_limits<Scalar_t>::infinity(); }
   inline constexpr Scalar_t max(const int) const {
     return std::numeric_limits<Scalar_t>::infinity();
   }
+  inline constexpr Scalar_t max(const int, const int) const {
+    return std::numeric_limits<Scalar_t>::infinity();
+  }
 
-  inline Scalar_t& mean() noexcept { return _meanS; }
-  inline Scalar_t mean() const noexcept { return _meanS; }
+  inline Scalar_t& mu() noexcept { return _muS; }
+  inline Scalar_t mu() const noexcept { return _muS; }
+  inline void setMu(const Scalar_t _mu) noexcept { _muS = _mu; }
 
-  inline Scalar_t& variance() noexcept { return _varianceS; }
-  inline Scalar_t variance() const noexcept { return _varianceS; }
+  inline Scalar_t& sigma() noexcept { return _sigmaS; }
+  inline Scalar_t sigma() const noexcept { return _sigmaS; }
+  inline void setSigma(const Scalar_t _sigma) noexcept {
+    assert(_sigma > 0);
+    _sigmaS = _sigma;
+  }
+
+  inline Scalar_t variance() const noexcept { return _sigmaS * _sigmaS; }
 
  private:
-  Scalar_t _meanS;
-  Scalar_t _varianceS;
+  Scalar_t _muS;
+  Scalar_t _sigmaS;
 };
 
 }  // namespace
@@ -538,12 +551,24 @@ class GaussianBox : public GuassianBoxCore<Var>, public internal::SquareBoxSizeB
   static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
   using Var_t = Var;
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+
+  static_assert(std::is_floating_point_v<Scalar_t>);
+
   inline void initialize(Var_t* v) const noexcept {
     this->initializeSize(v);
 
-    for (Scalar_t& val : *v) {
-#warning !
+    for (int idx = 0; idx < this->dimensions(); idx++) {
+      at(*v, idx) = ::heu::normD(this->mu(), this->sigma());
     }
+  }
+
+  inline void applyConstraint(Var_t*) const noexcept {}
+
+  inline void applyDelta(Var_t* v) const noexcept {
+    assert(v->size() == this->dimensions());
+    const int idx = randIdx(this->dimensions());
+
+    at(*v, idx) += randD(-1, 1) * this->delta(idx);
   }
 
  protected:
