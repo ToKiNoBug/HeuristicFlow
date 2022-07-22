@@ -134,19 +134,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       if constexpr (AOSParameterPack<Var_t, Fitness_t,
                                      Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
-        if constexpr (array_traits<Var_t>::isEigenClass) {
-          v->resize(solver->dimensions(), 1);
-        } else if constexpr (array_traits<Var_t>::sizeCT == -1) {
-          v->resize(solver->dimensions());
-        }
-
-        for (int idx = 0; idx < solver->dimensions(); idx++) {
-          if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
-            v->operator[](idx) = randD(solver->min(), solver->max());
-          } else {
-            v->operator[](idx) = randD(solver->min()[idx], solver->max()[idx]);
-          }
-        }
+        solver->initialize(v);
 
       } else {
         solver->runiFun(v, &solver->arg());
@@ -164,19 +152,7 @@ class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
       if constexpr (AOSParameterPack<Var_t, Fitness_t,
                                      Arg_t>::template iFunBody<_iFun_>::iFunAtCompileTime ==
                     Base_t::defaultInitializeFunctionThatShouldNotBeCalled) {
-        if constexpr (array_traits<Var_t>::isEigenClass) {
-          v->resize(solver->dimensions(), 1);
-        } else if constexpr (array_traits<Var_t>::sizeCT == -1) {
-          v->resize(solver->dimensions());
-        }
-
-        for (int idx = 0; idx < solver->dimensions(); idx++) {
-          if constexpr (Box_t::Shape == BoxShape::SQUARE_BOX) {
-            v->operator[](idx) = randD(solver->min(), solver->max());
-          } else {
-            v->operator[](idx) = randD(solver->min()[idx], solver->max()[idx]);
-          }
-        }
+        solver->initialize(v);
 
       } else {
         solver->runiFun(v);

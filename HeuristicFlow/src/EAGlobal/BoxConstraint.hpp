@@ -39,6 +39,13 @@ class BoxBase {
     }
   }
 
+  inline void applyConstraint(Var_t* v, const int idx) const noexcept {
+    assert(v->size() == static_cast<const Derived*>(this)->dimensions());
+    assert4Size(idx);
+    at(*v, idx) = std::min(at(*v, idx), static_cast<const Derived*>(this)->max(idx));
+    at(*v, idx) = std::max(at(*v, idx), static_cast<const Derived*>(this)->min(idx));
+  }
+
   inline void applyDelta(Var_t* v) const noexcept {
     assert(v->size() == static_cast<const Derived*>(this)->dimensions());
     const int idx = randIdx(0, static_cast<const Derived*>(this)->dimensions());
@@ -632,6 +639,8 @@ class GaussianBox : public GuassianBoxCore<Var>, public internal::SquareBoxSizeB
   }
 
   inline void applyConstraint(Var_t*) const noexcept {}
+
+  inline void applyConstraint(Var_t*, const int) const noexcept {}
 
   inline void applyDelta(Var_t* v) const noexcept {
     assert(v->size() == this->dimensions());

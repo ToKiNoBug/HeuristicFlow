@@ -115,17 +115,17 @@ class AOS4Eigen : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_
     }
 
     for (int varIdx = 0; varIdx < alpha.size(); varIdx++) {
-      this->applyConstraint(&child->state(varIdx), varIdx);
+      this->applyConstraint(&child->state, varIdx);
     }
   }
 
   inline void __impl2_applyNonPhotonEffect(const Electron& parent,
                                            Electron_t* child) const noexcept {
     child->state =
-        parent.state + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
+        parent.state + this->delta() * Var_t::Random(parent.state.rows(), parent.state.cols());
 
     for (int idx = 0; idx < parent.state.size(); idx++) {
-      this->applyConstraint(&child->state(idx), idx);
+      this->applyConstraint(&child->state, idx);
     }
   }
 };
@@ -251,7 +251,7 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
     }
 
     for (int idx = 0; idx < this->dimensions(); idx++) {
-      this->applyConstraint(&child->state[idx], idx);
+      this->applyConstraint(&child->state, idx);
     }
   }
 
@@ -259,16 +259,13 @@ class AOS4Std : public AOSBoxed<Var_t, Fitness_t, Arg_t, Box_t, _iFun_, _fFun_, 
                                            Electron_t* child) const noexcept {
     /*
     child->state =
-        parent + this->learnRate() * Var_t::Random(parent.state.rows(), parent.state.cols());
+        parent + this->delta() * Var_t::Random(parent.state.rows(), parent.state.cols());
         */
     child->state = parent.state;
     for (int idx = 0; idx < this->dimensions(); idx++) {
-      if constexpr (Base_t::Shape == BoxShape::SQUARE_BOX) {
-        child->state[idx] += randD(-this->learnRate(), this->learnRate());
-      } else {
-        child->state[idx] += randD(-this->learnRate()[idx], this->learnRate()[idx]);
-      }
-      this->applyConstraint(&child->state[idx], idx);
+      child->state[idx] += randD(-this->delta(idx), this->delta(idx));
+
+      this->applyConstraint(&child->state, idx);
     }
   }
 };

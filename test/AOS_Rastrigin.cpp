@@ -25,13 +25,15 @@ This file is part of HeuristicFlow.
 using std::cout, std::endl;
 
 int main() {
-  constexpr int Dim = 10;
+  constexpr int Dim = 3;
 
-  heu::AOS<Eigen::Array<double, Dim, 1>, heu::BoxShape::SQUARE_BOX, heu::FITNESS_LESS_BETTER,
-           heu::RECORD_FITNESS, void, heu::testFunctions<Eigen::Array<double, Dim, 1>>::rastrigin,
-           true, heu::DivEncode<-5, 1>::code, heu::DivEncode<5, 1>::code,
-           heu::DivEncode<3, 2>::code>
+  heu::AOS<heu::ContinousBox<Eigen::Array<double, Dim, 1>, heu::BoxShape::SQUARE_BOX>,
+           heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, void,
+           heu::testFunctions<Eigen::Array<double, Dim, 1>>::rastrigin>
       solver;
+
+  solver.setRange(-5, 5);
+  solver.setDelta(1.5);
 
   heu::AOSOption opt;
   opt.electronNum = 50;
