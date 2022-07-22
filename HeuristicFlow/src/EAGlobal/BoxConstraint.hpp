@@ -25,8 +25,8 @@ class BoxBase {
         at(*v, idx) = randIdx<Scalar_t>(static_cast<const Derived*>(this)->min(idx),
                                         1 + static_cast<const Derived*>(this)->max(idx));
       } else {
-        at(*v, idx) = randD(static_cast<const Derived*>(this)->min(idx),
-                            static_cast<const Derived*>(this)->max(idx));
+        at(*v, idx) = Scalar_t(randD(static_cast<const Derived*>(this)->min(idx),
+                                     static_cast<const Derived*>(this)->max(idx)));
       }
     }
   }
@@ -127,13 +127,6 @@ class SquareBoxConstDimVec
   using BoxBase_t = BoxBase<SquareBoxConstDimVec<Var>, Var>;
   static_assert(array_traits<Var_t>::isFixedSize);
   static_assert(array_traits<Var_t>::isVector);
-  /*
-    inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
-
-    inline void initializeSize(Var_t*) const noexcept {}
-
-   private:
-   */
 };
 
 template <class Var>
@@ -151,15 +144,6 @@ class SquareBoxConstDimMat
   static_assert(!array_traits<Var_t>::isVector);
 
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
-  /*
-    inline constexpr int dimensions() const noexcept { return array_traits<Var_t>::sizeCT; }
-
-    inline constexpr int boxRows() const noexcept { return array_traits<Var_t>::rowsCT; }
-
-    inline constexpr int boxCols() const noexcept { return array_traits<Var_t>::colsCT; }
-
-    inline void initializeSize(Var_t*) const noexcept {}
-    */
 };
 
 template <class Var>
@@ -173,21 +157,6 @@ class SquareBoxDynamicDimVec
   using BoxBase_t = BoxBase<SquareBoxConstDimVec<Var>, Var>;
   static_assert(!array_traits<Var_t>::isFixedSize);
   static_assert(array_traits<Var_t>::isVector);
-  /*
-    inline int dimensions() const noexcept { return _dimensions; }
-
-    inline void setDimensions(const int dim) noexcept {
-      assert(dim > 0);
-      _dimensions = dim;
-    }
-
-    inline void initializeSize(Var_t* v) const noexcept {
-      assert(_dimensions > 0);
-      v->resize(_dimensions);
-    }
-
-   private:
-    int _dimensions;*/
 };
 
 template <class Var>
@@ -310,10 +279,10 @@ class NonSquareBoxDynamicDimVec : public BoxBase<NonSquareBoxDynamicDimVec<Var>,
 
   inline int dimensions() const noexcept {
     assert(this->min().size() == this->max().size());
-    return this->min().size();
+    return int(this->min().size());
   }
 
-  inline int setDimensions(const int dim) const noexcept {
+  inline void setDimensions(const int dim) const noexcept {
     assert(dim > 0);
     this->min().resize(dim);
     this->max().resize(dim);
@@ -336,17 +305,17 @@ class NonSquareBoxDynamicDimMat : public BoxBase<NonSquareBoxDynamicDimMat<Var>,
   inline int dimensions() const noexcept {
     assert(this->min().size() == this->max().size());
     assert(this->min().rows() == this->max().rows());
-    return this->min().size();
+    return int(this->min().size());
   }
 
   inline int boxRows() const noexcept {
     assert(this->min().rows() == this->max().rows());
-    return this->min().rows();
+    return int(this->min().rows());
   }
 
   inline int boxCols() const noexcept {
     assert(this->min().cols() == this->max().cols());
-    return this->min().cols();
+    return int(this->min().cols());
   }
 
   inline void setDimensions(const int _r, const int _c) noexcept {
@@ -373,6 +342,74 @@ using NonSquareBox_t = std::conditional_t<
 
 }  // namespace
 
+/**
+ * \ingroup HEU_EAGLOBAL
+ * \brief This is a box constraint in N-dimensional discrete space, suppporting both vector-type and
+ * matrix-type of decision variable, both fixed size and dynamic size, both square box and rectangle
+ * box.
+ *
+ * Discrete box is designed for discrete variables, like boolean, integers and enumeration
+ * variables. But you can also use it with floating point numbers.
+ *
+ * \note In square boxes, since the range of all dimensions are identity, the upper and lower
+ * boundaries are stored in two scalars. Otherwise they are stored in two decision variables.
+ *
+ * \note This class have a specialization for boolean vectors / matrices. Since booleans have only
+ * two possible values(0 and 1), the upper and lower boundaries are fixed for all dimensions, making
+ * boolean boxes square boxes. Thus you can't assign the shape as rectangle box.
+ *
+ * \sa ContinousBox for floating point numbers.
+ *
+ * # Different boxes with different `Var` have differrent API.
+ * ## These are common:
+ * - `Scalar_t min(const int idx) const` Returns the lower boundary in the idx-th dimension.
+ * - `Scalar_t max(const int idx) const` Returns the upper boundary in the idx-th dimension.
+ * - `int dimensions() const` Returns the number of dimensions.
+ * - `void initializeSize(Var * v) const` Allocates the size of v. This is useful only for dynamic
+ * sized decision variable, but this member function also exists for fixed-sized and runs nothing.
+ * - `void initialize(Var * v) const` Initialize a decision variable. For those dynamic-sized,
+ * function `initializeSize` will be called. So you don't need to resize it before initialization.
+ * - `void applyConstraint(Var * v) const` Ensures that v will always be inside the box. If it gets
+ * out in some dimensions, it will be moved to the neares boundary.
+ * - `void applyDelta(Var * v) cosnt` Modifies the coordinate on an random dimension stochastically,
+ * which implements local searching.
+ *
+ * ## These only exists when `Var` is possibly a matrix:
+ * - `int boxRows() const` Returns the rows of that matrix.
+ * - `int boxCols() const` Returns the cols of that matrix.
+ * - `Scalar_t min(const int r,const int c) const` Returns the lower boundary at (r,c) dim.
+ * - `Scalar_t max(const int r,const int c) const` Returns the upper boundary at (r,c) dim.
+ *
+ * ## These exists when `Var` is dynamic-sized and is possibly a matrix:
+ * - `void setDimensions(const int r,cosnt int c)` Set the rows and cols of `Var_t`. The matrix
+ * shape of min and max will also change.
+ *
+ * ## These only exists when `Var` is a dynamic-sized vector:
+ * - `void setDimensions(const int d)` Set the dimensions of `Var_t`. The size of min and max will
+ * also change.
+ *
+ * ## These only exists when the box is a square box:
+ * - `Scalar_t & min() ` Returns a non-const reference to the lower bound.
+ * - `Scalar_t & max() ` Returns a non-const reference to the upper bound.
+ * - `Scalar_t min() const ` Returns the lower boundary.
+ * - `Scalar_t max() const ` Returns the upper boundary.
+ * - `void setRange(const Scalar_t __min,const Scalar_t __max)` Set the lower and upper boundaries.
+ * Mention that the upper bound must be greater than the lower bound.
+ *
+ * ## These only exists when the box is NOT a square box:
+ * - `Var & min() ` Returns a non-const reference to the lower bound.
+ * - `Var & max() ` Returns a non-const reference to the upper bound.
+ * - `const Var & min() const ` Returns a constant reference to the lower boundary.
+ * - `const Var & max() const ` Returns a constant reference to the upper boundary.
+ * - `void setRange(const Var & __min,const Var & __max)` Set the lower and upper boundaries.
+ * Mention that the upper bound must be greater than the lower bound.
+ *
+ *
+ * \tparam Var Type of decision variables, it can be any instantiation of std::vector,std::array or
+ * Eigen::Array.
+ * \tparam BS The shape of box.
+ * \sa BoxShape for the meanning of box shapes.
+ */
 template <class Var, BoxShape BS = BoxShape::SQUARE_BOX>
 class DiscretBox
     : public std::conditional_t<BS == BoxShape::SQUARE_BOX, SquareBox_t<Var>, NonSquareBox_t<Var>> {
@@ -479,6 +516,22 @@ class BoxContinousMat
 
 }  // namespace
 
+/**
+ * \ingroup HEU_EAGLOBAL
+ * \brief This is a N-dimensional continous box constraint, requirint that elements of `Var_t`
+ * should be floating-point numbers. It supports both vector-type and matrix-type of decision
+ * variable, both fixed size and dynamic size, both square box and rectangle box.
+ *
+ * Apart from discrete box, continous box have an extra attribute : delta, storting the maximum
+ * magnificance of each changes. This value, whether a vector or a scalar, must be positive.
+ *
+ * Continous box has all APIs that Discrete box has. The extra attribute, `delta`, has the same
+ * conditional APIs like `min` and `max`. Thanks to my laziness, I don't have to repeat them again.
+ *
+ *
+ * \tparam Var Type of decision variable
+ * \tparam BS The shape of box
+ */
 template <class Var, BoxShape BS>
 class ContinousBox : public std::conditional_t<array_traits<Var>::isVector,
                                                BoxContinousVec<Var, BS>, BoxContinousMat<Var, BS>> {
@@ -494,7 +547,7 @@ class ContinousBox : public std::conditional_t<array_traits<Var>::isVector,
     assert(v->size() == this->dimensions());
     const int idx = randIdx(this->dimensions());
 
-    at(*v, idx) += randD(-1, 1) * this->delta(idx);
+    at(*v, idx) += Scalar_t(randD(-1, 1)) * this->delta(idx);
 
     at(*v, idx) = std::min(at(*v, idx), this->max(idx));
     at(*v, idx) = std::max(at(*v, idx), this->min(idx));
@@ -545,6 +598,22 @@ class GuassianBoxCore : public SquareBoxDeltaCore<Var_t> {
 
 }  // namespace
 
+/**
+ * \ingroup HEU_EAGLOBAL
+ * \brief Infinite box constraint
+ *
+ * This box has no upper and lower boundaries, and values are initialized with a gaussian
+ * distribution. You need to assign the averange value($\mu$) and standard deviation($\sigma$) of
+ * this distribution.
+ *
+ * This box also has "delta", which is the maximum magnificance of each changes.
+ *
+ * For API-consistency, this box has a member function `applyConstraint`, but it did nothing to the
+ * decision variable since there is not upper and lower boundaries.
+ *
+ *
+ * \tparam Var Type of decision variable.
+ */
 template <class Var>
 class GaussianBox : public GuassianBoxCore<Var>, public internal::SquareBoxSizeBody<Var> {
  public:
