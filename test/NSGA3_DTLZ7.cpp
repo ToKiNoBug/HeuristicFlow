@@ -38,10 +38,9 @@ void testNSGA3_DTLZ7() {
   using Var_t = Eigen::Array<double, N, 1>;
   // using Fitness_t = solver_t::Fitness_t;
 
-  auto iFun = heu::GADefaults<Var_t, void, heu::ContainerOption::Eigen>::iFunNd<>;
+  auto iFun = heu::GADefaults<Var_t>::iFunNd<>;
 
-  auto cFun = heu::GADefaults<Var_t, void,
-                              heu::ContainerOption::Eigen>::cFunNd<heu::DivEncode<1, 10>::code>;
+  auto cFun = heu::GADefaults<Var_t>::cFunNd<heu::DivEncode<1, 10>::code>;
 
   auto mFun = [](const Var_t* src, Var_t* v) {
     *v = *src;

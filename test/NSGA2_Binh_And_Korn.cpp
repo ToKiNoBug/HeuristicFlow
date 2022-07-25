@@ -47,15 +47,14 @@ void testNSGA2_Binh_and_Korn() {
   // the type of solver
   using solver_t = heu::NSGA2<
       std::array<double, 2>, 2, heu::FITNESS_LESS_BETTER, heu::RecordOption::DONT_RECORD_FITNESS,
-      args_t,
-      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::iFun,  // initializatoin functon
+      args_t, heu::GADefaults<std::array<double, 2>, args_t>::iFun<>,  // initializatoin functon
       nullptr,  // the fitness function can be assigned at runtime if nullptr is used
-      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::cFunNd<>,  // otherwise the function
-                                                                           // must be assigned in
-                                                                           // the template
-      heu::GADefaults<std::array<double, 2>, args_t, heu::Std>::mFun>;     // This is suitable for
-                                                                           // iFun, fFun, cFun and
-                                                                           // mFun.
+      heu::GADefaults<std::array<double, 2>, args_t>::cFunNd<>,  // otherwise the function
+                                                                 // must be assigned in
+                                                                 // the template
+      heu::GADefaults<std::array<double, 2>, args_t>::mFun>;     // This is suitable for
+                                                                 // iFun, fFun, cFun and
+                                                                 // mFun.
 
   solver_t algo;
 

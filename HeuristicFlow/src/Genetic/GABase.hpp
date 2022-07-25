@@ -40,6 +40,16 @@ namespace heu {
 
 namespace internal {
 
+#if __cplusplus >= 202002L
+template <class Gene_t>
+concept isGAGene = requires(Gene_t *g, const Gene_t *cg) {
+  {cg->self};
+  {cg->_Fitness};
+  {cg->_isCalculated};
+  {g->setUncalculated()};
+};
+#endif  //  #if __cplusplus >= 202002L
+
 /**
  * \ingroup HEU_GENETIC
  * \class GABase
@@ -65,6 +75,9 @@ template <typename Var_t, typename Fitness_t, RecordOption Record, class Gene, c
           typename GAAbstract<Var_t, Fitness_t, Args_t>::fitnessFun _fFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::crossoverFun _cFun_,
           typename GAAbstract<Var_t, Fitness_t, Args_t>::mutateFun _mFun_>
+#if __cplusplus >= 202002L
+requires isGAGene<Gene>
+#endif  //  #if __cplusplus >= 202002L
 class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
                public GAAbstract<Var_t, Fitness_t, Args_t>::template iFunBody<_iFun_>,
                public GAAbstract<Var_t, Fitness_t, Args_t>::template fFunBody<_fFun_>,

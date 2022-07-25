@@ -36,6 +36,9 @@ namespace internal {
 template <typename Var_t, class Fitness_t, class Arg_t, class Box_t,
           typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::iFun_t _iFun_,
           typename AOSParameterPack<Var_t, Fitness_t, Arg_t>::fFun_t _fFun_, class Electron>
+#if __cplusplus >= 202002L
+requires isBoxConstraint<Box_t>
+#endif  //  #if __cplusplus >= 202002L
 class AOSBoxed : public AOSParameterPack<Var_t, Fitness_t, Arg_t>,
                  public AOSParameterPack<Var_t, Fitness_t, Arg_t>::template iFunBody<_iFun_>,
                  public AOSParameterPack<Var_t, Fitness_t, Arg_t>::template fFunBody<_fFun_>,

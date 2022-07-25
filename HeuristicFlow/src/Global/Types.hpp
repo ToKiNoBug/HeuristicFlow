@@ -30,7 +30,6 @@ This file is part of HeuristicFlow.
 #include "Constants.hpp"
 
 namespace heu {
-
 /**
  * \ingroup HEU_GLOBAL
  * \brief C++ std container for fixed and dynamic sizes.
@@ -43,35 +42,6 @@ namespace heu {
 template <typename scalar_t, int Dim>
 using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
                                                std::array<scalar_t, size_t(Dim)> >::type;
-
-/*
- * \ingroup HEU_GLOBAL
- * \brief C++ std container of double.
- *
- * \tparam Size Number of element. Use Eigen::Dynamic for dynamic size.
-
-template <int Size>
-using stdVecD_t = stdContainer<double, Size>;
-*/
-
-/*
- * \ingroup HEU_GLOBAL
- * \brief Container for different types, sizes and scalar types.
- *
- * \tparam scalar_t Type of elements.
- * \tparam Size Size at compile time. Use Eigen::Dynamic for dynamic size.
- * \tparam DVO Type of container.
- * Use ContainerOption::Eigen for Eigen::Array<scalar_t,Size,1> and
- * other enum values for stdContainer<scalar_t,Size>.
- *
-
-template <typename scalar_t, int Size, ContainerOption DVO>
-using Container =
-    typename std::conditional<(DVO != ContainerOption::Eigen), stdContainer<scalar_t, Size>,
-                              Eigen::Array<scalar_t, Size, 1> >::type;
- */
-// template<ContainerOption dvo,size_t Dim>
-// using FitnessVec_t= Container<double,Dim,dvo>;
 
 #if __cplusplus >= 202002L
 template <class T>
@@ -100,6 +70,45 @@ concept EigenClass = requires(T mat, int r, int c, T matB) {
   {mat.maxCoeff()};
   {mat.minCoeff(&r)};
   {mat.maxCoeff(&r, &c)};
+};
+
+template <class Box>
+concept isBoxConstraint = requires(Box b, int d, typename Box::Var_t v) {
+  typename Box::Var_t;
+  typename Box::Scalar_t;
+  Box::Shape;
+  isVector<typename Box::Var_t>;
+  std::is_arithmetic_v<typename Box::Scalar_t>;
+  {b.min()};
+  {b.max()};
+  {b.min(d)};
+  {b.max(d)};
+  {b.initialize(&v)};
+  {b.initializeSize(&v)};
+  {b.applyConstraint(&v)};
+  {b.applyConstraint(&v, d)};
+  {b.applyDelta(&v)};
+  {b.dimensions()};
+};
+
+template <class Box>
+concept isPSOBox = requires(Box b, int d, typename Box::Var_t v) {
+  typename Box::Var_t;
+  typename Box::Scalar_t;
+  Box::Shape;
+  isVector<typename Box::Var_t>;
+  std::is_arithmetic_v<typename Box::Scalar_t>;
+  std::is_floating_point_v<typename Box::Scalar_t>;
+  {b.posMin()};
+  {b.posMax()};
+  {b.posMin(d)};
+  {b.posMax(d)};
+  {b.velocityMax()};
+  {b.velocityMax(d)};
+  {b.initialize(&v)};
+  {b.initializeSize(&v)};
+  {b.applyConstraint(&v)};
+  {b.applyConstraint(&v, d)};
 };
 
 #endif  //  #if __cplusplus >=202002L

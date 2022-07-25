@@ -31,9 +31,9 @@ void testAckley_withRecord() {
   constexpr heu::SelectMethod sm = heu::SelectMethod::RunTimeSelectMethod;
 
   using solver_t = heu::SOGA<array<double, 2>, heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, sm,
-                             args_t, heu::GADefaults<array<double, 2>, args_t, heu::Std>::iFun,
-                             nullptr, heu::GADefaults<array<double, 2>, args_t, heu::Std>::cFunNd,
-                             heu::GADefaults<array<double, 2>, args_t, heu::Std>::mFun>;
+                             args_t, heu::GADefaults<array<double, 2>, args_t>::iFun<>, nullptr,
+                             heu::GADefaults<array<double, 2>, args_t>::cFunNd,
+                             heu::GADefaults<array<double, 2>, args_t>::mFun<>>;
   solver_t algo;
 
   heu::GAOption opt;

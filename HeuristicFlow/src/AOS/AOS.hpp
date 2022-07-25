@@ -36,6 +36,9 @@ template <class Box_t, FitnessOption fOpt = FitnessOption::FITNESS_LESS_BETTER,
           typename internal::AOSParameterPack<typename Box_t::Var_t, double, Arg_t>::iFun_t _iFun_ =
               internal::AOSParameterPack<typename Box_t::Var_t, double,
                                          Arg_t>::defaultInitializeFunctionThatShouldNotBeCalled>
+#if __cplusplus >= 202002L
+requires isBoxConstraint<Box_t>
+#endif  //  #if __cplusplus >= 202002L
 class AOS : public internal::AOSBase<typename Box_t::Var_t, double, Arg_t, Box_t, _iFun_, _fFun_,
                                      internal::DefaultElectron<typename Box_t::Var_t, double>, fOpt,
                                      rOpt> {

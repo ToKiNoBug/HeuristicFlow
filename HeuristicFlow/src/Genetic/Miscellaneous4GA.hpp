@@ -27,7 +27,7 @@ This file is part of HeuristicFlow.
 
 namespace heu {
 
-namespace internal {
+namespace {
 
 template <typename Var_t, ContainerOption dvo>
 struct imp_GADefaults_DVO {
@@ -85,7 +85,7 @@ struct imp_GADefaults_DVO<Var_t, ContainerOption::Eigen> {
   }
 };
 
-}  // namespace internal
+}  // namespace
 
 /**
  * \ingroup HEU_GENETIC
@@ -118,28 +118,18 @@ struct imp_GADefaults_DVO<Var_t, ContainerOption::Eigen> {
  *
  * \note This struct has a specilization for `Args_t` as `void` (which means no parameters).
  *
- * \sa GADefaults<Var_t, void, dvo>
+ * \sa GADefaults<Var_t,void>
  * \sa internal::GABase internal::GAAbstract
  *
  */
-template <typename Var_t, class Args_t = void, ContainerOption dvo = ContainerOption::Std>
+template <typename Var_t, class Args_t = void>
 struct GADefaults {
  private:
   static_assert(!std::is_same<Args_t, void>::value,
                 "The compiler run into a incorrect branch of partial specialization");
 
-  template <BoxShape BS, typename unused = void>
-  struct RealBoxOp {
-    static_assert(Args_t::Shape == BoxShape::RECTANGLE_BOX, "Wrong specialization");
-    // non-square box
-
-   private:
-  };
-
-  template <typename unused>
-  struct RealBoxOp<BoxShape::SQUARE_BOX, unused> {
-    // square box
-  };
+  static constexpr ContainerOption dvo =
+      (array_traits<Var_t>::isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
 
   template <BoxShape BS, typename unused = void>
   struct SymBoxOp  //  non-square box
@@ -188,6 +178,10 @@ struct GADefaults {
    * \param box Pointer to the box constraint
    *
    */
+  template <class = void>
+#if __cplusplus >= 202002L
+  requires isBoxConstraint<Args_t>
+#endif  //  #if __cplusplus >= 202002L
   inline static void iFun(Var_t *v, const Args_t *box) noexcept { box->initialize(v); }
 
   /**
@@ -206,7 +200,7 @@ struct GADefaults {
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                             const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::template cFunNd<_r>(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::template cFunNd<_r>(p1, p2, c1, c2);
   }
 
   /**
@@ -225,7 +219,7 @@ struct GADefaults {
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunXd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                             const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::template cFunXd<_r>(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::template cFunXd<_r>(p1, p2, c1, c2);
   }
 
   /**
@@ -241,7 +235,7 @@ struct GADefaults {
    */
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                                 const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::cFunSwapNs(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::cFunSwapNs(p1, p2, c1, c2);
   }
 
   /**
@@ -257,7 +251,7 @@ struct GADefaults {
    */
   inline static void cFunSwapXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                                 const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::cFunSwapXs(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::cFunSwapXs(p1, p2, c1, c2);
   }
 
   /**
@@ -278,7 +272,7 @@ struct GADefaults {
   template <DivCode p = DivCode::DivCode_Half>
   inline static void cFunRandNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                                 const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::template cFunRandNs<p>(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::template cFunRandNs<p>(p1, p2, c1, c2);
   }
 
   /**
@@ -299,9 +293,13 @@ struct GADefaults {
   template <DivCode posCode = DivCode::DivCode_Half>
   inline static void cFunRandXs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2,
                                 const Args_t *) noexcept {
-    GADefaults<Var_t, void, dvo>::template cFunRandXs<posCode>(p1, p2, c1, c2);
+    GADefaults<Var_t, void>::template cFunRandXs<posCode>(p1, p2, c1, c2);
   }
 
+  template <class = void>
+#if __cplusplus >= 202002L
+  requires isBoxConstraint<Args_t>
+#endif  //  #if __cplusplus >= 202002L
   inline static void mFun(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
     *v = *src;
     box->applyDelta(v);
@@ -319,7 +317,10 @@ struct GADefaults {
    * \param v The gene after mutation
    * \param box The box constraint
    */
-  template <typename unused = void>
+  template <typename = void>
+#if __cplusplus >= 202002L
+  requires isBoxConstraint<Args_t>
+#endif  //  #if __cplusplus >= 202002L
   inline static void mFun_s(const Var_t *src, Var_t *v, const Args_t *box) noexcept {
     static_assert(Args_t::isBox, "Default mFun requires Args_t to be a box constriant");
     static_assert(Args_t::Encoding == EncodeType::Symbolic, "mFun_s requires symbolic box");
@@ -330,8 +331,10 @@ struct GADefaults {
   }
 };
 
-template <typename Var_t, ContainerOption dvo>
-struct GADefaults<Var_t, void, dvo> {
+template <typename Var_t>
+struct GADefaults<Var_t, void> {
+  static constexpr ContainerOption dvo =
+      (array_traits<Var_t>::isEigenClass) ? (ContainerOption::Eigen) : (ContainerOption::Std);
   /**
    * \brief Initialization function for fixed double array without args.
    *
@@ -380,7 +383,7 @@ struct GADefaults<Var_t, void, dvo> {
    */
   template <DivCode _r = DivEncode<1, 5>::code>
   inline static void cFunNd(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) noexcept {
-    internal::template imp_GADefaults_DVO<Var_t, dvo>::template imp_cFunNd<_r>(p1, p2, c1, c2);
+    imp_GADefaults_DVO<Var_t, dvo>::template imp_cFunNd<_r>(p1, p2, c1, c2);
   }
 
   /**
@@ -405,7 +408,7 @@ struct GADefaults<Var_t, void, dvo> {
    * \sa GADefaults::cFunSwapNs
    */
   inline static void cFunSwapNs(const Var_t *p1, const Var_t *p2, Var_t *c1, Var_t *c2) noexcept {
-    internal::template imp_GADefaults_DVO<Var_t, dvo>::imp_cFunSwapNs(p1, p2, c1, c2);
+    imp_GADefaults_DVO<Var_t, dvo>::imp_cFunSwapNs(p1, p2, c1, c2);
   }
 
   /**

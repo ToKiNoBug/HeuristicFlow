@@ -103,9 +103,7 @@ void testTSP_SOGA(const uint32_t PointNum) {
     cout << "default pathL = " << naturalPathL << endl;
   }
 
-  auto crossoverFun =
-      heu::GADefaults<vector<double>, Args_t,
-                      heu::ContainerOption::Std>::cFunXd<heu::DivCode::DivCode_Half>;
+  auto crossoverFun = heu::GADefaults<vector<double>, Args_t>::cFunXd<heu::DivCode::DivCode_Half>;
 
   auto mutateFun = [](const vector<double> *src, vector<double> *x, const Args_t *) {
     *x = *src;

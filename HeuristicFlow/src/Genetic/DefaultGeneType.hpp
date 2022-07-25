@@ -29,6 +29,7 @@ This file is part of HeuristicFlow.
 namespace heu {
 
 namespace internal {
+
 /**
  * \ingroup HEU_GENETIC
  * \brief Default type of gene for GA
