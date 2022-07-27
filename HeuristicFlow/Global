@@ -26,6 +26,12 @@ This file is part of HeuristicFlow.
 
 #include <Eigen/Dense>
 
+/**
+ * \defgroup HEU_GLOBAL Global
+ * Global miscellenuous for HeuristicFlow.
+ *
+ */
+
 #include "src/Global/Threading.hpp"
 #include "src/Global/FunBody.hpp"
 #include "src/Global/Enumerations.hpp"
@@ -35,10 +41,6 @@ This file is part of HeuristicFlow.
 #include "src/Global/HeuMaths.hpp"
 #include "src/Global/Randoms.hpp"
 #include "src/Global/Macros.hpp"
-/**
- * \defgroup HEU_GLOBAL Global
- * Global miscellenuous for HeuristicFlow.
- *
- */
+#include "src/Global/ConvertDoubleAndBinCode.hpp"
 
 #endif  // HEU_GLOBAL_

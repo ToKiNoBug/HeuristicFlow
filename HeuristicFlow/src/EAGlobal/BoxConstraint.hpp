@@ -43,6 +43,8 @@ class BoxBase {
       } else if constexpr (std::is_integral_v<Scalar_t>) {
         at(*v, idx) = randIdx<Scalar_t>(static_cast<const Derived*>(this)->min(idx),
                                         1 + static_cast<const Derived*>(this)->max(idx));
+// applyConstraint(v);
+#warning goes out of range, don't know how to fix.
       } else {
         at(*v, idx) = Scalar_t(randD(static_cast<const Derived*>(this)->min(idx),
                                      static_cast<const Derived*>(this)->max(idx)));
@@ -366,6 +368,8 @@ using NonSquareBox_t = std::conditional_t<
 
 //////////////////////
 
+struct empytStruct0 {};
+
 }  // namespace
 
 /**
@@ -445,6 +449,57 @@ class DiscretBox
 
   static_assert(!(std::is_same_v<Scalar_t, bool> && BS == BoxShape::RECTANGLE_BOX),
                 "Boolean box must be a square box");
+};
+
+/**
+ * \ingroup HEU_EAGLOBAL
+ * \brief A discrete box which has a fixed range.
+ *
+ * \tparam Var Type of decision variable
+ * \tparam _minCT minimum value at compile-time
+ * \tparam _maxCT maximum value at compile-time
+ *
+ * \note Using double as template parameter is a C++20 feature.
+ */
+template <class Var, typename array_traits<Var>::Scalar_t _minCT,
+          typename array_traits<Var>::Scalar_t _maxCT>
+class FixedDiscreteBox
+    : public BoxBase<FixedDiscreteBox<Var, _minCT, _maxCT>, Var>,
+      public std::conditional_t<array_traits<Var>::isVector, empytStruct0,
+                                MatBoxBase<FixedDiscreteBox<Var, _minCT, _maxCT>, Var>>,
+      public internal::SquareBoxSizeBody<Var> {
+ public:
+  static_assert(_minCT < _maxCT);
+  static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
+  using Var_t = Var;
+  using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+#if __cplusplus < 202002L
+  static_assert(!std::is_floating_point_v<Scalar_t>);
+#endif
+
+  inline constexpr Scalar_t min(const int = 0) const noexcept { return _minCT; }
+
+  inline constexpr Scalar_t max(const int = 0) const noexcept { return _maxCT; }
+};
+
+template <class Var, ::heu::binCode64 _minCode, ::heu::binCode64 _maxCode>
+class FixedDiscreteBox17
+    : public BoxBase<FixedDiscreteBox17<Var, _minCode, _maxCode>, Var>,
+      public std::conditional_t<array_traits<Var>::isVector, empytStruct0,
+                                MatBoxBase<FixedDiscreteBox17<Var, _minCode, _maxCode>, Var>>,
+      public internal::SquareBoxSizeBody<Var> {
+  static constexpr double _minCT = ::heu::decode(_minCode);
+  static constexpr double _maxCT = ::heu::decode(_minCode);
+  static_assert(_minCT < _maxCT);
+  static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
+  using Var_t = Var;
+  using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+
+  static_assert(std::is_floating_point_v<Scalar_t>);
+
+  inline constexpr Scalar_t min(const int = 0) const noexcept { return _minCT; }
+
+  inline constexpr Scalar_t max(const int = 0) const noexcept { return _maxCT; }
 };
 
 //////////////////////////////////
@@ -580,8 +635,34 @@ class ContinousBox : public std::conditional_t<array_traits<Var>::isVector,
   }
 };
 
-namespace {
+#if __cplusplus >= 202002L
+template <class Var, typename array_traits<Var>::Scalar_t _minCT,
+          typename array_traits<Var>::Scalar_t _maxCT,
+          typename array_traits<Var>::Scalar_t _deltaCT>
+class FixedContinousBox20 : public FixedDiscreteBox<Var, _minCT, _maxCT> {
+ public:
+  static_assert(_deltaCT > 0);
+  using Var_t = Var;
+  using Scalar_t = typename array_traits<Var>::Scalar_t;
+  inline constexpr Scalar_t delta(const int = 0) const noexcept { return _deltaCT; }
+};
 
+#endif
+
+template <class Var, ::heu::binCode64 _minCode, ::heu::binCode64 _maxCode,
+          ::heu::binCode64 _deltaCode>
+class FixedContinousBox17 : public FixedDiscreteBox17<Var, _minCode, _maxCode> {
+ public:
+  using Scalar_t = typename array_traits<Var>::Scalar_t;
+  using Var_t = Var;
+
+  static constexpr double _deltaCT = decode(_deltaCode);
+  static_assert(_deltaCode > 0);
+
+  inline constexpr Scalar_t delta(const int = 0) const noexcept { return _deltaCT; }
+};
+
+namespace {
 template <class Var_t>
 class GuassianBoxCore : public SquareBoxDeltaCore<Var_t> {
  public:

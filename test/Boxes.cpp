@@ -27,6 +27,13 @@ using heu::BoxShape;
 
 // this example shows how to use box-constraint types
 void test_Box() {
+  cout << "Eigen::Matrix4d is EigenClass ? " << heu::array_traits<Eigen::Matrix4d>::isEigenClass
+       << endl;
+  cout << "Eigen::Array44d is EigenClass ? " << heu::array_traits<Eigen::Array44d>::isEigenClass
+       << endl;
+
+  cout << "std::vector is EigenClass ? " << heu::array_traits<std::vector<int>>::isEigenClass
+       << endl;
   //[0,1]^50, mutate step = 0.02
 
   cout << "Testing Box1 : box4dS" << endl;
@@ -149,6 +156,22 @@ void test_Box() {
   box4.applyDelta(&mat4);
 
   cout << "after delta : \n" << mat4 << endl;
+
+  cout << "\n\n\n\n\nTesting Box5 : Fixed box23i (in range [-3,6])" << endl;
+  heu::FixedDiscreteBox<Eigen::Array<int, 2, 3>, -3, -2> box5;
+
+  cout << "size of box5 = " << sizeof(box5) << endl;
+
+  cout << "box5.dimensions() = " << box5.dimensions() << endl;
+
+  cout << "box5.min() = " << box5.min() << endl;
+  cout << "box5.max() = " << box5.max() << endl;
+
+  Eigen::Array<int, 2, 3> mat5;
+
+  box5.initialize(&mat5);
+
+  cout << "initialized by box5 : \n" << mat5 << endl;
 }
 
 int main() {

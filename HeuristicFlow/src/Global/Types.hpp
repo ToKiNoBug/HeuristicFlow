@@ -60,7 +60,7 @@ concept EigenClass = requires(T mat, int r, int c, T matB) {
   {mat.cols()};
   {mat.array()};
   {mat = matB};
-  {mat += 1};
+  {mat.array() += 1};
   {mat.setZero()};
   {mat.array() + matB.array()};
   {mat.array() - matB.array()};
@@ -161,11 +161,30 @@ struct toElement {
  */
 template <typename T>
 struct isEigenClass {
+ private:
+  struct isEigen_t {};
+
+  static bool fun(...) { return 0; }
+
+  template <class U>
+  static decltype(U()(0), U()(0, 0), U().rows(), U().cols(), U().array(), U().setZero(),
+                  U().array() += U().array(), U().array() -= U().array(),
+                  U().array() *= U().array(), U().array() /= U().array(), U().minCoeff(),
+                  U().maxCoeff(), isEigen_t())
+  fun(const U&) {
+    return isEigen_t();
+  }
+
+ public:
 #if __cplusplus >= 202002L
   static constexpr bool value = ::heu::template EigenClass<T>;
 #else
-  static constexpr bool value =
-      std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value;
+  /*                                                                          \
+     static constexpr bool value =                                                  \
+                                                                                    \
+         std::is_assignable<Eigen::ArrayXX<typename toElement<T>::type>, T>::value; \
+         */
+  static constexpr bool value = std::is_same_v<decltype(fun(T())), isEigen_t>;
 #endif  //#if __cplusplus >= 202002L
 };
 
