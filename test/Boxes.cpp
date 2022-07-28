@@ -20,6 +20,7 @@ This file is part of HeuristicFlow.
 #include <HeuristicFlow/EAGlobal>
 
 #include <iostream>
+#include "Eigen/src/Core/Array.h"
 using namespace Eigen;
 using namespace std;
 
@@ -172,6 +173,28 @@ void test_Box() {
   box5.initialize(&mat5);
 
   cout << "initialized by box5 : \n" << mat5 << endl;
+
+  cout << "\n\n\n\n\nTesting box6 : Fixed BoxXXf (in range [-10,5], delta = 0.5)" << endl;
+
+  heu::FixedContinousBox17<Eigen::ArrayXXd, heu::encode(-10), heu::encode(5), heu::encode(0.5)>
+      box6;
+  box6.setDimensions(3, 4);
+
+  Eigen::ArrayXXd mat6;
+
+  cout << "box6.min() = " << box6.min() << endl;
+  cout << "box6.max() = " << box6.max() << endl;
+  cout << "box6.delta() = " << box6.delta() << endl;
+
+  cout << "size of box6 = " << sizeof(box6) << endl;
+
+  box6.initialize(&mat6);
+
+  cout << "initialized : \n" << mat6 << endl;
+
+  box6.applyDelta(&mat6);
+
+  cout << "after delta : \n" << mat6 << endl;
 }
 
 int main() {

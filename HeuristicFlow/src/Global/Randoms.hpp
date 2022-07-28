@@ -144,7 +144,7 @@ inline int_t randIdx(int_t size) noexcept {
 template <typename int_t>
 inline int_t randIdx(int_t min, int_t max_plus_1) noexcept {
   static_assert(std::is_integral<int_t>::value, "int_t must be integer");
-  return int_t((max_plus_1 - min) * randF() + min);
+  return int_t((max_plus_1 - min) * randF()) + min;
 }
 
 inline double normD() noexcept {

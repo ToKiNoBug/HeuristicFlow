@@ -210,7 +210,19 @@ template <class T>
 struct getStdVectorOrArraySizeCT {
  private:
   using scalar_t = typename toElement<T>::type;
-  static constexpr bool isSizeFixed = !std::is_same<std::vector<scalar_t>, T>::value;
+
+  struct isNotStdArray_t {};
+
+  template <class U>
+  static decltype(U().resize(10), isNotStdArray_t()) fun(const U&) {
+    return isNotStdArray_t();
+  }
+
+  static int fun(...) { return 0; }
+
+ private:
+  static constexpr bool isSizeFixed = !std::is_same_v<isNotStdArray_t, decltype(fun(T()))>;
+  //! std::is_same<std::vector<scalar_t>, T>::value;
 
  public:
   static constexpr int value = (isSizeFixed) ? (stdArraySizeCT<T>::value) : (Eigen::Dynamic);
@@ -219,7 +231,7 @@ struct getStdVectorOrArraySizeCT {
 };
 
 template <class T, bool isTEigenClass>
-struct getSizeCTOfAnyVector_v {
+struct __impl_getSizeOfAnyVector {
   // here implements when isTEigenClass==true
   static constexpr int value = getEigenClassSizeCT<T>::value;
   static constexpr int rowsCT = getEigenClassSizeCT<T>::rowsCT;
@@ -227,7 +239,7 @@ struct getSizeCTOfAnyVector_v {
 };
 
 template <class T>
-struct getSizeCTOfAnyVector_v<T, false> {
+struct __impl_getSizeOfAnyVector<T, false> {
   static constexpr int value = getStdVectorOrArraySizeCT<T>::value;
   static constexpr int rowsCT = getStdVectorOrArraySizeCT<T>::rowsCT;
   static constexpr int colsCT = getStdVectorOrArraySizeCT<T>::colsCT;
@@ -237,9 +249,9 @@ struct getSizeCTOfAnyVector_v<T, false> {
 template <class T>
 struct getSizeCTOfAnyVector {
   static constexpr bool isTEigenClass = isEigenClass<T>::value;
-  static constexpr int value = getSizeCTOfAnyVector_v<T, isTEigenClass>::value;
-  static constexpr int rowsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::rowsCT;
-  static constexpr int colsCT = getSizeCTOfAnyVector_v<T, isTEigenClass>::colsCT;
+  static constexpr int value = __impl_getSizeOfAnyVector<T, isTEigenClass>::value;
+  static constexpr int rowsCT = __impl_getSizeOfAnyVector<T, isTEigenClass>::rowsCT;
+  static constexpr int colsCT = __impl_getSizeOfAnyVector<T, isTEigenClass>::colsCT;
 };
 }  // namespace
 

@@ -175,17 +175,11 @@ constexpr uint64_t exponentCode(double fl) { return uint64_t(exponentVal(fl)) <<
 constexpr double absValWithExponentCode0(double fl) {
   fl = absVal(fl);
 
-  if (exponentVal(fl) != 0) {  //  erase the 1+ part
-    int N = int(exponentVal(fl)) - 1023;
-
-    fl -= expOf2AtCompileTime(N);
-
-    while (exponentVal(fl) != 0) {
-      fl /= 2;
-    }
+  if (exponentVal(fl) == 0) {
+    return fl;
   }
 
-  return fl;
+  return (fl * expOf2AtCompileTime(1023 - exponentVal(fl)) - 1) * expOf2AtCompileTime(-1022);
 }
 
 constexpr uint64_t mantissaCode(double fl) {
@@ -218,7 +212,11 @@ constexpr uint64_t mantissaCode(double fl) {
  * \return constexpr binCode64 The binary code.
  */
 constexpr binCode64 encode(const double d) {
-  if (std::isnan(d)) {
+  if (
+
+      !(d >= 0 || d <= 0)  //  if a number is neither negative nor non-negative, it is nan
+
+  ) {
     return binCode64((0ULL) | (0b11111111111ULL << 52) | (1ULL << 51));
   }
 

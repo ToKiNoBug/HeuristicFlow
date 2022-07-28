@@ -43,8 +43,6 @@ class BoxBase {
       } else if constexpr (std::is_integral_v<Scalar_t>) {
         at(*v, idx) = randIdx<Scalar_t>(static_cast<const Derived*>(this)->min(idx),
                                         1 + static_cast<const Derived*>(this)->max(idx));
-// applyConstraint(v);
-#warning goes out of range, don't know how to fix.
       } else {
         at(*v, idx) = Scalar_t(randD(static_cast<const Derived*>(this)->min(idx),
                                      static_cast<const Derived*>(this)->max(idx)));
@@ -488,8 +486,9 @@ class FixedDiscreteBox17
       public std::conditional_t<array_traits<Var>::isVector, empytStruct0,
                                 MatBoxBase<FixedDiscreteBox17<Var, _minCode, _maxCode>, Var>>,
       public internal::SquareBoxSizeBody<Var> {
+ public:
   static constexpr double _minCT = ::heu::decode(_minCode);
-  static constexpr double _maxCT = ::heu::decode(_minCode);
+  static constexpr double _maxCT = ::heu::decode(_maxCode);
   static_assert(_minCT < _maxCT);
   static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
   using Var_t = Var;
@@ -657,7 +656,7 @@ class FixedContinousBox17 : public FixedDiscreteBox17<Var, _minCode, _maxCode> {
   using Var_t = Var;
 
   static constexpr double _deltaCT = decode(_deltaCode);
-  static_assert(_deltaCode > 0);
+  static_assert(_deltaCT > 0);
 
   inline constexpr Scalar_t delta(const int = 0) const noexcept { return _deltaCT; }
 };
