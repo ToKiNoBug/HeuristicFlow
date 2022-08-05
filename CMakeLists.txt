@@ -5,11 +5,7 @@ project(HeuristicFlow LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/.${PROJECT_SOURCE_DIR}/build-HeuristicFlow)
-#set(CMAKE_BINARY_DIR ${PROJECT_BINARY_DIR})
 
-#message("PROJECT_BINARY_DIR=" ${PROJECT_BINARY_DIR})
-#message("CMAKE_BINARY_DIR=" ${CMAKE_BINARY_DIR})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow)
 add_subdirectory(${PROJECT_SOURCE_DIR}/test) # Test current algorithm

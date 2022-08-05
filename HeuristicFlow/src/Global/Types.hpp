@@ -41,7 +41,106 @@ namespace heu {
 */
 template <typename scalar_t, int Dim>
 using stdContainer = typename std::conditional<Dim == Eigen::Dynamic, std::vector<scalar_t>,
-                                               std::array<scalar_t, size_t(Dim)> >::type;
+                                               std::array<scalar_t, size_t(Dim)>>::type;
+
+namespace {
+
+template <class Vec>
+struct __impl_isVector {
+ private:
+  template <class V>
+  static decltype(V()[int()], V().size(),
+
+                  std::enable_if<std::is_pointer_v<decltype(V().data())>>(),
+
+                  int())
+  fun(const V&) {
+    return 0;
+  }
+
+  static void fun(...) { return; }
+
+ public:
+  static constexpr bool value = std::is_same_v<int, decltype(fun(Vec()))>;
+};
+
+}  // namespace
+
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief
+ *
+ * \tparam vec
+ */
+template <class vec>
+constexpr bool isVector_v = __impl_isVector<vec>::value;
+
+namespace {
+
+template <class box>
+struct __impl_isBoxConstraint {
+ private:
+  template <class B>
+  static decltype(
+
+      std::enable_if<std::is_arithmetic_v<typename B::Scalar_t>>(),
+
+      std::enable_if<isVector_v<typename B::Var_t>>(),
+
+      B::Shape,
+
+      B().min(int()), B().max(int()),
+
+      B().initialize((typename B::Var_t*)(nullptr)),
+      B().applyConstraint((typename B::Var_t*)(nullptr)),
+      B().applyConstraint((typename B::Var_t*)(nullptr), int()),
+      B().applyDelta((typename B::Var_t*)(nullptr)),
+
+      B().dimensions(),
+
+      int())
+  fun(const B&) {
+    return 0;
+  }
+
+  static void fun(...) {}
+
+ public:
+  static constexpr bool value = std::is_same_v<int, decltype(fun(box()))>;
+};
+
+}  // namespace
+
+template <class box>
+constexpr bool isBoxConstraint_v = __impl_isBoxConstraint<box>::value;
+
+namespace {
+
+template <class Box>
+struct __impl_isContinousBox {
+ private:
+  template <class B>
+  static decltype(std::enable_if<isBoxConstraint_v<B>>(),
+
+                  std::enable_if<std::is_floating_point_v<typename B::Scalar_t>>(),
+
+                  B().delta(int()),
+
+                  int())
+  fun(const B&) {
+    return 0;
+  }
+
+  static void fun(...) { return; }
+
+ public:
+  static constexpr bool value = std::is_same_v<int, decltype(fun(Box()))>;
+};
+
+}  // namespace
+
+template <class Box>
+constexpr bool isContinousBox_v = __impl_isContinousBox<Box>::value;
 
 #if __cplusplus >= 202002L
 template <class T>
@@ -79,12 +178,9 @@ concept isBoxConstraint = requires(Box b, int d, typename Box::Var_t v) {
   Box::Shape;
   isVector<typename Box::Var_t>;
   std::is_arithmetic_v<typename Box::Scalar_t>;
-  {b.min()};
-  {b.max()};
   {b.min(d)};
   {b.max(d)};
   {b.initialize(&v)};
-  {b.initializeSize(&v)};
   {b.applyConstraint(&v)};
   {b.applyConstraint(&v, d)};
   {b.applyDelta(&v)};
@@ -99,8 +195,6 @@ concept isPSOBox = requires(Box b, int d, typename Box::Var_t v) {
   isVector<typename Box::Var_t>;
   std::is_arithmetic_v<typename Box::Scalar_t>;
   std::is_floating_point_v<typename Box::Scalar_t>;
-  {b.posMin()};
-  {b.posMax()};
   {b.posMin(d)};
   {b.posMax(d)};
   {b.velocityMax()};

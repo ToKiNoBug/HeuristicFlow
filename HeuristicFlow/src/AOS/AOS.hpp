@@ -48,6 +48,8 @@ class AOS : public internal::AOSBase<typename Box_t::Var_t, double, Arg_t, Box_t
                                  rOpt>;
   using Var_t = typename Box_t::Var_t;
 
+  static_assert(::heu::isContinousBox_v<Box_t>, "Box_t must be a continous box constraint");
+
  public:
   HEU_MAKE_AOSBOXED_TYPES(Base_t);
 

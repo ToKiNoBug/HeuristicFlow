@@ -195,6 +195,16 @@ void test_Box() {
   box6.applyDelta(&mat6);
 
   cout << "after delta : \n" << mat6 << endl;
+
+  constexpr bool isBox0VecVec = heu::isVector_v<decltype(box0)::Var_t>;
+  static_assert(isBox0VecVec);
+
+  constexpr bool isBox0Box = heu::isBoxConstraint_v<decltype(box0)>;
+  static_assert(isBox0Box);
+  constexpr bool isBox0ContinousBox = heu::isContinousBox_v<decltype(box0)>;
+  static_assert(isBox0ContinousBox);
+
+  // static_assert(heu::isBoxConstraint<decltype(box0)>);
 }
 
 int main() {
