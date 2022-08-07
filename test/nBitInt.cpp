@@ -14,6 +14,13 @@ int main() {
 
   multiBitSet<7> vec(25);
 
+  vec[0] = vec[6];
+  vec.begin()++;
+
+  const multiBitSet<7> cvec = vec;
+
+  // sizeof(vec[0]);
+
   // vec.resize(25);
 
   // cout << "(0b00100ULL << char(-1)) = " << (0b00100ULL << char(1)) << endl;
