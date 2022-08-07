@@ -28,9 +28,13 @@ This file is part of HeuristicFlow.
 
 #include <Eigen/Core>
 
+#include "Global"
+
 #include "src/SimpleMatrix/MatrixBase.hpp"
 #include "src/SimpleMatrix/MatrixFixedSize.hpp"
 #include "src/SimpleMatrix/MatrixDynamicSize.hpp"
 #include "src/SimpleMatrix/MatrixMap.hpp"
+
+#include "src/SimpleMatrix/MultiBitSet.hpp"
 
 #endif  // HEU_SIMPLEMATRIX_

@@ -30,6 +30,14 @@ This file is part of HeuristicFlow.
 #include "Constants.hpp"
 
 namespace heu {
+
+template <size_t bitNum>
+using uintX_t = std::enable_if_t<
+    bitNum <= 64,
+    std::conditional_t<bitNum <= 8, uint8_t,
+                       std::conditional_t<bitNum <= 16, uint16_t,
+                                          std::conditional_t<bitNum <= 32, uint32_t, uint64_t>>>>;
+
 /**
  * \ingroup HEU_GLOBAL
  * \brief C++ std container for fixed and dynamic sizes.
