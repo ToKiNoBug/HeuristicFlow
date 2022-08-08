@@ -76,7 +76,7 @@ void printBin(size_t v) {
 }
 
 void printBinInInterval(const size_t* v, const size_t bits, const size_t bitPerSpace) {
-  const size_t size_tNum = std::ceil(float(bits) / sizeof(size_t) / 8.0);
+  const size_t size_tNum = size_t(std::ceil(float(bits) / sizeof(size_t) / 8.0));
 
   std::string str;
   str.reserve(bits * 2);

@@ -26,13 +26,30 @@ This file is part of HeuristicFlow.
 
 #include <thread>
 
+#include <assert.h>
+
 #include "InternalHeaderCheck.h"
+
+#include "Macros.hpp"
 
 namespace heu {
 
+int threadNum() noexcept;
+inline void setThreadNum(int _thN) noexcept;
+
 namespace {
-int thNum = std::thread::hardware_concurrency();
-}  //  unnamed namespace
+
+class thNumWrapper {
+  thNumWrapper() = delete;
+  friend int ::heu::threadNum() noexcept;
+  friend void ::heu::setThreadNum(int) noexcept;
+  static inline int& internalThreadNum() noexcept {
+    static int thNum = std::thread::hardware_concurrency();
+    return thNum;
+  }
+};
+
+}  // namespace
 
 /**
  * \ingroup HEU_GLOBAL
@@ -41,7 +58,7 @@ int thNum = std::thread::hardware_concurrency();
  *
  * \return int Number of threads that will be used.
  */
-inline int threadNum() noexcept { return thNum; }
+inline int threadNum() noexcept { return thNumWrapper::internalThreadNum(); }
 
 /**
  * \ingroup HEU_GLOBAL
@@ -51,8 +68,8 @@ inline int threadNum() noexcept { return thNum; }
  * \param _thN Number of threads that will be used.
  */
 inline void setThreadNum(int _thN) noexcept {
-  assert(_thN > 0);
-  thNum = _thN;
+  HEU_ASSERT(_thN > 0);
+  thNumWrapper::internalThreadNum() = _thN;
 }
 
 // if HEU_NO_THREADS is defined, HEU_HAS_OPENMP won't be defined, preventing following algorithms to

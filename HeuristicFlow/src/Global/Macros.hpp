@@ -40,7 +40,7 @@ This file is part of HeuristicFlow.
 #define HEU_ASSERT(expression) \
   {                            \
     assert(expression);        \
-    if (!expression) {         \
+    if (!(expression)) {       \
       abort();                 \
     }                          \
   }

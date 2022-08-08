@@ -357,7 +357,7 @@ class multiBitSet {
     }
 
     // const size_t __bytesNeed = std::ceil(float(eleBits * __size) / 8);
-    const size_t __blocksNeed = std::ceil(float(__size * eleBits) / (blockBits));
+    const size_t __blocksNeed = size_t(std::ceil(float(__size * eleBits) / (blockBits)));
     _data = alloc().allocate(__blocksNeed);
     _end = _data + __blocksNeed;
     _size = __size;
@@ -390,6 +390,10 @@ class multiBitSet {
 
     _end = b._end;
     _size = b._size;
+
+    b._size = 0;
+    b._data = 0;
+    b.end = 0;
   }
 
   /**
@@ -458,7 +462,7 @@ class multiBitSet {
       return;
     }
 
-    const size_t newBlockNum = std::ceil(float(newSize * eleBits) / (sizeof(block_t) * 8));
+    const size_t newBlockNum = size_t(std::ceil(float(newSize * eleBits) / (sizeof(block_t) * 8)));
 
     block_t* newDataPtr = alloc().allocate(newBlockNum);
 
@@ -624,7 +628,7 @@ class multiBitSet {
       (*blockNextPtr) |= (value << (blockBits - rightBitNum));
     }
 
-    return value;
+    return value_t(value);
   }
 
   value_t getValue(const size_t index) const noexcept {
