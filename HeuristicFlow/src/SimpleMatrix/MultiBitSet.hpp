@@ -10,7 +10,7 @@
 
 #include "../../Global"
 
-//#include <iostream>
+#include <iostream>
 
 namespace heu {
 
@@ -75,7 +75,17 @@ class multiBitSet {
      * \return value_t Type of value.
      */
     inline value_t operator=(const reference_t another) noexcept {
-      return source->setValue(another.index, another);
+      return source->setValue(index, value_t(another));
+    }
+
+    /**
+     * \brief If the reference is invalid
+     *
+     * \return true If the reference is valid
+     * \return false If the reference is invalid
+     */
+    inline bool isNull() const noexcept {
+      return (source == nullptr) || (index < 0) || (index >= source->size());
     }
 
     /*
@@ -104,6 +114,7 @@ class multiBitSet {
     friend class multiBitSet<eleBits>;
     friend class iterator_t;
     friend class constIterator_t;
+    reference_t() : source(nullptr), index(0){};
     reference_t(multiBitSet* _src, size_t _idx) : source(_src), index(_idx) {}
 
     inline void swap(reference_t& another) noexcept {
@@ -111,8 +122,85 @@ class multiBitSet {
       std::swap(this->index, another.index);
     }
 
+    inline void evaluateFrom(const reference_t& another) noexcept {
+      this->source = another.source;
+      this->index = another.index;
+    }
+
     multiBitSet* source;
     size_t index;
+  };
+
+  template <class it_t>
+  class iteratorBase {
+   public:
+    /**
+     * \brief Iterate to the next element and return the iterator AFTER moving.
+     * Called like ++it
+     *
+     * \return const it_t& The iterator after moving.
+     */
+    inline const it_t& operator++() noexcept {
+      static_cast<it_t*>(this)->ref.index++;
+      return static_cast<const it_t&>(*this);
+    }
+
+    /**
+     * \brief Iterate to the next element and return the element BEFORE moving.
+     * Called like it++
+     *
+     * \return it_t The iterator before moving
+     */
+    inline it_t operator++(int) noexcept {
+      it_t it = static_cast<it_t&>(*this);
+      static_cast<it_t*>(this)->ref.index++;
+      return it;
+    }
+
+    /**
+     * \brief Iterate to the previous element and return the element AFTER moving.
+     * Called like --it
+     *
+     * \return const it_t& The iterator after moving
+     */
+    inline const it_t& operator--() noexcept {
+      static_cast<it_t*>(this)->ref.index--;
+      return static_cast<const it_t&>(*this);
+    }
+
+    /**
+     * \brief Iterate to the previous element and return the element BEFORE moving.
+     * Called like it--
+     *
+     * \return it_t The iterator before moving
+     */
+    inline it_t operator--(int) noexcept {
+      it_t it = static_cast<it_t&>(*this);
+      static_cast<it_t*>(this)->ref.index--;
+      return it;
+    }
+
+    inline it_t operator+(int64_t idx) const noexcept {
+      return it_t(static_cast<const it_t*>(this)->ref.source,
+                  static_cast<const it_t*>(this)->ref.index + idx);
+    }
+
+    inline it_t operator-(int64_t idx) const noexcept {
+      return it_t(static_cast<const it_t*>(this)->ref.source,
+                  static_cast<const it_t*>(this)->ref.index - idx);
+    }
+
+    inline it_t operator[](int64_t idx) const noexcept { return *this + idx; }
+
+    inline size_t index() const noexcept { return static_cast<const it_t*>(this)->ref.index; }
+
+    inline bool isNull() const noexcept { return static_cast<const it_t*>(this)->ref.isNull(); }
+
+   protected:
+    inline bool isSame(const reference_t& anotherRef) const noexcept {
+      return (static_cast<const it_t*>(this)->ref.source == anotherRef.source) &&
+             (static_cast<const it_t*>(this)->ref.index == anotherRef.index);
+    }
   };
 
   /**
@@ -120,12 +208,13 @@ class multiBitSet {
    * and `operator++`, have been reloaded.
    *
    */
-  class iterator_t {
+  class iterator_t : public iteratorBase<iterator_t> {
    private:
     iterator_t(multiBitSet* src, size_t idx) : ref(src, idx) {}
 
     friend class multiBitSet<eleBits>;
     friend class reference_t;
+    friend class iteratorBase<iterator_t>;
 
     reference_t ref;
 
@@ -145,60 +234,15 @@ class multiBitSet {
     inline const reference_t& operator*() const noexcept { return ref; }
 
     /**
-     * \brief Iterate to the next element and return the element BEFORE moving.
-     * Called like ++it
-     *
-     * \return iterator_t& The iterator before moving
-     */
-    inline const iterator_t& operator++() noexcept {
-      ref.index++;
-      return *this;
-    }
-
-    /**
-     * \brief Iterate to the next element and return the iterator AFTER moving.
-     * Called like it++
-     *
-     * \return iterator_t The iterator after moving.
-     */
-    inline iterator_t operator++(int) noexcept {
-      iterator_t it = *this;
-      ref.index++;
-      return it;
-    }
-
-    /**
-     * \brief Iterate to the previous element and return the element BEFORE moving.
-     * Called like --it
-     *
-     * \return iterator_t& The iterator before moving
-     */
-    inline iterator_t& operator--() noexcept {
-      ref.index--;
-      return *this;
-    }
-
-    /**
-     * \brief Iterate to the previous element and return the iterator AFTER moving.
-     * Called like it--
-     *
-     * \return iterator_t The iterator after moving.
-     */
-    inline iterator_t operator--(int) noexcept {
-      iterator_t it;
-      ref.index--;
-      return it;
-    }
-
-    /**
      * \brief Compare between different iterators
      *
      * \param another Another iterator
      * \return true When iterators are same
      * \return false When iterators are different
      */
-    bool operator==(const iterator_t& another) const noexcept {
-      return (&ref.source == &another.ref.source) && (ref.index == another.ref.index);
+    template <class anotherIt_t>
+    inline bool operator==(const anotherIt_t& another) const noexcept {
+      return this->isSame(another.ref);
     }
 
     /**
@@ -208,7 +252,10 @@ class multiBitSet {
      * \return true When iterators are different
      * \return false When iterators are same.
      */
-    bool operator!=(const iterator_t& another) const noexcept { return !this->operator==(another); }
+    template <class anotherIt_t>
+    inline bool operator!=(const anotherIt_t& another) const noexcept {
+      return !(this->isSame(another.ref));
+    }
 
     /**
      * \brief Copy the value of iterator
@@ -226,18 +273,19 @@ class multiBitSet {
    * and `operator++`, have been reloaded.
    *
    */
-  class constIterator_t {
+  class constIterator_t : public iteratorBase<constIterator_t> {
    private:
     constIterator_t(multiBitSet* src, size_t idx) : ref(src, idx) {}
 
     friend class multiBitSet<eleBits>;
     friend class reference_t;
+    friend class iteratorBase<constIterator_t>;
 
     reference_t ref;
 
    public:
     /**
-     * \brief Construct a new constIterator t object from non-const iterator
+     * \brief Construct a new constIterator_t object from non-const iterator
      *
      */
     constIterator_t(const iterator_t& parent) {
@@ -253,71 +301,27 @@ class multiBitSet {
     inline value_t operator*() const noexcept { return ref; }
 
     /**
-     * \brief Iterate to the next element and return the element BEFORE moving.
-     * Called like ++it
+     * \brief Compare between different iterators
      *
-     * \return constIterator_t& The iterator before moving
+     * \param another Another iterator
+     * \return true When iterators are same
+     * \return false When iterators are different
      */
-    inline const constIterator_t& operator++() noexcept {
-      ref.index++;
-      return *this;
-    }
-
-    /**
-     * \brief Iterate to the next element and return the iterator AFTER moving.
-     * Called like it++
-     *
-     * \return constIterator_t The iterator after moving.
-     */
-    inline constIterator_t operator++(int) noexcept {
-      iterator_t it;
-      ref.index++;
-      return it;
-    }
-
-    /**
-     * \brief Iterate to the previous element and return the element BEFORE moving.
-     * Called like ++it
-     *
-     * \return constIterator_t& The iterator before moving
-     */
-    inline const constIterator_t& operator--() noexcept {
-      ref.index--;
-      return *this;
-    }
-
-    /**
-     * \brief Iterate to the previoud element and return the iterator AFTER moving.
-     * Called like it++
-     *
-     * \return constIterator_t The iterator after moving.
-     */
-    inline constIterator_t operator--(int) noexcept {
-      iterator_t it;
-      ref.index--;
-      return it;
+    template <class anotherIt_t>
+    inline bool operator==(const anotherIt_t& another) const noexcept {
+      return this->isSame(another.ref);
     }
 
     /**
      * \brief Compare between different iterators
      *
      * \param another Another iterator
-     * \return true When iterators are same.
-     * \return false When iterators are different.
-     */
-    bool operator==(const constIterator_t& another) const noexcept {
-      return (&ref.source == &another.ref.source) && (ref.index == another.ref.index);
-    }
-
-    /**
-     * \brief Compare between different iterators
-     *
-     * \param another Another iterator
-     * \return true When iterators are different.
+     * \return true When iterators are different
      * \return false When iterators are same.
      */
-    bool operator!=(const constIterator_t& another) const noexcept {
-      return !this->operator==(another);
+    template <class anotherIt_t>
+    inline bool operator!=(const anotherIt_t& another) const noexcept {
+      return !(this->isSame(another.ref));
     }
 
     /**
@@ -353,32 +357,32 @@ class multiBitSet {
     }
 
     // const size_t __bytesNeed = std::ceil(float(eleBits * __size) / 8);
-    const size_t __blocksNeed = std::ceil(float(__size * eleBits) / (8.0f * sizeof(block_t)));
+    const size_t __blocksNeed = std::ceil(float(__size * eleBits) / (blockBits));
     _data = alloc().allocate(__blocksNeed);
     _end = _data + __blocksNeed;
     _size = __size;
 
-    memset(_data, 0, __blocksNeed);
+    memset(_data, 0, __blocksNeed * sizeof(block_t));
   }
 
   /**
-   * \brief Construct from a const reference.
+   * \brief Copy constructor (deep copy)
    *
    * \param b
    */
   multiBitSet(const multiBitSet& b) {
+    _data = nullptr;
+    _end = nullptr;
+    _size = 0;
     if (b.size() > 0) {
       this->resize(b.size());
+
       memcpy(this->_data, b._data, b.blocks() * sizeof(block_t));
-    } else {
-      _data = nullptr;
-      _end = nullptr;
-      _size = 0;
     }
   }
 
   /**
-   * \brief Move constructor
+   * \brief Move constructor (shallow copy)
    *
    */
   multiBitSet(multiBitSet&& b) {
@@ -490,7 +494,7 @@ class multiBitSet {
   }
 
   inline void shrink_to_fit() noexcept {
-    const size_t blocksNeed = std::ceil(float(size() * eleBits) / (8.0f * sizeof(block_t)));
+    const size_t blocksNeed = std::ceil(float(size() * eleBits) / blockBits);
 
     if (blocksNeed == blocks()) {
       return;
@@ -543,6 +547,25 @@ class multiBitSet {
     _size = 0;
   }
 
+  /**
+   * \brief Deep copy
+   *
+   * \param another Copy source
+   * \return const multiBitSet& A reference to self
+   */
+  inline const multiBitSet& operator=(const multiBitSet& another) noexcept {
+    if (another.size() <= 0) {
+      resize(0);
+      return *this;
+    }
+
+    resize(another.size());
+    const size_t blocksNeed = std::ceil(float(size() * eleBits) / blockBits);
+
+    memcpy(_data, another._data, blocksNeed * sizeof(block_t));
+    return *this;
+  }
+
   inline reference_t front() noexcept { return reference_t(this, 0); }
 
   inline value_t front() const noexcept { return getValue(0); }
@@ -567,14 +590,15 @@ class multiBitSet {
   friend class reference_t;
 
   value_t setValue(const size_t index, block_t value) noexcept {
-    value &= blockMask;
+    value &= blockMask;  // remove extra bits
 
     const size_t firstScalarBitIdx = eleBits * index;
     const size_t lastScalarBitIdx = (index + 1) * eleBits - 1;
-
+    // a element may exists in 2 blocks. Compute addresses of both blocks
     block_t* blockPrevPtr = _data + firstScalarBitIdx / blockBits;
     block_t* blockNextPtr = _data + lastScalarBitIdx / blockBits;
 
+    // if pointers are the same, the element is in a single block
     if (blockPrevPtr == blockNextPtr) {
       const size_t endBitIdx = ((firstScalarBitIdx / blockBits) + 1) * blockBits;
       const size_t leftMoveBits = endBitIdx - lastScalarBitIdx - 1;
@@ -585,6 +609,8 @@ class multiBitSet {
 
       (*blockPrevPtr) |= (value << leftMoveBits);
     } else {
+      // the element is stored in two blocks
+
       const size_t midBitIdx = (lastScalarBitIdx / blockBits) * blockBits;
 
       const size_t leftBitNum = midBitIdx - firstScalarBitIdx;

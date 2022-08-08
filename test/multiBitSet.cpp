@@ -15,7 +15,7 @@ int main() {
   multiBitSet<7> vec(25);
 
   vec[0] = vec[6];
-  vec.begin()++;
+  // vec.begin()++;
 
   const multiBitSet<7> cvec = vec;
 
@@ -28,6 +28,8 @@ int main() {
   for (int byteId = 0; byteId < vec.blocks() * sizeof(decltype(vec)::block_t); byteId++) {
     reinterpret_cast<uint8_t*>(vec.data())[byteId] = heu::randIdx(0, 256);
   }
+
+  vec.front() = vec.back();
 
   cout << "size = " << vec.size() << " , capacity = " << vec.capacity() << endl;
 
@@ -42,39 +44,20 @@ int main() {
 
   cout << "The elements are : [";
 
-  for (auto val : vec) {
-    cout << int(val) << ", ";
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
+    // cout << "idx = " << it.index() << " , value = " << int(*it) << ", ";
+    cout << int(*it) << ", ";
   }
 
   cout << "\b\b];" << endl;
 
-  /*
-cout << "\n[9] = " << int(vec[9]) << endl;
+  cout << "begin().isNull = " << vec.begin().isNull() << endl;
 
-const auto val = 0b1111111;
+  cout << "end().isNull = " << vec.end().isNull() << endl;
 
-cout << "set [9] to " << val << endl;
+  cout << "*vec.end()[-1] = " << int(*(vec.end()[-1])) << endl;
 
-vec[9] = val;
-
-*/
-
-  /*
-#warning set value to 1 doesn't works well
-  cout << "\n\nstorage space in binary is : \n";
-  for (int blockId = 0; blockId < vec.blocks(); blockId++) printBin(vec.data()[blockId]);
-
-  cout << "\n\n\n";
-
-  cout << "The elements are : [";
-
-  for (auto val : vec) {
-    cout << int(val) << ", ";
-  }
-
-  cout << "\b\b];" << endl;
-
-  */
+  cout << "vec.front() == vec.back() ? " << (vec.front() == vec.back()) << endl;
 
   return 0;
 }

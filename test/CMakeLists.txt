@@ -30,7 +30,7 @@ add_executable(MinMaxCompileTime MinMaxCompileTime.cpp)
 add_executable(SimpleMatrix simpleMatrix.cpp)
 add_executable(TestEncoder testEncoder.cpp)
 
-add_executable(nBitIntSet nBitInt.cpp)
+add_executable(multiBitSet multiBitSet.cpp)
 
 find_package(OpenMP)
 
