@@ -28,6 +28,8 @@ This file is part of HeuristicFlow.
 
 #include "MatrixBase.hpp"
 
+#include <Eigen/Dense>
+
 namespace heu {
 /// col-major matrix with basic types only
 

@@ -20,6 +20,9 @@ This file is part of HeuristicFlow.
 #ifndef HEU_MACROS_HPP
 #define HEU_MACROS_HPP
 
+#include <assert.h>
+#include <cstdlib>
+
 #define HEU_RELOAD_MEMBERFUCTION_RUN                                         \
   inline void run() noexcept {                                               \
     this->template __impl_run<typename std::decay<decltype(*this)>::type>(); \
@@ -33,5 +36,13 @@ This file is part of HeuristicFlow.
 #else
 #define HEU_CPP_STANDARD _MSC_VER
 #endif
+
+#define HEU_ASSERT(expression) \
+  {                            \
+    assert(expression);        \
+    if (!expression) {         \
+      abort();                 \
+    }                          \
+  }
 
 #endif  //  HEU_MACROS_HPP
