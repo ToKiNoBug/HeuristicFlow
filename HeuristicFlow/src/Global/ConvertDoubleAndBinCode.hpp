@@ -157,7 +157,8 @@ constexpr uint64_t exponentVal(double fl) {
 
   constexpr double seper =
       decode(binCode64(0b0000000000001111111111111111111111111111111111111111111111111111));
-  while ((fl / seper) > 257) {
+
+  while (fl > 257 * seper) {
     fl /= 256;
     code += 8;
   }
@@ -179,7 +180,7 @@ constexpr double absValWithExponentCode0(double fl) {
     return fl;
   }
 
-  return (fl * expOf2AtCompileTime(1023 - exponentVal(fl)) - 1) * expOf2AtCompileTime(-1022);
+  return (fl * expOf2AtCompileTime(1023 - (int)exponentVal(fl)) - 1) * expOf2AtCompileTime(-1022);
 }
 
 constexpr uint64_t mantissaCode(double fl) {

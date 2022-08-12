@@ -13,7 +13,21 @@ project(HeuristicFlow_Test LANGUAGES CXX)
 add_definitions("-D _USE_MATH_DEFINES")
 
 include_directories(../)
-include_directories(D:/CppLibs/eigen-3.4.0)
+#include_directories(D:/CppLibs/eigen-3.4.0)
+
+
+#If you haven't added libEigen's directory into path, set the include directory manually
+set(EIGEN3_INCLUDE_DIR "D:\\CppLibs\\libEigen3\\include\\eigen3")
+
+
+if(NOT EIGEN3_INCLUDE_DIR)
+    find_package(Eigen3 REQUIRED)
+endif()
+
+include_directories(${EIGEN3_INCLUDE_DIR})
+
+# message("EIGEN3_INCLUDE_DIR = "${EIGEN3_INCLUDE_DIR})
+
 
 add_executable(NSGA2_Binh_And_Korn NSGA2_Binh_And_Korn.cpp)
 add_executable(NSGA2_Kursawe NSGA2_Kursawe.cpp)
