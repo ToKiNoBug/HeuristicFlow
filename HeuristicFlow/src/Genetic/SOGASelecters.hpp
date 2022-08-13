@@ -51,7 +51,10 @@ class SOGASelector<SelectMethod::Truncation> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using Gene_t = typename this_t::Gene_t;
+
+    using GeneIt_t = typename this_t::GeneIt_t;
+
     std::list<Gene_t>& popRef = static_cast<this_t*>(this)->_population;
     std::vector<GeneIt_t> sortSpace;
     sortSpace.clear();
@@ -87,7 +90,7 @@ class SOGASelector<SelectMethod::RouletteWheel> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     /*
      * In this function, the linked list `eliminateSpace` stores all candidates to be eliminated.
@@ -199,7 +202,9 @@ class SOGASelector<SelectMethod::Tournament> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t);
+    using Gene_t = typename this_t::Gene_t;
+    using GeneIt_t = typename this_t::GeneIt_t;
+    ;
 
     {
       const bool tournament_size_should_be_less_than_the_population_size =
@@ -301,7 +306,8 @@ class SOGASelector<SelectMethod::MonteCarlo> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t);
+    using GeneIt_t = typename this_t::GeneIt_t;
+    ;
     const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
     const int popSizeBeforeSelection = int(static_cast<this_t*>(this)->_population.size());
@@ -343,7 +349,7 @@ class SOGASelector<SelectMethod::Probability> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     std::list<std::pair<GeneIt_t, double>>
         eliminateSpace;  // Use the iterator as first and processed fitness as second
@@ -478,7 +484,7 @@ class SOGASelector<SelectMethod::LinearRank> {
 
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
     const int K = int(static_cast<this_t*>(this)->_option.populationSize);
@@ -568,7 +574,8 @@ class SOGASelector<SelectMethod::ExponentialRank> {
 
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
     const int K = int(static_cast<this_t*>(this)->_option.populationSize);
@@ -643,7 +650,7 @@ class SOGASelector<SelectMethod::Boltzmann> {
 
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     // static_cast<this_t*>(this)
 
@@ -706,7 +713,7 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
  protected:
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
 
     const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
 
@@ -822,7 +829,7 @@ class SOGASelector<SelectMethod::EliteReserved> {
 
   template <class this_t>
   void __impl___impl_select() noexcept {
-    HEU_MAKE_GABASE_TYPES(this_t)
+    using GeneIt_t = typename this_t::GeneIt_t;
     const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
     const int popSizeAfterSelect = int(static_cast<this_t*>(this)->_option.populationSize);
     const int eliminateNum = popSizeBeforeSelect - popSizeAfterSelect;
