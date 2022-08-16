@@ -110,8 +110,8 @@ class NSGA2
 
  protected:
   /**
-   * \brief Sort according to infoUnitBase::domainedByNum in an acsending order. This sorting step
-   * will seperate the whole population into several pareto layers.
+   * \brief Sort according to infoUnitBase::dominated_by_num in an acsending order. This sorting
+   * step will seperate the whole population into several pareto layers.
    *
    * \param A
    * \param B
@@ -142,7 +142,7 @@ class NSGA2
     static_assert(objIdx >= 0, "Invalid comparison flag");
     // if (A == B) return false;
     /// compare by fitness on single objective
-    return A->_Fitness[objIdx] < B->_Fitness[objIdx];
+    return A->fitness[objIdx] < B->fitness[objIdx];
   }
 
   /**
@@ -167,8 +167,8 @@ class NSGA2
    in
    * population(`std::list<Gene>`).
    * 2. Fill `this->sortSpace` (std::list<infoUnitBase*) with pointer to each member in `pop`.
-   * 3. Compute `infoUnit::domainedByNum` for `pop`.
-   * 4. Sort elements in `this->sortSpace` according to `infoUnitBase::domainedByNum`.
+   * 3. Compute `infoUnit::dominated_by_num` for `pop`.
+   * 4. Sort elements in `this->sortSpace` according to `infoUnitBase::dominated_by_num`.
    * 5. Divide the whole population into several nondominated layers. This function is implemented
    in `NSGABase`, and
    * the result is stored in `this->pfLayers`. For better performance, each `std::vector<infoUnit
@@ -220,7 +220,7 @@ class NSGA2
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
       pop.emplace_back();
       pop.back().iterator = it;
-      pop.back()._Fitness = it->_Fitness;
+      pop.back().fitness = it->fitness;
       pop.back().congestion = 0;
     }
 
@@ -265,8 +265,8 @@ class NSGA2
         std::sort(this->sortSpace.data(), this->sortSpace.data() + this->sortSpace.size(),
                   fitnessCmpFuns[objIdx]);
 
-        const double scale = std::abs(this->sortSpace.front()->_Fitness[objIdx] -
-                                      this->sortSpace.back()->_Fitness[objIdx]) +
+        const double scale = std::abs(this->sortSpace.front()->fitness[objIdx] -
+                                      this->sortSpace.back()->fitness[objIdx]) +
                              1e-10;
 
         this->sortSpace.front()->congestion = internal::pinfD;
@@ -276,8 +276,8 @@ class NSGA2
         for (size_t idx = 1; idx < popSizeBefore - 1; idx++) {
           this->sortSpace[idx]->congestion +=
 
-              std::abs(this->sortSpace[idx - 1]->_Fitness[objIdx] -
-                       this->sortSpace[idx + 1]->_Fitness[objIdx]) /
+              std::abs(this->sortSpace[idx - 1]->fitness[objIdx] -
+                       this->sortSpace[idx + 1]->fitness[objIdx]) /
               scale;
         }
       }  // end sort on objIdx

@@ -152,7 +152,7 @@ class MOGABase<Var_t, Eigen::Dynamic, fOpt, rOpt, Gene, Args_t, _iFun_, _fFun_, 
   inline void __impl_computeAllFitness() noexcept {
     for (Gene_t& g : this->_population) {
       if (!g.isCalculated()) {
-        g._Fitness.resize(objectiveNum(), 1);
+        g.fitness.resize(objectiveNum(), 1);
       }
     }
 

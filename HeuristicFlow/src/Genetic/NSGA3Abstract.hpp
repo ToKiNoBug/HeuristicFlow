@@ -124,7 +124,7 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
       this->sortSpace.emplace_back(it);
       it->closestRefPoint = -1;
       it->distance = 0;
-      it->translatedFitness.setZero(it->_Fitness.rows(), it->_Fitness.cols());
+      it->translatedFitness.setZero(it->fitness.rows(), it->fitness.cols());
     }
 
     /*
@@ -133,7 +133,7 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
       pop.emplace_back();
       pop.back().iterator = it;
-      pop.back()._Fitness = it->_Fitness;
+      pop.back().fitness = it->fitness;
       pop.back().closestRefPoint = -1;
     }
 
@@ -269,29 +269,29 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
 
     for (size_t c = 0; c < M; c++) {
       extremePtrs[c] = &*Fl[0];
-      extremePoints.col(c) = extremePtrs[c]->_Fitness;
+      extremePoints.col(c) = extremePtrs[c]->fitness;
     }
 
     for (auto i : selected) {
-      ideal = ideal.min(i->_Fitness);
+      ideal = ideal.min(i->fitness);
       for (size_t objIdx = 0; objIdx < M; objIdx++) {
-        if (i->_Fitness[objIdx] > extremePtrs[objIdx]->_Fitness[objIdx]) {
+        if (i->fitness[objIdx] > extremePtrs[objIdx]->fitness[objIdx]) {
           extremePtrs[objIdx] = i;
         }
       }
     }
 
     for (auto i : Fl) {
-      ideal = ideal.min(i->_Fitness);
+      ideal = ideal.min(i->fitness);
       for (size_t objIdx = 0; objIdx < M; objIdx++) {
-        if (i->_Fitness[objIdx] > extremePtrs[objIdx]->_Fitness[objIdx]) {
+        if (i->fitness[objIdx] > extremePtrs[objIdx]->fitness[objIdx]) {
           extremePtrs[objIdx] = &*(i);
         }
       }
     }
 
     for (size_t c = 0; c < M; c++) {
-      extremePoints.col(c) = extremePtrs[c]->_Fitness - ideal;
+      extremePoints.col(c) = extremePtrs[c]->fitness - ideal;
     }
 
     if (isSingular(extremePoints)) {
@@ -303,11 +303,11 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     }
 
     for (Gene_t* i : selected) {
-      i->translatedFitness = (i->_Fitness - ideal) / intercepts;
+      i->translatedFitness = (i->fitness - ideal) / intercepts;
     }
 
     for (const GeneIt_t& i : Fl) {
-      (i)->translatedFitness = (i->_Fitness - ideal) / intercepts;
+      (i)->translatedFitness = (i->fitness - ideal) / intercepts;
     }
   }  //  normalize
 

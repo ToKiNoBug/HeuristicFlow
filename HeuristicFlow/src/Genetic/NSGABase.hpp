@@ -71,7 +71,7 @@ class NSGABase
      * \brief A copy of fitness to boost nondominated sorting.
      *
      *
-  Fitness_t _Fitness;
+  Fitness_t fitness;
 
   *
    * \brief Genes in population that strong dominate this gene
@@ -79,7 +79,7 @@ class NSGABase
    * Value 0 means it's a member of the pareto
    * front.
    *
-  size_t domainedByNum;
+  size_t dominated_by_num;
 
   *
    * \brief Iterator to related gene
@@ -123,13 +123,13 @@ class NSGABase
    * \return false A is dominated by more or equal genes than B
    */
   inline static bool sortByDominatedNum(const GeneIt_t& A, const GeneIt_t& B) noexcept {
-    return (A->domainedByNum) < (B->domainedByNum);
+    return (A->dominated_by_num) < (B->dominated_by_num);
   }
 
-  // calculate domainedByNum
+  // calculate dominated_by_num
 
   /**
-   * \brief Function to calculate infoUnitBase::domainedByNum of a population.
+   * \brief Function to calculate infoUnitBase::dominated_by_num of a population.
    *
    */
   void calculateDominatedNum() noexcept {
@@ -138,21 +138,21 @@ class NSGABase
     static const int32_t thN = threadNum();
 #pragma omp parallel for schedule(dynamic, popSizeBefore / thN)
     for (int ed = 0; ed < popSizeBefore; ed++) {
-      sortSpace[ed]->domainedByNum = 0;
+      sortSpace[ed]->dominated_by_num = 0;
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
-        sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
-            &(sortSpace[er]->_Fitness), &(sortSpace[ed]->_Fitness));
+        sortSpace[ed]->dominated_by_num += Pareto<ObjNum, fOpt>::isStrongDominate(
+            &(sortSpace[er]->fitness), &(sortSpace[ed]->fitness));
       }
     }
 
 #else
     for (size_t ed = 0; ed < popSizeBefore; ed++) {
-      sortSpace[ed]->domainedByNum = 0;
+      sortSpace[ed]->dominated_by_num = 0;
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
-        sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
-            &(sortSpace[er]->_Fitness), &(sortSpace[ed]->_Fitness));
+        sortSpace[ed]->dominated_by_num += Pareto<ObjNum, fOpt>::isStrongDominate(
+            &(sortSpace[er]->fitness), &(sortSpace[ed]->fitness));
       }
     }
 #endif
@@ -169,8 +169,8 @@ class NSGABase
     const size_t popSizeBef = sortSpace.size();
     size_t curDM = -1;
     for (auto i : sortSpace) {
-      if (curDM != i->domainedByNum) {
-        curDM = i->domainedByNum;
+      if (curDM != i->dominated_by_num) {
+        curDM = i->dominated_by_num;
         pfLayers.emplace_back();
         pfLayers.back().reserve(popSizeBef);
       }

@@ -95,7 +95,7 @@ void testNSGA2_Binh_and_Korn() {
   // output the pareto front
   cout << "paretoFront=[";
   for (const auto &i : algo.pfGenes()) {
-    cout << i->_Fitness[0] << " , " << i->_Fitness[1] << ";\n";
+    cout << i->fitness[0] << " , " << i->fitness[1] << ";\n";
   }
   cout << "];" << endl;
 

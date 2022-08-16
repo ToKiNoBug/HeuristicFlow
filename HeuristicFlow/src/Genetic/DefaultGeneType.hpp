@@ -26,6 +26,8 @@ This file is part of HeuristicFlow.
 #include "../../EAGlobal"
 #include "GAAbstract.hpp"
 
+#include "IsGene.hpp"
+
 namespace heu {
 
 namespace internal {
@@ -40,41 +42,42 @@ namespace internal {
 template <typename Var_t, typename Fitness_t>
 class DefaultGene_t {
  public:
-  using fastFitness_t = typename std::conditional<(sizeof(Fitness_t) > sizeof(double)),
-                                                  const Fitness_t &, Fitness_t>::type;
+  DefaultGene_t() : is_fitness_computed(false) {
+    static_assert(is_GA_gene_v<std::decay_t<decltype(*this)>>);
+  }
+  Var_t decision_variable;   ///< Value of decision variable
+  Fitness_t fitness;         ///< Value of fitness
+  bool is_fitness_computed;  ///< Whether the fitness is computed
 
-  Var_t self;          ///< Value of decision variable
-  Fitness_t _Fitness;  ///< Value of fitness
-  bool _isCalculated;  ///< Whether the fitness is computed
+  inline void set_fitness_uncomputed() noexcept {
+    is_fitness_computed = false;
 
-  inline bool isCalculated() const noexcept {
-    return _isCalculated;
-  }  ///< If the fitness is computed
-  inline void setUncalculated() noexcept {
-    _isCalculated = false;
   }  ///< Set the fitness to be uncomputed
-  inline fastFitness_t fitness() const noexcept { return _Fitness; }  ///< Get fitness
 };
 
 template <typename Var_t, int N>
 class NSGAGene_t : public DefaultGene_t<Var_t, typename Eigen::Array<double, N, 1>> {
  public:
   using Fitness_t = Eigen::Array<double, N, 1>;
-  NSGAGene_t() : domainedByNum(0) {}
-  size_t domainedByNum;
+  NSGAGene_t() : dominated_by_num(0) {
+    static_assert(is_NSGA_gene_v<std::decay_t<decltype(*this)>>);
+  }
+  size_t dominated_by_num;
 };
 
 template <typename Var_t, int N>
 class NSGA2Gene_t : public NSGAGene_t<Var_t, N> {
  public:
-  NSGA2Gene_t() : congestion(0) {}
+  NSGA2Gene_t() : congestion(0) { static_assert(is_NSGA2_gene_v<std::decay_t<decltype(*this)>>); }
   double congestion;
 };
 
 template <typename Var_t, int N>
 class NSGA3Gene_t : public NSGAGene_t<Var_t, N> {
  public:
-  NSGA3Gene_t() : closestRefPoint(0), distance(0) {}
+  NSGA3Gene_t() : closestRefPoint(0), distance(0) {
+    static_assert(is_NSGA3_gene_v<std::decay_t<decltype(*this)>>);
+  }
   /// The translated fitness. Normalized fitness is also stored in this.
   typename NSGAGene_t<Var_t, N>::Fitness_t translatedFitness;
   /// The index of its closet RP

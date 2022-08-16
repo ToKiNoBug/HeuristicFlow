@@ -36,6 +36,8 @@ This file is part of HeuristicFlow.
 #include "GAOption.hpp"
 #include "GAAbstract.hpp"
 
+#include "IsGene.hpp"
+
 namespace heu {
 
 namespace internal {
@@ -43,10 +45,8 @@ namespace internal {
 #if __cplusplus >= 202002L
 template <class Gene_t>
 concept isGAGene = requires(Gene_t *g, const Gene_t *cg) {
-  {cg->self};
-  {cg->_Fitness};
-  {cg->_isCalculated};
-  {g->setUncalculated()};
+  {is_GA_gene_v<Gene_t>};
+  {g->set_fitness_uncomputed()};
 };
 #endif  //  #if __cplusplus >= 202002L
 
@@ -120,9 +120,9 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
   void initializePop() noexcept {
     _population.resize(_option.populationSize);
     for (auto &i : _population) {
-      GAExecutor<Base_t::HasParameters>::doInitialization(this, &i.self);
+      GAExecutor<Base_t::HasParameters>::doInitialization(this, &i.decision_variable);
 
-      i.setUncalculated();
+      i.set_fitness_uncomputed();
     }
   }
 
@@ -216,7 +216,7 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     tasks.resize(0);
     tasks.reserve(_population.size());
     for (Gene &i : _population) {
-      if (i._isCalculated) {
+      if (i.is_fitness_computed) {
         continue;
       }
       tasks.emplace_back(&i);
@@ -226,19 +226,19 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     for (int i = 0; i < int(tasks.size()); i++) {
       Gene *ptr = tasks[i];
 
-      GAExecutor<Base_t::HasParameters>::doFitness(this, &ptr->self, &ptr->_Fitness);
+      GAExecutor<Base_t::HasParameters>::doFitness(this, &ptr->decision_variable, &ptr->fitness);
 
-      ptr->_isCalculated = true;
+      ptr->is_fitness_computed = true;
     }
 #else
     for (Gene &i : _population) {
-      if (i._isCalculated) {
+      if (i.is_fitness_computed) {
         continue;
       }
 
-      GAExecutor<Base_t::HasParameters>::doFitness(this, &i.self, &i._Fitness);
+      GAExecutor<Base_t::HasParameters>::doFitness(this, &i.decision_variable, &i.fitness);
 
-      i._isCalculated = true;
+      i.is_fitness_computed = true;
     }
 #endif
   }
@@ -287,11 +287,12 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
       _population.emplace_back();
       Gene *childB = &_population.back();
 
-      GAExecutor<Base_t::HasParameters>::doCrossover(this, &a->self, &b->self, &childA->self,
-                                                     &childB->self);
+      GAExecutor<Base_t::HasParameters>::doCrossover(
+          this, &a->decision_variable, &b->decision_variable, &childA->decision_variable,
+          &childB->decision_variable);
 
-      childA->setUncalculated();
-      childB->setUncalculated();
+      childA->set_fitness_uncomputed();
+      childB->set_fitness_uncomputed();
     }
   }
 
@@ -309,9 +310,9 @@ class GABase : public GAAbstract<Var_t, Fitness_t, Args_t>,
     }
     for (auto src : mutateList) {
       this->_population.emplace_back();
-      GAExecutor<Base_t::HasParameters>::doMutation(this, &src->self,
-                                                    &this->_population.back().self);
-      this->_population.back().setUncalculated();
+      GAExecutor<Base_t::HasParameters>::doMutation(this, &src->decision_variable,
+                                                    &this->_population.back().decision_variable);
+      this->_population.back().set_fitness_uncomputed();
     }
   }
 

@@ -146,14 +146,14 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    *
    * \return Fitness_t Best fitness
    */
-  inline double bestFitness() const noexcept { return _bestGene->_Fitness; }
+  inline double bestFitness() const noexcept { return _bestGene->fitness; }
 
   /**
    * \brief Get result (Var_t).
    *
    * \return const Var_t& The decision variable of the elite gene.
    */
-  inline const Var_t& result() const noexcept { return _bestGene->self; }
+  inline const Var_t& result() const noexcept { return _bestGene->decision_variable; }
 
   /**
    * \brief Initialize the population and assign the first gene to be the elite.
@@ -182,7 +182,7 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
   }
 
   static inline bool GeneItCompareFun(const GeneIt_t& a, const GeneIt_t& b) noexcept {
-    return isBetter(a->_Fitness, b->_Fitness);
+    return isBetter(a->fitness, b->fitness);
   }
 
   GeneIt_t findCurrentBestGene() noexcept {
@@ -205,7 +205,7 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
 
   inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt,
                                          const double prevFitess) noexcept {
-    if (!isBetter(newBestGeneIt->_Fitness, prevFitess)) {
+    if (!isBetter(newBestGeneIt->fitness, prevFitess)) {
       this->_failTimes++;
       _bestGene = newBestGeneIt;
     } else {
@@ -219,7 +219,7 @@ class SOGA : public internal::GABase<Var_t, double, Record, internal::DefaultGen
    * the selection.
    */
   inline void updateFailTimesAndBestGene(const GeneIt_t& newBestGeneIt) noexcept {
-    updateFailTimesAndBestGene(newBestGeneIt, this->_bestGene->_Fitness);
+    updateFailTimesAndBestGene(newBestGeneIt, this->_bestGene->fitness);
   }
 
   /**

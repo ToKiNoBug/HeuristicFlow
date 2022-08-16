@@ -85,7 +85,7 @@ class MOGAAbstract : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt,
     front.clear();
     front.reserve(_pfGenes.size());
     for (const Gene* i : _pfGenes) {
-      front.emplace_back(i->_Fitness);
+      front.emplace_back(i->fitness);
     }
     return;
   }
@@ -101,7 +101,7 @@ class MOGAAbstract : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt,
     front.clear();
     front.reserve(_pfGenes.size());
     for (const Gene* i : _pfGenes) {
-      front.emplace_back(std::make_pair(&(i->self), &(i->_Fitness)));
+      front.emplace_back(std::make_pair(&(i->self), &(i->fitness)));
     }
   }
 
@@ -133,12 +133,12 @@ class MOGAAbstract : public GABase<Var_t, Eigen::Array<double, ObjNum, 1>, rOpt,
    * \return Fitness_t ideal point
    */
   Fitness_t bestFitness() const noexcept {
-    Fitness_t best = this->_population.front()._Fitness;
+    Fitness_t best = this->_population.front().fitness;
     for (const Gene& i : this->_population) {
       if (fOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-        best = best.max(i._Fitness);
+        best = best.max(i.fitness);
       } else {
-        best = best.min(i._Fitness);
+        best = best.min(i.fitness);
       }
     }
     return best;

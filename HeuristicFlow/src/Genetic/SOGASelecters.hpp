@@ -125,9 +125,9 @@ class SOGASelector<SelectMethod::RouletteWheel> {
          it != static_cast<this_t*>(this)->_population.end(); ++it) {
       // If fitness option is FITNESS_LESS_BETTER, take the inverse value
       if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-        eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, it->fitness));
       } else {
-        eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, -it->fitness));
       }
       minFitness = std::min(minFitness, eliminateSpace.back().second);
     }
@@ -213,7 +213,7 @@ class SOGASelector<SelectMethod::Tournament> {
     }
 
     const int prevPopSize = int(static_cast<this_t*>(this)->_population.size());
-    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->fitness;
 
     if (prevPopSize <= int(static_cast<this_t*>(this)->_option.populationSize)) {
       static_cast<this_t*>(this)->updateFailTimesAndBestGene(
@@ -243,7 +243,7 @@ class SOGASelector<SelectMethod::Tournament> {
       //   find the best gene inside the tournament
       Gene_t* bestGenePtr = tournamentSpace.front();
       for (int idx = 1; idx < _tournamentSize; idx++) {
-        if (this_t::isBetter(tournamentSpace[idx]->_Fitness, bestGenePtr->_Fitness)) {
+        if (this_t::isBetter(tournamentSpace[idx]->fitness, bestGenePtr->fitness)) {
           bestGenePtr = tournamentSpace[idx];
         }
       }
@@ -277,7 +277,7 @@ class SOGASelector<SelectMethod::Tournament> {
     GeneIt_t curBestGene = static_cast<this_t*>(this)->_population.begin();
     for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
          it != static_cast<this_t*>(this)->_population.end(); ++it) {
-      if (this_t::isBetter(it->_Fitness, curBestGene->_Fitness)) {
+      if (this_t::isBetter(it->fitness, curBestGene->fitness)) {
         curBestGene = it;
       }
     }
@@ -308,7 +308,7 @@ class SOGASelector<SelectMethod::MonteCarlo> {
   void __impl___impl_select() noexcept {
     using GeneIt_t = typename this_t::GeneIt_t;
     ;
-    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->fitness;
 
     const int popSizeBeforeSelection = int(static_cast<this_t*>(this)->_population.size());
 
@@ -377,9 +377,9 @@ class SOGASelector<SelectMethod::Probability> {
            it != static_cast<this_t*>(this)->_population.end(); ++it) {
         // If fitness option is FITNESS_LESS_BETTER, take the inverse value
         if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-          eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
+          eliminateSpace.emplace_back(std::make_pair(it, it->fitness));
         } else {
-          eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
+          eliminateSpace.emplace_back(std::make_pair(it, -it->fitness));
         }
 
         minFitness = std::min(eliminateSpace.back().second, minFitness);
@@ -654,7 +654,7 @@ class SOGASelector<SelectMethod::Boltzmann> {
 
     // static_cast<this_t*>(this)
 
-    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->fitness;
 
     const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
 
@@ -671,8 +671,8 @@ class SOGASelector<SelectMethod::Boltzmann> {
     // double Z = 0;    //Z is erased because probability normalization is not guaranteed.
     for (GeneIt_t it = static_cast<this_t*>(this)->_population.begin();
          it != static_cast<this_t*>(this)->_population.end(); ++it) {
-      eliminateSpace.emplace_back(it, it->_Fitness);
-      // Z += std::exp(it->_Fitness);
+      eliminateSpace.emplace_back(it, it->fitness);
+      // Z += std::exp(it->fitness);
     }
 
     double rMax = 0;  // the sum of "probability"
@@ -715,7 +715,7 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
   void __impl___impl_select() noexcept {
     using GeneIt_t = typename this_t::GeneIt_t;
 
-    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->_Fitness;
+    const double previousBestFitness = static_cast<this_t*>(this)->_bestGene->fitness;
 
     const int popSizeBeforeSelect = int(static_cast<this_t*>(this)->_population.size());
 
@@ -736,9 +736,9 @@ class SOGASelector<SelectMethod::StochasticUniversal> {
          it != static_cast<this_t*>(this)->_population.end(); ++it) {
       // If fitness option is FITNESS_LESS_BETTER, take the inverse value
       if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER) {
-        eliminateSpace.emplace_back(std::make_pair(it, it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, it->fitness));
       } else {
-        eliminateSpace.emplace_back(std::make_pair(it, -it->_Fitness));
+        eliminateSpace.emplace_back(std::make_pair(it, -it->fitness));
       }
 
       minFitness = std::min(minFitness, eliminateSpace.back().second);
@@ -856,9 +856,9 @@ class SOGASelector<SelectMethod::EliteReserved> {
 
       for (int idx = _eliteNum; idx < int(sortSpace.size()); idx++) {
         if constexpr (this_t::FitnessOpt == FitnessOption::FITNESS_GREATER_BETTER)
-          eliminateSpace.emplace_back(sortSpace[idx], sortSpace[idx]->_Fitness);
+          eliminateSpace.emplace_back(sortSpace[idx], sortSpace[idx]->fitness);
         else
-          eliminateSpace.emplace_back(sortSpace[idx], -sortSpace[idx]->_Fitness);
+          eliminateSpace.emplace_back(sortSpace[idx], -sortSpace[idx]->fitness);
 
         minFitness = std::min(minFitness, eliminateSpace.back().second);
       }

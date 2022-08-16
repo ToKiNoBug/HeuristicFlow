@@ -88,7 +88,7 @@ void testNSGA3_DTLZ7() {
 
   cout << "PFV=[";
   for (const auto& i : solver.pfGenes()) {
-    cout << i->_Fitness.transpose() << ";\n";
+    cout << i->fitness.transpose() << ";\n";
   }
   cout << "];\n\n\n" << endl;
 }
