@@ -60,36 +60,6 @@ class NSGABase
   HEU_MAKE_GABASE_TYPES(Base_t)
   using Fitness_t = typename Base_t::Fitness_t;
 
-  /*
-   * \brief Basical unit for NS
-   *
-   * This struct stores basic informations of a gene used in nondominated sorting.
-   *
-  struct infoUnitBase {
-   public:
-    **
-     * \brief A copy of fitness to boost nondominated sorting.
-     *
-     *
-  Fitness_t fitness;
-
-  *
-   * \brief Genes in population that strong dominate this gene
-   *
-   * Value 0 means it's a member of the pareto
-   * front.
-   *
-  size_t dominated_by_num;
-
-  *
-   * \brief Iterator to related gene
-   *
-  GeneIt_t iterator;
-
-};  //  infoUnitBase
-
-*/
-
   /**
    * \brief Reimplemented
    *

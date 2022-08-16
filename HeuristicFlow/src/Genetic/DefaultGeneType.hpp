@@ -36,8 +36,8 @@ namespace internal {
  * \ingroup HEU_GENETIC
  * \brief Default type of gene for GA
  *
- * \tparam Var_t
- * \tparam Fitness_t
+ * \tparam Var_t Type of decision variable
+ * \tparam Fitness_t Type of fitness
  */
 template <typename Var_t, typename Fitness_t>
 class DefaultGene_t {
@@ -49,22 +49,48 @@ class DefaultGene_t {
   Fitness_t fitness;         ///< Value of fitness
   bool is_fitness_computed;  ///< Whether the fitness is computed
 
-  inline void set_fitness_uncomputed() noexcept {
-    is_fitness_computed = false;
-
-  }  ///< Set the fitness to be uncomputed
+  ///< Set the fitness to be uncomputed
+  inline void set_fitness_uncomputed() noexcept { is_fitness_computed = false; }
 };
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief Type of gene for MOGAs
+ *
+ * \tparam Var_t Type of decision variable
+ * \tparam N Number of objectives.
+ */
 template <typename Var_t, int N>
-class NSGAGene_t : public DefaultGene_t<Var_t, typename Eigen::Array<double, N, 1>> {
+class MOGene_t : public DefaultGene_t<Var_t, Eigen::Array<double, N, 1>> {
+ public:
+  using Fitness_t = Eigen::Array<double, N, 1>;
+};
+
+/**
+ * \ingroup HEU_GENETIC
+ * \brief Type of gene for NSGA-like algorithm
+ *
+ * \tparam Var_t Type of decision variable
+ * \tparam N Number of objectives.
+ */
+template <typename Var_t, int N>
+class NSGAGene_t : public MOGene_t<Var_t, N> {
  public:
   using Fitness_t = Eigen::Array<double, N, 1>;
   NSGAGene_t() : dominated_by_num(0) {
     static_assert(is_NSGA_gene_v<std::decay_t<decltype(*this)>>);
   }
+  /// The number of genes that dominate a gene
   size_t dominated_by_num;
 };
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief Type of gene for NSGA2.
+ *
+ * \tparam Var_t Type of decision variable
+ * \tparam N Number of objectives.
+ */
 template <typename Var_t, int N>
 class NSGA2Gene_t : public NSGAGene_t<Var_t, N> {
  public:
@@ -72,6 +98,13 @@ class NSGA2Gene_t : public NSGAGene_t<Var_t, N> {
   double congestion;
 };
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief Type of gene for NSGA3
+ *
+ * \tparam Var_t Type of decision variable
+ * \tparam N Number of objectives.
+ */
 template <typename Var_t, int N>
 class NSGA3Gene_t : public NSGAGene_t<Var_t, N> {
  public:

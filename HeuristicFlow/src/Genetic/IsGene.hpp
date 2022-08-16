@@ -35,6 +35,18 @@ __impl_fun_is_gene(const G &) {
 static inline void __impl_fun_is_gene(...) { return; }
 }  // namespace
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief If class G fits the requirement of fundamental GA.
+ * It must have following public members and functions:
+ * 1. `decision_variable`
+ * 2. `fitness`
+ * 3. `is_fitness_computed`
+ * 4. `set_fitness_uncomputed()`(not const function)
+ *
+ * \tparam G Type of gene
+ * \sa GABase
+ */
 template <class G>
 constexpr bool is_GA_gene_v = std::is_same_v<decltype(__impl_fun_is_gene(G())), int>;
 
@@ -48,6 +60,15 @@ __impl_fun_is_NSGA_gene(const G &) {
 static inline void __impl_fun_is_NSGA_gene(...) { return; }
 }  // namespace
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief If class G fits the requirement of fundamental NSGA.
+ * The gene must fit `is_GA_gene_v`, and have following members:
+ * 1. `dominated_by_num`
+ *
+ * \tparam G Type of gene
+ * \sa is_GA_gene_v NSGABase
+ */
 template <class G>
 constexpr bool is_NSGA_gene_v = std::is_same_v<decltype(__impl_fun_is_NSGA_gene(G())), int>;
 
@@ -61,6 +82,15 @@ __impl_fun_is_NSGA2_gene(const G &) {
 static inline void __impl_fun_is_NSGA2_gene(...) { return; }
 }  // namespace
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief If class G fits the requirement of NSGA2.
+ * The gene must fit `is_NSGA_gene_v`, and have following members:
+ * 1. `congestion`
+ *
+ * \tparam G Type of gene
+ * \sa is_NSGA_gene_v NSGA2
+ */
 template <class G>
 constexpr bool is_NSGA2_gene_v = std::is_same_v<decltype(__impl_fun_is_NSGA2_gene(G())), int>;
 
@@ -75,6 +105,17 @@ __impl_fun_is_NSGA3_gene(const G &) {
 static inline void __impl_fun_is_NSGA3_gene(...) { return; }
 }  // namespace
 
+/**
+ * \ingroup HEU_GENETIC
+ * \brief If class G fits the requirement of NSGA3.
+ * The gene must fit `is_NSGA_gene_v`, and have following members:
+ * 1. `translatedFitness`
+ * 2. `colsestRefPoint`
+ * 3. `distance`
+ *
+ * \tparam G Type of gene
+ * \sa is_NSGA_gene_v NSGA3
+ */
 template <class G>
 constexpr bool is_NSGA3_gene_v = std::is_same_v<decltype(__impl_fun_is_NSGA3_gene(G())), int>;
 

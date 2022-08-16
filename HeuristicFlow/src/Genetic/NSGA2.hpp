@@ -88,24 +88,6 @@ class NSGA2
                                 internal::NSGA2Gene_t<Var_t, ObjNum>, Args_t, _iFun_, _fFun_,
                                 _cFun_, _mFun_>;
 
-  /*
-   * \brief This struct is used to store nondomainance sorting-related informations in select
-   * operation. A pointer to this struct, infoUnit2*, has access to every information to a gene.
-   *
-   * There's several sorting by according to different attribute, thus a vector of infoUnit2* is
-   * widely used when sorting.
-   *
-   *
-  struct infoUnit2 : public Gene_t {
-   public:
-    **
-     * \brief Congestion value of this gene.
-     *
-     *
-    double congestion;
-  };
-  */
-
   HEU_RELOAD_MEMBERFUCTION_RUN
 
  protected:
@@ -211,25 +193,6 @@ class NSGA2
       this->sortSpace.emplace_back(it);
       this->sortSpace.back()->congestion = 0;
     }
-    /*
-    std::vector<Gene_t *> pop;
-    pop.clear();
-    pop.reserve(popSizeBefore);
-    this->sortSpace.resize(popSizeBefore);
-
-    for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
-      pop.emplace_back();
-      pop.back().iterator = it;
-      pop.back().fitness = it->fitness;
-      pop.back().congestion = 0;
-    }
-
-
-    // make sortspace
-    for (size_t i = 0; i < popSizeBefore; i++) {
-      this->sortSpace[i] = pop.data() + i;
-    }
-    */
 
     this->calculateDominatedNum();
 
