@@ -28,7 +28,7 @@ This file is part of HeuristicFlow.
 #include "src/Genetic/MOGAAbstract.hpp"
 #include "src/Genetic/MOGABase.hpp"
 #include "src/Genetic/NSGA2.hpp"
-#include "src/Genetic/NSGA3.hpp"
+//#include "src/Genetic/NSGA3.hpp"
 #include "src/Genetic/Miscellaneous4GA.hpp"
 
 /**

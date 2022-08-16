@@ -60,33 +60,35 @@ class NSGABase
   HEU_MAKE_GABASE_TYPES(Base_t)
   using Fitness_t = typename Base_t::Fitness_t;
 
-  /**
+  /*
    * \brief Basical unit for NS
    *
    * This struct stores basic informations of a gene used in nondominated sorting.
-   */
+   *
   struct infoUnitBase {
    public:
-    /**
+    **
      * \brief A copy of fitness to boost nondominated sorting.
      *
-     */
-    Fitness_t fitnessCache;
-
-    /**
-     * \brief Genes in population that strong dominate this gene
      *
-     * Value 0 means it's a member of the pareto
-     * front.
-     */
-    size_t domainedByNum;
+  Fitness_t _Fitness;
 
-    /**
-     * \brief Iterator to related gene
-     */
-    GeneIt_t iterator;
+  *
+   * \brief Genes in population that strong dominate this gene
+   *
+   * Value 0 means it's a member of the pareto
+   * front.
+   *
+  size_t domainedByNum;
 
-  };  //  infoUnitBase
+  *
+   * \brief Iterator to related gene
+   *
+  GeneIt_t iterator;
+
+};  //  infoUnitBase
+
+*/
 
   /**
    * \brief Reimplemented
@@ -104,13 +106,13 @@ class NSGABase
    * swaping pointers is much faster than swaping structs.
    *
    */
-  std::vector<infoUnitBase*> sortSpace;
+  std::vector<GeneIt_t> sortSpace;
 
   /**
    * \brief A list of vectors that divides the current population into several nondominated layers.
    *
    */
-  std::list<std::vector<infoUnitBase*>> pfLayers;
+  std::list<std::vector<GeneIt_t>> pfLayers;
 
   /**
    * \brief Compare function used to sort by dominatedNum in ascend.
@@ -120,7 +122,7 @@ class NSGABase
    * \return true A is dominated by less genes than B
    * \return false A is dominated by more or equal genes than B
    */
-  inline static bool sortByDominatedNum(const infoUnitBase* A, const infoUnitBase* B) noexcept {
+  inline static bool sortByDominatedNum(const GeneIt_t& A, const GeneIt_t& B) noexcept {
     return (A->domainedByNum) < (B->domainedByNum);
   }
 
@@ -140,7 +142,7 @@ class NSGABase
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
         sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
-            &(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
+            &(sortSpace[er]->_Fitness), &(sortSpace[ed]->_Fitness));
       }
     }
 
@@ -150,7 +152,7 @@ class NSGABase
       for (size_t er = 0; er < popSizeBefore; er++) {
         if (er == ed) continue;
         sortSpace[ed]->domainedByNum += Pareto<ObjNum, fOpt>::isStrongDominate(
-            &(sortSpace[er]->fitnessCache), &(sortSpace[ed]->fitnessCache));
+            &(sortSpace[er]->_Fitness), &(sortSpace[ed]->_Fitness));
       }
     }
 #endif
@@ -180,18 +182,28 @@ class NSGABase
    * \brief Update the pareto front
    *
    */
-  void updatePF(const infoUnitBase** pfs, const size_t curFrontSize) noexcept {
+  void updatePF(const GeneIt_t* const pfs, const size_t curFrontSize) noexcept {
     this->_pfGenes.clear();
     for (size_t i = 0; i < curFrontSize; i++) {
-      this->_pfGenes.emplace(&*(pfs[i]->iterator));
+      this->_pfGenes.emplace(&*(pfs[i]));
+    }
+  }  // updatePF()
+
+  /**
+   * \brief Update the pareto front
+   *
+   */
+  void updatePF(const Gene_t* const* const pfs, const size_t curFrontSize) noexcept {
+    this->_pfGenes.clear();
+    for (size_t i = 0; i < curFrontSize; i++) {
+      this->_pfGenes.emplace(pfs[i]);
     }
   }  // updatePF()
 
 };  // NSGABase
 
-#define HEU_MAKE_NSGABASE_TYPES(Base_t)                 \
-  HEU_MAKE_GABASE_TYPES(Base_t)                         \
-  using infoUnitBase_t = typename Base_t::infoUnitBase; \
+#define HEU_MAKE_NSGABASE_TYPES(Base_t) \
+  HEU_MAKE_GABASE_TYPES(Base_t)         \
   using Fitness_t = typename Base_t::Fitness_t;
 
 }  //  namespace internal

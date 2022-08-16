@@ -74,11 +74,9 @@ template <typename Var_t, int ObjNum, FitnessOption fOpt = FITNESS_LESS_BETTER,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun
               _mFun_ = nullptr>
 class NSGA2
-    : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
-                                internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+    : public internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, internal::NSGA2Gene_t<Var_t, ObjNum>,
                                 Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
-  using Base_t = internal::NSGABase<Var_t, ObjNum, fOpt, rOpt,
-                                    internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+  using Base_t = internal::NSGABase<Var_t, ObjNum, fOpt, rOpt, internal::NSGA2Gene_t<Var_t, ObjNum>,
                                     Args_t, _iFun_, _fFun_, _cFun_, _mFun_>;
 
  private:
@@ -87,25 +85,26 @@ class NSGA2
   ~NSGA2(){};
   HEU_MAKE_NSGABASE_TYPES(Base_t)
   friend class internal::GABase<Var_t, Fitness_t, DONT_RECORD_FITNESS,
-                                internal::DefaultGene_t<Var_t, Fitness_t>, Args_t, _iFun_, _fFun_,
+                                internal::NSGA2Gene_t<Var_t, ObjNum>, Args_t, _iFun_, _fFun_,
                                 _cFun_, _mFun_>;
 
-  /**
+  /*
    * \brief This struct is used to store nondomainance sorting-related informations in select
    * operation. A pointer to this struct, infoUnit2*, has access to every information to a gene.
    *
    * There's several sorting by according to different attribute, thus a vector of infoUnit2* is
    * widely used when sorting.
    *
-   */
-  struct infoUnit2 : public infoUnitBase_t {
+   *
+  struct infoUnit2 : public Gene_t {
    public:
-    /**
+    **
      * \brief Congestion value of this gene.
      *
-     */
+     *
     double congestion;
   };
+  */
 
   HEU_RELOAD_MEMBERFUCTION_RUN
 
@@ -119,11 +118,11 @@ class NSGA2
    * \return true A's congestion is greater than B
    * \return false A's congestion is not greater than B
    */
-  inline static bool compareByCongestion(const infoUnitBase_t *A,
-                                         const infoUnitBase_t *B) noexcept {
-    if (A == B) return false;
-    return (static_cast<const infoUnit2 *>(A)->congestion) >
-           (static_cast<const infoUnit2 *>(B)->congestion);
+  inline static bool compareByCongestion(const GeneIt_t &A, const GeneIt_t &B) noexcept {
+    // if (A == B) return false;
+    return A->congestion > B->congestion;
+    // return (static_cast<const infoUnit2 *>(A)->congestion)> (static_cast<const infoUnit2
+    // *>(B)->congestion);
   }
 
   /**
@@ -139,11 +138,11 @@ class NSGA2
    * as fitness is simply used to compute congestion.
    */
   template <int64_t objIdx>
-  inline static bool compareByFitness(const infoUnitBase_t *A, const infoUnitBase_t *B) noexcept {
+  inline static bool compareByFitness(const GeneIt_t &A, const GeneIt_t &B) noexcept {
     static_assert(objIdx >= 0, "Invalid comparison flag");
-    if (A == B) return false;
+    // if (A == B) return false;
     /// compare by fitness on single objective
-    return A->fitnessCache[objIdx] < B->fitnessCache[objIdx];
+    return A->_Fitness[objIdx] < B->_Fitness[objIdx];
   }
 
   /**
@@ -198,13 +197,22 @@ class NSGA2
    *
    */
   void __impl_select() noexcept {
-    using cmpFun_t = bool (*)(const infoUnitBase_t *, const infoUnitBase_t *);
-    static const size_t objCapacity =
+    using cmpFun_t = bool (*)(const GeneIt_t &, const GeneIt_t &);
+    static constexpr size_t objCapacity =
         (ObjNum == Eigen::Dynamic) ? (HEU_MAX_RUNTIME_OBJNUM) : ObjNum;
     static const std::array<cmpFun_t, objCapacity> fitnessCmpFuns = expand<0, objCapacity - 1>();
 
     const size_t popSizeBefore = this->_population.size();
-    std::vector<infoUnit2> pop;
+
+    this->sortSpace.clear();
+    this->sortSpace.reserve(popSizeBefore);
+
+    for (GeneIt_t it = this->_population.begin(); it != this->_population.end(); ++it) {
+      this->sortSpace.emplace_back(it);
+      this->sortSpace.back()->congestion = 0;
+    }
+    /*
+    std::vector<Gene_t *> pop;
     pop.clear();
     pop.reserve(popSizeBefore);
     this->sortSpace.resize(popSizeBefore);
@@ -212,14 +220,16 @@ class NSGA2
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
       pop.emplace_back();
       pop.back().iterator = it;
-      pop.back().fitnessCache = it->_Fitness;
+      pop.back()._Fitness = it->_Fitness;
       pop.back().congestion = 0;
     }
+
 
     // make sortspace
     for (size_t i = 0; i < popSizeBefore; i++) {
       this->sortSpace[i] = pop.data() + i;
     }
+    */
 
     this->calculateDominatedNum();
 
@@ -227,10 +237,9 @@ class NSGA2
 
     const size_t PFSize = this->pfLayers.front().size();
     if (PFSize <= this->_option.populationSize)
-      this->updatePF((const infoUnitBase_t **)(this->pfLayers.front().data()),
-                     this->pfLayers.front().size());
+      this->updatePF((this->pfLayers.front().data()), this->pfLayers.front().size());
 
-    std::unordered_set<infoUnit2 *> selected;
+    std::unordered_set<Gene_t *> selected;
     selected.reserve(this->_option.populationSize);
     bool needCongestion = true;
     while (true) {
@@ -245,56 +254,55 @@ class NSGA2
         break;
       }
       // emplace every element of this layer into selected
-      for (const auto i : this->pfLayers.front()) {
-        selected.emplace(static_cast<infoUnit2 *>(i));
+      for (GeneIt_t i : this->pfLayers.front()) {
+        selected.emplace(&*i);
       }
       this->pfLayers.pop_front();
     }
     // calculate congestion
     if (needCongestion) {
       for (size_t objIdx = 0; objIdx < this->objectiveNum(); objIdx++) {
-        std::sort((infoUnit2 **)(this->sortSpace.data()),
-                  (infoUnit2 **)(this->sortSpace.data() + this->sortSpace.size()),
+        std::sort(this->sortSpace.data(), this->sortSpace.data() + this->sortSpace.size(),
                   fitnessCmpFuns[objIdx]);
 
-        const double scale = std::abs(this->sortSpace.front()->fitnessCache[objIdx] -
-                                      this->sortSpace.back()->fitnessCache[objIdx]) +
+        const double scale = std::abs(this->sortSpace.front()->_Fitness[objIdx] -
+                                      this->sortSpace.back()->_Fitness[objIdx]) +
                              1e-10;
 
-        static_cast<infoUnit2 *>(this->sortSpace.front())->congestion = internal::pinfD;
-        static_cast<infoUnit2 *>(this->sortSpace.back())->congestion = internal::pinfD;
+        this->sortSpace.front()->congestion = internal::pinfD;
+        this->sortSpace.back()->congestion = internal::pinfD;
 
         // calculate congestion on single object
         for (size_t idx = 1; idx < popSizeBefore - 1; idx++) {
-          static_cast<infoUnit2 *>(this->sortSpace[idx])->congestion +=
-              std::abs(this->sortSpace[idx - 1]->fitnessCache[objIdx] -
-                       this->sortSpace[idx + 1]->fitnessCache[objIdx]) /
+          this->sortSpace[idx]->congestion +=
+
+              std::abs(this->sortSpace[idx - 1]->_Fitness[objIdx] -
+                       this->sortSpace[idx + 1]->_Fitness[objIdx]) /
               scale;
         }
       }  // end sort on objIdx
 
       // sort by congestion in the undetermined set
-      std::sort((infoUnit2 **)(this->pfLayers.front().data()),
-                (infoUnit2 **)(this->pfLayers.front().data() + this->pfLayers.front().size()),
-                compareByCongestion);
+      std::sort(this->pfLayers.front().data(),
+                this->pfLayers.front().data() + this->pfLayers.front().size(), compareByCongestion);
 
       size_t idx = 0;
       while (selected.size() < this->_option.populationSize) {
-        selected.emplace(static_cast<infoUnit2 *>(this->pfLayers.front()[idx]));
+        selected.emplace(&*this->pfLayers.front()[idx]);
         idx++;
       }
 
     }  // end applying congestion
 
     // erase unselected
-    for (auto &i : pop) {
-      if (selected.find(&i) == selected.end()) {
-        this->_population.erase(i.iterator);
+    for (GeneIt_t &i : this->sortSpace) {
+      if (selected.find(&*i) == selected.end()) {
+        this->_population.erase(i);
       }
     }
 
     if (PFSize > this->_option.populationSize) {
-      std::vector<const infoUnitBase_t *> PF;
+      std::vector<const Gene_t *> PF;
       PF.reserve(selected.size());
       for (auto i : selected) {
         PF.emplace_back(i);
@@ -309,7 +317,7 @@ class NSGA2
  private:
   // some template metaprogramming to make a function pointer array as below:
   // universialCompareFun<0>,universialCompareFun<1>,...,universialCompareFun<ObjNum-1>
-  using fun_t = bool (*)(const infoUnitBase_t *, const infoUnitBase_t *);
+  using fun_t = bool (*)(const GeneIt_t &, const GeneIt_t &);
 
   template <int64_t cur, int64_t max>
   struct expandStruct {
