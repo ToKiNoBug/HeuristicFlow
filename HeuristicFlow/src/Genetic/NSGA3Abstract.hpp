@@ -73,19 +73,6 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
    */
   inline const RefMat_t& referencePoints() const noexcept { return referencePoses; }
 
-  /**
-   * \brief The struct to store all information about a gene used in NSGA3's selection.
-   *
-   */
-  struct infoUnit3 : public infoUnitBase_t {
-    /// The translated fitness. Normalized fitness is also stored in this.
-    Fitness_t translatedFitness;
-    /// The index of its closet RP
-    size_t closestRefPoint;
-    /// Distance to the closet RP
-    double distance;
-  };
-
  protected:
   /// RP matrix. Each coloumn is the coordinate of a RP.
   RefMat_t referencePoses;
@@ -130,12 +117,23 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
   void __impl_select() noexcept {
     // population size before selection.
     const size_t popSizeBef = this->_population.size();
+    this->sortSpace.clear();
+    this->sortSpace.reserve(popSizeBef);
+
+    for (GeneIt_t it = this->_population.begin(); it != this->_population.end(); ++it) {
+      this->sortSpace.emplace_back(it);
+      it->closestRefPoint = -1;
+      it->distance = 0;
+      it->translatedFitness.setZero(it->_Fitness.rows(), it->_Fitness.cols());
+    }
+
+    /*
     std::vector<infoUnit3> pop;
     pop.reserve(popSizeBef);
     for (auto it = this->_population.begin(); it != this->_population.end(); ++it) {
       pop.emplace_back();
       pop.back().iterator = it;
-      pop.back().fitnessCache = it->_Fitness;
+      pop.back()._Fitness = it->_Fitness;
       pop.back().closestRefPoint = -1;
     }
 
@@ -143,6 +141,7 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     for (size_t i = 0; i < popSizeBef; i++) {
       this->sortSpace[i] = pop.data() + i;
     }
+    */
 
     this->calculateDominatedNum();
     this->divideLayers();
@@ -150,15 +149,14 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     const size_t PFSize = this->pfLayers.front().size();
 
     if (PFSize <= this->_option.populationSize)
-      this->updatePF((const infoUnitBase_t**)this->pfLayers.front().data(),
-                     this->pfLayers.front().size());
+      this->updatePF(this->pfLayers.front().data(), this->pfLayers.front().size());
 
     // hash set to store genes that will be selected
-    std::unordered_set<infoUnit3*> selected;
+    std::unordered_set<Gene_t*> selected;
     selected.reserve(this->_option.populationSize);
 
     // pointer to undertermined layer Fl
-    std::vector<infoUnitBase_t*>* FlPtr = nullptr;
+    std::vector<GeneIt_t>* FlPtr = nullptr;
 
     // if need to use RP in this selection
     bool needRefPoint;
@@ -178,15 +176,15 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
       }
 
       // emplace the whole layer into selected
-      for (infoUnitBase_t* i : this->pfLayers.front()) {
-        selected.emplace(static_cast<infoUnit3*>(i));
+      for (GeneIt_t& i : this->pfLayers.front()) {
+        selected.emplace(&*i);
       }
       this->pfLayers.pop_front();
     }
 
     if (needRefPoint) {
       // Normalize procedure
-      std::unordered_multimap<RefPointIdx_t, infoUnit3*>
+      std::unordered_multimap<RefPointIdx_t, Gene_t*>
           Fl;  // Fl is stored in a multihash sothat we can find a gene by its related RP
       Fl.reserve(FlPtr->size());
       normalize(selected, *FlPtr);
@@ -206,16 +204,25 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     }
 
     // erase all unselected genes
-    for (auto i : this->sortSpace) {
-      if (selected.find((infoUnit3*)i) == selected.end()) {
+    for (GeneIt_t it = this->_population.begin(); it != this->_population.end();) {
+      if (selected.find(&*it) == selected.end()) {
+        it = this->_population.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    /*
+    for (const Gene_t* i : this->sortSpace) {
+      if (selected.find(i) == selected.end()) {
         this->_population.erase(i->iterator);
       }
     }
+    */
 
     // update PF after selection if the next population is filled with PF(We don't hope the size of
     // PF exceeds size of population)
     if (PFSize > this->_option.populationSize) {
-      std::vector<const infoUnitBase_t*> PF;
+      std::vector<const Gene_t*> PF;
       PF.reserve(selected.size());
       for (auto i : selected) {
         PF.emplace_back(i);
@@ -244,10 +251,10 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
    * diagonal line as intercept.
    * 6. Update the translateFitness : gene.translatedFitness/=intercept.
    */
-  void normalize(const std::unordered_set<infoUnit3*>& selected,
-                 const std::vector<infoUnitBase_t*>& Fl) const noexcept {
+  void normalize(const std::unordered_set<Gene_t*>& selected,
+                 const std::vector<GeneIt_t>& Fl) const noexcept {
     const size_t M = this->objectiveNum();
-    stdContainer<const infoUnit3*, ObjNum> extremePtrs;
+    stdContainer<const Gene_t*, ObjNum> extremePtrs;
     heu_initializeSize<ObjNum>::template resize<decltype(extremePtrs)>(&extremePtrs, M);
 
     Eigen::Array<double, ObjNum, ObjNum> extremePoints;
@@ -261,30 +268,30 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     ideal.setConstant(pinfD);
 
     for (size_t c = 0; c < M; c++) {
-      extremePtrs[c] = static_cast<infoUnit3*>(Fl[0]);
-      extremePoints.col(c) = extremePtrs[c]->fitnessCache;
+      extremePtrs[c] = &*Fl[0];
+      extremePoints.col(c) = extremePtrs[c]->_Fitness;
     }
 
     for (auto i : selected) {
-      ideal = ideal.min(i->fitnessCache);
+      ideal = ideal.min(i->_Fitness);
       for (size_t objIdx = 0; objIdx < M; objIdx++) {
-        if (i->fitnessCache[objIdx] > extremePtrs[objIdx]->fitnessCache[objIdx]) {
+        if (i->_Fitness[objIdx] > extremePtrs[objIdx]->_Fitness[objIdx]) {
           extremePtrs[objIdx] = i;
         }
       }
     }
 
     for (auto i : Fl) {
-      ideal = ideal.min(i->fitnessCache);
+      ideal = ideal.min(i->_Fitness);
       for (size_t objIdx = 0; objIdx < M; objIdx++) {
-        if (i->fitnessCache[objIdx] > extremePtrs[objIdx]->fitnessCache[objIdx]) {
-          extremePtrs[objIdx] = static_cast<infoUnit3*>(i);
+        if (i->_Fitness[objIdx] > extremePtrs[objIdx]->_Fitness[objIdx]) {
+          extremePtrs[objIdx] = &*(i);
         }
       }
     }
 
     for (size_t c = 0; c < M; c++) {
-      extremePoints.col(c) = extremePtrs[c]->fitnessCache - ideal;
+      extremePoints.col(c) = extremePtrs[c]->_Fitness - ideal;
     }
 
     if (isSingular(extremePoints)) {
@@ -295,12 +302,12 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
       extremePoints2Intercept(extremePoints, &intercepts);
     }
 
-    for (auto i : selected) {
-      i->translatedFitness = (i->fitnessCache - ideal) / intercepts;
+    for (Gene_t* i : selected) {
+      i->translatedFitness = (i->_Fitness - ideal) / intercepts;
     }
 
-    for (auto i : Fl) {
-      static_cast<infoUnit3*>(i)->translatedFitness = (i->fitnessCache - ideal) / intercepts;
+    for (const GeneIt_t& i : Fl) {
+      (i)->translatedFitness = (i->_Fitness - ideal) / intercepts;
     }
   }  //  normalize
 
@@ -337,7 +344,7 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
    *
    * \param selected hash set of selected genes
    */
-  void associate(const std::unordered_set<infoUnit3*>& selected) const noexcept {
+  void associate(const std::unordered_set<Gene_t*>& selected) const noexcept {
     for (auto i : selected) {
       i->closestRefPoint = findNearest(i->translatedFitness, &i->distance);
     }
@@ -355,13 +362,12 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
    * \param Fl_src Source of Fl
    * \param Fl_dst Destination of Fl
    */
-  void associate(const std::vector<infoUnitBase_t*>& Fl_src,
-                 std::unordered_multimap<RefPointIdx_t, infoUnit3*>* Fl_dst) const noexcept {
-    for (auto j : Fl_src) {
-      infoUnit3* i = static_cast<infoUnit3*>(j);
+  void associate(const std::vector<GeneIt_t>& Fl_src,
+                 std::unordered_multimap<RefPointIdx_t, Gene_t*>* Fl_dst) const noexcept {
+    for (auto i : Fl_src) {
       RefPointIdx_t idx = findNearest(i->translatedFitness, &i->distance);
       i->closestRefPoint = idx;
-      Fl_dst->emplace(idx, i);
+      Fl_dst->emplace(idx, &*i);
     }
   }  // associate
 
@@ -383,8 +389,8 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
    * \param Fl (F_l in the paper)
    * \param refPoints hash map (RP as key and niche count as value)
    */
-  void nichePreservation(std::unordered_set<infoUnit3*>* selected,
-                         std::unordered_multimap<RefPointIdx_t, infoUnit3*>* Fl,
+  void nichePreservation(std::unordered_set<Gene_t*>* selected,
+                         std::unordered_multimap<RefPointIdx_t, Gene_t*>* Fl,
                          std::unordered_map<RefPointIdx_t, size_t>* refPoints) const noexcept {
     for (auto i : *selected) {
       refPoints->operator[](i->closestRefPoint)++;
@@ -393,8 +399,8 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
     std::vector<std::unordered_map<RefPointIdx_t, size_t>::iterator> minNicheIterators;
     minNicheIterators.reserve(refPoints->size());
 
-    std::pair<typename std::unordered_multimap<RefPointIdx_t, infoUnit3*>::iterator,
-              typename std::unordered_multimap<RefPointIdx_t, infoUnit3*>::iterator>
+    std::pair<typename std::unordered_multimap<RefPointIdx_t, Gene_t*>::iterator,
+              typename std::unordered_multimap<RefPointIdx_t, Gene_t*>::iterator>
         associatedGenesInFl;
 
     while (selected->size() < this->_option.populationSize) {
@@ -405,10 +411,10 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
       associatedGenesInFl = Fl->equal_range(curRefPoint->first);
 
       if (associatedGenesInFl.first != associatedGenesInFl.second) {  //  not empty
-        typename std::unordered_multimap<RefPointIdx_t, infoUnit3*>::iterator pickedGene;
+        typename std::unordered_multimap<RefPointIdx_t, Gene_t*>::iterator pickedGene;
         if (rhoJ == 0) {
           // find element in associatedGenesInFl with minimum distance
-          typename std::unordered_multimap<RefPointIdx_t, infoUnit3*>::iterator minGene =
+          typename std::unordered_multimap<RefPointIdx_t, Gene_t*>::iterator minGene =
               associatedGenesInFl.first;
           for (auto it = associatedGenesInFl.first; it != associatedGenesInFl.second; ++it) {
             if (it->second->distance < minGene->second->distance) {
@@ -506,10 +512,9 @@ class NSGA3Abstract : public NSGABase<Var_t, ObjNum, FITNESS_LESS_BETTER, rOpt, 
   }
 };
 
-#define HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)    \
-  HEU_MAKE_NSGABASE_TYPES(Base_t)               \
-  using RefMat_t = typename Base_t::RefMat_t;   \
-  using infoUnit3 = typename Base_t::infoUnit3; \
+#define HEU_MAKE_NSGA3ABSTRACT_TYPES(Base_t)  \
+  HEU_MAKE_NSGABASE_TYPES(Base_t)             \
+  using RefMat_t = typename Base_t::RefMat_t; \
   using RefPointIdx_t = typename Base_t::RefPointIdx_t;
 
 }  //  namespace internal

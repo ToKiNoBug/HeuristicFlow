@@ -85,12 +85,10 @@ template <typename Var_t, int ObjNum, RecordOption rOpt = DONT_RECORD_FITNESS,
           typename internal::GAAbstract<Var_t, Eigen::Array<double, ObjNum, 1>, Args_t>::mutateFun
               _mFun_ = nullptr>
 class NSGA3
-    : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
-                                 internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>,
+    : public internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, internal::NSGA3Gene_t<Var_t, ObjNum>,
                                  Args_t, _iFun_, _fFun_, _cFun_, _mFun_> {
   using Base_t =
-      internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt,
-                          internal::DefaultGene_t<Var_t, Eigen::Array<double, ObjNum, 1>>, Args_t,
+      internal::NSGA3Base<Var_t, ObjNum, rOpt, rpOpt, internal::NSGA3Gene_t<Var_t, ObjNum>, Args_t,
                           _iFun_, _fFun_, _cFun_, _mFun_>;
 
  public:
