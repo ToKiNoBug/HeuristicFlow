@@ -22,7 +22,7 @@ This file is part of HeuristicFlow.
 
 #include <stdint.h>
 
-#include "InternalHeaderCheck.hpp"
+#include "InternalHeaderCheck.h"
 
 namespace heu {
 

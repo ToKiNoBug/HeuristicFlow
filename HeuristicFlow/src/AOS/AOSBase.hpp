@@ -20,7 +20,7 @@ This file is part of HeuristicFlow.
 #ifndef HEU_AOSBASE_HPP
 #define HEU_AOSBASE_HPP
 
-#include "InternalHeaderCheck.hpp"
+#include "InternalHeaderCheck.h"
 #include "AOS4EigenAndStd.hpp"
 
 namespace heu {

@@ -27,8 +27,8 @@ using std::cout, std::endl;
 int main() {
   constexpr int Dim = 3;
 
-  heu::AOS<heu::FixedContinousBox17<Eigen::Array<double, Dim, 1>, heu::encode(-5), heu::encode(5),
-                                    heu::encode(1.5)>,
+  heu::AOS<heu::FixedContinousBox17<Eigen::Array<double, Dim, 1>, heu::encode(-5.0),
+                                    heu::encode(5.0), heu::encode(1.5)>,
            heu::FITNESS_LESS_BETTER, heu::RECORD_FITNESS, void,
            heu::testFunctions<Eigen::Array<double, Dim, 1>>::rastrigin>
       solver;

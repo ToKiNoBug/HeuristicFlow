@@ -23,7 +23,7 @@ This file is part of HeuristicFlow.
 #include <list>
 #include <HeuristicFlow/SimpleMatrix>
 
-#include "InternalHeaderCheck.hpp"
+#include "InternalHeaderCheck.h"
 #include "AOSParameterPack.hpp"
 #include "AOSOption.hpp"
 

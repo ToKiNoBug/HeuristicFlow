@@ -24,7 +24,7 @@ This file is part of HeuristicFlow.
 
 #include <HeuristicFlow/EAGlobal>
 
-#include "InternalHeaderCheck.hpp"
+#include "InternalHeaderCheck.h"
 #include "AOSBase.hpp"
 #include "AOSDefaultElectron.hpp"
 

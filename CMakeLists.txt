@@ -5,6 +5,7 @@ project(HeuristicFlow LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow)
