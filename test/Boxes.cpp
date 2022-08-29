@@ -176,11 +176,12 @@ void test_Box() {
 
   cout << "\n\n\n\n\nTesting box6 : Fixed BoxXXf (in range [-10,5], delta = 0.5)" << endl;
 
-  heu::FixedContinousBox17<Eigen::ArrayXXd, heu::encode(-10), heu::encode(5), heu::encode(0.5)>
+  heu::FixedContinousBox17<Eigen::ArrayXXf, heu::encode(-10.0f), heu::encode(5.0f),
+                           heu::encode(0.5f)>
       box6;
   box6.setDimensions(3, 4);
 
-  Eigen::ArrayXXd mat6;
+  Eigen::ArrayXXf mat6;
 
   cout << "box6.min() = " << box6.min() << endl;
   cout << "box6.max() = " << box6.max() << endl;

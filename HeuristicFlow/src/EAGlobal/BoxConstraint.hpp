@@ -480,19 +480,20 @@ class FixedDiscreteBox
   inline constexpr Scalar_t max(const int = 0) const noexcept { return _maxCT; }
 };
 
-template <class Var, ::heu::binCode64 _minCode, ::heu::binCode64 _maxCode>
+template <class Var, ::heu::binCode_t<typename array_traits<Var>::Scalar_t> _minCode,
+          ::heu::binCode_t<typename array_traits<Var>::Scalar_t> _maxCode>
 class FixedDiscreteBox17
     : public BoxBase<FixedDiscreteBox17<Var, _minCode, _maxCode>, Var>,
       public std::conditional_t<array_traits<Var>::isVector, empytStruct0,
                                 MatBoxBase<FixedDiscreteBox17<Var, _minCode, _maxCode>, Var>>,
       public internal::SquareBoxSizeBody<Var> {
  public:
-  static constexpr double _minCT = ::heu::decode(_minCode);
-  static constexpr double _maxCT = ::heu::decode(_maxCode);
-  static_assert(_minCT < _maxCT);
-  static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
   using Var_t = Var;
   using Scalar_t = typename array_traits<Var_t>::Scalar_t;
+  static constexpr Scalar_t _minCT = ::heu::decode(_minCode);
+  static constexpr Scalar_t _maxCT = ::heu::decode(_maxCode);
+  static_assert(_minCT < _maxCT);
+  static constexpr BoxShape Shape = BoxShape::SQUARE_BOX;
 
   static_assert(std::is_floating_point_v<Scalar_t>);
 
@@ -648,14 +649,15 @@ class FixedContinousBox20 : public FixedDiscreteBox<Var, _minCT, _maxCT> {
 
 #endif
 
-template <class Var, ::heu::binCode64 _minCode, ::heu::binCode64 _maxCode,
-          ::heu::binCode64 _deltaCode>
+template <class Var, ::heu::binCode_t<typename array_traits<Var>::Scalar_t> _minCode,
+          ::heu::binCode_t<typename array_traits<Var>::Scalar_t> _maxCode,
+          ::heu::binCode_t<typename array_traits<Var>::Scalar_t> _deltaCode>
 class FixedContinousBox17 : public FixedDiscreteBox17<Var, _minCode, _maxCode> {
  public:
   using Scalar_t = typename array_traits<Var>::Scalar_t;
   using Var_t = Var;
 
-  static constexpr double _deltaCT = decode(_deltaCode);
+  static constexpr Scalar_t _deltaCT = decode(_deltaCode);
   static_assert(_deltaCT > 0);
 
   inline constexpr Scalar_t delta(const int = 0) const noexcept { return _deltaCT; }

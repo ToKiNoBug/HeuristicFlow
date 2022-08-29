@@ -404,6 +404,11 @@ constexpr binCode32 encode(const float d) {
     return binCode32(signCode(d) | exponentCode(d) | mantissaCode(d));
 }
 
+template <typename float_t>
+using binCode_t = typename std::enable_if_t<
+    std::is_floating_point_v<float_t>,
+    std::conditional_t<std::is_same_v<float_t, float>, binCode32, binCode64>>;
+
 }  // namespace heu
 
 #endif  // HEU_CONVERTDOUBLEANDBINCODE_HPP
