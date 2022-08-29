@@ -145,6 +145,33 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
     return *this;
   }
 
+  /**
+   * \brief Move assigning operator
+   *
+   * \param src A rvalue reference
+   * \return MatrixDynamicSize&
+   */
+  MatrixDynamicSize &operator=(MatrixDynamicSize &&src) noexcept {
+    if (this->dataPtr != nullptr) {
+      if constexpr (isClass) {
+        for (int i = 0; i < _capacity; i++) {
+          (dataPtr + i)->~Scalar_t();
+          // alloc().destroy(dataPtr + i);
+        }
+      }
+      alloc().deallocate(dataPtr, _capacity);
+    }
+
+    this->dataPtr = src.dataPtr;
+    src.dataPtr = nullptr;
+    this->rowNum = src.rowNum;
+    src.rowNum = 0;
+    this->colNum = src.colNum;
+    src.colNum = 0;
+    this->_capacity = src._capacity;
+    src._capacity = 0;
+  }
+
   template <class DerivedB>
   inline MatrixDynamicSize &operator=(const MatrixBase<DerivedB> &src) noexcept {
     return MatrixBase<MatrixDynamicSize>::template operator=

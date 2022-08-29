@@ -75,6 +75,7 @@ CMakeLists.txt.user
 .vscode/c_cpp_properties.json
 .vscode/settings.json
 .vscode/launch.json
+.cache/*
 *.html
 *.dot
 *.js
@@ -86,3 +87,5 @@ CMakeLists.txt.user
 *.hhk
 *.7z
 runPy.py
+
+compile_commands.json
