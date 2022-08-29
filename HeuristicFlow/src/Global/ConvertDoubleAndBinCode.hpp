@@ -31,8 +31,9 @@ This file is part of HeuristicFlow.
 namespace heu {
 namespace {
 
-inline constexpr double expOf2AtCompileTime(int N) {
-  double fl = 1.0;
+template <typename float_t = double>
+inline constexpr float_t expOf2AtCompileTime(int N) {
+  float_t fl = 1.0;
 
   while (N > 11) {
     fl *= 1024;
@@ -66,6 +67,15 @@ inline constexpr double expOf2AtCompileTime(int N) {
  * \sa decode encode
  */
 enum binCode64 : uint64_t {};
+
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief The binary code to convey float through templates. This enum stores floatinig-point
+ * numbers dierctly by their binary encoding (IEEE754 standard).
+ *
+ * \sa decode encode
+ */
+enum binCode32 : uint32_t {};
 
 /**
  * \ingroup HEU_GLOBAL
@@ -143,13 +153,95 @@ inline constexpr double decode(const binCode64 binCode) {
     return res;
 }
 
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Convert binary code to float
+ *
+ * \param code The binary code
+ * \return constexpr double The floating-point number at compile time
+ */
+inline constexpr float decode(const binCode32 binCode) {
+  const uint32_t code = uint32_t(binCode);
+  constexpr uint32_t expMask = (0b11111111UL) << 23;
+
+  constexpr uint32_t mantissaMask = (0b1UL << 23) - 1UL;
+
+  if (((expMask & code) == expMask) && (mantissaMask & code) != 0) {
+    //  if is nan
+    return std::numeric_limits<float>::signaling_NaN();
+  }
+
+  const uint32_t absCode = code & ~(1UL << 31);
+  if (absCode >= (0b11111111UL) << 23) {  //  if is inf
+    if (absCode == code) {
+      return std::numeric_limits<float>::infinity();
+    } else {
+      return -std::numeric_limits<float>::infinity();
+    }
+  }
+
+  float res = 0;
+  uint32_t exponent = (code & expMask) >> 23;
+
+  {
+    if (exponent != 0) res += 1;
+
+    float delta = 0.5;
+    uint32_t singleMantissaMask = 1UL << 22;
+
+    for (int i = 0; i < 52; i++) {
+      if (code & singleMantissaMask) {
+        res += delta;
+      }
+
+      delta /= 2;
+      singleMantissaMask = singleMantissaMask >> 1;
+    }
+  }
+
+  // return res;
+
+  {
+    if (exponent != 0) {
+      int N = int(exponent) - 127;
+      while (N > 0) {
+        res *= 2;
+        N--;
+      }
+
+      while (N < 0) {
+        res /= 2;
+        N++;
+      }
+    } else {
+      res /= (expOf2AtCompileTime<float>(126));
+    }
+
+    // res *= expOf2AtCompileTime(int(exponent) - 1023);
+  }
+
+  // return res;
+
+  const bool isNegative = code & (1UL << 31);
+  if (isNegative)
+    return -res;
+  else
+    return res;
+}
+
 namespace {
 
 constexpr bool isNotNegative(const double fl) { return fl >= 0; }
 
+constexpr bool isNotNegative(const float fl) { return fl >= 0; }
+
 constexpr uint64_t signCode(const double fl) { return uint64_t(!isNotNegative(fl)) << 63; }
 
+constexpr uint32_t signCode(const float fl) { return uint32_t(!isNotNegative(fl)) << 31; }
+
 constexpr double absVal(const double fl) { return (fl >= 0) ? (fl) : (-fl); }
+
+constexpr float absVal(const float fl) { return (fl >= 0) ? (fl) : (-fl); }
 
 constexpr uint64_t exponentVal(double fl) {
   uint64_t code = 0;
@@ -171,7 +263,31 @@ constexpr uint64_t exponentVal(double fl) {
   return code;
 }
 
+constexpr uint32_t exponentVal(float fl) {
+  uint32_t code = 0;
+  fl = absVal(fl);
+  /*
+constexpr double seper =
+    decode(binCode64(0b0000000000001111111111111111111111111111111111111111111111111111));
+    */
+  constexpr float seper = decode(binCode32(0b00000000011111111111111111111111UL));
+
+  while (fl > 257 * seper) {
+    fl /= 256;
+    code += 8;
+  }
+
+  while (fl > seper) {
+    fl /= 2;
+    code++;
+  }
+
+  return code;
+}
+
 constexpr uint64_t exponentCode(double fl) { return uint64_t(exponentVal(fl)) << 52; }
+
+constexpr uint32_t exponentCode(float fl) { return uint32_t(exponentVal(fl)) << 23; }
 
 constexpr double absValWithExponentCode0(double fl) {
   fl = absVal(fl);
@@ -183,6 +299,17 @@ constexpr double absValWithExponentCode0(double fl) {
   return (fl * expOf2AtCompileTime(1023 - (int)exponentVal(fl)) - 1) * expOf2AtCompileTime(-1022);
 }
 
+constexpr float absValWithExponentCode0(float fl) {
+  fl = absVal(fl);
+
+  if (exponentVal(fl) == 0) {
+    return fl;
+  }
+
+  return (fl * expOf2AtCompileTime<float>(127 - (int)exponentVal(fl)) - 1) *
+         expOf2AtCompileTime<float>(-126);
+}
+
 constexpr uint64_t mantissaCode(double fl) {
   fl = absValWithExponentCode0(fl);
   uint64_t mask = 1ULL << 51;
@@ -192,6 +319,26 @@ constexpr uint64_t mantissaCode(double fl) {
   constexpr double compareNum = expOf2AtCompileTime(-1023);
 
   for (int i = 0; i < 52; i++) {
+    if (fl >= compareNum) {
+      result = result | mask;
+      fl -= compareNum;
+    }
+    fl *= 2;
+    mask = mask >> 1;
+  }
+
+  return result;
+}
+
+constexpr uint32_t mantissaCode(float fl) {
+  fl = absValWithExponentCode0(fl);
+  uint32_t mask = 1UL << 22;
+
+  uint32_t result = 0;
+
+  constexpr float compareNum = (expOf2AtCompileTime<float>(-127));
+
+  for (int i = 0; i < 23; i++) {
     if (fl >= compareNum) {
       result = result | mask;
       fl -= compareNum;
@@ -229,6 +376,32 @@ constexpr binCode64 encode(const double d) {
     }
   } else
     return binCode64(signCode(d) | exponentCode(d) | mantissaCode(d));
+}
+
+/**
+ * \ingroup HEU_GLOBAL
+ * \brief Encode a floaitng-point number to binCode32.
+ *
+ * \param d The floating point number
+ * \return constexpr binCode32 The binary code.
+ */
+constexpr binCode32 encode(const float d) {
+  if (
+
+      !(d >= 0 || d <= 0)  //  if a number is neither negative nor non-negative, it is nan
+
+  ) {
+    return binCode32((0UL) | (0b11111111UL << 23) | (1UL << 22));
+  }
+
+  if (absVal(d) >= std::numeric_limits<float>::infinity()) {
+    if (d > 0) {
+      return binCode32(0b11111111111UL << 23);
+    } else {
+      return binCode32(0b111111111111UL << 23);
+    }
+  } else
+    return binCode32(signCode(d) | exponentCode(d) | mantissaCode(d));
 }
 
 }  // namespace heu
