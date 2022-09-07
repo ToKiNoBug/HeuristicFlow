@@ -7,6 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/compile_commands.json)
+    file(REMOVE ${CMAKE_SOURCE_DIR}/compile_commands.json)
+endif()
+
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow)
 add_subdirectory(${PROJECT_SOURCE_DIR}/test) # Test current algorithm

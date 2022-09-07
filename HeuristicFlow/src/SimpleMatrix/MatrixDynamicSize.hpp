@@ -78,7 +78,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
     colNum = c;
     _capacity = r * c;
     dataPtr = alloc().allocate(_capacity);
-    if constexpr (isClass)
+    if constexpr (!std::is_trivially_default_constructible_v<Scalar_t>)
       for (int i = 0; i < _capacity; i++) {
         // alloc().construct(dataPtr + i);
         dataPtr[i] = Scalar_t();
@@ -115,7 +115,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
    */
   ~MatrixDynamicSize() {
     if (dataPtr != nullptr) {
-      if constexpr (isClass)
+      if constexpr (!std::is_trivially_destructible_v<Scalar_t>)
         for (int i = 0; i < _capacity; i++) {
           (dataPtr + i)->~Scalar_t();
           // alloc().destroy(dataPtr + i);
@@ -136,7 +136,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
   MatrixDynamicSize &operator=(const MatrixDynamicSize &src) noexcept {
     resize(src.rowNum, src.colNum);
     for (int i = 0; i < size(); i++) {
-      if constexpr (isClass) {
+      if constexpr (!std::is_trivially_copy_assignable_v<Scalar_t>) {
         dataPtr[i] = src.dataPtr[i];
       } else {
         memcpy(dataPtr, src, sizeof(Scalar_t) * src.size());
@@ -153,7 +153,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
    */
   MatrixDynamicSize &operator=(MatrixDynamicSize &&src) noexcept {
     if (this->dataPtr != nullptr) {
-      if constexpr (isClass) {
+      if constexpr (!std::is_trivially_destructible_v<Scalar_t>) {
         for (int i = 0; i < _capacity; i++) {
           (dataPtr + i)->~Scalar_t();
           // alloc().destroy(dataPtr + i);
@@ -251,7 +251,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
     if (r * c != size()) {
       if (r * c > _capacity) {
         if (dataPtr != nullptr) {
-          if constexpr (isClass)
+          if constexpr (std::is_trivially_destructible_v<Scalar_t>)
             for (int i = 0; i < _capacity; i++) {
               // alloc().destroy(dataPtr + i);
               (dataPtr + i)->~Scalar_t();
@@ -262,7 +262,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
         dataPtr = alloc().allocate(r * c);
         _capacity = r * c;
 
-        if constexpr (isClass)
+        if constexpr (std::is_trivially_default_constructible_v<Scalar_t>)
           for (int i = 0; i < _capacity; i++) {
             // alloc().construct(dataPtr + i);
             dataPtr[i] = Scalar_t();
@@ -341,7 +341,7 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
     }
   }
 
-  static constexpr bool isClass = std::is_class<Scalar_t>::value;
+  // static constexpr bool isClass = std::is_class<Scalar_t>::value;
   static const bool isFixedSize = false;
   static constexpr int rowsAtCompileTime = Eigen::Dynamic;
   static constexpr int colsAtCompileTime = Eigen::Dynamic;

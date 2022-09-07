@@ -72,7 +72,7 @@ class MatrixFixedSize : public MatrixBase<MatrixFixedSize<Scalar, Rows, Cols>> {
    * \param src Source of copying
    */
   explicit MatrixFixedSize(const MatrixFixedSize &src) {
-    if constexpr (isClass) {
+    if constexpr (!std::is_trivially_copy_assignable_v<Scalar_t>) {
       for (size_t i = 0; i < size(); i++) {
         array[i] = src.array[i];
       }
@@ -138,7 +138,7 @@ class MatrixFixedSize : public MatrixBase<MatrixFixedSize<Scalar, Rows, Cols>> {
       i = src;
     }
   }
-  static constexpr bool isClass = std::is_class<Scalar_t>::value;
+  // static constexpr bool isClass = std::is_class<Scalar_t>::value;
   static constexpr bool isFixedSize = true;
   static constexpr int rowsAtCompileTime = Rows;
   static constexpr int colsAtCompileTime = Cols;

@@ -46,12 +46,12 @@ class MatrixBase {
       static_cast<Derived&>(*this).resize(src.rows(), src.cols());
     }
 
-    if constexpr (Derived::isClass) {
+    if constexpr (std::is_trivially_copy_assignable_v<typename Derived::Scalar_t>) {
       memcpy(static_cast<Derived&>(*this).data(), src.data(),
              sizeof(typename Derived::Scalar_t) * src.size());
     } else {
       for (int idx = 0; idx < src.size(); idx++) {
-        static_cast<Derived&>(*this).data()[idx] = src.data[idx];
+        static_cast<Derived&>(*this).data()[idx] = src.data()[idx];
       }
     }
 
