@@ -160,7 +160,7 @@ concept isVector = requires(T vec, int idx) {
 
 template <class T>
 concept EigenClass = requires(T mat, int r, int c, T matB) {
-  isVector<T>;
+  requires isVector<T>;
   {mat(r)};
   {mat(r, c)};
   {mat.rows()};
@@ -184,11 +184,14 @@ concept isBoxConstraint = requires(Box b, int d, typename Box::Var_t v) {
   typename Box::Var_t;
   typename Box::Scalar_t;
   Box::Shape;
-  isVector<typename Box::Var_t>;
+  requires isVector<typename Box::Var_t>;
   std::is_arithmetic_v<typename Box::Scalar_t>;
+  {b.min()};
+  {b.max()};
   {b.min(d)};
   {b.max(d)};
   {b.initialize(&v)};
+  {b.initializeSize(&v)};
   {b.applyConstraint(&v)};
   {b.applyConstraint(&v, d)};
   {b.applyDelta(&v)};
@@ -200,9 +203,11 @@ concept isPSOBox = requires(Box b, int d, typename Box::Var_t v) {
   typename Box::Var_t;
   typename Box::Scalar_t;
   Box::Shape;
-  isVector<typename Box::Var_t>;
+  requires isVector<typename Box::Var_t>;
   std::is_arithmetic_v<typename Box::Scalar_t>;
   std::is_floating_point_v<typename Box::Scalar_t>;
+  {b.posMin()};
+  {b.posMax()};
   {b.posMin(d)};
   {b.posMax(d)};
   {b.velocityMax()};
