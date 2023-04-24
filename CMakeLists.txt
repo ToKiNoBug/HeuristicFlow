@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(HeuristicFlow LANGUAGES CXX)
+project(HeuristicFlow LANGUAGES CXX VERSION 1.6.2.1)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Where to install")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -13,17 +10,33 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/compile_commands.json)
     file(REMOVE ${CMAKE_SOURCE_DIR}/compile_commands.json)
 endif()
 
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow)
-add_subdirectory(${PROJECT_SOURCE_DIR}/test) # Test current algorithm
-add_subdirectory(${PROJECT_SOURCE_DIR}/lab) # Test new algorithm
-
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/Genetic)
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/Global)
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/PSO)
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/EAGlobal)
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/SimpleMatrix)
-add_subdirectory(${PROJECT_SOURCE_DIR}/HeuristicFlow/src/AOS)
+set(Heu_submodules
+        Global
+        SimpleMatrix
+        EAGlobal
+        AOS
+        Genetic
+        PSO)
 
 
+if(NOT DEFINED EIGEN3_INCLUDE_DIR)
+    include(cmake/config_eigen3.cmake)
+endif()
+message(STATUS "EIGEN3_INCLUDE_DIR = " ${EIGEN3_INCLUDE_DIR})
+
+
+add_subdirectory(HeuristicFlow)
+add_subdirectory(test) # Test current algorithm
+add_subdirectory(lab) # Test new algorithm
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(HeuConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/HeuConfig.cmake
+        INSTALL_DESTINATION lib/cmake/Heu)
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/HeuConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/HeuConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/HeuConfigVersion.cmake
+        DESTINATION lib/cmake/Heu)

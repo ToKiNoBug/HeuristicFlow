@@ -2,12 +2,21 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Heu_SimpleMatrix LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_library(Heu_SimpleMatrix INTERFACE)
+target_link_libraries(Heu_SimpleMatrix INTERFACE Heu::Global)
 
-
+add_library(Heu::SimpleMatrix ALIAS Heu_SimpleMatrix)
 
 file(GLOB heu_SimpleMatrix_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 install(FILES ${heu_SimpleMatrix_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/src/SimpleMatrix)
+    DESTINATION include/HeuristicFlow/src/SimpleMatrix)
+
+install(TARGETS Heu_SimpleMatrix
+        DESTINATION lib
+        EXPORT HeuSimpleMatrix-targets)
+
+install(EXPORT HeuSimpleMatrix-targets
+        NAMESPACE Heu::
+        FILE HeuSimpleMatrixTargets.cmake
+        DESTINATION lib/cmake/Heu)

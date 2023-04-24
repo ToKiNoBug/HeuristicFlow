@@ -2,12 +2,21 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Heu_PSO LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_library(Heu_PSO INTERFACE)
+target_link_libraries(Heu_PSO INTERFACE Heu::Global Heu::EAGlobal)
 
-
+add_library(Heu::PSO ALIAS Heu_PSO)
 
 file(GLOB heu_PSO_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 install(FILES ${heu_PSO_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/src/PSO)
+    DESTINATION include/HeuristicFlow/src/PSO)
+
+install(TARGETS Heu_PSO
+        DESTINATION lib
+        EXPORT HeuPSO-targets)
+
+install(EXPORT HeuPSO-targets
+        NAMESPACE Heu::
+        FILE HeuPSOTargets.cmake
+        DESTINATION lib/cmake/Heu)
