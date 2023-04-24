@@ -93,6 +93,5 @@ void testRastriginFun() {
 
 int main() {
   testRastriginFun();
-  system("pause");
   return 0;
 }

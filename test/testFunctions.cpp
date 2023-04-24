@@ -63,4 +63,5 @@ int main() {
   cout << "surf(x,y,z,'EdgeColor','none','FaceAlpha',0.9)" << endl;
 
   // system("pause");
+  return 0;
 }

@@ -133,6 +133,6 @@ int main() {
   cout << "Input node number : ";
   cin >> NodeNum;
   testTSP_PSO(NodeNum);
-  system("pause");
+
   return 0;
 }

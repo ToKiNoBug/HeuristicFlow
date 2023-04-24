@@ -21,6 +21,7 @@ This file is part of HeuristicFlow.
 #define HEU_AOSOPTION_HPP
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include "InternalHeaderCheck.h"
 

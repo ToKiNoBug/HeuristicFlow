@@ -100,6 +100,5 @@ void testNSGA2_ZDT3() {
 
 int main() {
   testNSGA2_ZDT3();
-  system("pause");
   return 0;
 }

@@ -117,6 +117,5 @@ void searchPFfun(size_t nIdx, Eigen::Array<double, N, 1>* var,
 
 int main() {
   testNSGA3_DTLZ7();
-  system("pause");
   return 0;
 }

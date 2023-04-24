@@ -68,7 +68,7 @@ cout << "]';\n\n\n\n" << endl;
 
   cout << "result fitness = " << solver.bestElectron().energy << " in " << solver.generation()
        << " generations" << endl;
-
+  return 0;
   /*
 cout << "record=[";
 for (auto i : solver.record()) {

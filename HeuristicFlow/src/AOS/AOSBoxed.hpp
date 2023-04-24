@@ -21,7 +21,7 @@ This file is part of HeuristicFlow.
 #define HEU_AOSBOXED_HPP
 
 #include <list>
-#include <HeuristicFlow/SimpleMatrix>
+#include "../../SimpleMatrix"
 
 #include "InternalHeaderCheck.h"
 #include "AOSParameterPack.hpp"

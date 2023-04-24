@@ -118,4 +118,7 @@ int main() {
 
   printf("%s\n", "computed code of of 3.14e10f : ");
   printBin(encode(3.14e10f));
+
+
+  return 0;
 }

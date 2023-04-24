@@ -103,6 +103,5 @@ void testNSGA2_Kursawe() {
 
 int main() {
   testNSGA2_Kursawe();
-  system("pause");
   return 0;
 }
