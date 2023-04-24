@@ -89,3 +89,6 @@ CMakeLists.txt.user
 runPy.py
 
 compile_commands.json
+compile-commands.json
+
+cmake-build*
