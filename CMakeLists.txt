@@ -22,8 +22,8 @@ set(Heu_submodules
 if(NOT DEFINED EIGEN3_INCLUDE_DIR)
     include(cmake/config_eigen3.cmake)
 endif()
-message(STATUS "EIGEN3_INCLUDE_DIR = " ${EIGEN3_INCLUDE_DIR})
 
+enable_testing()
 
 add_subdirectory(HeuristicFlow)
 add_subdirectory(test) # Test current algorithm
