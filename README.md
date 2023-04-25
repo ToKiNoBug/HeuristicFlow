@@ -1,6 +1,6 @@
 # HeuristicFlow
 
-![](https://img.shields.io/badge/C%2B%2B-14-blue?style=plastic) ![](https://img.shields.io/badge/Eigen-v3.3+-yellowgreen?style=plastic) 
+![](https://img.shields.io/badge/C%2B%2B-17-blue?style=plastic) ![](https://img.shields.io/badge/Eigen-v3.3+-yellowgreen?style=plastic) 
 
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/TokiNoBug/HeuristicFlow?style=plastic) ![GitHub](https://img.shields.io/github/license/TokiNoBug/HeuristicFlow?style=plastic)
 
