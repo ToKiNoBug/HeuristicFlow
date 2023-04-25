@@ -74,14 +74,14 @@ class MatrixDynamicSize : public MatrixBase<MatrixDynamicSize<Scalar, allocator_
    * \param c
    */
   MatrixDynamicSize(int r, int c) noexcept {
-    rowNum = r;
-    colNum = c;
-    _capacity = r * c;
-    dataPtr = alloc().allocate(_capacity);
+    this->rowNum = r;
+    this->colNum = c;
+    this->_capacity = r * c;
+    this->dataPtr = alloc().allocate(_capacity);
+    assert(this->dataPtr!=nullptr);
     if constexpr (!std::is_trivially_default_constructible_v<Scalar_t>)
       for (int i = 0; i < _capacity; i++) {
-        // alloc().construct(dataPtr + i);
-        dataPtr[i] = Scalar_t();
+        std::allocator_traits<allocator_t>::construct(alloc(),this->dataPtr+i);
       }
   }
 
