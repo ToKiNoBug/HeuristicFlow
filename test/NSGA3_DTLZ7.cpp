@@ -23,12 +23,12 @@ This file is part of HeuristicFlow.
 using namespace Eigen;
 using namespace std;
 
-void testNSGA3_DTLZ7() {
+void testNSGA3_DTLZ7(bool is_auto=false) {
   // Dimension of decison variable
-  static constexpr size_t N = 30;
+  constexpr size_t N = 30;
   // Number of objectives. DTLZ series are greatly extentable, you can simply edit the value of M
   // and N to see how it behaves for higher dimensions.
-  static constexpr size_t M = 3;
+  constexpr size_t M = 3;
 
   // Note that NSGA3 supports only FITNESS_LESS_BETTER
   using solver_t = heu::NSGA3<Eigen::Array<double, N, 1>, M,
@@ -54,12 +54,14 @@ void testNSGA3_DTLZ7() {
   heu::GAOption opt;
   opt.maxGenerations = 1000;
   opt.populationSize = 400;
-  cout << "maxGenerations=";
-  cin >> opt.maxGenerations;
+  if(!is_auto) {
+    cout << "maxGenerations=";
+    cin >> opt.maxGenerations;
 
-  // opt.maxFailTimes = -1; // this member is useless to MOGA solvers
-  cout << "populationSize=";
-  cin >> opt.populationSize;
+    // opt.maxFailTimes = -1; // this member is useless to MOGA solvers
+    cout << "populationSize=";
+    cin >> opt.populationSize;
+  }
   opt.crossoverProb = 0.8;
   opt.mutateProb = 0.1;
 
@@ -115,7 +117,18 @@ void searchPFfun(size_t nIdx, Eigen::Array<double, N, 1>* var,
   }
 }
 
-int main() {
-  testNSGA3_DTLZ7();
+#include <string_view>
+
+int main(int argc,char**argv) {
+  bool is_auto=false;
+
+  for(int i=0;i<argc;i++) {
+    if(std::string_view{argv[i]}=="--auto") {
+      is_auto=true;
+      break;
+    }
+  }
+
+  testNSGA3_DTLZ7(is_auto);
   return 0;
 }

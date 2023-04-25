@@ -4,7 +4,7 @@ project(HeuristicFlow_Test LANGUAGES CXX)
 function(Heu_add_test name source dep)
     add_executable(${name} ${source})
     target_link_libraries(${name} PRIVATE ${dep})
-    add_test(${name} COMMAND ${name}
+    add_test(NAME ${name} COMMAND ${name} --auto
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endfunction(Heu_add_test)
 

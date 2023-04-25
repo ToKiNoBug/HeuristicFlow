@@ -26,7 +26,7 @@ using namespace std;
 // Ackely function is a single objective testing function with great number of local minimum points,
 // but its global minimum point is [0,0] and corresponding value is 0. A good solver should be able
 // to find the global minimum point.
-void testAckley_withRecord() {
+void testAckley_withRecord(bool is_auto) {
   using args_t = heu::ContinousBox<array<double, 2>, heu::BoxShape::SQUARE_BOX>;
   constexpr heu::SelectMethod sm = heu::SelectMethod::RunTimeSelectMethod;
 
@@ -44,15 +44,17 @@ void testAckley_withRecord() {
 
   {
     uint32_t sm = heu::SelectMethod::EliteReserved;
-    cout << "Please choose a selection method :\n";
-    for (heu::SelectMethod i = heu::SelectMethod(0); i < heu::SelectMethod::RunTimeSelectMethod;
-         i = heu::SelectMethod(int(i) + 1)) {
-      cout << i << " for " << heu::Enum2String(i) << ",\n";
+    if(!is_auto) {
+      cout << "Please choose a selection method :\n";
+      for (heu::SelectMethod i = heu::SelectMethod(0); i < heu::SelectMethod::RunTimeSelectMethod;
+           i = heu::SelectMethod(int(i) + 1)) {
+        cout << i << " for " << heu::Enum2String(i) << ",\n";
+      }
+
+      cout << "Please nput the number of selection method : ";
+
+      std::cin >> sm;
     }
-
-    cout << "Please nput the number of selection method : ";
-
-    std::cin >> sm;
 
     algo.setSelectMethod(heu::SelectMethod(sm));
   }
@@ -112,8 +114,17 @@ void testAckley_withRecord() {
   cout << endl;
 }
 
-int main() {
-  testAckley_withRecord();
+int main(int argc,char**argv) {
+  bool is_auto=false;
+
+  for(int i=0;i<argc;i++) {
+    if(std::string_view{argv[i]}=="--auto") {
+      is_auto=true;
+      break;
+    }
+  }
+
+  testAckley_withRecord(is_auto);
   // system("pause");
   return 0;
 }

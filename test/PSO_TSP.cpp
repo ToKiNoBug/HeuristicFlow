@@ -128,10 +128,20 @@ void testTSP_PSO(const int N) {
   */
 }
 
-int main() {
+int main(int argc,char**argv) {
+  bool is_auto=false;
+
+  for(int i=0;i<argc;i++) {
+    if(std::string_view{argv[i]}=="--auto") {
+      is_auto=true;
+      break;
+    }
+  }
   int NodeNum = 100;
-  cout << "Input node number : ";
-  cin >> NodeNum;
+  if(!is_auto) {
+    cout << "Input node number : ";
+    cin >> NodeNum;
+  }
   testTSP_PSO(NodeNum);
 
   return 0;

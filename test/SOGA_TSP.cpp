@@ -148,10 +148,21 @@ void testTSP_SOGA(const uint32_t PointNum) {
   cout << "result fitness = " << algo.bestFitness() << endl;
 }
 
-int main() {
+int main(int argc,char**argv) {
+  bool is_auto=false;
+
+  for(int i=0;i<argc;i++) {
+    if(std::string_view{argv[i]}=="--auto") {
+      is_auto=true;
+      break;
+    }
+  }
+
   int NodeNum = 100;
-  cout << "Input node number : ";
-  cin >> NodeNum;
+  if(!is_auto) {
+    cout << "Input node number : ";
+    cin >> NodeNum;
+  }
   testTSP_SOGA(NodeNum);
   // system("pause");
   return 0;
