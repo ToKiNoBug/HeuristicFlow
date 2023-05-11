@@ -3,20 +3,21 @@ cmake_minimum_required(VERSION 3.5)
 project(HeuristicFlow LANGUAGES CXX VERSION 1.6.3)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${PROJECT_SOURCE_DIR})
-    set(Heu_is_sub_project 0)
+    set(Heu_is_sub_project OFF)
+    set(Heu_is_not_sub_project ON)
 else()
-    set(Heu_is_sub_project 1)
+    set(Heu_is_sub_project ON)
+    set(Heu_is_not_sub_project OFF)
 endif()
 
-math(EXPR Heu_do_install_default_val "1 - ${Heu_is_sub_project}")
-
-option(Heu_do_install "Install or not" ${Heu_do_install_default_val})
+option(Heu_do_install "Install or not" ${Heu_is_not_sub_project})
+option(Heu_build_test "Build tests or not" ${Heu_is_not_sub_project})
+option(Heu_build_lab "Build tests or not" ${Heu_is_not_sub_project})
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Where to install")
 
 if(NOT ${Heu_do_install})
     message(STATUS "Installation for HeuristicFlow is disabled. This function is designed for using heu as a external project.")
 endif()
-
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Where to install")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

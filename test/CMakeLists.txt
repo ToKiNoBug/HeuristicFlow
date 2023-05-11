@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
+
+if(NOT ${Heu_build_test})
+    return()
+endif()
+
 project(HeuristicFlow_Test LANGUAGES CXX)
 
 function(Heu_add_test name source dep)
@@ -28,7 +33,6 @@ Heu_add_test(PSO_RastriginFun PSO_RastriginFun.cpp Heu::PSO)
 Heu_add_test(PSO_TSP PSO_TSP.cpp Heu::PSO)
 
 Heu_add_test(AOS_Rastrigin AOS_Rastrigin.cpp Heu::AOS)
-
 
 find_package(OpenMP)
 
