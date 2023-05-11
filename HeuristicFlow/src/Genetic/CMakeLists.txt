@@ -9,8 +9,12 @@ add_library(Heu::Genetic ALIAS Heu_Genetic)
 
 file(GLOB heu_Genetic_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_Genetic_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/Genetic)
+        DESTINATION include/HeuristicFlow/src/Genetic)
 
 install(TARGETS Heu_Genetic
         DESTINATION lib

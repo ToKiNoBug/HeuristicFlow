@@ -13,16 +13,21 @@ target_compile_definitions(Heu_Global INTERFACE _USE_MATH_DEFINES)
 target_compile_features(Heu_Global INTERFACE cxx_std_17)
 
 find_package(OpenMP)
+
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(Heu_Global INTERFACE OpenMP::OpenMP_CXX)
+        target_link_libraries(Heu_Global INTERFACE OpenMP::OpenMP_CXX)
 endif()
 
 add_library(Heu::Global ALIAS Heu_Global)
 
 file(GLOB heu_Global_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_Global_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/Global)
+        DESTINATION include/HeuristicFlow/src/Global)
 
 install(TARGETS Heu_Global
         DESTINATION lib

@@ -9,8 +9,12 @@ add_library(Heu::EAGlobal ALIAS Heu_EAGlobal)
 
 file(GLOB heu_EAGlobal_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_EAGlobal_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/EAGlobal)
+        DESTINATION include/HeuristicFlow/src/EAGlobal)
 
 install(TARGETS Heu_EAGlobal
         DESTINATION lib

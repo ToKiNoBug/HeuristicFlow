@@ -9,8 +9,12 @@ add_library(Heu::PSO ALIAS Heu_PSO)
 
 file(GLOB heu_PSO_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_PSO_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/PSO)
+        DESTINATION include/HeuristicFlow/src/PSO)
 
 install(TARGETS Heu_PSO
         DESTINATION lib

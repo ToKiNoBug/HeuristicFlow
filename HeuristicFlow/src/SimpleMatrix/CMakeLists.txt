@@ -9,8 +9,12 @@ add_library(Heu::SimpleMatrix ALIAS Heu_SimpleMatrix)
 
 file(GLOB heu_SimpleMatrix_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_SimpleMatrix_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/SimpleMatrix)
+        DESTINATION include/HeuristicFlow/src/SimpleMatrix)
 
 install(TARGETS Heu_SimpleMatrix
         DESTINATION lib

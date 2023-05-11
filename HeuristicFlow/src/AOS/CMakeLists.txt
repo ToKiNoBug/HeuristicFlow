@@ -9,8 +9,12 @@ add_library(Heu::AOS ALIAS Heu_AOS)
 
 file(GLOB heu_AOS_headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
+if(NOT ${Heu_do_install})
+        return()
+endif()
+
 install(FILES ${heu_AOS_headers} ${CMAKE_CURRENT_SOURCE_DIR}/headerCheck/InternalHeaderCheck.h
-    DESTINATION include/HeuristicFlow/src/AOS)
+        DESTINATION include/HeuristicFlow/src/AOS)
 
 install(TARGETS Heu_AOS
         DESTINATION lib
