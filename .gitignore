@@ -87,7 +87,10 @@ CMakeLists.txt.user
 *.hhk
 *.7z
 
+# compilation database for clangd
 compile_commands.json
 compile-commands.json
 
+# clion generated
 cmake-build*
+.idea/*
