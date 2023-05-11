@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(HeuristicFlow LANGUAGES CXX VERSION 1.6.3)
+project(HeuristicFlow LANGUAGES CXX VERSION 1.6.4)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${PROJECT_SOURCE_DIR})
     set(Heu_is_sub_project OFF)
